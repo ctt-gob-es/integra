@@ -1,0 +1,9 @@
+<serviceGroup>
+  <service name="EvisorServices" targetNamespace="http://evisorservices.ws.integraws.afirma.gob.es.v1">
+    <description>Servicio con operacioes de generación y validación de reportes de firma desde eVisor</description>
+    <schema schemaNamespace="http://evisorservices.ws.integraws.afirma.gob.es.v1" />
+    <parameter name="ServiceClass" locked="false">es.gob.afirma.integraws.ws.impl.EvisorServices</parameter>
+	<parameter name="disableSOAP11" locked="true">true</parameter>
+	<parameter name="disableREST" locked="false">true</parameter>
+  </service>
+</serviceGroup>

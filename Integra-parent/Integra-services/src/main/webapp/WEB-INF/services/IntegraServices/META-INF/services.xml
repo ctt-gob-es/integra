@@ -1,0 +1,9 @@
+<serviceGroup>
+  <service name="IntegraServices" targetNamespace="http://integraservices.ws.integraws.afirma.gob.es.v1">
+    <description>Servicio con operacioes de firma y certificados ofrecidos por integra</description>
+    <schema schemaNamespace="http://integraservices.ws.integraws.afirma.gob.es.v1" />
+    <parameter name="ServiceClass" locked="false">es.gob.afirma.integraws.ws.impl.IntegraServices</parameter>
+	<parameter name="disableSOAP11" locked="true">true</parameter>
+	<parameter name="disableREST" locked="false">true</parameter>
+  </service>
+</serviceGroup>

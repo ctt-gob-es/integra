@@ -1,0 +1,9 @@
+<serviceGroup>
+  <service name="AfirmaServices" targetNamespace="http://afirmaservices.ws.integraws.afirma.gob.es.v1">
+    <description>Servicio con operacioes de firma servidor y validación ocsp sobre @firma</description>
+    <schema schemaNamespace="http://afirmaservices.ws.integraws.afirma.gob.es.v1" />
+    <parameter name="ServiceClass" locked="false">es.gob.afirma.integraws.ws.impl.AfirmaServices</parameter>
+	<parameter name="disableSOAP11" locked="true">true</parameter>
+	<parameter name="disableREST" locked="false">true</parameter>
+  </service>
+</serviceGroup>

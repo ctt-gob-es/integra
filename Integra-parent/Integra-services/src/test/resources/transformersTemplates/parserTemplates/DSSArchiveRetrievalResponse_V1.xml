@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<arch:ArchiveRetrievalResponse Profile="urn:afirma:dss:1.0:profile:archive" 
+xmlns:dss="urn:oasis:names:tc:dss:1.0:core:schema" 
+xmlns:arch="urn:oasis:names:tc:dss:1.0:profiles:archive" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+	<dss:Result>
+		<dss:ResultMajor afirmaNodeType="text"/>
+		<dss:ResultMessage afirmaNodeType="text"/>
+		<dss:ResultMinor afirmaNodeType="text"/>
+	</dss:Result>
+	<dss:OptionalOutputs>
+		<dss:DocumentWithSignature>
+			<dss:Document afirmaNodeType="attribute" attributesToInclude="ID">
+				<dss:Base64XML afirmaNodeType="text"/>
+			</dss:Document>
+		</dss:DocumentWithSignature>
+	</dss:OptionalOutputs>
+	<dss:SignatureObject>
+		<dss:SignaturePtr afirmaNodeType="attribute" attributesToInclude="WhichDocument" />
+		<ds:Signature afirmaNodeType="xml" />
+		<dss:Base64Signature afirmaNodeType="attributeText"
+			attributesToInclude="Type" />
+	</dss:SignatureObject>
+</arch:ArchiveRetrievalResponse>

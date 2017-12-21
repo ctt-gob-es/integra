@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="Integra-services-2.2.1_000">
+        <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
+        <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
+        <dependent-module archiveName="Integra-commons-2.2.1_000.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/Integra-commons/Integra-commons">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="Integra-commons-xml-2.2.1_000.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/Integra-commons-xml/Integra-commons-xml">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="Integra-commons-pdf-bc-2.2.1_000.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/Integra-commons-pdf-bc/Integra-commons-pdf-bc">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="Integra-ocsp-rfc3161-2.2.1_000.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/Integra-ocsp-rfc3161/Integra-ocsp-rfc3161">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="Integra-sign-operations-2.2.1_000.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/Integra-sign-operations/Integra-sign-operations">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="Integra-utils-2.2.1_000.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/Integra-utils/Integra-utils">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="Integra-ws-2.2.1_000.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/Integra-ws/Integra-ws">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="Integra-encryption-2.2.1_000.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/Integra-encryption/Integra-encryption">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="context-root" value="Integra-services"/>
+        <property name="java-output-path" value="/Integra-services/target/classes"/>
+    </wb-module>
+</project-modules>

@@ -1,0 +1,9 @@
+<serviceGroup>
+  <service name="TSAServices" targetNamespace="http://tsaservices.ws.integraws.afirma.gob.es.v1">
+    <description>Servicio con operacioes de sellado de tiempo</description>
+    <schema schemaNamespace="http://tsaservices.ws.integraws.afirma.gob.es.v1" />
+    <parameter name="ServiceClass" locked="false">es.gob.afirma.integraws.ws.impl.TSAServices</parameter>
+	<parameter name="disableSOAP11" locked="true">true</parameter>
+	<parameter name="disableREST" locked="false">true</parameter>
+  </service>
+</serviceGroup>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<arch:ArchiveRetrievalRequest Profile="urn:afirma:dss:1.0:profile:archive" 
+xmlns:dss="urn:oasis:names:tc:dss:1.0:core:schema" 
+xmlns:arch="urn:oasis:names:tc:dss:1.0:profiles:archive" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<dss:OptionalInputs>
+		<dss:ClaimedIdentity>
+			<dss:Name/>
+		</dss:ClaimedIdentity>
+	</dss:OptionalInputs>
+	<arch:ArchiveIdentifier afirmaNodeType="text"/>
+</arch:ArchiveRetrievalRequest>
