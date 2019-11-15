@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>26/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.1, 06/10/2017.
+ * @version 1.2, 15/11/2019.
  */
 package es.gob.afirma.integraFacade;
 
@@ -86,7 +86,7 @@ import net.java.xades.util.XMLUtils;
 /**
  * <p>Class that manages the generation of request messages to invoke the DSS web services of @Firma.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 06/10/2017.
+ * @version 1.2, 15/11/2019.
  */
 public final class GenerateMessageRequest {
 
@@ -498,6 +498,11 @@ public final class GenerateMessageRequest {
 	if (upgSigReq.isIgnoreGracePeriod()) {
 	    inputParameters.put(DSSTagsRequest.IGNORE_GRACE_PERIOD, "");
 	}
+	
+	// processAsNotBaseline
+	if (upgSigReq.isProcessAsNotBaseline()) {
+	    inputParameters.put(DSSTagsRequest.PROCESS_AS_NOT_BASELINE, "");
+	}
 
 	return inputParameters;
     }
@@ -908,6 +913,15 @@ public final class GenerateMessageRequest {
 	// returnSignedDataInfo
 	if (optParams.isReturnSignedDataInfo()) {
 	    inputParameters.put(DSSTagsRequest.RETURN_SIGNED_DATA_INFO, "");
+	}
+	
+	// returnNextUpdate
+	if(optParams.isReturnNextUpdate()){
+	    inputParameters.put(DSSTagsRequest.RETURN_NEXT_UPDATE, "");
+	}
+	
+	if(optParams.isProcessAsNotBaseline()){
+	    inputParameters.put(DSSTagsRequest.PROCESS_AS_NOT_BASELINE, "");
 	}
 
 	// certificateValidationLevel

@@ -16,14 +16,14 @@
  * <b>Description:</b><p>Class that represents constants used in the DSS XML type.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * @author Gobierno de España.
- * @version 07/02/2011.
+ * @version 1.1, 15/11/2019.
  */
 package es.gob.afirma.utils;
 
 /**
  * <p>Class that represents constants used in the DSS XML type.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 07/02/2011.
+ * @version 1.1, 15/11/2019.
  */
 public final class DSSConstants {
 
@@ -497,6 +497,16 @@ public final class DSSConstants {
 	 * Constant attribute that represents the XPath for the tag <code>ds:Signature</code>.
 	 */
 	public static final String RETURN_SIGNED_DATA_INFO = OPTIONAL_INPUT + "/afxp:ReturnSignedDataInfo";
+	
+	/**
+	 * Constant attribute that represents the XPath for the tag <code>afxp:ReturnNextUpdate</code>.
+	 */
+	public static final String RETURN_NEXT_UPDATE = OPTIONAL_INPUT + "/afxp:ReturnNextUpdate";
+
+	/**
+	 * Constant attribute that represents the XPath for the tag <code>afxp:ProcessAsNotBaseline</code>.
+	 */
+	public static final String PROCESS_AS_NOT_BASELINE = OPTIONAL_INPUT + "/afxp:ProcessAsNotBaseline";
 
 	/********************	DSSBATCH_VERIFY ********************************/
 

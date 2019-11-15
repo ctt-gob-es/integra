@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>24/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 24/11/2014.
+ * @version 1.1, 15/11/2019.
  */
 package es.gob.afirma.integraFacade.pojo;
 
@@ -26,7 +26,7 @@ import java.io.Serializable;
 /**
  * <p>Class that represents the request for the service to upgrade signature.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 24/11/2014.
+ * @version 1.1, 15/11/2019.
  */
 public class UpgradeSignatureRequest implements Serializable {
 
@@ -69,6 +69,11 @@ public class UpgradeSignatureRequest implements Serializable {
      * Attribute that indicates to server that is not going to save a possible grace period.
      */
     private boolean ignoreGracePeriod = false;
+
+    /**
+     * Attribute that indicates to server that the operation should be processed as not baseline.
+     */
+    private boolean processAsNotBaseline = false;
 
     /**
      * Constructor method for the class UpgradeSignatureRequest.java.
@@ -190,6 +195,22 @@ public class UpgradeSignatureRequest implements Serializable {
      */
     public final void setApplicationId(String applicationIdParam) {
 	this.applicationId = applicationIdParam;
+    }
+
+    /**
+     * Gets the value of the attribute {@link #processAsNotBaseline}.
+     * @return the value of the attribute {@link #processAsNotBaseline}.
+     */
+    public boolean isProcessAsNotBaseline() {
+        return processAsNotBaseline;
+    }
+
+    /**
+     * Gets the value of the attribute {@link #processAsNotBaseline}.
+     * @return the value of the attribute {@link #processAsNotBaseline}.
+     */
+    public void setProcessAsNotBaseline(boolean processAsNotBaseline) {
+        this.processAsNotBaseline = processAsNotBaseline;
     }
 
 }
