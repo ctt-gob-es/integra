@@ -17,19 +17,21 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>01/02/2016.</p>
  * @author Gobierno de España.
- * @version 1.0, 01/02/2016.
+ * @version 1.1, 13/01/2020.
  */
 package es.gob.afirma.signature.xades;
 
-import org.apache.xml.security.signature.XMLSignatureInput;
-import org.apache.xml.security.utils.resolver.ResourceResolverException;
-import org.apache.xml.security.utils.resolver.ResourceResolverSpi;
+
 import org.w3c.dom.Attr;
+
+import es.gob.afirma.xml.security.signature.XMLSignatureInput;
+import es.gob.afirma.xml.security.utils.resolver.ResourceResolverException;
+import es.gob.afirma.xml.security.utils.resolver.ResourceResolverSpi;
 
 /**
  * <p>Class that allows to resolve the URI associated to an external file signed by a XML signature.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 01/02/2016.
+ * @version 1.1, 13/01/2020.
  */
 public class ExternalFileURIDereferencer extends ResourceResolverSpi {
 

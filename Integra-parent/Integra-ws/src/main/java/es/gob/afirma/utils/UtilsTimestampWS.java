@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>05/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 05/11/2014.
+ * @version 1.1, 13/01/2020.
  */
 package es.gob.afirma.utils;
 
@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.crypto.dsig.XMLSignature;
+import es.gob.afirma.xml.crypto.dsig.XMLSignature;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -39,7 +39,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Logger;
-import org.apache.xml.security.c14n.Canonicalizer;
+import es.gob.afirma.xml.security.c14n.Canonicalizer;
 import org.bouncycastle.asn1.tsp.MessageImprint;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
@@ -68,7 +68,7 @@ import es.gob.afirma.utils.DSSConstants.ResultProcessIds;
 /**
  * <p>Class that contains methods related to the manage of timestamps.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 05/11/2014.
+ * @version 1.1, 13/01/2020.
  */
 public final class UtilsTimestampWS {
 

@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>25/01/2016.</p>
  * @author Gobierno de España.
- * @version 1.5, 06/10/2017.
+ * @version 1.6, 13/01/2020.
  */
 package es.gob.afirma.signature.xades;
 
@@ -46,25 +46,25 @@ import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
-import javax.xml.crypto.MarshalException;
-import javax.xml.crypto.XMLStructure;
-import javax.xml.crypto.dom.DOMStructure;
-import javax.xml.crypto.dsig.CanonicalizationMethod;
-import javax.xml.crypto.dsig.DigestMethod;
-import javax.xml.crypto.dsig.Manifest;
-import javax.xml.crypto.dsig.Reference;
-import javax.xml.crypto.dsig.Transform;
-import javax.xml.crypto.dsig.XMLObject;
-import javax.xml.crypto.dsig.XMLSignature;
-import javax.xml.crypto.dsig.XMLSignatureException;
-import javax.xml.crypto.dsig.XMLSignatureFactory;
-import javax.xml.crypto.dsig.spec.TransformParameterSpec;
-import javax.xml.crypto.dsig.spec.XPathFilterParameterSpec;
+import es.gob.afirma.xml.crypto.MarshalException;
+import es.gob.afirma.xml.crypto.XMLStructure;
+import es.gob.afirma.xml.crypto.dom.DOMStructure;
+import es.gob.afirma.xml.crypto.dsig.CanonicalizationMethod;
+import es.gob.afirma.xml.crypto.dsig.DigestMethod;
+import es.gob.afirma.xml.crypto.dsig.Manifest;
+import es.gob.afirma.xml.crypto.dsig.Reference;
+import es.gob.afirma.xml.crypto.dsig.Transform;
+import es.gob.afirma.xml.crypto.dsig.XMLObject;
+import es.gob.afirma.xml.crypto.dsig.XMLSignature;
+import es.gob.afirma.xml.crypto.dsig.XMLSignatureException;
+import es.gob.afirma.xml.crypto.dsig.XMLSignatureFactory;
+import es.gob.afirma.xml.crypto.dsig.spec.TransformParameterSpec;
+import es.gob.afirma.xml.crypto.dsig.spec.XPathFilterParameterSpec;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
-import org.apache.xml.security.c14n.InvalidCanonicalizerException;
+import es.gob.afirma.xml.security.c14n.InvalidCanonicalizerException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.w3c.dom.DOMException;
@@ -124,7 +124,7 @@ import net.java.xades.security.xml.XAdES.XAdES_EPES;
 /**
  * <p>Class that manages the generation, validation and upgrade of XAdES Baseline signatures.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.5, 06/10/2017.
+ * @version 1.6, 13/01/2020.
  */
 public final class XAdESBaselineSigner implements Signer {
 
@@ -1692,11 +1692,11 @@ public final class XAdESBaselineSigner implements Signer {
 		}
 	    }
 
-	} catch (MarshalException e) {
+	} catch (es.gob.afirma.xml.crypto.MarshalException e) {
 	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (XMLSignatureException e) {
+	} catch (es.gob.afirma.xml.crypto.dsig.XMLSignatureException e) {
 	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);

@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>13/01/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 13/01/2014.
+ * @version 1.1, 13/01/2020.
  */
 package es.gob.afirma.tsaServiceInvoker.ws;
 
@@ -42,7 +42,7 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.log4j.Logger;
-import org.apache.xml.security.keys.KeyInfo;
+import es.gob.afirma.xml.security.keys.KeyInfo;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.x509.SubjectKeyIdentifier;
@@ -83,7 +83,7 @@ import es.gob.afirma.utils.UtilsResourcesCommons;
 /**
  * <p>Class that represents a CallbackHandler for managing the SOAP messages.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 13/01/2014.
+ * @version 1.1, 13/01/2020.
  */
 public class TSACallBackHandler implements CallbackHandler {
 

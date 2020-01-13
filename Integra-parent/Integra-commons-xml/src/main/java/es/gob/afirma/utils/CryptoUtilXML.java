@@ -17,11 +17,11 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>29/06/2011.</p>
  * @author Gobierno de España.
- * @version 1.1, 14/03/2017.
+ * @version 1.2, 13/01/2020.
  */
 package es.gob.afirma.utils;
 
-import javax.xml.crypto.dsig.DigestMethod;
+import es.gob.afirma.xml.crypto.dsig.DigestMethod;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
@@ -33,7 +33,7 @@ import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
 /**
  * <p>Utility class contains encryption and hash functions for digital signature.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 14/03/2017.
+ * @version 1.2, 13/01/2020.
  */
 public final class CryptoUtilXML {
 

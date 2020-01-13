@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>17/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 17/11/2014.
+ * @version 1.1, 13/01/2020.
  */
 package es.gob.afirma.utils;
 
@@ -27,32 +27,31 @@ import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import javax.xml.crypto.AlgorithmMethod;
-import javax.xml.crypto.KeySelector;
-import javax.xml.crypto.KeySelectorException;
-import javax.xml.crypto.KeySelectorResult;
-import javax.xml.crypto.XMLCryptoContext;
-import javax.xml.crypto.XMLStructure;
-import javax.xml.crypto.dsig.SignatureMethod;
-import javax.xml.crypto.dsig.keyinfo.KeyInfo;
-import javax.xml.crypto.dsig.keyinfo.X509Data;
-
-import org.apache.xml.security.signature.XMLSignature;
+import es.gob.afirma.xml.crypto.AlgorithmMethod;
+import es.gob.afirma.xml.crypto.KeySelector;
+import es.gob.afirma.xml.crypto.KeySelectorException;
+import es.gob.afirma.xml.crypto.KeySelectorResult;
+import es.gob.afirma.xml.crypto.XMLCryptoContext;
+import es.gob.afirma.xml.crypto.XMLStructure;
+import es.gob.afirma.xml.crypto.dsig.SignatureMethod;
+import es.gob.afirma.xml.crypto.dsig.keyinfo.KeyInfo;
+import es.gob.afirma.xml.crypto.dsig.keyinfo.X509Data;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
+import es.gob.afirma.xml.security.signature.XMLSignature;
 
 /**
  * <p>Class that extends KeySelector to retrieve the public key out of the KeyValue element and returns it. NOTE: If the key algorithm doesn't match
  * the signature algorithm, then the public key will be ignored.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 17/11/2014.
+ * @version 1.1, 13/01/2020.
  */
 public class KeyValueSelector extends KeySelector {
 
     /**
      * {@inheritDoc}
-     * @see javax.xml.crypto.KeySelector#select(javax.xml.crypto.dsig.keyinfo.KeyInfo, javax.xml.crypto.KeySelector.Purpose, javax.xml.crypto.AlgorithmMethod, javax.xml.crypto.XMLCryptoContext)
+     * @see es.gob.afirma.xml.crypto.KeySelector#select(es.gob.afirma.xml.crypto.dsig.keyinfo.KeyInfo, es.gob.afirma.xml.crypto.KeySelector.Purpose, es.gob.afirma.xml.crypto.AlgorithmMethod, es.gob.afirma.xml.crypto.XMLCryptoContext)
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -122,7 +121,7 @@ public class KeyValueSelector extends KeySelector {
 
 	/**
 	 * {@inheritDoc}
-	 * @see javax.xml.crypto.KeySelectorResult#getKey()
+	 * @see es.gob.afirma.xml.crypto.KeySelectorResult#getKey()
 	 */
 	@Override
 	public Key getKey() {

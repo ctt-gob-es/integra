@@ -17,13 +17,13 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>03/10/2011.</p>
  * @author Gobierno de España.
- * @version 1.0, 23/03/2011.
+ * @version 1.1, 13/01/2020.
  */
 package es.gob.afirma.wsServiceInvoker.ws;
 
 import java.security.cert.X509Certificate;
 
-import javax.xml.crypto.dsig.XMLSignature;
+import es.gob.afirma.xml.crypto.dsig.XMLSignature;
 
 import org.apache.axis.AxisFault;
 import org.apache.axis.Message;
@@ -45,7 +45,7 @@ import es.gob.afirma.utils.UtilsSignatureCommons;
 /**
  * <p>Class that represents handler used to verify the signature response.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 28/09/2011.
+ * @version 1.1, 13/01/2020.
  */
 public class ResponseHandler extends AbstractCommonHandler {
 

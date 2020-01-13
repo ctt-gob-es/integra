@@ -21,7 +21,7 @@ package net.java.xades.security.xml.XAdES;
 
 import java.security.GeneralSecurityException;
 
-import javax.xml.crypto.dsig.XMLSignature;
+import es.gob.afirma.xml.crypto.dsig.XMLSignature;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

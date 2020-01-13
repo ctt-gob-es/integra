@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>13/01/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 13/01/2014.
+ * @version 1.1, 13/01/2020.
  */
 package es.gob.afirma.tsaServiceInvoker.ws;
 
@@ -35,7 +35,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.xml.crypto.dsig.XMLSignature;
+import es.gob.afirma.xml.crypto.dsig.XMLSignature;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.soap.MessageFactory;
@@ -89,7 +89,7 @@ import es.gob.afirma.utils.UtilsTimestampWS;
 /**
  * <p>Class that manages the invoke of TS@ web services.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 13/01/2014.
+ * @version 1.1, 13/01/2020.
  */
 public class TSAWebServiceInvoker {
 

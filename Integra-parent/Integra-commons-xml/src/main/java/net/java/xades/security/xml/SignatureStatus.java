@@ -23,7 +23,7 @@ import net.java.xades.util.ComparableBean;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.crypto.MarshalException;
+import es.gob.afirma.xml.crypto.MarshalException;
 
 /**
  *

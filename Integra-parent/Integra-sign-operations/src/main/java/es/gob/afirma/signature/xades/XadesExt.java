@@ -23,30 +23,31 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>04/08/2011.</p>
  * @author Gobierno de España.
- * @version 1.0, 04/08/2011.
+ * @version 1.1, 13/01/2020.
  */
 package es.gob.afirma.signature.xades;
 
 import java.security.GeneralSecurityException;
 import java.security.KeyException;
 import java.security.PrivateKey;
+import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.crypto.MarshalException;
-import javax.xml.crypto.dom.DOMStructure;
-import javax.xml.crypto.dsig.CanonicalizationMethod;
-import javax.xml.crypto.dsig.Reference;
-import javax.xml.crypto.dsig.XMLObject;
-import javax.xml.crypto.dsig.XMLSignature;
-import javax.xml.crypto.dsig.XMLSignatureException;
-import javax.xml.crypto.dsig.XMLSignatureFactory;
-import javax.xml.crypto.dsig.dom.DOMSignContext;
-import javax.xml.crypto.dsig.keyinfo.KeyInfo;
-import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
-import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
-
+import es.gob.afirma.utils.IntegraProvider;
+import es.gob.afirma.xml.crypto.MarshalException;
+import es.gob.afirma.xml.crypto.dom.DOMStructure;
+import es.gob.afirma.xml.crypto.dsig.CanonicalizationMethod;
+import es.gob.afirma.xml.crypto.dsig.Reference;
+import es.gob.afirma.xml.crypto.dsig.XMLObject;
+import es.gob.afirma.xml.crypto.dsig.XMLSignature;
+import es.gob.afirma.xml.crypto.dsig.XMLSignatureException;
+import es.gob.afirma.xml.crypto.dsig.XMLSignatureFactory;
+import es.gob.afirma.xml.crypto.dsig.dom.DOMSignContext;
+import es.gob.afirma.xml.crypto.dsig.keyinfo.KeyInfo;
+import es.gob.afirma.xml.crypto.dsig.keyinfo.KeyInfoFactory;
+import es.gob.afirma.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import net.java.xades.security.xml.WrappedKeyStorePlace;
 import net.java.xades.security.xml.XmlWrappedKeyInfo;
 import net.java.xades.security.xml.XAdES.XAdES_BES;
@@ -61,7 +62,7 @@ import net.java.xades.security.xml.XAdES.XMLAdvancedSignature;
  * <li>Namespace of XAdES can be set.</li>
  * </ul></p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 21/09/2011.
+ * @version 1.1, 13/01/2020.
  */
 public final class XadesExt extends XMLAdvancedSignature {
 
@@ -82,6 +83,7 @@ public final class XadesExt extends XMLAdvancedSignature {
      * Atribute that indicates whether signature is XAdES Baseline or not.
      */
     private boolean isXAdESBaseline = false;
+
     /**
      * Establece el algoritmo de canonicalizaci&oacute;n.
      * @param canMethod URL del algoritmo de canonicalizaci&oacute;n. Debe estar soportado en XMLDSig 1.0 &oacute; 1.1
@@ -107,7 +109,7 @@ public final class XadesExt extends XMLAdvancedSignature {
     public void setXAdESBaseline(boolean isXAdESBaselineParam) {
 	this.isXAdESBaseline = isXAdESBaselineParam;
     }
-    
+
     /**
      * {@inheritDoc}
      * @see net.java.xades.security.xml.XAdES.XMLAdvancedSignature#newKeyInfo(java.security.cert.X509Certificate, java.lang.String)
@@ -139,11 +141,11 @@ public final class XadesExt extends XMLAdvancedSignature {
 	if (WrappedKeyStorePlace.SIGNING_CERTIFICATE_PROPERTY.equals(getWrappedKeyStorePlace())) {
 	    xades.setSigningCertificate(certificate);
 	}
-
+	
 	addXMLObject(marshalXMLSignature(xadesNamespace, signatureIdPrefix, referencesIdList, tsaURL));
-
+	// final XMLSignatureFactory fac = getXMLSignatureFactory(new
+	// IntegraProvider());
 	final XMLSignatureFactory fac = getXMLSignatureFactory();
-
 	final List<Reference> documentReferences = getReferences(referencesIdList);
 	final String keyInfoId = getKeyInfoId(signatureIdPrefix);
 	if (!isXAdESBaseline) {
@@ -151,7 +153,6 @@ public final class XadesExt extends XMLAdvancedSignature {
 	}
 
 	this.signature = fac.newXMLSignature(fac.newSignedInfo(fac.newCanonicalizationMethod(canonicalizationMethod, (C14NMethodParameterSpec) null), fac.newSignatureMethod(signatureMethod, null), documentReferences), newKeyInfo(certificate, keyInfoId), getXMLObjects(), getSignatureId(signatureIdPrefix), getSignatureValueId(signatureIdPrefix));
-
 	this.signContext = new DOMSignContext(privateKey, baseElement);
 	this.signContext.putNamespacePrefix(XMLSignature.XMLNS, xades.getXmlSignaturePrefix());
 	this.signContext.putNamespacePrefix(xadesNamespace, xades.getXadesPrefix());

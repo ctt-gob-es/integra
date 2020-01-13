@@ -24,7 +24,7 @@ import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 
-import javax.xml.crypto.dsig.XMLSignature;
+import es.gob.afirma.xml.crypto.dsig.XMLSignature;
 
 import net.java.xades.security.timestamp.TimeStampFactory;
 

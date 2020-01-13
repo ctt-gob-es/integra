@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>04/07/2011.</p>
  * @author Gobierno de España.
- * @version 1.5, 06/10/2017.
+ * @version 1.6, 13/01/2020.
  */
 package es.gob.afirma.signature.xades;
 
@@ -43,25 +43,26 @@ import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
-import javax.xml.crypto.MarshalException;
-import javax.xml.crypto.XMLStructure;
-import javax.xml.crypto.dom.DOMStructure;
-import javax.xml.crypto.dsig.CanonicalizationMethod;
-import javax.xml.crypto.dsig.DigestMethod;
-import javax.xml.crypto.dsig.Manifest;
-import javax.xml.crypto.dsig.Reference;
-import javax.xml.crypto.dsig.Transform;
-import javax.xml.crypto.dsig.XMLObject;
-import javax.xml.crypto.dsig.XMLSignature;
-import javax.xml.crypto.dsig.XMLSignatureException;
-import javax.xml.crypto.dsig.XMLSignatureFactory;
-import javax.xml.crypto.dsig.spec.TransformParameterSpec;
-import javax.xml.crypto.dsig.spec.XPathFilterParameterSpec;
+import es.gob.afirma.xml.crypto.MarshalException;
+import es.gob.afirma.xml.crypto.XMLStructure;
+import es.gob.afirma.xml.crypto.dom.DOMStructure;
+import es.gob.afirma.xml.crypto.dsig.CanonicalizationMethod;
+import es.gob.afirma.xml.crypto.dsig.DigestMethod;
+import es.gob.afirma.xml.crypto.dsig.Manifest;
+import es.gob.afirma.xml.crypto.dsig.Reference;
+import es.gob.afirma.xml.crypto.dsig.Transform;
+import es.gob.afirma.xml.crypto.dsig.XMLObject;
+import es.gob.afirma.xml.crypto.dsig.XMLSignature;
+import es.gob.afirma.xml.crypto.dsig.XMLSignatureException;
+import es.gob.afirma.xml.crypto.dsig.XMLSignatureFactory;
+import es.gob.afirma.xml.crypto.dsig.spec.TransformParameterSpec;
+import es.gob.afirma.xml.crypto.dsig.spec.XPathFilterParameterSpec;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
-import org.apache.xml.security.c14n.InvalidCanonicalizerException;
+import org.apache.xerces.impl.dtd.XMLContentSpec.Provider;
+import es.gob.afirma.xml.security.c14n.InvalidCanonicalizerException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.w3c.dom.DOMException;
@@ -101,6 +102,7 @@ import es.gob.afirma.utils.DSSConstants;
 import es.gob.afirma.utils.GenericUtilsCommons;
 import es.gob.afirma.utils.IUtilsSignature;
 import es.gob.afirma.utils.IUtilsTimestamp;
+import es.gob.afirma.utils.IntegraProvider;
 import es.gob.afirma.utils.UtilsCertificateCommons;
 import es.gob.afirma.utils.UtilsSignatureCommons;
 import es.gob.afirma.utils.UtilsSignatureOp;
@@ -120,7 +122,7 @@ import net.java.xades.security.xml.XAdES.XAdES_EPES;
 /**
  * <p>Class for create XAdES signatures.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.5, 06/10/2017.
+ * @version 1.6,13/01/2020.
  */
 public final class XadesSigner implements Signer {
 
@@ -187,7 +189,7 @@ public final class XadesSigner implements Signer {
 	    dBFactory.setNamespaceAware(true);
 	}
 	if (xmlSignatureFactory == null) {
-	    xmlSignatureFactory = XMLSignatureFactory.getInstance("DOM");
+	    xmlSignatureFactory = XMLSignatureFactory.getInstance("DOM", new IntegraProvider());
 	}
 	// Añadimos el proveedor criptográfico Bouncycastle en caso de que no
 	// esté incluído
@@ -195,6 +197,7 @@ public final class XadesSigner implements Signer {
 	    Security.addProvider(new BouncyCastleProvider());
 	}
 	org.apache.xml.security.Init.init();
+		
     }
 
     /**
@@ -1580,6 +1583,9 @@ public final class XadesSigner implements Signer {
 	checkDataObjectFormat(optionalParams);
 	// Generamos el objeto que representará la firma
 	XAdES_EPES xades = generateXAdESElement(privateKey, optionalParams, docSignature.getDocumentElement());
+	
+	// Insertamos nuestro provider en la primera posición de la lista de provders.
+	Security.insertProviderAt(new IntegraProvider(), 1);
 
 	// Instanciamos el objeto que permite la generación de la firma XAdES
 	final XadesExt signBuilder = XadesExt.newInstance(xades, false);

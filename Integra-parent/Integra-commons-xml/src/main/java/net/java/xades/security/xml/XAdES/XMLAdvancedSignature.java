@@ -26,6 +26,7 @@ import java.security.GeneralSecurityException;
 import java.security.KeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.Provider;
 import java.security.Security;
 import java.security.SignatureException;
 import java.security.cert.X509Certificate;
@@ -33,27 +34,27 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.xml.crypto.MarshalException;
-import javax.xml.crypto.XMLStructure;
-import javax.xml.crypto.dsig.CanonicalizationMethod;
-import javax.xml.crypto.dsig.DigestMethod;
-import javax.xml.crypto.dsig.Reference;
-import javax.xml.crypto.dsig.SignatureMethod;
-import javax.xml.crypto.dsig.SignedInfo;
-import javax.xml.crypto.dsig.Transform;
-import javax.xml.crypto.dsig.TransformException;
-import javax.xml.crypto.dsig.XMLObject;
-import javax.xml.crypto.dsig.XMLSignature;
-import javax.xml.crypto.dsig.XMLSignatureException;
-import javax.xml.crypto.dsig.XMLSignatureFactory;
-import javax.xml.crypto.dsig.dom.DOMSignContext;
-import javax.xml.crypto.dsig.keyinfo.KeyInfo;
-import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
-import javax.xml.crypto.dsig.keyinfo.KeyValue;
-import javax.xml.crypto.dsig.keyinfo.X509Data;
-import javax.xml.crypto.dsig.keyinfo.X509IssuerSerial;
-import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
-import javax.xml.crypto.dsig.spec.TransformParameterSpec;
+import es.gob.afirma.xml.crypto.MarshalException;
+import es.gob.afirma.xml.crypto.XMLStructure;
+import es.gob.afirma.xml.crypto.dsig.CanonicalizationMethod;
+import es.gob.afirma.xml.crypto.dsig.DigestMethod;
+import es.gob.afirma.xml.crypto.dsig.Reference;
+import es.gob.afirma.xml.crypto.dsig.SignatureMethod;
+import es.gob.afirma.xml.crypto.dsig.SignedInfo;
+import es.gob.afirma.xml.crypto.dsig.Transform;
+import es.gob.afirma.xml.crypto.dsig.TransformException;
+import es.gob.afirma.xml.crypto.dsig.XMLObject;
+import es.gob.afirma.xml.crypto.dsig.XMLSignature;
+import es.gob.afirma.xml.crypto.dsig.XMLSignatureException;
+import es.gob.afirma.xml.crypto.dsig.XMLSignatureFactory;
+import es.gob.afirma.xml.crypto.dsig.dom.DOMSignContext;
+import es.gob.afirma.xml.crypto.dsig.keyinfo.KeyInfo;
+import es.gob.afirma.xml.crypto.dsig.keyinfo.KeyInfoFactory;
+import es.gob.afirma.xml.crypto.dsig.keyinfo.KeyValue;
+import es.gob.afirma.xml.crypto.dsig.keyinfo.X509Data;
+import es.gob.afirma.xml.crypto.dsig.keyinfo.X509IssuerSerial;
+import es.gob.afirma.xml.crypto.dsig.spec.C14NMethodParameterSpec;
+import es.gob.afirma.xml.crypto.dsig.spec.TransformParameterSpec;
 import javax.xml.parsers.ParserConfigurationException;
 
 import net.java.xades.security.timestamp.TimeStampFactory;
@@ -64,8 +65,8 @@ import net.java.xades.security.xml.XMLSignatureElement;
 import net.java.xades.security.xml.XmlWrappedKeyInfo;
 import net.java.xades.util.Base64;
 
-import org.apache.xml.security.c14n.CanonicalizationException;
-import org.apache.xml.security.c14n.InvalidCanonicalizerException;
+import es.gob.afirma.xml.security.c14n.CanonicalizationException;
+import es.gob.afirma.xml.security.c14n.InvalidCanonicalizerException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -109,7 +110,7 @@ public class XMLAdvancedSignature {
 		// {
 		// try
 		// {
-		Security.insertProviderAt(new org.apache.jcp.xml.dsig.internal.dom.XMLDSigRI(), 1);
+		Security.insertProviderAt(new es.gob.afirma.xml.dsig.internal.dom.XMLDSigRI(), 1);
 		// }
 		// catch (Throwable e)
 		// {
@@ -293,6 +294,11 @@ public class XMLAdvancedSignature {
 	if (xmlSignatureFactory == null) {
 	    xmlSignatureFactory = XMLSignatureFactory.getInstance("DOM");
 	}
+	return xmlSignatureFactory;
+    }
+
+    protected XMLSignatureFactory getXMLSignatureFactory(Provider provider) {
+	xmlSignatureFactory = XMLSignatureFactory.getInstance("DOM", provider);
 	return xmlSignatureFactory;
     }
 

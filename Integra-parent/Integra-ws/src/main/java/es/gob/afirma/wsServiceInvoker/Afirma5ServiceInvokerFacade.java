@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>16/03/2011.</p>
  * @author Gobierno de España.
- * @version 1.0, 16/03/2011.
+ * @version 1.1, 13/01/2020.
  */
 package es.gob.afirma.wsServiceInvoker;
 
@@ -32,8 +32,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.log4j.Logger;
-import org.apache.xml.security.exceptions.Base64DecodingException;
-import org.apache.xml.security.utils.Base64;
+import es.gob.afirma.xml.security.exceptions.Base64DecodingException;
+import es.gob.afirma.xml.security.utils.Base64;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -48,13 +48,11 @@ import es.gob.afirma.utils.GeneralConstants;
 import es.gob.afirma.utils.GenericUtilsCommons;
 import es.gob.afirma.utils.NativeTagsRequest;
 import es.gob.afirma.utils.UtilsCertificateCommons;
-import es.gob.afirma.wsServiceInvoker.WSServiceInvokerConstants;
-import es.gob.afirma.wsServiceInvoker.WSServiceInvokerException;
 
 /**
  * <p>Class that represents the facade for the invocation of the web services of @Firma.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 17/03/2011.
+ * @version 1.1, 13/01/2020.
  */
 public final class Afirma5ServiceInvokerFacade {
 

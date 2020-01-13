@@ -21,7 +21,7 @@ package net.java.xades.security.xml;
 
 import java.util.Date;
 
-import javax.xml.crypto.dom.DOMStructure;
+import es.gob.afirma.xml.crypto.dom.DOMStructure;
 
 import net.java.xades.util.SystemUtils;
 

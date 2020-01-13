@@ -27,7 +27,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
-import javax.xml.crypto.MarshalException;
+import es.gob.afirma.xml.crypto.MarshalException;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;

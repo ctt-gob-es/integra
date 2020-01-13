@@ -23,12 +23,13 @@ import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.xml.security.Init;
-import org.apache.xml.security.c14n.CanonicalizationException;
-import org.apache.xml.security.c14n.Canonicalizer;
-import org.apache.xml.security.c14n.InvalidCanonicalizerException;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
+
+import es.gob.afirma.xml.security.Init;
+import es.gob.afirma.xml.security.c14n.CanonicalizationException;
+import es.gob.afirma.xml.security.c14n.Canonicalizer;
+import es.gob.afirma.xml.security.c14n.InvalidCanonicalizerException;
 
 public class DOMCanonicalizationFactory {
 

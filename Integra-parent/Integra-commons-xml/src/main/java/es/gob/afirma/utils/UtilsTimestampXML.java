@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>05/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.3, 21/03/2017.
+ * @version 1.4, 13/01/2020.
  */
 package es.gob.afirma.utils;
 
@@ -33,18 +33,15 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 
-import javax.xml.crypto.MarshalException;
-import javax.xml.crypto.dsig.CanonicalizationMethod;
-import javax.xml.crypto.dsig.DigestMethod;
-import javax.xml.crypto.dsig.XMLSignature;
-import javax.xml.crypto.dsig.XMLSignatureException;
-import javax.xml.crypto.dsig.XMLSignatureFactory;
-import javax.xml.crypto.dsig.dom.DOMValidateContext;
+import es.gob.afirma.xml.crypto.MarshalException;
+import es.gob.afirma.xml.crypto.dsig.CanonicalizationMethod;
+import es.gob.afirma.xml.crypto.dsig.DigestMethod;
+import es.gob.afirma.xml.crypto.dsig.XMLSignature;
+import es.gob.afirma.xml.crypto.dsig.XMLSignatureException;
+import es.gob.afirma.xml.crypto.dsig.XMLSignatureFactory;
+import es.gob.afirma.xml.crypto.dsig.dom.DOMValidateContext;
 
 import org.apache.log4j.Logger;
-import org.apache.xml.security.c14n.CanonicalizationException;
-import org.apache.xml.security.c14n.Canonicalizer;
-import org.apache.xml.security.c14n.InvalidCanonicalizerException;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -65,11 +62,14 @@ import es.gob.afirma.i18n.Language;
 import es.gob.afirma.logger.IntegraLogger;
 import es.gob.afirma.signature.SigningException;
 import es.gob.afirma.signature.xades.IXMLConstants;
+import es.gob.afirma.xml.security.c14n.CanonicalizationException;
+import es.gob.afirma.xml.security.c14n.Canonicalizer;
+import es.gob.afirma.xml.security.c14n.InvalidCanonicalizerException;
 
 /**
  * <p>Class that contains methods related to the manage of timestamps.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.3, 21/03/2017.
+ * @version 1.4, 13/01/2020.
  */
 public final class UtilsTimestampXML {
 
@@ -449,7 +449,7 @@ public final class UtilsTimestampXML {
 	    // Una vez hemos encontrada la firma
 	    if (xmlSigNode != null) {
 		try {
-		    org.apache.xml.security.signature.XMLSignature sig = new org.apache.xml.security.signature.XMLSignature((Element) xmlSigNode, "");
+		    es.gob.afirma.xml.security.signature.XMLSignature sig = new es.gob.afirma.xml.security.signature.XMLSignature((Element) xmlSigNode, "");
 		    if (sig.getKeyInfo() != null && sig.getKeyInfo().getX509Certificate() != null) {
 			// Accedemos al certificado
 			cert = UtilsCertificateCommons.generateCertificate(sig.getKeyInfo().getX509Certificate().getEncoded());

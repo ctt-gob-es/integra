@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>23/01/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 23/01/2014.
+ * @version 1.1, 13/01/2020.
  */
 package es.gob.afirma.testwebservices;
 
@@ -27,7 +27,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.apache.xml.security.c14n.Canonicalizer;
+import es.gob.afirma.xml.security.c14n.Canonicalizer;
 
 import es.gob.afirma.transformers.TransformersConstants;
 import es.gob.afirma.transformers.TransformersException;
@@ -49,7 +49,7 @@ import es.gob.afirma.wsServiceInvoker.Afirma5ServiceInvokerFacade;
 /**
  * <p>Class that allows to tests the @Firma and TS@ DSS services.</p>
  * <b>Project:</b><p>@Firma and TS@ Web Services Integration Platform.</p>
- * @version 1.0, 13/04/2015.
+ * @version 1.1, 13/01/2020.
  */
 public class DSSServicesTest extends TestCase {
 
@@ -687,7 +687,7 @@ public class DSSServicesTest extends TestCase {
 	     * INICIO SELLADO
 	     */
 	    file = UtilsFileSystemCommons.readFile("ficheroAfirmar2.xml", true);
-	    org.apache.xml.security.Init.init();
+	    es.gob.afirma.xml.security.Init.init();
 	    byte[ ] canonicalizedFile = Canonicalizer.getInstance(Canonicalizer.ALGO_ID_C14N_EXCL_OMIT_COMMENTS).canonicalize(file);
 	    MessageDigest md = MessageDigest.getInstance("SHA1");
 	    md.update(canonicalizedFile);

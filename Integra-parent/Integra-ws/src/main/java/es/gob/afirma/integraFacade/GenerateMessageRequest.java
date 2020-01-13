@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>26/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.2, 15/11/2019.
+ * @version 1.3, 13/01/2020.
  */
 package es.gob.afirma.integraFacade;
 
@@ -35,17 +35,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.crypto.MarshalException;
-import javax.xml.crypto.dsig.Reference;
-import javax.xml.crypto.dsig.XMLSignature;
+import es.gob.afirma.xml.crypto.MarshalException;
+import es.gob.afirma.xml.crypto.dsig.Reference;
+import es.gob.afirma.xml.crypto.dsig.XMLSignature;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.axis.encoding.Base64;
 import org.apache.log4j.Logger;
-import org.apache.xml.security.c14n.CanonicalizationException;
-import org.apache.xml.security.c14n.Canonicalizer;
-import org.apache.xml.security.c14n.InvalidCanonicalizerException;
+import es.gob.afirma.xml.security.c14n.CanonicalizationException;
+import es.gob.afirma.xml.security.c14n.Canonicalizer;
+import es.gob.afirma.xml.security.c14n.InvalidCanonicalizerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -86,7 +86,7 @@ import net.java.xades.util.XMLUtils;
 /**
  * <p>Class that manages the generation of request messages to invoke the DSS web services of @Firma.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 15/11/2019.
+ * @version 1.3, 13/01/2020.
  */
 public final class GenerateMessageRequest {
 
