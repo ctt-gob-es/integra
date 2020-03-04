@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>26/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.3, 13/01/2020.
+ * @version 1.4, 04/03/2020.
  */
 package es.gob.afirma.integraFacade;
 
@@ -35,17 +35,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import es.gob.afirma.xml.crypto.MarshalException;
-import es.gob.afirma.xml.crypto.dsig.Reference;
-import es.gob.afirma.xml.crypto.dsig.XMLSignature;
+import org.apache.xml.crypto.MarshalException;
+import org.apache.xml.crypto.dsig.Reference;
+import org.apache.xml.crypto.dsig.XMLSignature;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.axis.encoding.Base64;
 import org.apache.log4j.Logger;
-import es.gob.afirma.xml.security.c14n.CanonicalizationException;
-import es.gob.afirma.xml.security.c14n.Canonicalizer;
-import es.gob.afirma.xml.security.c14n.InvalidCanonicalizerException;
+import org.apache.xml.security.c14n.CanonicalizationException;
+import org.apache.xml.security.c14n.Canonicalizer;
+import org.apache.xml.security.c14n.InvalidCanonicalizerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -86,7 +85,7 @@ import net.java.xades.util.XMLUtils;
 /**
  * <p>Class that manages the generation of request messages to invoke the DSS web services of @Firma.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.3, 13/01/2020.
+ * @version 1.4, 04/03/2020.
  */
 public final class GenerateMessageRequest {
 
@@ -704,7 +703,7 @@ public final class GenerateMessageRequest {
 		    inputParameters.put(DSSTagsRequest.DOCUMENT_ATR_ID, idSignaturePtr);
 		    // en dss:document/dss:base64XML se guarda la firma
 		    // codificada en base64
-		    inputParameters.put(DSSTagsRequest.BASE64XML, new String(Base64.encode(signature)));
+		    inputParameters.put(DSSTagsRequest.BASE64XML, new String(org.apache.axis2.util.XMLUtils.base64encode(signature)));
 
 		}
 
@@ -752,8 +751,7 @@ public final class GenerateMessageRequest {
 		    // si es enveloped o detached, se incluye en ds:SignaturePtr
 		    // referencia al elemento dss:BaseXML
 		    String idSignaturePtr = String.valueOf(Math.random() * NumberConstants.INT_9999);
-
-		    docMap.put(DSSTagsRequest.BASE64XML_LAST, new String(Base64.encode(signature)));
+		    docMap.put(DSSTagsRequest.BASE64XML_LAST, new String(org.apache.axis2.util.XMLUtils.base64encode(signature)));
 		    docMap.put(DSSTagsRequest.DOCUMENT_ATR_ID_LAST, idSignaturePtr);
 		    inputParameters.put(DSSTagsRequest.INPUTDOC_SIGNATURE_SIGNATURE_PTR_ATR_WHICH, idSignaturePtr);
 
@@ -858,8 +856,7 @@ public final class GenerateMessageRequest {
 		    // si es enveloped o detached, se incluye en ds:SignaturePtr
 		    // referencia al elemento dss:BaseXML
 		    String idSignaturePtr = String.valueOf(Math.random() * NumberConstants.INT_9999);
-
-		    docMap.put(DSSTagsRequest.BASE64XML_LAST, new String(Base64.encode(signature)));
+		    docMap.put(DSSTagsRequest.BASE64XML_LAST, new String(org.apache.axis2.util.XMLUtils.base64encode(signature)));
 		    docMap.put(DSSTagsRequest.DOCUMENT_ATR_ID_LAST, idSignaturePtr);
 		    inputParameters.put(DSSTagsRequest.SIGNATURE_PTR_ATR_WHICH, idSignaturePtr);
 

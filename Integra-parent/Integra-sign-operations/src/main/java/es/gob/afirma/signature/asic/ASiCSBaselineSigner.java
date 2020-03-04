@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>27/01/2016.</p>
  * @author Gobierno de España.
- * @version 1.1, 13/01/2020.
+ * @version 1.2, 04/03/2020.
  */
 package es.gob.afirma.signature.asic;
 
@@ -39,12 +39,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import es.gob.afirma.xml.crypto.MarshalException;
-import es.gob.afirma.xml.crypto.dsig.DigestMethod;
-import es.gob.afirma.xml.crypto.dsig.Reference;
-import es.gob.afirma.xml.crypto.dsig.Transform;
-import es.gob.afirma.xml.crypto.dsig.XMLObject;
-import es.gob.afirma.xml.crypto.dsig.XMLSignature;
+import org.apache.xml.crypto.MarshalException;
+import org.apache.xml.crypto.dsig.DigestMethod;
+import org.apache.xml.crypto.dsig.Reference;
+import org.apache.xml.crypto.dsig.Transform;
+import org.apache.xml.crypto.dsig.XMLObject;
+import org.apache.xml.crypto.dsig.XMLSignature;
 
 import net.java.xades.security.xml.XMLSignatureElement;
 
@@ -55,7 +55,7 @@ import org.apache.log4j.Logger;
 import org.apache.tika.mime.MimeType;
 import org.apache.tika.mime.MimeTypeException;
 import org.apache.tika.mime.MimeTypes;
-import es.gob.afirma.xml.security.c14n.Canonicalizer;
+import org.apache.xml.security.c14n.Canonicalizer;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
@@ -99,7 +99,7 @@ import es.gob.afirma.utils.UtilsSignatureOp;
 /**
  * <p>Class that manages the generation, validation and upgrade of ASiC-S Baseline signatures.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 13/01/2020.
+ * @version 1.2, 04/03/2020.
  */
 public final class ASiCSBaselineSigner implements Signer {
 

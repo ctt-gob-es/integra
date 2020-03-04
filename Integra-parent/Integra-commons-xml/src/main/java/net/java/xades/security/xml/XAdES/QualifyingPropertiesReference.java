@@ -19,7 +19,7 @@
  */
 package net.java.xades.security.xml.XAdES;
 
-import es.gob.afirma.xml.crypto.dom.DOMStructure;
+import org.apache.xml.crypto.dom.DOMStructure;
 import org.w3c.dom.Node;
 
 /**

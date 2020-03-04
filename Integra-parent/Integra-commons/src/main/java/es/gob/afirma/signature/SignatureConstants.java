@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>28/06/2011.</p>
  * @author Gobierno de España.
- * @version 1.1, 13/01/2020.
+ * @version 1.2, 04/03/2020.
  */
 package es.gob.afirma.signature;
 
@@ -26,14 +26,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import es.gob.afirma.xml.crypto.dsig.DigestMethod;
+import org.apache.xml.crypto.dsig.DigestMethod;
 
 import es.gob.afirma.utils.CryptoUtilCommons;
 
 /**
  * <p>Class that defines constants related to processes with signatures.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 13/01/2020.
+ * @version 1.2, 04/03/2020.
  */
 public final class SignatureConstants {
 

@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>13/01/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 13/01/2020.
+ * @version 1.2, 04/03/2020.
  */
 package es.gob.afirma.utils;
 
@@ -29,7 +29,7 @@ import java.util.HashMap;
 /** 
  * <p>Class that implements the XmlSec 1.5 security provider.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 13/01/2020.
+ * @version 1.2, 04/03/2020.
  */
 public class IntegraProvider extends Provider {
 
@@ -44,37 +44,37 @@ public class IntegraProvider extends Provider {
     public IntegraProvider() {
 	super("IntegraXMLDSig", 1.5D, INFO);
 	final HashMap<String, String> map = new HashMap<String, String>();
-	map.put("XMLSignatureFactory.DOM", "es.gob.afirma.xml.dsig.internal.dom.DOMXMLSignatureFactory");
-	map.put("KeyInfoFactory.DOM", "es.gob.afirma.xml.dsig.internal.dom.DOMKeyInfoFactory");
-	map.put("TransformService.http://www.w3.org/TR/2001/REC-xml-c14n-20010315", "es.gob.afirma.xml.dsig.internal.dom.DOMCanonicalXMLC14NMethod");
+	map.put("XMLSignatureFactory.DOM", "org.apache.xml.dsig.internal.dom.DOMXMLSignatureFactory");
+	map.put("KeyInfoFactory.DOM", "org.apache.xml.dsig.internal.dom.DOMKeyInfoFactory");
+	map.put("TransformService.http://www.w3.org/TR/2001/REC-xml-c14n-20010315", "org.apache.xml.dsig.internal.dom.DOMCanonicalXMLC14NMethod");
 	map.put("Alg.Alias.TransformService.INCLUSIVE", "http://www.w3.org/TR/2001/REC-xml-c14n-20010315");
 	map.put("TransformService.http://www.w3.org/TR/2001/REC-xml-c14n-20010315 MechanismType", "DOM");
-	map.put("TransformService.http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments", "es.gob.afirma.xml.dsig.internal.dom.DOMCanonicalXMLC14NMethod");
+	map.put("TransformService.http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments", "org.apache.xml.dsig.internal.dom.DOMCanonicalXMLC14NMethod");
 	map.put("Alg.Alias.TransformService.INCLUSIVE_WITH_COMMENTS", "http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments");
 	map.put("TransformService.http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments MechanismType", "DOM");
-	map.put("TransformService.http://www.w3.org/2006/12/xml-c14n11", "es.gob.afirma.xml.dsig.internal.dom.DOMCanonicalXMLC14N11Method");
+	map.put("TransformService.http://www.w3.org/2006/12/xml-c14n11", "org.apache.xml.dsig.internal.dom.DOMCanonicalXMLC14N11Method");
 	map.put("TransformService.http://www.w3.org/2006/12/xml-c14n11 MechanismType", "DOM");
-	map.put("TransformService.http://www.w3.org/2006/12/xml-c14n11#WithComments", "es.gob.afirma.xml.dsig.internal.dom.DOMCanonicalXMLC14N11Method");
+	map.put("TransformService.http://www.w3.org/2006/12/xml-c14n11#WithComments", "org.apache.xml.dsig.internal.dom.DOMCanonicalXMLC14N11Method");
 	map.put("TransformService.http://www.w3.org/2006/12/xml-c14n11#WithComments MechanismType", "DOM");
-	map.put("TransformService.http://www.w3.org/2001/10/xml-exc-c14n#", "es.gob.afirma.xml.dsig.internal.dom.DOMExcC14NMethod");
+	map.put("TransformService.http://www.w3.org/2001/10/xml-exc-c14n#", "org.apache.xml.dsig.internal.dom.DOMExcC14NMethod");
 	map.put("Alg.Alias.TransformService.EXCLUSIVE", "http://www.w3.org/2001/10/xml-exc-c14n#");
 	map.put("TransformService.http://www.w3.org/2001/10/xml-exc-c14n# MechanismType", "DOM");
-	map.put("TransformService.http://www.w3.org/2001/10/xml-exc-c14n#WithComments", "es.gob.afirma.xml.dsig.internal.dom.DOMExcC14NMethod");
+	map.put("TransformService.http://www.w3.org/2001/10/xml-exc-c14n#WithComments", "org.apache.xml.dsig.internal.dom.DOMExcC14NMethod");
 	map.put("Alg.Alias.TransformService.EXCLUSIVE_WITH_COMMENTS", "http://www.w3.org/2001/10/xml-exc-c14n#WithComments");
 	map.put("TransformService.http://www.w3.org/2001/10/xml-exc-c14n#WithComments MechanismType", "DOM");
-	map.put("TransformService.http://www.w3.org/2000/09/xmldsig#base64", "es.gob.afirma.xml.dsig.internal.dom.DOMBase64Transform");
+	map.put("TransformService.http://www.w3.org/2000/09/xmldsig#base64", "org.apache.xml.dsig.internal.dom.DOMBase64Transform");
 	map.put("Alg.Alias.TransformService.BASE64", "http://www.w3.org/2000/09/xmldsig#base64");
 	map.put("TransformService.http://www.w3.org/2000/09/xmldsig#base64 MechanismType", "DOM");
-	map.put("TransformService.http://www.w3.org/2000/09/xmldsig#enveloped-signature", "es.gob.afirma.xml.dsig.internal.dom.DOMEnvelopedTransform");
+	map.put("TransformService.http://www.w3.org/2000/09/xmldsig#enveloped-signature", "org.apache.xml.dsig.internal.dom.DOMEnvelopedTransform");
 	map.put("Alg.Alias.TransformService.ENVELOPED", "http://www.w3.org/2000/09/xmldsig#enveloped-signature");
 	map.put("TransformService.http://www.w3.org/2000/09/xmldsig#enveloped-signature MechanismType", "DOM");
-	map.put("TransformService.http://www.w3.org/2002/06/xmldsig-filter2", "es.gob.afirma.xml.dsig.internal.dom.DOMXPathFilter2Transform");
+	map.put("TransformService.http://www.w3.org/2002/06/xmldsig-filter2", "org.apache.xml.dsig.internal.dom.DOMXPathFilter2Transform");
 	map.put("Alg.Alias.TransformService.XPATH2", "http://www.w3.org/2002/06/xmldsig-filter2");
 	map.put("TransformService.http://www.w3.org/2002/06/xmldsig-filter2 MechanismType", "DOM");
-	map.put("TransformService.http://www.w3.org/TR/1999/REC-xpath-19991116", "es.gob.afirma.xml.dsig.internal.dom.DOMXPathTransform");
+	map.put("TransformService.http://www.w3.org/TR/1999/REC-xpath-19991116", "org.apache.xml.dsig.internal.dom.DOMXPathTransform");
 	map.put("Alg.Alias.TransformService.XPATH", "http://www.w3.org/TR/1999/REC-xpath-19991116");
 	map.put("TransformService.http://www.w3.org/TR/1999/REC-xpath-19991116 MechanismType", "DOM");
-	map.put("TransformService.http://www.w3.org/TR/1999/REC-xslt-19991116", "es.gob.afirma.xml.dsig.internal.dom.DOMXSLTTransform");
+	map.put("TransformService.http://www.w3.org/TR/1999/REC-xslt-19991116", "org.apache.xml.dsig.internal.dom.DOMXSLTTransform");
 	map.put("Alg.Alias.TransformService.XSLT", "http://www.w3.org/TR/1999/REC-xslt-19991116");
 	map.put("TransformService.http://www.w3.org/TR/1999/REC-xslt-19991116 MechanismType", "DOM");
 	AccessController.doPrivileged(new PrivilegedAction() {

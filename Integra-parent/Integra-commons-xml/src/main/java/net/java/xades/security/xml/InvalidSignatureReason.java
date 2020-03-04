@@ -19,10 +19,10 @@
  */
 package net.java.xades.security.xml;
 
-import es.gob.afirma.xml.crypto.MarshalException;
-import es.gob.afirma.xml.crypto.dsig.Reference;
-import es.gob.afirma.xml.crypto.dsig.XMLSignature;
-import es.gob.afirma.xml.crypto.dsig.XMLSignatureException;
+import org.apache.xml.crypto.MarshalException;
+import org.apache.xml.crypto.dsig.Reference;
+import org.apache.xml.crypto.dsig.XMLSignature;
+import org.apache.xml.crypto.dsig.XMLSignatureException;
 
 import net.java.xades.security.*;
 import net.java.xades.util.ComparableBean;

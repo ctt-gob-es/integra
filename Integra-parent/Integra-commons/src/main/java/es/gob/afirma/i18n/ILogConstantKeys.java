@@ -17,14 +17,14 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>24/01/2014.</p>
  * @author Gobierno de España.
- * @version 1.4, 20/03/2017.
+ * @version 1.6, 04/03/2020.
  */
 package es.gob.afirma.i18n;
 
 /**
  * <p>Interface that defines all the keys of the log messages file.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.5, 21/03/2017.
+ * @version 1.6, 04/03/2020.
  */
 public interface ILogConstantKeys {
 
@@ -179,11 +179,6 @@ public interface ILogConstantKeys {
     String WSI_LOG009 = "WSI009";
 
     /**
-     * Constant attribute that represents the name of the property <code>WSI010</code> belonging to the file integra_xx_YY.properties.
-     */
-    String WSI_LOG010 = "WSI010";
-
-    /**
      * Constant attribute that represents the name of the property <code>WSI011</code> belonging to the file integra_xx_YY.properties.
      */
     String WSI_LOG011 = "WSI011";
@@ -217,6 +212,36 @@ public interface ILogConstantKeys {
      * Constant attribute that represents the name of the property <code>WSI017</code> belonging to the file integra_xx_YY.properties.
      */
     String WSI_LOG017 = "WSI017";
+
+    /**
+     * Constant attribute that represents the name of the property <code>WSI018</code> belonging to the file integra_xx_YY.properties.
+     */
+    String WSI_LOG018 = "WSI018";
+
+    /**
+     * Constant attribute that represents the name of the property <code>WSI019</code> belonging to the file integra_xx_YY.properties.
+     */
+    String WSI_LOG019 = "WSI019";
+
+    /**
+     * Constant attribute that represents the name of the property <code>WSI020</code> belonging to the file integra_xx_YY.properties.
+     */
+    String WSI_LOG020 = "WSI020";
+
+    /**
+     * Constant attribute that represents the name of the property <code>WSI021</code> belonging to the file integra_xx_YY.properties.
+     */
+    String WSI_LOG021 = "WSI021";
+
+    /**
+     * Constant attribute that represents the name of the property <code>WSI022</code> belonging to the file integra_xx_YY.properties.
+     */
+    String WSI_LOG022 = "WSI022";
+
+    /**
+     * Constant attribute that represents the name of the property <code>WSI023</code> belonging to the file integra_xx_YY.properties.
+     */
+    String WSI_LOG023 = "WSI023";
 
     /**
      * Constant attribute that represents the name of the property <code>RTSI001</code> belonging to the file integra_xx_YY.properties.
@@ -1829,16 +1854,6 @@ public interface ILogConstantKeys {
     String TWSI_LOG030 = "TWSI030";
 
     /**
-     * Constant attribute that represents the name of the property <code>TWSI031</code> belonging to the file integra_xx_YY.properties.
-     */
-    String TWSI_LOG031 = "TWSI031";
-
-    /**
-     * Constant attribute that represents the name of the property <code>TWSI032</code> belonging to the file integra_xx_YY.properties.
-     */
-    String TWSI_LOG032 = "TWSI032";
-
-    /**
      * Constant attribute that represents the name of the property <code>TWSI033</code> belonging to the file integra_xx_YY.properties.
      */
     String TWSI_LOG033 = "TWSI033";
@@ -1939,11 +1954,6 @@ public interface ILogConstantKeys {
     String TWSI_LOG052 = "TWSI052";
 
     /**
-     * Constant attribute that represents the name of the property <code>TWSI053</code> belonging to the file integra_xx_YY.properties.
-     */
-    String TWSI_LOG053 = "TWSI053";
-
-    /**
      * Constant attribute that represents the name of the property <code>TWSI054</code> belonging to the file integra_xx_YY.properties.
      */
     String TWSI_LOG054 = "TWSI054";
@@ -1964,16 +1974,6 @@ public interface ILogConstantKeys {
     String TWSI_LOG057 = "TWSI057";
 
     /**
-     * Constant attribute that represents the name of the property <code>TWSI058</code> belonging to the file integra_xx_YY.properties.
-     */
-    String TWSI_LOG058 = "TWSI058";
-
-    /**
-     * Constant attribute that represents the name of the property <code>TWSI059</code> belonging to the file integra_xx_YY.properties.
-     */
-    String TWSI_LOG059 = "TWSI059";
-
-    /**
      * Constant attribute that represents the name of the property <code>TWSI060</code> belonging to the file integra_xx_YY.properties.
      */
     String TWSI_LOG060 = "TWSI060";
@@ -1987,11 +1987,6 @@ public interface ILogConstantKeys {
      * Constant attribute that represents the name of the property <code>TWSI062</code> belonging to the file integra_xx_YY.properties.
      */
     String TWSI_LOG062 = "TWSI062";
-
-    /**
-     * Constant attribute that represents the name of the property <code>TWSI063</code> belonging to the file integra_xx_YY.properties.
-     */
-    String TWSI_LOG063 = "TWSI063";
 
     /**
      * Constant attribute that represents the name of the property <code>TWSI064</code> belonging to the file integra_xx_YY.properties.
@@ -6027,5 +6022,195 @@ public interface ILogConstantKeys {
      * Constant attribute that represents the name of the property <code>IE010</code> belonging to the file integra_xx_YY.properties.
      */
     String SFDC_LOG001 = "SFDC001";
+
+    /**
+     * Constant attribute that represents the name of the property <code>MURH001</code> belonging to the file integra_xx_YY.properties.
+     */
+    String MURH_LOG001 = "MURH001";
+
+    /**
+     * Constant attribute that represents the name of the property <code>MURH001</code> belonging to the file integra_xx_YY.properties.
+     */
+    String MURH_LOG002 = "MURH002";
+    
+    /**
+     * Constant attribute that represents the name of the property <code>TRSKH001</code> belonging to the file integra_xx_YY.properties.
+     */    
+    String TRSKH_LOG001 = "TRSKH001";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TRSKH002</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TRSKH_LOG002 = "TRSKH002";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TRSKH003</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TRSKH_LOG003 = "TRSKH003";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TRSKH004</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TRSKH_LOG004 = "TRSKH004";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TRSKH005</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TRSKH_LOG005 = "TRSKH005";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TRSKH006</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TRSKH_LOG006 = "TRSKH006";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TRSKH007</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TRSKH_LOG007 = "TRSKH007";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TRSKH008</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TRSKH_LOG008 = "TRSKH008";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TCSKH001</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TCSKH_LOG001 = "TCSKH001";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TCSKH002</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TCSKH_LOG002 = "TCSKH002";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TCSKH003</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TCSKH_LOG003 = "TCSKH003";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TCSKH004</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TCSKH_LOG004 = "TCSKH004";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TCSKH005</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TCSKH_LOG005 = "TCSKH005";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TCSKH006</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TCSKH_LOG006 = "TCSKH006";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TCSKH007</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TCSKH_LOG007 = "TCSKH007";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TCSKH008</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TCSKH_LOG008 = "TCSKH008";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TCSKH009</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TCSKH_LOG009 = "TCSKH009";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TCSKH010</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TCSKH_LOG010 = "TCSKH010";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TCSKH011</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TCSKH_LOG011 = "TCSKH011";
+
+    /**
+     * Constant attribute that represents the name of the property <code>UA001</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String UA_LOG001 = "UA001";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TCH001</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TCH_LOG001 = "TCH001";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TCH002</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TCH_LOG002 = "TCH002";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TRH001</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TRH_LOG001 = "TRH001";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TRH002</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TRH_LOG002 = "TRH002";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TRH003</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TRH_LOG003 = "TRH003";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TRH004</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TRH_LOG004 = "TRH004";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TRH005</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TRH_LOG005 = "TRH005";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TRH006</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TRH_LOG006 = "TRH006";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TRH007</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TRH_LOG007 = "TRH007";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TRH008</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TRH_LOG008 = "TRH008";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TRH009</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TRH_LOG009 = "TRH009";
+
+    /**
+     * Constant attribute that represents the name of the property <code>TRH010</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TRH_LOG010 = "TRH010";
+    
+    /**
+     * Constant attribute that represents the name of the property <code>TRH011</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TRH_LOG011 = "TRH011";
+    
+    /**
+     * Constant attribute that represents the name of the property <code>TRH012</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TRH_LOG012 = "TRH012";
+    
+    /**
+     * Constant attribute that represents the name of the property <code>TRH013</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TRH_LOG013 = "TRH013";
+    
+    /**
+     * Constant attribute that represents the name of the property <code>TRH014</code> belonging to the file integra_xx_YY.properties.
+     */ 
+    String TRH_LOG014 = "TRH014";
 
 }

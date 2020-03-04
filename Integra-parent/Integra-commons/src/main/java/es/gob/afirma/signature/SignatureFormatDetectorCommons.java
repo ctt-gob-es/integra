@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>10/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.1, 13/01/2020.
+ * @version 1.2, 04/03/2020.
  */
 package es.gob.afirma.signature;
 
@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import es.gob.afirma.xml.crypto.dsig.XMLSignature;
+import org.apache.xml.crypto.dsig.XMLSignature;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -45,7 +45,7 @@ import es.gob.afirma.utils.UtilsSignatureCommons;
 /**
  * <p>Class that contains all the functionality related to recognize the signature formats.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 13/01/2020.
+ * @version 1.2, 04/03/2020.
  */
 public final class SignatureFormatDetectorCommons implements ISignatureFormatDetector {
 

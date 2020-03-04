@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>26/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.2, 13/01/2020.
+ * @version 1.3, 04/03/2020.
  */
 package es.gob.afirma.signature.policy;
 
@@ -31,7 +31,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import es.gob.afirma.xml.crypto.dsig.XMLSignature;
+import org.apache.xml.crypto.dsig.XMLSignature;
 
 import net.java.xades.security.xml.XAdES.SignaturePolicyIdentifier;
 import net.java.xades.security.xml.XAdES.XAdES_EPES;
@@ -77,7 +77,7 @@ import es.gob.afirma.utils.IUtilsSignature;
 /**
  * <p>Class that manages all the operations related to signature policies.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 13/01/2020.
+ * @version 1.3, 04/03/2020.
  */
 public final class SignaturePolicyManager {
 

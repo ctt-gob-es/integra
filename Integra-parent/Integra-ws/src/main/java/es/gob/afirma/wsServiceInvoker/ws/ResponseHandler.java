@@ -12,22 +12,20 @@
 // http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
 
 /**
- * <b>File:</b><p>es.gob.afirma.afirma5ServiceInvoker.ws.ResponseHandler.java.</p>
+ * <b>File:</b><p>es.gob.afirma.wsServiceInvoker.ws.ResponseHandler.java.</p>
  * <b>Description:</b><p>Class that represents handler used to verify the signature response.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>03/10/2011.</p>
  * @author Gobierno de España.
- * @version 1.1, 13/01/2020.
+ * @version 1.2, 04/03/2020.
  */
 package es.gob.afirma.wsServiceInvoker.ws;
 
 import java.security.cert.X509Certificate;
 
-import es.gob.afirma.xml.crypto.dsig.XMLSignature;
-
-import org.apache.axis.AxisFault;
-import org.apache.axis.Message;
-import org.apache.axis.MessageContext;
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.MessageContext;
+import org.apache.axis2.saaj.util.SAAJUtil;
 import org.apache.log4j.Logger;
 import org.apache.ws.security.components.crypto.CryptoType;
 import org.apache.ws.security.components.crypto.CryptoType.TYPE;
@@ -40,19 +38,15 @@ import es.gob.afirma.i18n.Language;
 import es.gob.afirma.logger.IntegraLogger;
 import es.gob.afirma.signature.xades.IXMLConstants;
 import es.gob.afirma.signature.xades.IdRegister;
-import es.gob.afirma.utils.UtilsSignatureCommons;
+import org.apache.xml.crypto.dsig.XMLSignature;
 
 /**
  * <p>Class that represents handler used to verify the signature response.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 13/01/2020.
+ * @version 1.2, 04/03/2020.
  */
 public class ResponseHandler extends AbstractCommonHandler {
 
-    /**
-     * Attribute that represents serial version identificator.
-     */
-    private static final long serialVersionUID = 3921688388842794471L;
     /**
      * Attribute that represents the object that manages the log of the class.
      */
@@ -85,48 +79,46 @@ public class ResponseHandler extends AbstractCommonHandler {
      * @see org.apache.axis.Handler#invoke(org.apache.axis.MessageContext)
      */
     @Override
-    public final void invoke(MessageContext msgContext) throws AxisFault {
-	Message msg;
+    public InvocationResponse invoke(MessageContext msgContext) throws AxisFault {
 	Document doc = null;
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.RH_LOG001));
 	try {
-	    org.apache.xml.security.Init.init();
-	    // Obtención del documento XML que representa la petición SOAP
-	    msg = msgContext.getCurrentMessage();
-
-	    doc = UtilsSignatureCommons.getDocumentFromXML(msg.getSOAPPartAsBytes());
-	    // Obtenemos el objeto signature
+	    // Obtención del documento XML que representa la petición SOAP.
+	    doc = SAAJUtil.getDocumentFromSOAPEnvelope(msgContext.getEnvelope());
+	    // Obtenemos el objeto signature.
 	    Element sigElement = null;
 	    NodeList nl = doc.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_SIGNATURE);
 	    if (nl.getLength() > 0) {
 		sigElement = (Element) nl.item(0);
-	    } else {
-		throw new AxisFault(Language.getResIntegra(ILogConstantKeys.RH_LOG002));
-	    }
-	    // creamos un manejador de la firma (para validarlo) a partir del
-	    // xml de la firma
-	    org.apache.xml.security.signature.XMLSignature signature = new org.apache.xml.security.signature.XMLSignature(sigElement, "");
+		// creamos un manejador de la firma (para validarlo) a partir
+		// del xml de la firma.
+		org.apache.xml.security.Init.init();
+		org.apache.xml.security.signature.XMLSignature signature = new org.apache.xml.security.signature.XMLSignature(sigElement, "");
 
-	    IdRegister.registerElements(doc.getDocumentElement());
-	    // Obtenemos la clave pública usada en el servidor para las
-	    // respuestas a partir del almacén de certificados.
-	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.RH_LOG003, new Object[ ] { getUserAlias() }));
-	    CryptoType aliasCertificate = new CryptoType(TYPE.ALIAS);
-	    aliasCertificate.setAlias(getUserAlias());
-	    X509Certificate[ ] certificates = getCryptoInstance().getX509Certificates(aliasCertificate);
-	    if (certificates != null && certificates.length > 0) {
-		X509Certificate certificate = certificates[0];
-		if (signature.checkSignatureValue(certificate)) {
-		    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.RH_LOG004));
+		IdRegister.registerElements(doc.getDocumentElement());
+		// Obtenemos la clave pública usada en el servidor para las
+		// respuestas a partir del almacén de certificados.
+		LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.RH_LOG003, new Object[ ] { getUserAlias() }));
+		CryptoType aliasCertificate = new CryptoType(TYPE.ALIAS);
+		aliasCertificate.setAlias(getUserAlias());
+		X509Certificate[ ] certificates = getCryptoInstance().getX509Certificates(aliasCertificate);
+		if (certificates != null && certificates.length > 0) {
+		    X509Certificate certificate = certificates[0];
+		    if (signature.checkSignatureValue(certificate)) {
+			LOGGER.debug(Language.getResIntegra(ILogConstantKeys.RH_LOG004));
+		    } else {
+			throw new AxisFault(Language.getFormatResIntegra(ILogConstantKeys.RH_LOG005, new Object[ ] { certificate.getSubjectDN(), certificate.getSerialNumber() }));
+		    }
 		} else {
-		    throw new AxisFault(Language.getFormatResIntegra(ILogConstantKeys.RH_LOG005, new Object[ ] { certificate.getSubjectDN(), certificate.getSerialNumber() }));
+		    throw new AxisFault(Language.getResIntegra(ILogConstantKeys.RH_LOG006));
 		}
 	    } else {
-		throw new AxisFault(Language.getResIntegra(ILogConstantKeys.RH_LOG006));
+		 throw new AxisFault(Language.getResIntegra(ILogConstantKeys.RH_LOG002));
 	    }
 	} catch (Exception e) {
 	    throw AxisFault.makeFault(e);
 	}
+	return InvocationResponse.CONTINUE;
     }
 
 }

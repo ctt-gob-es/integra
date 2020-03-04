@@ -12,20 +12,20 @@
 // http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
 
 /**
- * <b>File:</b><p>es.gob.afirma.afirma5ServiceInvoker.ws.AbstractCommonHandler.java.</p>
+ * <b>File:</b><p>es.gob.afirma.wsServiceInvoker.ws.AbstractCommonHandler.java.</p>
  * <b>Description:</b><p>Class that represents handlers used in the service invoker.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>03/10/2011.</p>
  * @author Gobierno de España.
- * @version 1.0, 23/03/2011.
+ * @version 1.1, 04/03/2020.
  */
 package es.gob.afirma.wsServiceInvoker.ws;
 
 import java.util.Properties;
 
-import org.apache.axis.AxisFault;
-import org.apache.axis.MessageContext;
-import org.apache.axis.handlers.BasicHandler;
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.MessageContext;
+import org.apache.axis2.handlers.AbstractHandler;
 import org.apache.ws.security.WSConstants;
 import org.apache.ws.security.WSSecurityException;
 import org.apache.ws.security.components.crypto.Crypto;
@@ -34,14 +34,9 @@ import org.apache.ws.security.components.crypto.CryptoFactory;
 /**
  * <p>Class that represents handlers used in the service invoker.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 28/09/2011.
+ * @version 1.1, 04/03/2020.
  */
-public class AbstractCommonHandler extends BasicHandler {
-
-    /**
-     * Class serial version.
-     */
-    private static final long serialVersionUID = -4453701134094417213L;
+public class AbstractCommonHandler extends AbstractHandler {
 
     /**
      * Attribute that represents the user name to authenticate the request with UserNameToken, or the alias of the private key defined to to authenticate the
@@ -77,9 +72,11 @@ public class AbstractCommonHandler extends BasicHandler {
 
     /**
      * {@inheritDoc}
-     * @see org.apache.axis.Handler#invoke(org.apache.axis.MessageContext)
+     * @see org.apache.axis2.engine.Handler#invoke(org.apache.axis2.context.MessageContext)
      */
-    public void invoke(MessageContext msgContext) throws AxisFault {
+    @Override
+    public InvocationResponse invoke(MessageContext msgContext) throws AxisFault {
+	return InvocationResponse.CONTINUE;
     }
 
     /**

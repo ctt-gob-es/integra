@@ -24,10 +24,10 @@ import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
-import es.gob.afirma.xml.crypto.KeySelectorResult;
-import es.gob.afirma.xml.crypto.XMLStructure;
-import es.gob.afirma.xml.crypto.dsig.keyinfo.X509Data;
-import es.gob.afirma.xml.crypto.dsig.keyinfo.X509IssuerSerial;
+import org.apache.xml.crypto.KeySelectorResult;
+import org.apache.xml.crypto.XMLStructure;
+import org.apache.xml.crypto.dsig.keyinfo.X509Data;
+import org.apache.xml.crypto.dsig.keyinfo.X509IssuerSerial;
 
 /**
  *

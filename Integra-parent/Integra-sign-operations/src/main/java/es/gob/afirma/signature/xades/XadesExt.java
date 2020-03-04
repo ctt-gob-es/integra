@@ -23,7 +23,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>04/08/2011.</p>
  * @author Gobierno de España.
- * @version 1.1, 13/01/2020.
+ * @version 1.2, 04/03/2020.
  */
 package es.gob.afirma.signature.xades;
 
@@ -36,18 +36,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import es.gob.afirma.utils.IntegraProvider;
-import es.gob.afirma.xml.crypto.MarshalException;
-import es.gob.afirma.xml.crypto.dom.DOMStructure;
-import es.gob.afirma.xml.crypto.dsig.CanonicalizationMethod;
-import es.gob.afirma.xml.crypto.dsig.Reference;
-import es.gob.afirma.xml.crypto.dsig.XMLObject;
-import es.gob.afirma.xml.crypto.dsig.XMLSignature;
-import es.gob.afirma.xml.crypto.dsig.XMLSignatureException;
-import es.gob.afirma.xml.crypto.dsig.XMLSignatureFactory;
-import es.gob.afirma.xml.crypto.dsig.dom.DOMSignContext;
-import es.gob.afirma.xml.crypto.dsig.keyinfo.KeyInfo;
-import es.gob.afirma.xml.crypto.dsig.keyinfo.KeyInfoFactory;
-import es.gob.afirma.xml.crypto.dsig.spec.C14NMethodParameterSpec;
+import org.apache.xml.crypto.MarshalException;
+import org.apache.xml.crypto.dom.DOMStructure;
+import org.apache.xml.crypto.dsig.CanonicalizationMethod;
+import org.apache.xml.crypto.dsig.Reference;
+import org.apache.xml.crypto.dsig.XMLObject;
+import org.apache.xml.crypto.dsig.XMLSignature;
+import org.apache.xml.crypto.dsig.XMLSignatureException;
+import org.apache.xml.crypto.dsig.XMLSignatureFactory;
+import org.apache.xml.crypto.dsig.dom.DOMSignContext;
+import org.apache.xml.crypto.dsig.keyinfo.KeyInfo;
+import org.apache.xml.crypto.dsig.keyinfo.KeyInfoFactory;
+import org.apache.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import net.java.xades.security.xml.WrappedKeyStorePlace;
 import net.java.xades.security.xml.XmlWrappedKeyInfo;
 import net.java.xades.security.xml.XAdES.XAdES_BES;
@@ -62,7 +62,7 @@ import net.java.xades.security.xml.XAdES.XMLAdvancedSignature;
  * <li>Namespace of XAdES can be set.</li>
  * </ul></p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 13/01/2020.
+ * @version 1.2, 04/03/2020.
  */
 public final class XadesExt extends XMLAdvancedSignature {
 

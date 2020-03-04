@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>07/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.4, 13/01/2020.
+ * @version 1.5, 04/03/2020.
  */
 package es.gob.afirma.utils;
 
@@ -49,7 +49,7 @@ import es.gob.afirma.signature.xades.XAdESSignerInfo;
 /**
  * <p>Class that contains methods related to the manage of signatures.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.4, 13/01/2020.
+ * @version 1.5, 04/03/2020.
  */
 public final class UtilsSignature implements IUtilsSignature {
 
@@ -234,7 +234,7 @@ public final class UtilsSignature implements IUtilsSignature {
      * @param signedFileName Parameter that represents the name of the file signed by the XML signature when the signed data isn't included into the signed XML document.
      * @throws SigningException If the validation fails.
      */
-    public static void validateXAdESSigner(es.gob.afirma.xml.security.signature.XMLSignature xmlSignature, X509Certificate signingCertificate, TimeStampToken tst, Element xmlTst, String signingMode, byte[ ] signedFile, String signedFileName) throws SigningException {
+    public static void validateXAdESSigner(org.apache.xml.security.signature.XMLSignature xmlSignature, X509Certificate signingCertificate, TimeStampToken tst, Element xmlTst, String signingMode, byte[ ] signedFile, String signedFileName) throws SigningException {
 	UtilsSignatureOp.validateXAdESSigner(xmlSignature, signingCertificate, tst, xmlTst, signingMode, signedFile, signedFileName, null);
     }
 

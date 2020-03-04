@@ -17,14 +17,14 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>09/01/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 09/01/2014.
+ * @version 1.1, 04/03/2020.
  */
 package es.gob.afirma.tsaServiceInvoker;
 
 /**
  * <p>Interface that defines all the constants related to the invocation of TS@ services (DSS and RFC 3161).</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 09/01/2014.
+ * @version 1.1, 04/03/2020.
  */
 public interface TSAServiceInvokerConstants {
 
@@ -175,7 +175,13 @@ public interface TSAServiceInvokerConstants {
      *  symmetric key used to encrypt the SOAP request.
      */
     String WS_REQUEST_SYMMETRICKEY_VALUE = "request.symmetricKey.value";
-
+    
+    /**
+     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with the algorithm of the
+     *  symmetric key used to encrypt the SOAP request.
+     */
+    String WS_REQUEST_SYMMETRICKEY_ALGORITHM = "request.symmetricKey.algorithm";
+    
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with the path of the
      *  keystore which contains the certificate used to secure the SOAP responses from TS@ with X509 Certificate Token.
@@ -353,6 +359,135 @@ public interface TSAServiceInvokerConstants {
 	 * Constant attribute that identifies the cryptographic protocol Secure Sockets Layer used to communicate with TS@ RFC 3161 service. 
 	 */
 	String SSL = "SSL";
+    }
+    
+    /** 
+     * <p>Interface that defines some SOAP element and attributes necessaries for the management of petitions.</p>
+     * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
+     * @version 1.0, 04/03/2020.
+     */
+    interface SOAPElements {
+	
+	/**
+	 * Constant attribute that represents the <i>DataReference</i> element. 
+	 */
+	String DATA_REFERENCE = "DataReference";
+
+	/**
+	 * Constant attribute that represents the <i>URI</i> element. 
+	 */
+	String URI = "URI";
+
+	/**
+	 * Constant attribute that represents the <i>EncryptedData</i> element. 
+	 */
+	String ENCRYPTED_DATA = "EncryptedData";
+	
+	/**
+	 * Constant attribute that represents the <i>Id</i> element. 
+	 */	
+	String ID = "Id";
+
+	/**
+	 * Constant attribute that represents the <i>KeyName</i> element. 
+	 */
+	String KEY_NAME = "KeyName";
+
+	/**
+	 * Constant attribute that represents the <i>EncryptionMethod</i> element. 
+	 */
+	String ENCRYPTION_METHOD = "EncryptionMethod";
+
+	/**
+	 * Constant attribute that represents the <i>Algorithm</i> element. 
+	 */
+	String ALGORITHM = "Algorithm";
+
+	/**
+	 * Constant attribute that represents the <i>ReferenceList</i> element. 
+	 */
+	String REFERENCE_LIST = "ReferenceList";
+
+	/**
+	 * Constant attribute that represents the <i>Security</i> element. 
+	 */
+	String SECURITY = "Security";
+	
+	/**
+	 * Constant attribute that represents the <i>Type</i> element. 
+	 */	
+	String TYPE = "Type";
+
+	/**
+	 * Constant attribute that represents the <i>KeyInfo</i> element. 
+	 */	
+	String KEY_INFO = "KeyInfo";
+
+	/**
+	 * Constant attribute that represents the <i>CipherData</i> element. 
+	 */	
+	String CIPHER_DATA = "CipherData";
+
+	/**
+	 * Constant attribute that represents the <i>CipherValue</i> element. 
+	 */
+	String CIPHER_VALUE = "CipherValue";
+
+	/**
+	 * Constant attribute that represents the <i>idAplicacion</i> element. 
+	 */
+	String ID_APPLICATION = "idAplicacion";
+
+	/**
+	 * Constant attribute that represents the <i>ResultMessage</i> element. 
+	 */
+	String RESULT_MESSAGE = "ResultMessage";
+
+	/**
+	 * Constant attribute that represents the <i>InputDocuments</i> element. 
+	 */
+	String INPUT_DOCUMENTS = "InputDocuments";
+
+	/**
+	 * Constant attribute that represents the <i>SecurityTokenReference</i> element. 
+	 */
+	String SECURITY_TOKEN_REFERENCE = "SecurityTokenReference";
+
+	/**
+	 * Constant attribute that represents the <i>Reference</i> element. 
+	 */
+	String REFERENCE = "Reference";
+
+	/**
+	 * Constant attribute that represents the <i>BinarySecurityToken</i> element. 
+	 */
+	String BINARY_SECURITY_TOKEN = "BinarySecurityToken";
+
+	/**
+	 * Constant attribute that represents the <i>KeyIdentifier</i> element. 
+	 */
+	String KEY_IDENTIFIER = "KeyIdentifier";
+
+	/**
+	 * Constant attribute that represents the <i>Assertion</i> element. 
+	 */
+	String ASSERTION = "Assertion";
+
+	/**
+	 * Constant attribute that represents the <i>AssertionID</i> element. 
+	 */
+	String ASSERTION_ID = "AssertionID";
+
+	/**
+	 * Constant attribute that represents the <i>MajorVersion</i> element. 
+	 */
+	String MAJOR_VERSION = "MajorVersion";
+
+	/**
+	 * Constant attribute that represents the <i>MinorVersion</i> element. 
+	 */
+	String MINOR_VERSION = "MinorVersion";
+	
     }
 
 }

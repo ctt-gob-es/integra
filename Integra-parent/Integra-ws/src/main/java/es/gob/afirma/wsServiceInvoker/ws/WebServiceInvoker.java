@@ -12,23 +12,28 @@
 // http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
 
 /**
- * <b>File:</b><p>es.gob.afirma.afirma5ServiceInvoker.ws.WebServiceInvoker.java.</p>
+ * <b>File:</b><p>es.gob.afirma.wsServiceInvoker.ws.WebServiceInvoker.java.</p>
  * <b>Description:</b><p>Class that manages the invoke of @Firma and eVisor web services.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>26/12/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 26/12/2014.
+ * @version 1.1, 04/03/2020.
  */
 package es.gob.afirma.wsServiceInvoker.ws;
 
-import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Properties;
 
-import javax.xml.namespace.QName;
-import javax.xml.rpc.ServiceException;
-
-import org.apache.axis.client.Call;
-import org.apache.axis.client.Service;
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMNamespace;
+import org.apache.axis2.addressing.EndpointReference;
+import org.apache.axis2.client.Options;
+import org.apache.axis2.client.ServiceClient;
+import org.apache.axis2.engine.AxisConfiguration;
+import org.apache.axis2.engine.Phase;
+import org.apache.axis2.phaseresolver.PhaseException;
 import org.apache.log4j.Logger;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
@@ -41,7 +46,7 @@ import es.gob.afirma.wsServiceInvoker.WSServiceInvokerException;
 /**
  * <p>Class that manages the invoke of @Firma and eVisor web services.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 26/12/2014.
+ * @version 1.1, 04/03/2020.
  */
 public class WebServiceInvoker {
 
@@ -81,20 +86,17 @@ public class WebServiceInvoker {
      * @throws WSServiceInvokerException If the method fails.
      */
     final Object performCall(String methodName, Object[ ] params) throws WSServiceInvokerException {
-	Call call;
+	String endPointURL, securityOption, secureMode, timeout, afirmaService,
+		protocol, endPoint, servicePath;
+	Object res = null;
 	ClientHandler requestHandler;
-	Service service;
-	String endPointURL, securityOption, secureMode, timeout, afirmaService, protocol, endPoint, servicePath;
-	Object res;
+	ResponseHandler responseHandler;
 
-	res = null;
 	try {
-
+	    // Recuperamos todas las propiedades necesarias para formar el end
+	    // point.
 	    afirmaService = this.properties.getProperty(WSServiceInvokerConstants.AFIRMA_SERVICE);
-
 	    secureMode = this.properties.getProperty(WSServiceInvokerConstants.SECURE_MODE_PROPERTY);
-
-	    // Propiedades de conexión con el repositorio de servicios Web
 	    protocol = NO_SECURE_PROTOCOL;
 	    if (secureMode != null && secureMode.equals("true")) {
 		protocol = SECURE_PROTOCOL;
@@ -104,66 +106,110 @@ public class WebServiceInvoker {
 	    servicePath = this.properties.getProperty(WSServiceInvokerConstants.WS_SRV_PATH_PROPERTY);
 	    checkSvcInvokerParams(WSServiceInvokerConstants.WS_SRV_PATH_PROPERTY, servicePath);
 
-	    // "https://localhost:8080/afirmaws/services/ValidarCertificado";
+	    // Obtenemos el endpoint. Ejemplo:
+	    // https://localhost:8080/afirmaws/services/ValidarCertificado.
 	    endPointURL = protocol + "://" + endPoint + "/" + servicePath + "/" + afirmaService;
 
 	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.WSI_LOG001, new Object[ ] { afirmaService }));
 	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.WSI_LOG002, new Object[ ] { endPointURL }));
 
-	    // Propiedades propias del servicio web a invocar
-
 	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.WSI_LOG003));
-	    // Creacion del manejador que securizará la petición SOAP
-	    // validacionWS.ValidarCertificado.ws.authorizationMethod
 	    securityOption = this.properties.getProperty(WSServiceInvokerConstants.WS_AUTHORIZATION_METHOD_PROP);
 	    checkSvcInvokerParams(WSServiceInvokerConstants.WS_AUTHORIZATION_METHOD_PROP, securityOption);
 	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.WSI_LOG004, new Object[ ] { securityOption }));
 	    requestHandler = newRequestHandler(securityOption);
-
-	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.WSI_LOG005));
-	    // Creación del servicio y la llamada al método
-	    service = new Service();
-	    call = (Call) service.createCall();
-	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.WSI_LOG006));
+	    responseHandler = newResponseHandler();
 
 	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.WSI_LOG007, new Object[ ] { methodName }));
-	    // Configuración de la llamada
-	    call.setTargetEndpointAddress(endPointURL);
 
-	    call.setOperationName(new QName("http://soapinterop.org/", methodName));
 	    timeout = this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_TIMEOUT_PROP);
 	    checkSvcInvokerParams(WSServiceInvokerConstants.WS_CALL_TIMEOUT_PROP, timeout);
 	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.WSI_LOG008, new Object[ ] { timeout }));
-	    call.setTimeout(Integer.valueOf(timeout));
 
-	    // incluimos los manejadores de entrada (cabecera de seguridad en
-	    // las peticiones)
-	    // y los manejadores de salida (validación de las respuestas
-	    // firmadas de los servicios @firma)
-	    call.setClientHandlers(requestHandler, newResponseHandler());
+	    // Creamos la factoria de objetos XML de AXIS2.
+	    OMFactory fac = OMAbstractFactory.getOMFactory();
 
+	    // Creamos el namespace de la petición.
+	    OMNamespace ns = fac.createOMNamespace("http://soapinterop.org/", "ns1");
+	    // Creamos el elemento XML raíz del SOAP body que indica la
+	    // operación a realizar.
+	    OMElement operationElem = fac.createOMElement(methodName, ns);
+	    // Creamos el elemento XML que contendrá la petición SOAP completa.
+	    OMElement inputParamElem = fac.createOMElement("arg0", ns);
+	    // Añadimos la petición al parámetro de entrada principal.
+	    inputParamElem.setText((String) params[0]);
+	    // Incluimos el parámetro a la operación para formar el body del
+	    // SOAP
+	    // completamente.
+	    operationElem.addChild(inputParamElem);
+
+	    // Creamos un objeto Option que albergará la configuración de
+	    // conexión al servicio.
+	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.WSI_LOG006));
+	    Options options = new Options();
+	    options.setTimeOutInMilliSeconds(Integer.valueOf(timeout));
+	    options.setTo(new EndpointReference(endPointURL));
+
+	    // Creamos el cliente y le añadimos la configuración anterior.
+	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.WSI_LOG005));
+	    ServiceClient client = new ServiceClient();
+	    client.setOptions(options);
+
+	    // Añadimos los handler generados al flujo de handlers de Axis2.
+	    addHandlers(client, requestHandler, responseHandler);
+
+	    // Realizamos la llamada.
 	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.WSI_LOG009));
-	    // Llamada al metodo del servicio web
-
-	    if (params == null) {
-		res = call.invoke(new Object[0]);
+	    OMElement result = client.sendReceive(operationElem);
+	    if (result != null && result.getFirstElement() != null && !result.getFirstElement().getText().isEmpty()) {
+		res = result.getFirstElement().getText();
 	    } else {
-		LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.WSI_LOG010, new Object[ ] { params[0] }));
-		res = call.invoke(params);
-	    }
-	} catch (RemoteException e) {
-	    throw new WSServiceInvokerException(e);
-	} catch (ServiceException e) {
-	    throw new WSServiceInvokerException(e);
-	}
 
-	Object result = "Null.";
-	if (res != null) {
-	    result = res;
+	    }
+	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.WSI_LOG011, new Object[ ] { res }));
+	} catch (Exception e) {
+	    throw new WSServiceInvokerException(e);
 	}
-	LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.WSI_LOG011, new Object[ ] { result }));
 
 	return res;
+    }
+
+    /**
+     * Auxiliary method that adds the generated handlers to the 'phases' of Axis2.
+     * @param client Service client.
+     * @param requestHandler Request handler.
+     * @param responseHandler Response handler.
+     */
+    private void addHandlers(ServiceClient client, ClientHandler requestHandler, ResponseHandler responseHandler) {
+
+	// Añadimos el handler de seguridad de salida.
+	AxisConfiguration config = client.getAxisConfiguration();
+	List<Phase> phasesOut = config.getOutFlowPhases();
+	for (Phase phase: phasesOut) {
+	    if ("Security".equals(phase.getPhaseName())) {
+		try {
+		    phase.setPhaseLast(requestHandler);
+		    break;
+		} catch (PhaseException e) {
+		    e.printStackTrace();
+		}
+	    }
+	}
+
+	// Añadimos el handler de seguridad de entrada.
+	if (responseHandler != null) {
+	    List<Phase> phasesIn = config.getInFlowPhases();
+	    for (Phase phase: phasesIn) {
+		if ("Security".equals(phase.getPhaseName())) {
+		    try {
+			phase.setPhaseLast(responseHandler);
+			break;
+		    } catch (PhaseException e) {
+			e.printStackTrace();
+		    }
+		}
+	    }
+	}
     }
 
     /**
@@ -185,7 +231,8 @@ public class WebServiceInvoker {
      * @throws WSServiceInvokerException If the method fails.
      */
     private ClientHandler newRequestHandler(String securityOption) throws WSServiceInvokerException {
-	String autUser, autPassword, autPassType, keystorePath, keystorePass, keystoreType;
+	String autUser, autPassword, autPassType, keystorePath, keystorePass,
+		keystoreType;
 	autUser = "";
 	autPassword = "";
 	autPassType = "";
@@ -214,7 +261,7 @@ public class WebServiceInvoker {
 	ClientHandler sender = new ClientHandler(securityOpt);
 	sender.setUserAlias(autUser);
 	sender.setPassword(autPassword);
-	// Este parametro solo tiene sentido si la autorizacion se realiza
+	// Este parámetro solo tiene sentido si la autorizacion se realiza
 	// mediante el tag de seguridad UserNameToken
 	sender.setPasswordType(autPassType);
 	// Propiedades para binarySecurityToken

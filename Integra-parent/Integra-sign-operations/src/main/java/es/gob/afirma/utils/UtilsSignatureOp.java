@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>07/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.2, 13/01/2020.
+ * @version 1.3, 04/03/2020.
  */
 package es.gob.afirma.utils;
 
@@ -50,18 +50,18 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
 
-import es.gob.afirma.xml.crypto.MarshalException;
-import es.gob.afirma.xml.crypto.dsig.Reference;
-import es.gob.afirma.xml.crypto.dsig.XMLSignature;
+import org.apache.xml.crypto.MarshalException;
+import org.apache.xml.crypto.dsig.Reference;
+import org.apache.xml.crypto.dsig.XMLSignature;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
-import es.gob.afirma.xml.dsig.internal.dom.DOMReference;
+import org.apache.xml.dsig.internal.dom.DOMReference;
 import org.apache.log4j.Logger;
-import es.gob.afirma.xml.security.signature.XMLSignatureInput;
-import es.gob.afirma.xml.security.utils.resolver.ResourceResolver;
-import es.gob.afirma.xml.security.utils.resolver.ResourceResolverException;
+import org.apache.xml.security.signature.XMLSignatureInput;
+import org.apache.xml.security.utils.resolver.ResourceResolver;
+import org.apache.xml.security.utils.resolver.ResourceResolverException;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1GeneralizedTime;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
@@ -142,13 +142,13 @@ import es.gob.afirma.signature.xades.IXMLConstants;
 import es.gob.afirma.signature.xades.IdRegister;
 import es.gob.afirma.signature.xades.XAdESSignerInfo;
 import es.gob.afirma.transformers.TransformersException;
-import es.gob.afirma.xml.security.keys.KeyInfo;
+import org.apache.xml.security.keys.KeyInfo;
 import net.java.xades.security.xml.XMLSignatureElement;
 
 /**
  * <p>Class that contains methods related to the manage of signatures.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 13/01/2020.
+ * @version 1.3, 04/03/2020.
  */
 @SuppressWarnings("unchecked")
 public final class UtilsSignatureOp implements IUtilsSignature {
@@ -1354,13 +1354,13 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 			XAdESSignerInfo signerInfo = new XAdESSignerInfo();
 			listResult.add(signerInfo);
 			try {
-			    signerInfo.setSignature(new es.gob.afirma.xml.security.signature.XMLSignature(signatureNode, ""));
+			    signerInfo.setSignature(new org.apache.xml.security.signature.XMLSignature(signatureNode, ""));
 			    signerInfo.setElementSignature(signatureNode);
 			    signerInfo.setId(signatureNode.getAttribute(IXMLConstants.ATTRIBUTE_ID));
 			    processXMLSignature(signerInfo, signatureNode);
-			} catch (es.gob.afirma.xml.security.signature.XMLSignatureException e) {
+			} catch (org.apache.xml.security.signature.XMLSignatureException e) {
 			    signerInfo.setErrorMsg(Language.getResIntegra(ILogConstantKeys.US_LOG040));
-			} catch (es.gob.afirma.xml.security.exceptions.XMLSecurityException e) {
+			} catch (org.apache.xml.security.exceptions.XMLSecurityException e) {
 			    signerInfo.setErrorMsg(Language.getResIntegra(ILogConstantKeys.US_LOG040));
 			}
 		    }
@@ -1585,7 +1585,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 			XAdESSignerInfo signerInfoCounter = new XAdESSignerInfo();
 			listCounterSigners.add(signerInfoCounter);
 			try {
-			    signerInfoCounter.setSignature(new es.gob.afirma.xml.security.signature.XMLSignature(signatureNode, ""));
+			    signerInfoCounter.setSignature(new org.apache.xml.security.signature.XMLSignature(signatureNode, ""));
 			    signerInfoCounter.setElementSignature(signatureNode);
 			    signerInfoCounter.setId(signatureNode.getAttribute(IXMLConstants.ATTRIBUTE_ID));
 			} catch (Exception e) {
@@ -1680,7 +1680,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param idClient Parameter that represents the client application identifier.
      * @throws SigningException If the validation fails.
      */
-    public static void validateXAdESSigner(es.gob.afirma.xml.security.signature.XMLSignature xmlSignature, X509Certificate signingCertificate, TimeStampToken tst, Element xmlTst, String signingMode, byte[ ] signedFile, String signedFileName, String idClient) throws SigningException {
+    public static void validateXAdESSigner(org.apache.xml.security.signature.XMLSignature xmlSignature, X509Certificate signingCertificate, TimeStampToken tst, Element xmlTst, String signingMode, byte[ ] signedFile, String signedFileName, String idClient) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG070));
 	try {
 	    // Comprobamos que se ha indicado la firma XML
@@ -1736,7 +1736,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 			LOGGER.error(errorMsg);
 			throw new SigningException(errorMsg);
 		    }
-		} catch (es.gob.afirma.xml.security.signature.XMLSignatureException e) {
+		} catch (org.apache.xml.security.signature.XMLSignatureException e) {
 		    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG033);
 		    LOGGER.error(errorMsg, e);
 		    throw new SigningException(errorMsg, e);
@@ -3159,7 +3159,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param isBaseline Parameter that indicates if the signature to validate has Baseline form (true) or not (false).
      * @throws SigningException If the validation fails.
      */
-    public static void validateXAdESSignatureCore(Element qualifyingPropertiesElement, String signatureId, Element signatureElement, es.gob.afirma.xml.security.signature.XMLSignature xmlSignature, byte[ ] signedFile, String signedFileName, X509Certificate signingCertificate, Element signedSignaturePropertiesElement, Element signedPropertiesElement, boolean isBaseline) throws SigningException {
+    public static void validateXAdESSignatureCore(Element qualifyingPropertiesElement, String signatureId, Element signatureElement, org.apache.xml.security.signature.XMLSignature xmlSignature, byte[ ] signedFile, String signedFileName, X509Certificate signingCertificate, Element signedSignaturePropertiesElement, Element signedPropertiesElement, boolean isBaseline) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG179));
 	/*
 	 * Validación del Núcleo de Firma: Se realizarán las siguientes verificaciones (en el caso de que la firma no sea Baseline):
@@ -3249,7 +3249,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param xmlSignature Parameter that represents the XML signature.
      * @throws SigningException If the validation fails.
      */
-    private static void checkDataObjectFormatStructure(String signatureId, Element signedPropertiesElement, es.gob.afirma.xml.security.signature.XMLSignature xmlSignature) throws SigningException {
+    private static void checkDataObjectFormatStructure(String signatureId, Element signedPropertiesElement, org.apache.xml.security.signature.XMLSignature xmlSignature) throws SigningException {
 	// Accedemos al elemento xades:SignedDataObjectProperties
 	Element signedDataObjectPropertiesElement = UtilsXML.getChildElement(signedPropertiesElement, IXMLConstants.ELEMENT_SIGNED_DATA_OBJECT_PROPERTIES, signatureId, true);
 
@@ -3317,14 +3317,14 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signatureId Parameter that represents the value of <code>Id</code> attribute of <code>ds:Signature</code> element.
      * @throws SigningException If the validation fails.
      */
-    private static void findReferenceFromDataObjectFormat(es.gob.afirma.xml.security.signature.XMLSignature xmlSignature, String objectReference, String idSignedProperties, String signatureId) throws SigningException {
+    private static void findReferenceFromDataObjectFormat(org.apache.xml.security.signature.XMLSignature xmlSignature, String objectReference, String idSignedProperties, String signatureId) throws SigningException {
 	try {
 	    // Recorremos la lista de referencias buscando aquella apuntada por
 	    // el atributo ObjectReference
 	    boolean found = false;
 	    for (int i = 0; !found && i < xmlSignature.getSignedInfo().getLength(); i++) {
 		// Accedemos a la referencia
-		es.gob.afirma.xml.security.signature.Reference ref = xmlSignature.getSignedInfo().item(i);
+		org.apache.xml.security.signature.Reference ref = xmlSignature.getSignedInfo().item(i);
 
 		// Comprobamos si el Id de la referencia coincide con el valor
 		// del atributo ObjectReference del elemento
@@ -3351,7 +3351,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
-	} catch (es.gob.afirma.xml.security.exceptions.XMLSecurityException e) {
+	} catch (org.apache.xml.security.exceptions.XMLSecurityException e) {
 	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG188, new Object[ ] { signatureId });
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
@@ -3368,7 +3368,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signatureId Parameter that represents the value of <code>Id</code> attribute of <code>ds:Signature</code> element.
      * @throws SigningException If the validation fails.
      */
-    private static void checkXAdESSigner(es.gob.afirma.xml.security.signature.XMLSignature xmlSignature, byte[ ] signedFile, String signedFileName, X509Certificate signingCertificate, String signatureId) throws SigningException {
+    private static void checkXAdESSigner(org.apache.xml.security.signature.XMLSignature xmlSignature, byte[ ] signedFile, String signedFileName, X509Certificate signingCertificate, String signatureId) throws SigningException {
 	// Accedemos al elemento KeyInfo
 	KeyInfo keyInfo = xmlSignature.getKeyInfo();
 
@@ -3389,7 +3389,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
-	    } catch (es.gob.afirma.xml.security.signature.XMLSignatureException e) {
+	    } catch (org.apache.xml.security.signature.XMLSignatureException e) {
 		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG033, new Object[ ] { signatureId });
 		LOGGER.error(errorMsg, e);
 		throw new SigningException(errorMsg, e);
@@ -3408,7 +3408,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signedPropertiesElement Parameter that represents <code>xades:SignedProperties</code> element.
      * @throws SigningException If the validation fails.
      */
-    private static void checkReferenceToSignedProperties(es.gob.afirma.xml.security.signature.XMLSignature xmlSignature, String signatureId, Element signedPropertiesElement) throws SigningException {
+    private static void checkReferenceToSignedProperties(org.apache.xml.security.signature.XMLSignature xmlSignature, String signatureId, Element signedPropertiesElement) throws SigningException {
 	try {
 	    // Accedemos al atributo Id del elemento xades:SignedProperties
 	    String idSP = signedPropertiesElement.getAttribute(IXMLConstants.ATTRIBUTE_ID);
@@ -3419,7 +3419,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    boolean finded = false;
 	    for (int index = 0; !finded && index < xmlSignature.getSignedInfo().getLength(); index++) {
 		// Accedemos a la referencia
-		es.gob.afirma.xml.security.signature.Reference ref = xmlSignature.getSignedInfo().item(index);
+		org.apache.xml.security.signature.Reference ref = xmlSignature.getSignedInfo().item(index);
 
 		// Si el valor del atributo URI de la refefencia coincide con el
 		// valor del atributo Id del elemento xades:SignedProperties
@@ -3449,7 +3449,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
-	} catch (es.gob.afirma.xml.security.exceptions.XMLSecurityException e) {
+	} catch (org.apache.xml.security.exceptions.XMLSecurityException e) {
 	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG188, new Object[ ] { signatureId });
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
@@ -3760,7 +3760,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param isCounterSignature Parameter that indicates if the element to validate is a signer (false) or a counter-signer (true).
      * @throws SigningException If the validation fails.
      */
-    public static void validateXAdESPublicKeyInfo(String signatureId, Element signatureElement, es.gob.afirma.xml.security.signature.XMLSignature xmlSignature, boolean isBaseline, boolean isCounterSignature) throws SigningException {
+    public static void validateXAdESPublicKeyInfo(String signatureId, Element signatureElement, org.apache.xml.security.signature.XMLSignature xmlSignature, boolean isBaseline, boolean isCounterSignature) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG156));
 	try {
 
@@ -3792,7 +3792,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signatureId Parameter that represents the value of <code>Id</code> attribute of <code>ds:Signature</code> element.
      * @throws SigningException If the validation fails.
      */
-    private static void validateProtectionKeyInfo(es.gob.afirma.xml.security.signature.XMLSignature xmlSignature, Element keyInfoElement, String signatureId) throws SigningException {
+    private static void validateProtectionKeyInfo(org.apache.xml.security.signature.XMLSignature xmlSignature, Element keyInfoElement, String signatureId) throws SigningException {
 	/*
 	 * Comprobamos que la información de clave pública del elemento KeyInfo haya sido protegida en el cálculo de la firma digital, esto es,
 	 * que exista un elemento Reference cuya URI apunte al elemento KeyInfo
@@ -3809,7 +3809,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 		for (int index = 0; !found && index < xmlSignature.getSignedInfo().getLength(); index++) {
 		    // Accedemos a la referencia
-		    es.gob.afirma.xml.security.signature.Reference ref = xmlSignature.getSignedInfo().item(index);
+		    org.apache.xml.security.signature.Reference ref = xmlSignature.getSignedInfo().item(index);
 
 		    // Obtenemos la URI de la referencia
 		    String uri = null;
@@ -3832,7 +3832,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
-	} catch (es.gob.afirma.xml.security.exceptions.XMLSecurityException e) {
+	} catch (org.apache.xml.security.exceptions.XMLSecurityException e) {
 	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG188, new Object[ ] { signatureId });
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);

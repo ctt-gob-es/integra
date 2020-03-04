@@ -17,14 +17,14 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>22/01/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 22/01/2014.
+ * @version 1.1, 04/03/2020.
  */
 package es.gob.afirma.utils;
 
 /**
  * <p>Interface that defines numeric constants for generalized usage.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 22/01/2014.
+ * @version 1.1, 04/03/2020.
  */
 public interface NumberConstants {
 
@@ -152,6 +152,11 @@ public interface NumberConstants {
      * Constant attribute that represents the number 76.
      */
     int INT_76 = 76;
+    
+    /**
+     * Constant attribute that represents the number 99.
+     */
+    int INT_99 = 99;
 
     /**
      * Constant attribute that represents the number 100.
@@ -187,6 +192,11 @@ public interface NumberConstants {
      * Constant attribute that represents the number 4096.
      */
     int INT_4096 = 4096;
+    
+    /**
+     * Constant attribute that represents the number 5000.
+     */
+    int INT_5000 = 5000;
 
     /**
      * Constant attribute that represents the number 8000.
@@ -197,7 +207,12 @@ public interface NumberConstants {
      * Constant attribute that represents the number 9999.
      */
     int INT_9999 = 9999;
-
+    
+    /**
+     * Constant attribute that represents the number 10000.
+     */
+    int INT_10000 = 10000;
+    
     /**
      * Constant attribute that represents the number 16384.
      */
@@ -227,5 +242,4 @@ public interface NumberConstants {
      * Constant attribute that represents the number 60000.
      */
     Long LONG_60000 = 60000L;
-
 }

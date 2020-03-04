@@ -28,23 +28,23 @@ import java.security.cert.X509Certificate;
 import java.util.Iterator;
 import java.util.List;
 
-import es.gob.afirma.xml.crypto.AlgorithmMethod;
-import es.gob.afirma.xml.crypto.KeySelector;
-import es.gob.afirma.xml.crypto.KeySelectorException;
-import es.gob.afirma.xml.crypto.KeySelectorResult;
-import es.gob.afirma.xml.crypto.MarshalException;
-import es.gob.afirma.xml.crypto.XMLCryptoContext;
-import es.gob.afirma.xml.crypto.XMLStructure;
-import es.gob.afirma.xml.crypto.dsig.Reference;
-import es.gob.afirma.xml.crypto.dsig.SignatureMethod;
-import es.gob.afirma.xml.crypto.dsig.XMLSignature;
-import es.gob.afirma.xml.crypto.dsig.XMLSignature.SignatureValue;
-import es.gob.afirma.xml.crypto.dsig.XMLSignatureException;
-import es.gob.afirma.xml.crypto.dsig.XMLSignatureFactory;
-import es.gob.afirma.xml.crypto.dsig.dom.DOMValidateContext;
-import es.gob.afirma.xml.crypto.dsig.keyinfo.KeyInfo;
-import es.gob.afirma.xml.crypto.dsig.keyinfo.KeyValue;
-import es.gob.afirma.xml.crypto.dsig.keyinfo.X509Data;
+import org.apache.xml.crypto.AlgorithmMethod;
+import org.apache.xml.crypto.KeySelector;
+import org.apache.xml.crypto.KeySelectorException;
+import org.apache.xml.crypto.KeySelectorResult;
+import org.apache.xml.crypto.MarshalException;
+import org.apache.xml.crypto.XMLCryptoContext;
+import org.apache.xml.crypto.XMLStructure;
+import org.apache.xml.crypto.dsig.Reference;
+import org.apache.xml.crypto.dsig.SignatureMethod;
+import org.apache.xml.crypto.dsig.XMLSignature;
+import org.apache.xml.crypto.dsig.XMLSignature.SignatureValue;
+import org.apache.xml.crypto.dsig.XMLSignatureException;
+import org.apache.xml.crypto.dsig.XMLSignatureFactory;
+import org.apache.xml.crypto.dsig.dom.DOMValidateContext;
+import org.apache.xml.crypto.dsig.keyinfo.KeyInfo;
+import org.apache.xml.crypto.dsig.keyinfo.KeyValue;
+import org.apache.xml.crypto.dsig.keyinfo.X509Data;
 
 import org.w3c.dom.Element;
 
@@ -66,7 +66,7 @@ public class XMLSignatureElement {
 		// {
 		// try
 		// {
-		Security.insertProviderAt(new es.gob.afirma.xml.dsig.internal.dom.XMLDSigRI(), 1);
+		Security.insertProviderAt(new org.apache.xml.dsig.internal.dom.XMLDSigRI(), 1);
 		// }
 		// catch (Throwable e)
 		// {

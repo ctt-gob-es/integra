@@ -16,14 +16,14 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>24/12/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 24/12/2014.
+ * @version 1.1, 04/03/2020.
  */
 package es.gob.afirma.wsServiceInvoker;
 
 /**
  * <p>Interface that defines all the constants related to the invocation of @Firma services.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 24/12/2014.
+ * @version 1.1, 04/03/2020.
  */
 public interface WSServiceInvokerConstants {
 
@@ -68,12 +68,36 @@ public interface WSServiceInvokerConstants {
      *  the authorization method used to secure the SOAP requests to invoke the web service.
      */
     String WS_AUTHORIZATION_METHOD_PROP = "authorizationMethod";
+    
+    /**
+     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with
+     *  the authorization method used to secure the SOAP requests to invoke the web service.
+     */
+    String TSA__USER_WS_AUTHORIZATION_METHOD_PROP = "UserNameToken";
+    
+    /**
+     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with
+     *  the authorization method used to secure the SOAP requests to invoke the web service.
+     */
+    String TSA_CERTIFICATE_WS_AUTHORIZATION_METHOD_PROP = "X509CertificateToken";
+
+    /**
+     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with
+     *  the authorization method used to secure the SOAP requests to invoke the web service.
+     */
+    String TSA_SAML_AUTHORIZATION_METHOD_PROP = "SAMLToken";
 
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of @Firma and eVisor web services with
      *  the user name or the alias of the certificate defined for the authorization method used to secure the SOAP requests to invoke the web service.
      */
     String WS_AUTHORIZ_METHOD_USER_PROP = "user";
+    
+    /**
+     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with
+     *  the user name or the alias of the certificate defined for the authorization method used to secure the SOAP requests to invoke the web service.
+     */
+    String TSA_WS_AUTHORIZ_METHOD_USER_PROP = "userName";
 
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of @Firma and eVisor web services with
@@ -81,6 +105,27 @@ public interface WSServiceInvokerConstants {
      *  to invoke the web service.
      */
     String WS_AUTHORIZATION_METHOD_PASS_PROP = "password";
+    
+    /**
+     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with
+     *  the user password defined for the authorization method used to secure the SOAP requests
+     *  to invoke the web service.
+     */
+    String TSA_WS_AUTHORIZATION_METHOD_PASS_PROP = "userPassword";
+
+    /**
+     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with
+     *  the password of the private key of the certificate defined for the authorization method used to secure the SOAP requests
+     *  to invoke the web service.
+     */
+    String TSA_WS_AUTHORIZATION_METHOD_KEYSTOREPASSWORD_PROP = "keystorePassword";
+    
+    /**
+     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with
+     *  the password of the private key of the certificate defined for the authorization method used to secure the SOAP requests
+     *  to invoke the web service.
+     */
+    String TSA_AUTHORIZATION_METHOD_PRIVATEKEYPASSWORD_PROP = "privateKeyPassword";
 
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of @Firma and eVisor web services with
@@ -94,18 +139,48 @@ public interface WSServiceInvokerConstants {
      *  the path of the keystore with the certificates used to sign the requests.
      */
     String WS_AUTHORIZATION_METHOD_USERKEYSTORE_PROP = "userKeystore";
+    
+    /**
+     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with
+     *  the path of the keystore with the certificates used to sign the requests.
+     */
+    String TSA_WS_AUTHORIZATION_METHOD_USERKEYSTORE_PROP = "keystorePath";
+    
+    /**
+     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with
+     *  the SAML method used to sign the requests.
+     */
+    String TSA_SAML_AUTHORIZATION_METHOD_METHOD_PROP = "method";    
+    
+    /**
+     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with
+     *  the name of certificate to use.
+     */
+    String TSA_WS_AUTHORIZATION_METHOD_CERTNAME_PROP = "privateKeyAlias";
 
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of @Firma and eVisor web services with
      *  the password of the keystore with the certificates used to sign the requests.
      */
     String WS_AUTHORIZATION_METHOD_USERKEYSTORE_PASS_PROP = "userKeystorePassword";
+    
+    /**
+     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with
+     *  the password of the keystore with the certificates used to sign the requests.
+     */
+    String TSA_WS_AUTHORIZATION_METHOD_USERKEYSTORE_PASS_PROP = "keystorePassword";
 
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of @Firma and eVisor web services with
      *  the type of the keystore with the certificates used to sign the requests.
      */
     String WS_AUTHORIZATION_METHOD_USERKEYSTORE_TYPE_PROP = "userKeystoreType";
+    
+    /**
+     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with
+     *  the type of the keystore with the certificates used to sign the requests.
+     */
+    String TSA_WS_AUTHORIZATION_METHOD_USERKEYSTORE_TYPE_PROP = "keystoreType";
 
     /**
      *  Constant attribute that identifies the application context to the classes used to execute the request of the web services.
@@ -113,9 +188,14 @@ public interface WSServiceInvokerConstants {
     String APPLICATION_NAME = "applicationName";
 
     /**
-     *  Constant attribute that identifies the service to call for the classes used to execute the request of the web services.
+     *  Constant attribute that identifies the service to call for the classes used to execute the request of the web services for @Firma.
      */
     String AFIRMA_SERVICE = "afirmaService";
+    
+    /**
+     *  Constant attribute that identifies the service to call for the classes used to execute the request of the web services for TSA@.
+     */
+    String TSA_SERVICE = "tsaService";
 
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of @Firma and eVisor web services with
@@ -140,6 +220,12 @@ public interface WSServiceInvokerConstants {
      * prefix used in the response of the web services.
      */
     String PREFIX_RESPONSE_PROPERTY = "response";
+
+    /**
+     * Constant attribute that identifies the SAML key defined on the properties file where to configure the invoke of web services with the
+     * prefix used in the response of the web services.
+     */
+    String PREFIX_RESPONSE_SAML_PROPERTY = "SAML";
 
     /**
      * Constant attribute that identifies the key defined on the properties file where to configure the invoke of @Firma and eVisor web services with the

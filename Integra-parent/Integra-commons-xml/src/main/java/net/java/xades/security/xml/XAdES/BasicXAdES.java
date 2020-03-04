@@ -24,11 +24,11 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
-import es.gob.afirma.xml.crypto.MarshalException;
-import es.gob.afirma.xml.crypto.XMLStructure;
-import es.gob.afirma.xml.crypto.dsig.Reference;
-import es.gob.afirma.xml.crypto.dsig.XMLObject;
-import es.gob.afirma.xml.crypto.dsig.XMLSignatureException;
+import org.apache.xml.crypto.MarshalException;
+import org.apache.xml.crypto.XMLStructure;
+import org.apache.xml.crypto.dsig.Reference;
+import org.apache.xml.crypto.dsig.XMLObject;
+import org.apache.xml.crypto.dsig.XMLSignatureException;
 
 import net.java.xades.security.xml.WrappedKeyStorePlace;
 import net.java.xades.security.xml.XMLSignatureDocument;

@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>17/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.1, 13/01/2020.
+ * @version 1.2, 04/03/2020.
  */
 package es.gob.afirma.signature.xades;
 
@@ -28,12 +28,12 @@ import java.util.List;
 import org.w3c.dom.Element;
 
 import es.gob.afirma.utils.XAdESTimeStampType;
-import es.gob.afirma.xml.security.signature.XMLSignature;
+import org.apache.xml.security.signature.XMLSignature;
 
 /**
  * <p>Class that represents the principal information related to a signer of a XAdES signature.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 13/01/2020.
+ * @version 1.2, 04/03/2020.
  */
 public class XAdESSignerInfo implements Serializable {
 
