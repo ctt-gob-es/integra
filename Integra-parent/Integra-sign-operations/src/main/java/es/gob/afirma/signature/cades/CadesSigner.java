@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>28/06/2011.</p>
  * @author Gobierno de España.
- * @version 1.5, 21/03/2017.
+ * @version 1.6, 06/03/2020.
  */
 package es.gob.afirma.signature.cades;
 
@@ -77,7 +77,7 @@ import es.gob.afirma.utils.UtilsTimestampPdfBc;
 /**
  * <p>Class that manages the generation, validation and upgrade of CAdES signatures.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.5, 21/03/2017.
+ * @version 1.6, 06/03/2020.
  */
 public final class CadesSigner implements Signer {
 
@@ -108,24 +108,30 @@ public final class CadesSigner implements Signer {
      */
     public byte[ ] sign(byte[ ] data, String algorithm, String signatureFormat, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID, String idClient) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.CS_LOG004));
+	boolean isExplicitHash = signatureFormat.equals(SignatureConstants.SIGN_MODE_EXPLICIT_HASH);
+
 	// Validación de los parámetros de entrada
-	checkInputParam(algorithm, data, privateKey);
+	checkInputs(isExplicitHash, algorithm, data, privateKey);
+	
 	if (data == null || !GenericUtilsCommons.assertStringValue(algorithm) || privateKey == null) {
 	    String errorMsg = Language.getResIntegra(ILogConstantKeys.CS_LOG003);
 	    LOGGER.error(errorMsg);
 	    throw new IllegalArgumentException(errorMsg);
 	}
-	if (!SignatureConstants.SIGN_ALGORITHMS_SUPPORT_CADES.containsKey(algorithm)) {
-	    String msg = Language.getFormatResIntegra(ILogConstantKeys.CS_LOG005, new Object[ ] { algorithm });
-	    LOGGER.error(msg);
-	    throw new IllegalArgumentException(msg);
-	}
 	Properties externalParams = extraParams;
 	if (externalParams == null) {
 	    externalParams = new Properties();
 	}
+
 	LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.CS_LOG006, new Object[ ] { algorithm, signatureFormat, extraParams }));
-	final P7ContentSignerParameters csp = new P7ContentSignerParameters(data, algorithm, privateKey);
+	P7ContentSignerParameters csp = null;
+	if (isExplicitHash) {
+	    csp = new P7ContentSignerParameters(null, SignatureConstants.DIGEST_ALGORITHMS_SUPPORT_CADES.get(algorithm), privateKey);
+	    csp.setDigestValue(data);
+	} else {
+	    csp = new P7ContentSignerParameters(data, algorithm, privateKey);
+	}
+
 	try {
 	    // oid para elemento EncapsulatedContentInfo
 	    Oid dataType = new Oid(PKCSObjectIdentifiers.data.getId());
@@ -134,7 +140,7 @@ public final class CadesSigner implements Signer {
 
 	    // verificación de la inclusión contenido en la firma
 	    boolean includeContent = true;
-	    if (mode.equals(SignatureConstants.SIGN_MODE_EXPLICIT)) {
+	    if (mode.equals(SignatureConstants.SIGN_MODE_EXPLICIT) || isExplicitHash) {
 		includeContent = false;
 	    }
 	    // generación del elemento SignedData
@@ -146,6 +152,22 @@ public final class CadesSigner implements Signer {
 	    throw new SigningException(Language.getResIntegra(ILogConstantKeys.CS_LOG001), e);
 	}
 
+    }
+
+    /**
+     * Auxiliary method that checks the input parameters.
+     * @param isExplicitHash Flag that indicates if the data attribute represents the file data or the file hash data.
+     * @param algorithm Algorithm used for the data generation.
+     * @param data data to check.
+     * @param privateKey Private key to check.
+     * @throws SigningException if some parameter is invalid.
+     */
+    private void checkInputs(boolean isExplicitHash, String algorithm, byte[ ] data, PrivateKeyEntry privateKey) throws SigningException {
+	if (isExplicitHash) {
+	    checkInputParamHash(algorithm, data, privateKey);
+	} else {
+	    checkInputParam(algorithm, data, privateKey);
+	}	
     }
 
     /**
@@ -280,10 +302,10 @@ public final class CadesSigner implements Signer {
     }
 
     /**
-     * Checks if the values of input parameters (signature algorithm and a set of values) are valids.
+     * Checks if the values of input parameters (signature algorithm and a set of values) are valid.
      * @param algorithm signature algorithm.
      * @param inputParams any value to check if are null.
-     * @throws SigningException if signature algorithmn isn't support.
+     * @throws SigningException if signature algorithm isn't support.
      */
     private void checkInputParam(String algorithm, Object... inputParams) throws SigningException {
 	if (GenericUtilsCommons.checkNullValues(inputParams)) {
@@ -296,6 +318,26 @@ public final class CadesSigner implements Signer {
 	    LOGGER.error(msg);
 	    throw new SigningException(msg);
 	}
+    }
+    
+    /**
+     * Checks if the values of input parameters (signature algorithm and a set of values) are valid.
+     * @param algorithm signature algorithm.
+     * @param inputParams any value to check if are null.
+     * @throws SigningException if signature algorithm isn't support.
+     */
+    private void checkInputParamHash(String algorithm, Object... inputParams) throws SigningException {
+	if (GenericUtilsCommons.checkNullValues(inputParams)) {
+	    String errorMsg = Language.getResIntegra(ILogConstantKeys.CS_LOG003);
+	    LOGGER.error(errorMsg);
+	    throw new IllegalArgumentException(errorMsg);
+	}
+	if (!SignatureConstants.DIGEST_ALGORITHMS_SUPPORT_CADES.containsKey(algorithm)) {
+	    String msg = Language.getFormatResIntegra(ILogConstantKeys.CS_LOG005, new Object[ ] { algorithm });
+	    LOGGER.error(msg);
+	    throw new SigningException(msg);
+	}
+	
     }
 
     /**

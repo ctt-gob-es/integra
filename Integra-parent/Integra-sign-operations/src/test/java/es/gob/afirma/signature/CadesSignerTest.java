@@ -16,10 +16,11 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>10/04/2015.</p>
  * @author Gobierno de España.
- * @version 1.2, 14/03/2017.
+ * @version 1.3, 06/03/2020.
  */
 package es.gob.afirma.signature;
 
+import java.security.MessageDigest;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,12 +28,13 @@ import java.util.List;
 import es.gob.afirma.signature.cades.CadesSigner;
 import es.gob.afirma.signature.validation.ValidationResult;
 import es.gob.afirma.utils.Base64CoderCommons;
+import es.gob.afirma.utils.CryptoUtilCommons;
 import es.gob.afirma.utils.UtilsFileSystemCommons;
 
 /**
  * <p>Class that defines tests for {@link CadesSigner}.</p>
  * <b>Project:</b><p>@Firma and TS@ Web Services Integration Platform.</p>
- * @version 1.2, 14/03/2017.
+ * @version 1.3, 06/03/2020.
  */
 public class CadesSignerTest extends AbstractSignatureTest {
 
@@ -95,6 +97,15 @@ public class CadesSignerTest extends AbstractSignatureTest {
 	System.out.println("!!!!" + cs.verifySignature(result, null).getErrorMsg());
 	assertTrue(cs.verifySignature(result, getTextDocument()).isCorrect());
 	System.out.println("\n-->>FIRMA RESULTANTE (explícita): \n" + new String(Base64CoderCommons.encodeBase64(result)));
+	
+	// test con valores válidos (firma explícita con hash)
+	MessageDigest md = MessageDigest.getInstance(CryptoUtilCommons.HASH_ALGORITHM_SHA256); 
+	byte[] digest = md.digest(getTextDocument());
+	byte[ ] result2 = cs.sign(digest, CryptoUtilCommons.HASH_ALGORITHM_SHA256, SignatureConstants.SIGN_MODE_EXPLICIT_HASH, getCertificatePrivateKey(), null, false, SignatureFormatDetector.FORMAT_CADES_BES, null);
+	// validamos firma
+	System.out.println("!!!!" + cs.verifySignature(result2, null).getErrorMsg());
+	assertTrue(cs.verifySignature(result2, getTextDocument()).isCorrect());
+	System.out.println("\n-->>FIRMA RESULTANTE (explícita): \n" + new String(Base64CoderCommons.encodeBase64(result2)));
 
 	// test con valores válidos (firma implícita)
 	result = cs.sign(getTextDocument(), SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, SignatureConstants.SIGN_MODE_IMPLICIT, getCertificatePrivateKey(), null, false, SignatureFormatDetector.FORMAT_CADES_BES, null);

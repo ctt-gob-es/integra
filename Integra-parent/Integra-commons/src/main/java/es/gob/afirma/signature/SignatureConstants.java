@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>28/06/2011.</p>
  * @author Gobierno de España.
- * @version 1.2, 04/03/2020.
+ * @version 1.3, 06/03/2020.
  */
 package es.gob.afirma.signature;
 
@@ -33,7 +33,7 @@ import es.gob.afirma.utils.CryptoUtilCommons;
 /**
  * <p>Class that defines constants related to processes with signatures.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 04/03/2020.
+ * @version 1.3, 06/03/2020.
  */
 public final class SignatureConstants {
 
@@ -102,6 +102,11 @@ public final class SignatureConstants {
      * Constant attribute that represents explicit signature mode.
      */
     public static final String SIGN_MODE_EXPLICIT = "explicit mode";
+
+    /**
+     * Constant attribute that represents explicit hash signature mode.
+     */
+    public static final String SIGN_MODE_EXPLICIT_HASH = "explicit hash mode";
 
     /**
      * Constant attribute that represents implicit signature mode.
@@ -181,6 +186,24 @@ public final class SignatureConstants {
 	    put(SIGN_ALGORITHM_SHA256WITHRSA, "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256");
 	    put(SIGN_ALGORITHM_SHA384WITHRSA, "http://www.w3.org/2001/04/xmldsig-more#rsa-sha384");
 	    put(SIGN_ALGORITHM_SHA512WITHRSA, "http://www.w3.org/2001/04/xmldsig-more#rsa-sha512");
+	}
+    };
+
+    /**
+     * Constant attribute that represents the allowed digest algorithms to use with CADES signatures.
+     */
+    public static final Map<String, String> DIGEST_ALGORITHMS_SUPPORT_CADES = new HashMap<String, String>() {
+
+	/**
+	 * Class serial version.
+	 */
+	private static final long serialVersionUID = 74770910568121154L;
+
+	{
+	    put(CryptoUtilCommons.HASH_ALGORITHM_SHA1, SIGN_ALGORITHM_SHA1WITHRSA);
+	    put(CryptoUtilCommons.HASH_ALGORITHM_SHA256, SIGN_ALGORITHM_SHA256WITHRSA);
+	    put(CryptoUtilCommons.HASH_ALGORITHM_SHA384, SIGN_ALGORITHM_SHA384WITHRSA);
+	    put(CryptoUtilCommons.HASH_ALGORITHM_SHA512, SIGN_ALGORITHM_SHA512WITHRSA);
 	}
     };
 

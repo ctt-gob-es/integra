@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>18/01/2016.</p>
  * @author Gobierno de España.
- * @version 1.5, 21/03/2017.
+ * @version 1.6, 06/03/2020.
  */
 package es.gob.afirma.signature.cades;
 
@@ -77,7 +77,7 @@ import es.gob.afirma.utils.UtilsTimestampPdfBc;
 /**
  * <p>Class that manages the generation, validation and upgrade of CAdES Baseline signatures.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.5, 21/03/2017.
+ * @version 1.6, 06/03/2020.
  */
 public final class CAdESBaselineSigner implements Signer {
 
@@ -103,6 +103,20 @@ public final class CAdESBaselineSigner implements Signer {
     }
 
     /**
+     * Method that checks if the input algorithm is valid or not.
+     * @param algorithm Algorithm parameter to verify.
+     * @param isExplicitHash if the algorithm is not valid.
+     */
+    private void checkSignAlg(String algorithm, boolean isExplicitHash) {
+
+	if (isExplicitHash) {
+	    checkInputSignatureAlgorithmHash(algorithm);
+	} else {
+	    checkInputSignatureAlgorithm(algorithm);
+	}
+    }
+
+    /**
      * Method that checks if the input signature algorithm is <code>null</code> and is allowed to use.
      * @param signatureAlgorithm Parameter that represents the signature algorithm.
      */
@@ -113,6 +127,22 @@ public final class CAdESBaselineSigner implements Signer {
 	// Comprobamos que el algoritmo de firma está soportado
 	if (!SignatureConstants.SIGN_ALGORITHMS_SUPPORT_CADES.containsKey(signatureAlgorithm)) {
 	    String msg = Language.getFormatResIntegra(ILogConstantKeys.CBS_LOG004, new Object[ ] { signatureAlgorithm });
+	    LOGGER.error(msg);
+	    throw new IllegalArgumentException(msg);
+	}
+    }
+
+    /**
+     * Method that checks if the input hash algorithm is valid or not.
+     * @param algorithm Parameter that represents the signature algorithm.
+     */
+    private void checkInputSignatureAlgorithmHash(String algorithm) {
+	// Comprobamos que el algoritmo de firma no es nulo
+	GenericUtilsCommons.checkInputParameterIsNotNull(algorithm, Language.getResIntegra(ILogConstantKeys.CBS_LOG003));
+
+	// Comprobamos que el algoritmo de firma está soportado
+	if (!SignatureConstants.DIGEST_ALGORITHMS_SUPPORT_CADES.containsKey(algorithm)) {
+	    String msg = Language.getFormatResIntegra(ILogConstantKeys.CBS_LOG004, new Object[ ] { algorithm });
 	    LOGGER.error(msg);
 	    throw new IllegalArgumentException(msg);
 	}
@@ -142,11 +172,11 @@ public final class CAdESBaselineSigner implements Signer {
     @Override
     public byte[ ] sign(byte[ ] data, String algorithm, String signatureFormat, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID, String idClient) throws SigningException {
 	LOGGER.info(Language.getResIntegra(ILogConstantKeys.CBS_LOG001));
-
+	boolean isExplicitHash = signatureFormat.equals(SignatureConstants.SIGN_MODE_EXPLICIT_HASH);
 	try {
 	    // Comprobamos que se ha indicado el algoritmo de firma y tiene un
 	    // valor admitido
-	    checkInputSignatureAlgorithm(algorithm);
+	    checkSignAlg(algorithm, isExplicitHash);
 
 	    // Comprobamos que se han indicado los datos a firmar
 	    GenericUtilsCommons.checkInputParameterIsNotNull(data, Language.getResIntegra(ILogConstantKeys.CBS_LOG005));
@@ -166,7 +196,13 @@ public final class CAdESBaselineSigner implements Signer {
 
 	    // Instanciamos los parámetros que recibirá el método encargado de
 	    // generar la firma CAdES Baseline
-	    P7ContentSignerParameters csp = new P7ContentSignerParameters(data, algorithm, privateKey);
+	    P7ContentSignerParameters csp = null;
+		if (isExplicitHash) {
+		    csp = new P7ContentSignerParameters(null, SignatureConstants.DIGEST_ALGORITHMS_SUPPORT_CADES.get(algorithm), privateKey);
+		    csp.setDigestValue(data);
+		} else {
+		    csp = new P7ContentSignerParameters(data, algorithm, privateKey);
+		}
 
 	    // Instanciamos el OID para el atributo content-type, que deberá
 	    // tener el valor id-data
@@ -821,7 +857,7 @@ public final class CAdESBaselineSigner implements Signer {
 	signerValidationResult.getListValidations().add(validationInfo);
 	try {
 	    // Comprobamos que el firmante verifica la firma
-	    UtilsSignatureOp.validateCAdESSignatureCore(signerInfo.getSignerInformation(), signerInfo.getSigningCertificate(),false);
+	    UtilsSignatureOp.validateCAdESSignatureCore(signerInfo.getSignerInformation(), signerInfo.getSigningCertificate(), false);
 
 	    // Indicamos que la validación ha sido correcta
 	    validationInfo.setSucess(true);

@@ -17,33 +17,30 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>18/01/2016.</p>
  * @author Gobierno de España.
- * @version 1.2, 14/03/2017.
+ * @version 1.3, 06/03/2020.
  */
 package es.gob.afirma.signature.cades;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.KeyStore.PrivateKeyEntry;
+import java.security.MessageDigest;
 
-import junit.framework.TestCase;
 import es.gob.afirma.signature.ISignatureFormatDetector;
 import es.gob.afirma.signature.OriginalSignedData;
 import es.gob.afirma.signature.SignatureConstants;
 import es.gob.afirma.signature.SignatureFormatDetectorCadesPades;
 import es.gob.afirma.signature.SigningException;
 import es.gob.afirma.signature.validation.ValidationResult;
-import es.gob.afirma.utils.IUtilsKeystore;
+import es.gob.afirma.utils.CryptoUtilCommons;
 import es.gob.afirma.utils.UtilsFileSystemCommons;
+import junit.framework.TestCase;
 
 /**
  * <p>Class that defines tests for {@link CAdESBaselineSigner}.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 14/03/2017.
+ * @version 1.3, 06/03/2020.
  */
 public class CAdESBaselineSignerTest extends TestCase {
 
@@ -151,6 +148,21 @@ public class CAdESBaselineSignerTest extends TestCase {
 	    cadesBLevelCounterSignature = signer.counterSign(cadesBLevelSignature, SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, privateKey, null, false, ISignatureFormatDetector.FORMAT_CADES_B_LEVEL, "ASN1_AGE_1.9");
 	    ValidationResult vr = signer.verifySignature(cadesBLevelCoSignature, dataToSign);
 	    assertTrue(vr.isCorrect());
+	} catch (Exception e) {
+	    assertTrue(false);
+	}
+
+	/*
+	 * Generación y Validación de firma CAdES B-Level explícita sin política de firma, algoritmo SHA-256 y con hash de fichero.
+	 */
+	try {
+	    MessageDigest md = MessageDigest.getInstance(CryptoUtilCommons.HASH_ALGORITHM_SHA256);
+	    byte[ ] hashToSign = md.digest(dataToSign);
+	    cadesBLevelSignature = signer.sign(hashToSign, CryptoUtilCommons.HASH_ALGORITHM_SHA256, SignatureConstants.SIGN_MODE_EXPLICIT_HASH, privateKey, null, false, ISignatureFormatDetector.FORMAT_CADES_B_LEVEL, null);
+	    assertEquals(SignatureFormatDetectorCadesPades.getSignatureFormat(cadesBLevelSignature), ISignatureFormatDetector.FORMAT_CADES_B_LEVEL);
+	    ValidationResult vr = signer.verifySignature(cadesBLevelSignature, dataToSign);
+	    assertTrue(vr.isCorrect());
+
 	} catch (Exception e) {
 	    assertTrue(false);
 	}
