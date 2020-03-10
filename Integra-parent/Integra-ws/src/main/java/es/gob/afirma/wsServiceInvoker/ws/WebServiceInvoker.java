@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>26/12/2014.</p>
  * @author Gobierno de España.
- * @version 1.1, 04/03/2020.
+ * @version 1.2, 10/03/2020.
  */
 package es.gob.afirma.wsServiceInvoker.ws;
 
@@ -40,13 +40,14 @@ import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
 import es.gob.afirma.logger.IntegraLogger;
 import es.gob.afirma.utils.GenericUtilsCommons;
+import es.gob.afirma.utils.UtilsAxis;
 import es.gob.afirma.wsServiceInvoker.WSServiceInvokerConstants;
 import es.gob.afirma.wsServiceInvoker.WSServiceInvokerException;
 
 /**
  * <p>Class that manages the invoke of @Firma and eVisor web services.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 04/03/2020.
+ * @version 1.2, 10/03/2020.
  */
 public class WebServiceInvoker {
 
@@ -64,6 +65,11 @@ public class WebServiceInvoker {
      * Attribute that represents the object that manages the log of the class.
      */
     private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(WebServiceInvoker.class);
+
+    /**
+     * Constant attribute that identifier the security Axis2 phase. 
+     */
+    private static final String PHASE_NAME_SECURITY = "Security";
 
     /**
      * Attribute that represents the properties defined on the configuration file.
@@ -186,9 +192,11 @@ public class WebServiceInvoker {
 	AxisConfiguration config = client.getAxisConfiguration();
 	List<Phase> phasesOut = config.getOutFlowPhases();
 	for (Phase phase: phasesOut) {
-	    if ("Security".equals(phase.getPhaseName())) {
+	    if (PHASE_NAME_SECURITY.equals(phase.getPhaseName())) {
 		try {
-		    phase.setPhaseLast(requestHandler);
+		    if (!UtilsAxis.isHandlerInPhase(phase, requestHandler)) {
+			phase.setPhaseLast(requestHandler);
+		    }
 		    break;
 		} catch (PhaseException e) {
 		    e.printStackTrace();
@@ -200,9 +208,11 @@ public class WebServiceInvoker {
 	if (responseHandler != null) {
 	    List<Phase> phasesIn = config.getInFlowPhases();
 	    for (Phase phase: phasesIn) {
-		if ("Security".equals(phase.getPhaseName())) {
+		if (PHASE_NAME_SECURITY.equals(phase.getPhaseName())) {
 		    try {
-			phase.setPhaseLast(responseHandler);
+			if (!UtilsAxis.isHandlerInPhase(phase, requestHandler)) {
+			    phase.setPhaseLast(responseHandler);
+			}
 			break;
 		    } catch (PhaseException e) {
 			e.printStackTrace();

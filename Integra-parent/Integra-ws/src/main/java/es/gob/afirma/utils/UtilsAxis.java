@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>04/03/2020.</p>
  * @author Gobierno de España.
- * @version 1.0, 04/03/2020.
+ * @version 1.1, 10/03/2020.
  */
 package es.gob.afirma.utils;
 
@@ -28,6 +28,7 @@ import java.security.SecureRandom;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMAttribute;
@@ -35,6 +36,8 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.soap.SOAPBody;
+import org.apache.axis2.engine.Handler;
+import org.apache.axis2.engine.Phase;
 import org.apache.axis2.saaj.SOAPElementImpl;
 import org.apache.axis2.saaj.SOAPHeaderElementImpl;
 import org.apache.axis2.saaj.TextImplEx;
@@ -46,11 +49,10 @@ import es.gob.afirma.i18n.Language;
 import es.gob.afirma.logger.IntegraLogger;
 import es.gob.afirma.tsaServiceInvoker.TSAServiceInvokerConstants;
 
-
 /** 
  * <p>Utilities class that contains auxiliary method related with axis engine.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 04/03/2020.
+ * @version 1.1, 10/03/2020.
  */
 public final class UtilsAxis {
 
@@ -58,7 +60,7 @@ public final class UtilsAxis {
      * Attribute that represents the object that manages the log of the class.
      */
     private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(UtilsAxis.class);
-    
+
     /**
      * Attribute that represents the counter of numbered sequences generated at this loop.
      */
@@ -108,7 +110,7 @@ public final class UtilsAxis {
      */
     public static OMElement fromSOAPHeaderToOMElement(SOAPHeaderElementImpl headers) {
 	OMFactory fac = OMAbstractFactory.getOMFactory();
-	
+
 	// Generamos los distintos elementos incluidos en el elemento principal.
 	return UtilsAxis.parseElements((SOAPElementImpl<?>) headers, fac);
     }
@@ -121,13 +123,13 @@ public final class UtilsAxis {
      * @return a new OMElement object that represents the set of child elements.
      */
     public static OMElement parseElements(SOAPElementImpl<?> sh, OMFactory fac) {
-	
+
 	// Creamos el namespace.
 	OMNamespace nsMain = fac.createOMNamespace(sh.getNamespaceURI(), sh.getPrefix());
-	
+
 	// Creamos el elemento principal.
 	OMElement mainElem = fac.createOMElement(sh.getElementQName().getLocalPart(), nsMain);
-	
+
 	// Añadimos los atributos.
 	NamedNodeMap attrs = sh.getAttributes();
 	for (int i = 0; i < attrs.getLength(); i++) {
@@ -138,7 +140,7 @@ public final class UtilsAxis {
 	    }
 	    mainElem.addAttribute(attr);
 	}
-	
+
 	// Recorremos los hijos.
 	Iterator<?> elements = sh.getChildElements();
 	while (elements.hasNext()) {
@@ -181,11 +183,11 @@ public final class UtilsAxis {
 	    String ipNode = null;
 	    int addingResult = -1;
 	    try {
-		
+
 		// Obtenemos la IP del nodo.
 		ipNode = InetAddress.getLocalHost().getHostAddress().toString();
 		String[ ] parts = ipNode.split("\\.");
-		
+
 		// Calculamos el número resumido.
 		int part0 = Integer.parseInt(parts[0]) * NumberConstants.INT_5;
 		int part1 = Integer.parseInt(parts[1]) * NumberConstants.INT_3;
@@ -198,7 +200,7 @@ public final class UtilsAxis {
 		    addingResult = addingResult + rest;
 		}
 	    } catch (UnknownHostException e) {
-		
+
 		// Si se produce un error al obtener la IP del nodo, se genera
 		// un número aleatorio entre 00 y 99.
 		addingResult = (int) (getRandomDouble() * NumberConstants.INT_99);
@@ -231,14 +233,14 @@ public final class UtilsAxis {
 	while (it.hasNext() && res == null) {
 	    elem = (OMElement) it.next();
 	    localName = elem.getLocalName();
-	    
+
 	    // Si el nombre del elemento coincide con el que buscamos,
 	    // terminamos la búsqueda.
 	    if (localName.equals(tagName)) {
 		res = elem;
 		break;
 	    }
-	    
+
 	    // Si el elemento tiene hijos, los recorremos recursivamente.
 	    if (elem.getChildElements().hasNext()) {
 		res = findElementByTagName(elem, tagName);
@@ -276,12 +278,12 @@ public final class UtilsAxis {
 	while (it.hasNext() && res == null && !exit) {
 	    elem = (OMElement) it.next();
 	    localName = elem.getLocalName();
-	    
+
 	    // Si el nombre del elemento coincide con el que buscamos,
 	    // comparamos el identificador.
 	    if (localName.equals(tagName)) {
 		String idValue = findAttributeValue(elem, attrName);
-		
+
 		// Si el identificador coincide con el solicitado,
 		// devolvemos el elemento.
 		if (attrValue.equalsIgnoreCase(idValue)) {
@@ -290,7 +292,7 @@ public final class UtilsAxis {
 		    break;
 		}
 	    }
-	    
+
 	    // Si el elemento tiene hijos, los recorremos recursivamente.
 	    if (elem.getChildElements().hasNext()) {
 		res = findElementByTagNameAndAttribute(elem, tagName, attrName, attrValue);
@@ -341,5 +343,25 @@ public final class UtilsAxis {
 	while (it.hasNext()) {
 	    body.addChild(UtilsAxis.parseElements((SOAPElementImpl<?>) it.next(), fac));
 	}
+    }
+
+    /**
+     * Method that checks if the handlers is already included in the phase.
+     * @param phase axis2 phase.
+     * @param handler handler to check.
+     * @return <i>true</i> if the handler is already in the handler and <i>false</i> if not.
+     */
+    public static boolean isHandlerInPhase(Phase phase, Handler handler) {
+	boolean res = false;
+	List<Handler> handlers = phase.getHandlers();
+	for (Handler h: handlers) {
+	    if (h.getClass().equals(handler.getClass())) {
+		if (h.getName().equals(handler.getName())) {
+		    res = true;
+		    break;
+		}
+	    }
+	}
+	return res;
     }
 }

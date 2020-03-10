@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>04/03/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 04/03/2020.
+ * @version 1.2, 10/03/2020.
  */
 package es.gob.afirma.tsaServiceInvoker.ws;
 
@@ -85,7 +85,7 @@ import es.gob.afirma.wsServiceInvoker.WSServiceInvokerException;
 /**
  * <p>Class secures SOAP messages of TS@ requests.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 04/03/2020.
+ * @version 1.2, 10/03/2020.
  */
 class TSAClientHandler extends AbstractTSAHandler {
 
@@ -93,6 +93,11 @@ class TSAClientHandler extends AbstractTSAHandler {
      * Attribute that represents the object that manages the log of the class.
      */
     private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(TSAClientHandler.class);
+    
+    /**
+     * Constant attribute that represents the handler name. 
+     */
+    private static final String HANDLER_NAME = "tsaClientHandlerIntegra";
 
     /**
      * Constant attribute that identifies UserNameToken authorization method.
@@ -135,6 +140,7 @@ class TSAClientHandler extends AbstractTSAHandler {
      * @throws WSServiceInvokerException If the method fails.
      */
     TSAClientHandler(String securityOpt) throws WSServiceInvokerException {
+	this.handlerDesc.setName(HANDLER_NAME);
 	if (securityOpt == null) {
 	    throw new WSServiceInvokerException(Language.getResIntegra(ILogConstantKeys.CH_LOG001));
 	}

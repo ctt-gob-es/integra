@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>04/03/2020.</p>
  * @author Gobierno de España.
- * @version 1.0, 04/03/2020.
+ * @version 1.1, 10/03/2020.
  */
 package es.gob.afirma.tsaServiceInvoker.ws;
 
@@ -50,7 +50,7 @@ import es.gob.afirma.utils.UtilsAxis;
 /**
  * <p>Class that checks and decrypts the SOAP messages of TS@ responses with symmetric key.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 04/03/2020.
+ * @version 1.1, 10/03/2020.
  */
 public class TSAResponseSymmetricKeyHandler extends AbstractTSAHandler {
 
@@ -58,6 +58,11 @@ public class TSAResponseSymmetricKeyHandler extends AbstractTSAHandler {
      * Attribute that represents the object that manages the log of the class.
      */
     private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(TSAResponseSymmetricKeyHandler.class);
+
+    /**
+     * Constant attribute that represents the handler name. 
+     */
+    private static final String HANDLER_NAME = "tsaResponseSymmetricKeyHandlerIntegra";
 
     /**
      * Attribute that represents the algorithm to use in the secret key generation. 
@@ -68,6 +73,8 @@ public class TSAResponseSymmetricKeyHandler extends AbstractTSAHandler {
      * Constructor method for the class TSAResponseSymmetricKeyHandler.java.
      */
     public TSAResponseSymmetricKeyHandler() {
+	this.handlerDesc.setName(HANDLER_NAME);
+	this.handlerDesc.getRules().setPhaseFirst(true);
     }
 
     /**
@@ -76,69 +83,73 @@ public class TSAResponseSymmetricKeyHandler extends AbstractTSAHandler {
      */
     @Override
     public InvocationResponse invoke(MessageContext msgContext) throws AxisFault {
-	// NOTA: Aunque el estandar dice que podría haber varios elementos
-	// DataReference y KeyReference dentro de ReferenceList, y que podrían
-	// existir claves cifradas en el body e incluso varios datos cifrados en
-	// distintos elementos, la implementación de comunicación simétrica a
-	// través de web services con TS@ únicamente acepta esta estructura de
-	// petición, por lo que no es necesario implementar dicha lógica. Si en
-	// el futuro se cambia esta funcionalidad, habrá que adaptar este código
-	// para que cumpla con los nuevos requisitos.
+	if (isEncryptMessage()) {
+	    // NOTA: Aunque el estandar dice que podría haber varios elementos
+	    // DataReference y KeyReference dentro de ReferenceList, y que
+	    // podrían existir claves cifradas en el body e incluso varios datos
+	    // cifrados en distintos elementos, la implementación de
+	    // comunicación simétrica a través de web services con TS@
+	    // únicamente acepta esta estructura de petición, por lo que no es
+	    // necesario implementar dicha lógica. Si en el futuro se cambia
+	    // esta funcionalidad, habrá que adaptar este código para que cumpla
+	    // con los nuevos requisitos.
 
-	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.TRSKH_LOG005));
-	try {
-	    // Recuperamos la cabecera SOAP.
-	    SOAPHeader header = msgContext.getEnvelope().getHeader();
+	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.TRSKH_LOG005));
+	    try {
+		// Recuperamos la cabecera SOAP.
+		SOAPHeader header = msgContext.getEnvelope().getHeader();
 
-	    // Recuperamos el Body.
-	    SOAPBody body = msgContext.getEnvelope().getBody();
+		// Recuperamos el Body.
+		SOAPBody body = msgContext.getEnvelope().getBody();
 
-	    // Recuperamos el identificador de los datos formados en la
-	    // cabecera.
-	    OMElement dataReference = UtilsAxis.findElementByTagName(header, TSAServiceInvokerConstants.SOAPElements.DATA_REFERENCE);
-	    if (dataReference == null) {
-		throw new TSAServiceInvokerException(Language.getFormatResIntegra(ILogConstantKeys.TRSKH_LOG006, new Object[ ] { TSAServiceInvokerConstants.SOAPElements.DATA_REFERENCE }));
+		// Recuperamos el identificador de los datos formados en la
+		// cabecera.
+		OMElement dataReference = UtilsAxis.findElementByTagName(header, TSAServiceInvokerConstants.SOAPElements.DATA_REFERENCE);
+		if (dataReference == null) {
+		    throw new TSAServiceInvokerException(Language.getFormatResIntegra(ILogConstantKeys.TRSKH_LOG006, new Object[ ] { TSAServiceInvokerConstants.SOAPElements.DATA_REFERENCE }));
+		}
+		String identifier = UtilsAxis.findAttributeValue(dataReference, TSAServiceInvokerConstants.SOAPElements.URI).substring(1);
+
+		// Recuperamos el elemento que contiene los datos cifrados.
+		OMElement encryptedData = UtilsAxis.findElementByTagNameAndAttribute(body, TSAServiceInvokerConstants.SOAPElements.ENCRYPTED_DATA, TSAServiceInvokerConstants.SOAPElements.ID, identifier);
+		if (encryptedData == null) {
+		    throw new TSAServiceInvokerException(Language.getFormatResIntegra(ILogConstantKeys.TRSKH_LOG006, new Object[ ] { TSAServiceInvokerConstants.SOAPElements.ENCRYPTED_DATA }));
+		}
+
+		// Recuperamos el nombre de la clave simétrica a usar para el
+		// descifrado.
+		OMElement keyName = UtilsAxis.findElementByTagName(encryptedData, TSAServiceInvokerConstants.SOAPElements.KEY_NAME);
+		if (keyName == null) {
+		    throw new TSAServiceInvokerException(Language.getFormatResIntegra(ILogConstantKeys.TRSKH_LOG007, new Object[ ] { TSAServiceInvokerConstants.SOAPElements.KEY_NAME }));
+		}
+		String keyAlias = keyName.getText();
+
+		// Recuperamos el algoritmo de cifrado utilizado en la
+		// respuesta.
+		OMElement encryptionMethod = UtilsAxis.findElementByTagName(encryptedData, TSAServiceInvokerConstants.SOAPElements.ENCRYPTION_METHOD);
+		if (encryptionMethod == null) {
+		    throw new TSAServiceInvokerException(Language.getFormatResIntegra(ILogConstantKeys.TRSKH_LOG007, new Object[ ] { TSAServiceInvokerConstants.SOAPElements.ENCRYPTION_METHOD }));
+		}
+		String encryptAlgorithm = UtilsAxis.findAttributeValue(encryptionMethod, TSAServiceInvokerConstants.SOAPElements.ALGORITHM);
+
+		// Desciframos...
+		LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.TRSKH_LOG004, new Object[ ] { keyAlias, encryptAlgorithm }));
+		OMElement decryptedBody = decrypt(keyAlias, encryptAlgorithm, encryptedData);
+
+		// Si todo ha ido bien, generamos el nuevo body descifrado y lo
+		// sustituimos por el anterior.
+		if (decryptedBody != null) {
+		    msgContext.getEnvelope().getBody().getFirstElement().detach();
+		    msgContext.getEnvelope().getBody().addChild(decryptedBody);
+		} else {
+		    String errorMsg = Language.getResIntegra(ILogConstantKeys.TRSKH_LOG008);
+		    LOGGER.error(errorMsg);
+		    throw new TSAServiceInvokerException(errorMsg);
+		}
+
+	    } catch (Exception e) {
+		throw AxisFault.makeFault(e);
 	    }
-	    String identifier = UtilsAxis.findAttributeValue(dataReference, TSAServiceInvokerConstants.SOAPElements.URI).substring(1);
-
-	    // Recuperamos el elemento que contiene los datos cifrados.
-	    OMElement encryptedData = UtilsAxis.findElementByTagNameAndAttribute(body, TSAServiceInvokerConstants.SOAPElements.ENCRYPTED_DATA, TSAServiceInvokerConstants.SOAPElements.ID, identifier);
-	    if (encryptedData == null) {
-		throw new TSAServiceInvokerException(Language.getFormatResIntegra(ILogConstantKeys.TRSKH_LOG006, new Object[ ] { TSAServiceInvokerConstants.SOAPElements.ENCRYPTED_DATA }));
-	    }
-
-	    // Recuperamos el nombre de la clave simétrica a usar para el
-	    // descifrado.
-	    OMElement keyName = UtilsAxis.findElementByTagName(encryptedData, TSAServiceInvokerConstants.SOAPElements.KEY_NAME);
-	    if (keyName == null) {
-		throw new TSAServiceInvokerException(Language.getFormatResIntegra(ILogConstantKeys.TRSKH_LOG007, new Object[ ] { TSAServiceInvokerConstants.SOAPElements.KEY_NAME }));
-	    }
-	    String keyAlias = keyName.getText();
-
-	    // Recuperamos el algoritmo de cifrado utilizado en la respuesta.
-	    OMElement encryptionMethod = UtilsAxis.findElementByTagName(encryptedData, TSAServiceInvokerConstants.SOAPElements.ENCRYPTION_METHOD);
-	    if (encryptionMethod == null) {
-		throw new TSAServiceInvokerException(Language.getFormatResIntegra(ILogConstantKeys.TRSKH_LOG007, new Object[ ] { TSAServiceInvokerConstants.SOAPElements.ENCRYPTION_METHOD }));
-	    }
-	    String encryptAlgorithm = UtilsAxis.findAttributeValue(encryptionMethod, TSAServiceInvokerConstants.SOAPElements.ALGORITHM);
-
-	    // Desciframos...
-	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.TRSKH_LOG004, new Object[ ] { keyAlias, encryptAlgorithm }));
-	    OMElement decryptedBody = decrypt(keyAlias, encryptAlgorithm, encryptedData);
-
-	    // Si todo ha ido bien, generamos el nuevo body descifrado y lo
-	    // sustituimos por el anterior.
-	    if (decryptedBody != null) {
-		msgContext.getEnvelope().getBody().getFirstElement().detach();
-		msgContext.getEnvelope().getBody().addChild(decryptedBody);
-	    } else {
-		String errorMsg = Language.getResIntegra(ILogConstantKeys.TRSKH_LOG008);
-		LOGGER.error(errorMsg);
-		throw new TSAServiceInvokerException(errorMsg);
-	    }
-
-	} catch (Exception e) {
-	    throw AxisFault.makeFault(e);
 	}
 
 	return InvocationResponse.CONTINUE;

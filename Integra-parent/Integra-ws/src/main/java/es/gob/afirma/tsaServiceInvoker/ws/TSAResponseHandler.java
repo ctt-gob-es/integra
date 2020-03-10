@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>04/03/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 04/03/2020.
+ * @version 1.2, 10/03/2020.
  */
 package es.gob.afirma.tsaServiceInvoker.ws;
 
@@ -71,11 +71,16 @@ import es.gob.afirma.utils.UtilsResourcesCommons;
 /**
  * <p>Class that represents handler used to verify the signature response.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 04/03/2020.
+ * @version 1.2, 10/03/2020.
  */
 @SuppressWarnings("deprecation")
 public class TSAResponseHandler extends AbstractTSAHandler {
 
+    /**
+     * Constant attribute that represents the handler name. 
+     */
+    private static final String HANDLER_NAME = "tsaResponseHandlerIntegra";
+    
     /**
      * Attribute that represents the 'KeyIdentifier' security header token. 
      */
@@ -110,6 +115,7 @@ public class TSAResponseHandler extends AbstractTSAHandler {
      * Constructor method for the class TSAResponseHandler.java. 
      */
     public TSAResponseHandler() {
+	this.handlerDesc.setName(HANDLER_NAME);
     }
 
     /**
@@ -125,6 +131,7 @@ public class TSAResponseHandler extends AbstractTSAHandler {
      * @param samlAutUser SAML certificate alias stored in keystore.
      */
     public TSAResponseHandler(String keystorePath, String keystorePass, String keystoreType, String autUser, String autPassword, String samlKeystorePath, String samlKeystorePass, String samlKeystoreType, String samlAutUser) {
+	this.handlerDesc.setName(HANDLER_NAME);
 	setResponseKeystore(keystorePath);
 	setResponseKeystorePass(keystorePass);
 	setResponseKeystoreType(keystoreType);
