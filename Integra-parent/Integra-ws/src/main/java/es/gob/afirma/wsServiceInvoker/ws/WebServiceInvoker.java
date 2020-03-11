@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>26/12/2014.</p>
  * @author Gobierno de España.
- * @version 1.2, 10/03/2020.
+ * @version 1.3, 11/03/2020.
  */
 package es.gob.afirma.wsServiceInvoker.ws;
 
@@ -34,6 +34,7 @@ import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.engine.Phase;
 import org.apache.axis2.phaseresolver.PhaseException;
+import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.log4j.Logger;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
@@ -47,7 +48,7 @@ import es.gob.afirma.wsServiceInvoker.WSServiceInvokerException;
 /**
  * <p>Class that manages the invoke of @Firma and eVisor web services.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 10/03/2020.
+ * @version 1.3, 11/03/2020.
  */
 public class WebServiceInvoker {
 
@@ -155,6 +156,9 @@ public class WebServiceInvoker {
 	    Options options = new Options();
 	    options.setTimeOutInMilliSeconds(Integer.valueOf(timeout));
 	    options.setTo(new EndpointReference(endPointURL));
+	    
+	    // Desactivamos el chunked.
+	    options.setProperty(HTTPConstants.CHUNKED, "false");
 
 	    // Creamos el cliente y le añadimos la configuración anterior.
 	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.WSI_LOG005));
