@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>03/10/2011.</p>
  * @author Gobierno de España.
- * @version 1.2, 04/03/2020.
+ * @version 1.3, 11/03/2020.
  */
 package es.gob.afirma.wsServiceInvoker.ws;
 
@@ -43,7 +43,7 @@ import org.apache.xml.crypto.dsig.XMLSignature;
 /**
  * <p>Class that represents handler used to verify the signature response.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 04/03/2020.
+ * @version 1.3, 11/03/2020.
  */
 public class ResponseHandler extends AbstractCommonHandler {
 
@@ -53,9 +53,16 @@ public class ResponseHandler extends AbstractCommonHandler {
     private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(ResponseHandler.class);
 
     /**
+     * Constant attribute that represents the handler name. 
+     */
+    private static final String HANDLER_NAME = "responseHandlerIntegra";
+
+    /**
      * Constructor method for the class CopyOfClientHandler.java.
      */
     public ResponseHandler() {
+	this.handlerDesc.setName(HANDLER_NAME);
+	this.handlerDesc.getRules().setPhaseLast(true);
     }
 
     /**
@@ -67,6 +74,8 @@ public class ResponseHandler extends AbstractCommonHandler {
      * @param autPassword password of certificate (private key).
      */
     public ResponseHandler(String keystorePath, String keystorePass, String keystoreType, String autUser, String autPassword) {
+	this.handlerDesc.setName(HANDLER_NAME);
+	this.handlerDesc.getRules().setPhaseLast(true);
 	setUserKeystore(keystorePath);
 	setUserKeystorePass(keystorePass);
 	setUserKeystoreType(keystoreType);
@@ -113,7 +122,7 @@ public class ResponseHandler extends AbstractCommonHandler {
 		    throw new AxisFault(Language.getResIntegra(ILogConstantKeys.RH_LOG006));
 		}
 	    } else {
-		 throw new AxisFault(Language.getResIntegra(ILogConstantKeys.RH_LOG002));
+		throw new AxisFault(Language.getResIntegra(ILogConstantKeys.RH_LOG002));
 	    }
 	} catch (Exception e) {
 	    throw AxisFault.makeFault(e);

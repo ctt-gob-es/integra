@@ -17,10 +17,11 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>26/12/2014.</p>
  * @author Gobierno de España.
- * @version 1.3, 11/03/2020.
+ * @version 1.4, 11/03/2020.
  */
 package es.gob.afirma.wsServiceInvoker.ws;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -32,6 +33,7 @@ import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.engine.AxisConfiguration;
+import org.apache.axis2.engine.Handler;
 import org.apache.axis2.engine.Phase;
 import org.apache.axis2.phaseresolver.PhaseException;
 import org.apache.axis2.transport.http.HTTPConstants;
@@ -48,7 +50,7 @@ import es.gob.afirma.wsServiceInvoker.WSServiceInvokerException;
 /**
  * <p>Class that manages the invoke of @Firma and eVisor web services.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.3, 11/03/2020.
+ * @version 1.4, 11/03/2020.
  */
 public class WebServiceInvoker {
 
@@ -78,6 +80,11 @@ public class WebServiceInvoker {
     private Properties properties;
 
     /**
+     * Attribute that represents the list of handlers added to the Axis engine. 
+     */
+    private static List<String> handlerAdded = new ArrayList<String>();
+
+    /**
      * Constructor method for the class WebServiceInvoker.java.
      * @param prop Parameter that represents the properties defined on the configuration file.
      */
@@ -98,6 +105,7 @@ public class WebServiceInvoker {
 	Object res = null;
 	ClientHandler requestHandler;
 	ResponseHandler responseHandler;
+	ServiceClient client = null;
 
 	try {
 	    // Recuperamos todas las propiedades necesarias para formar el end
@@ -156,13 +164,13 @@ public class WebServiceInvoker {
 	    Options options = new Options();
 	    options.setTimeOutInMilliSeconds(Integer.valueOf(timeout));
 	    options.setTo(new EndpointReference(endPointURL));
-	    
+
 	    // Desactivamos el chunked.
 	    options.setProperty(HTTPConstants.CHUNKED, "false");
 
 	    // Creamos el cliente y le añadimos la configuración anterior.
 	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.WSI_LOG005));
-	    ServiceClient client = new ServiceClient();
+	    client = new ServiceClient();
 	    client.setOptions(options);
 
 	    // Añadimos los handler generados al flujo de handlers de Axis2.
@@ -179,6 +187,8 @@ public class WebServiceInvoker {
 	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.WSI_LOG011, new Object[ ] { res }));
 	} catch (Exception e) {
 	    throw new WSServiceInvokerException(e);
+	} finally {
+	    removeHandlers(client);
 	}
 
 	return res;
@@ -198,9 +208,7 @@ public class WebServiceInvoker {
 	for (Phase phase: phasesOut) {
 	    if (PHASE_NAME_SECURITY.equals(phase.getPhaseName())) {
 		try {
-		    if (!UtilsAxis.isHandlerInPhase(phase, requestHandler)) {
-			phase.setPhaseLast(requestHandler);
-		    }
+		    addHandler(phase, requestHandler, 2);
 		    break;
 		} catch (PhaseException e) {
 		    e.printStackTrace();
@@ -214,15 +222,80 @@ public class WebServiceInvoker {
 	    for (Phase phase: phasesIn) {
 		if (PHASE_NAME_SECURITY.equals(phase.getPhaseName())) {
 		    try {
-			if (!UtilsAxis.isHandlerInPhase(phase, requestHandler)) {
-			    phase.setPhaseLast(responseHandler);
-			}
+			 addHandler(phase, responseHandler, 2);
 			break;
 		    } catch (PhaseException e) {
 			e.printStackTrace();
 		    }
 		}
 	    }
+	}
+    }
+
+    /**
+     * Method that removes the added handler from the axis engine.
+     * @param client Axis service client.
+     */
+    private void removeHandlers(ServiceClient client) {
+	if (client != null && !handlerAdded.isEmpty()) {
+	    AxisConfiguration config = client.getAxisConfiguration();
+
+	    // Recorremos las phases de salida.
+	    List<Phase> phasesOut = config.getOutFlowPhases();
+	    for (Phase phase: phasesOut) {
+		removeHandler(phase);
+	    }
+
+	    // Recorremos las phases de entrada.
+	    List<Phase> phasesIn = config.getInFlowPhases();
+	    for (Phase phase: phasesIn) {
+		removeHandler(phase);
+	    }
+
+	    // Reiniciamos la lista de handlers.
+	    handlerAdded = new ArrayList<String>();
+	}
+
+    }
+
+    /**
+     * Auxiliary method that removes the added handler from the given phase.
+     * @param phase Axis phase where the handlers are.
+     */
+    private void removeHandler(Phase phase) {
+	if (phase != null) {
+	    List<Handler> handlers = phase.getHandlers();
+	    for (Handler handler: handlers) {
+		if (handlerAdded.contains(handler.getName())) {
+		    handler.getHandlerDesc().setHandler(handler);
+		    phase.removeHandler(handler.getHandlerDesc());
+		}
+	    }
+	}
+    }
+
+    /**
+     * Auxiliary method that add a handler into an AXIS2 phase.
+     * @param phase AXIS2 phase.
+     * @param handler Handler to add.
+     * @param position Indicates if the handler is added in the first place of the list (0), at the end (2) or is indifferent (1).
+     * @throws PhaseException if it is not possible to add the handler to the phase.
+     */
+    private void addHandler(Phase phase, Handler handler, int position) throws PhaseException {
+	if (position == 0 && !UtilsAxis.isHandlerInPhase(phase, handler)) {
+	    phase.setPhaseFirst(handler);
+	    handlerAdded.add(handler.getName());
+	    return;
+	}
+	if (position == 1 && !UtilsAxis.isHandlerInPhase(phase, handler)) {
+	    phase.addHandler(handler);
+	    handlerAdded.add(handler.getName());
+	    return;
+	}
+	if (position == 2 && !UtilsAxis.isHandlerInPhase(phase, handler)) {
+	    phase.setPhaseLast(handler);
+	    handlerAdded.add(handler.getName());
+	    return;
 	}
     }
 
