@@ -17,14 +17,14 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>25/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.1, 06/10/2017.
+ * @version 1.2, 17/03/2020.
  */
 package es.gob.afirma.utils;
 
 /**
  * <p>Class that defines tags related to the responses of DSS web services of @Firma.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 06/10/2017.
+ * @version 1.2, 17/03/2020.
  */
 public final class DSSTagsResponse {
 
@@ -112,7 +112,7 @@ public final class DSSTagsResponse {
     /**
      * Constant attribute that represents the XPath for the tag <code>/dss:UpdatedSignature/dss:SignatureObject/dss:Signature</code>.
      */
-    public static final String UPDATED_SIGNATURE = UPDATED_SIGNATURE_OBJET + "/dss:Signature";
+    public static final String UPDATED_SIGNATURE = UPDATED_SIGNATURE_OBJET + "/ds:Signature";
 
     /**
      * Constant attribute that represents the XPath for the tag <code>/dss:UpdatedSignature/dss:SignatureObject/dss:SignaturePtr</code>.
