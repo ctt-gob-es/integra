@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>16/03/2011.</p>
  * @author Gobierno de España.
- * @version 1.0, 16/03/2011.
+ * @version 1.1, 17/03/2020.
  */
 package es.gob.afirma.wsServiceInvoker;
 
@@ -34,7 +34,7 @@ import es.gob.afirma.wsServiceInvoker.WSServiceInvokerException;
 /**
  * <p>Class that represents the facade for the invocation of the web services of eVisor.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 17/03/2011.
+ * @version 1.1, 17/03/2020.
  */
 public final class EvisorServiceInvokerFacade {
 
@@ -146,7 +146,7 @@ public final class EvisorServiceInvokerFacade {
 	String res = null;
 	try {
 	    serviceInParam = new Object[1];
-	    serviceInParam[0] = xmlInput;
+	    serviceInParam[0] = xmlInput.replace("\n", "").replace("\r", "");
 
 	    eVisorInvoker = getEvisorInvokerInstance(service, applicationName, serviceProperties, idClient);
 	    res = eVisorInvoker.invokeService(method, serviceInParam);

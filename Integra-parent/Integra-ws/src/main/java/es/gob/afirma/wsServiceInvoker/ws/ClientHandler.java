@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>03/10/2011.</p>
  * @author Gobierno de España.
- * @version 1.3, 11/03/2020.
+ * @version 1.4, 17/03/2020.
  */
 package es.gob.afirma.wsServiceInvoker.ws;
 
@@ -64,10 +64,10 @@ import es.gob.afirma.wsServiceInvoker.WSServiceInvokerException;
 /**
  * <p>Class secures SOAP messages of @Firma requests.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.3, 11/03/2020.
+ * @version 1.4, 17/03/2020.
  */
 class ClientHandler extends AbstractCommonHandler {
-    
+
     /**
      * Constant attribute that represents the handler name. 
      */
@@ -213,43 +213,51 @@ class ClientHandler extends AbstractCommonHandler {
 	String secSOAPReq;
 	WSSecUsernameToken wsSecUsernameToken;
 	WSSecHeader wsSecHeader;
-	
+
 	// Eliminamos el provider ApacheXMLDSig de la lista de provider para que
 	// no haya conflictos con el nuestro.
 	Provider apacheXMLDSigProvider = Security.getProvider("ApacheXMLDSig");
 	Security.removeProvider("ApacheXMLDSig");
 
-	// Inserción del tag wsse:Security y userNameToken
-	wsSecHeader = new WSSecHeader(null, false);
-	wsSecUsernameToken = new WSSecUsernameToken();
-	wsSecUsernameToken.setPasswordType(getPasswordType());
-	wsSecUsernameToken.setUserInfo(getUserAlias(), getPassword());
-	wsSecHeader.insertSecurityHeader(soapEnvelopeRequest);
-	wsSecUsernameToken.prepare(soapEnvelopeRequest);
-	// Añadimos una marca de tiempo inidicando la fecha de creación del tag
-	wsSecUsernameToken.addCreated();
-	wsSecUsernameToken.addNonce();
-	// Modificación de la petición
-	secSOAPReqDoc = wsSecUsernameToken.build(soapEnvelopeRequest, wsSecHeader);
-	element = secSOAPReqDoc.getDocumentElement();
+	try {
+	    // Inserción del tag wsse:Security y userNameToken
+	    wsSecHeader = new WSSecHeader(null, false);
+	    wsSecUsernameToken = new WSSecUsernameToken();
+	    wsSecUsernameToken.setPasswordType(getPasswordType());
+	    wsSecUsernameToken.setUserInfo(getUserAlias(), getPassword());
+	    wsSecHeader.insertSecurityHeader(soapEnvelopeRequest);
+	    wsSecUsernameToken.prepare(soapEnvelopeRequest);
+	    // Añadimos una marca de tiempo inidicando la fecha de creación del
+	    // tag
+	    wsSecUsernameToken.addCreated();
+	    wsSecUsernameToken.addNonce();
+	    // Modificación de la petición
+	    secSOAPReqDoc = wsSecUsernameToken.build(soapEnvelopeRequest, wsSecHeader);
+	    element = secSOAPReqDoc.getDocumentElement();
 
-	// Transformación del elemento DOM a String
-	source = new DOMSource(element);
-	baos = new ByteArrayOutputStream();
-	streamResult = new StreamResult(baos);
-	TransformerFactory.newInstance().newTransformer().transform(source, streamResult);
-	secSOAPReq = new String(baos.toByteArray());
+	    // Transformación del elemento DOM a String
+	    source = new DOMSource(element);
+	    baos = new ByteArrayOutputStream();
+	    streamResult = new StreamResult(baos);
+	    TransformerFactory.newInstance().newTransformer().transform(source, streamResult);
+	    secSOAPReq = new String(baos.toByteArray());
 
-	// Creación de un nuevo mensaje SOAP a partir del mensaje SOAP
-	// securizado formado
-	MessageFactory mf = new org.apache.axis2.saaj.MessageFactoryImpl();
-	res = mf.createMessage(null, new ByteArrayInputStream(secSOAPReq.getBytes()));
+	    // Creación de un nuevo mensaje SOAP a partir del mensaje SOAP
+	    // securizado formado
+	    MessageFactory mf = new org.apache.axis2.saaj.MessageFactoryImpl();
+	    res = mf.createMessage(null, new ByteArrayInputStream(secSOAPReq.getBytes()));
 
-	// Restauramos el provider ApacheXMLDSig eliminado inicialmente.
-	if(apacheXMLDSigProvider != null){
-	    Security.addProvider(apacheXMLDSigProvider);
+	} finally {
+	    // Restauramos el provider ApacheXMLDSig eliminado inicialmente.
+	    if (apacheXMLDSigProvider != null) {
+		// Eliminamos de nuevo el provider por si se ha añadido otra
+		// versión durante la generación de la petición.
+		Security.removeProvider("ApacheXMLDSig");
+		// Añadimos el provider.
+		Security.insertProviderAt(apacheXMLDSigProvider, 1);
+	    }
 	}
-	
+
 	return res;
     }
 
@@ -279,37 +287,45 @@ class ClientHandler extends AbstractCommonHandler {
 	Provider apacheXMLDSigProvider = Security.getProvider("ApacheXMLDSig");
 	Security.removeProvider("ApacheXMLDSig");
 
-	crypto = null;
-	wsSecHeader = null;
-	wsSecSignature = null;
-	// Inserción del tag wsse:Security y BinarySecurityToken
-	wsSecHeader = new WSSecHeader(null, false);
-	wsSecSignature = new WSSecSignature();
-	crypto = getCryptoInstance();
-	// Indicación para que inserte el tag BinarySecurityToken
-	wsSecSignature.setKeyIdentifierType(WSConstants.BST_DIRECT_REFERENCE);
-	wsSecSignature.setUserInfo(getUserAlias(), getPassword());
-	wsSecHeader.insertSecurityHeader(soapEnvelopeRequest);
-	wsSecSignature.prepare(soapEnvelopeRequest, crypto, wsSecHeader);
+	try {
+	    crypto = null;
+	    wsSecHeader = null;
+	    wsSecSignature = null;
+	    // Inserción del tag wsse:Security y BinarySecurityToken
+	    wsSecHeader = new WSSecHeader(null, false);
+	    wsSecSignature = new WSSecSignature();
+	    crypto = getCryptoInstance();
+	    // Indicación para que inserte el tag BinarySecurityToken
+	    wsSecSignature.setKeyIdentifierType(WSConstants.BST_DIRECT_REFERENCE);
+	    wsSecSignature.setUserInfo(getUserAlias(), getPassword());
+	    wsSecHeader.insertSecurityHeader(soapEnvelopeRequest);
+	    wsSecSignature.prepare(soapEnvelopeRequest, crypto, wsSecHeader);
 
-	// Modificación y firma de la petición
-	secSOAPReqDoc = wsSecSignature.build(soapEnvelopeRequest, crypto, wsSecHeader);
-	element = secSOAPReqDoc.getDocumentElement();
-	// Transformación del elemento DOM a String
-	source = new DOMSource(element);
-	baos = new ByteArrayOutputStream();
-	streamResult = new StreamResult(baos);
-	TransformerFactory.newInstance().newTransformer().transform(source, streamResult);
-	secSOAPReq = new String(baos.toByteArray());
+	    // Modificación y firma de la petición
+	    secSOAPReqDoc = wsSecSignature.build(soapEnvelopeRequest, crypto, wsSecHeader);
+	    element = secSOAPReqDoc.getDocumentElement();
+	    // Transformación del elemento DOM a String
+	    source = new DOMSource(element);
+	    baos = new ByteArrayOutputStream();
+	    streamResult = new StreamResult(baos);
+	    TransformerFactory.newInstance().newTransformer().transform(source, streamResult);
+	    secSOAPReq = new String(baos.toByteArray());
 
-	// Creación de un nuevo mensaje SOAP a partir del mensaje SOAP
-	// securizado formado
-	MessageFactory mf = new org.apache.axis2.saaj.MessageFactoryImpl();
-	res = mf.createMessage(null, new ByteArrayInputStream(secSOAPReq.getBytes()));
+	    // Creación de un nuevo mensaje SOAP a partir del mensaje SOAP
+	    // securizado formado
+	    MessageFactory mf = new org.apache.axis2.saaj.MessageFactoryImpl();
+	    res = mf.createMessage(null, new ByteArrayInputStream(secSOAPReq.getBytes()));
 
-	// Restauramos el provider ApacheXMLDSig eliminado inicialmente.
-	if(apacheXMLDSigProvider != null){
-	    Security.addProvider(apacheXMLDSigProvider);
+	} finally {
+	    // Eliminamos de nuevo el provider por si se ha añadido otra
+	    // versión durante la generación de la petición.
+	    Security.removeProvider("ApacheXMLDSig");
+
+	    // Restauramos el provider ApacheXMLDSig eliminado inicialmente.
+	    if (apacheXMLDSigProvider != null) {
+		// Añadimos el provider.
+		Security.insertProviderAt(apacheXMLDSigProvider, 1);
+	    }
 	}
 	return res;
     }
