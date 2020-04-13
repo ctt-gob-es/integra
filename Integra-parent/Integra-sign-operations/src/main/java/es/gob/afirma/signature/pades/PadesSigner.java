@@ -1,4 +1,4 @@
-// Copyright (C) 2017 MINHAP, Gobierno de España
+// Copyright (C) 2020 MINHAP, Gobierno de España
 // This program is licensed and may be used, modified and redistributed under the terms
 // of the European Public License (EUPL), either version 1.1 or (at your
 // option) any later version as soon as they are approved by the European Commission.
@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>13/09/2011.</p>
  * @author Gobierno de España.
- * @version 1.2, 21/03/2017.
+ * @version 1.3, 13/04/2020.
  */
 package es.gob.afirma.signature.pades;
 
@@ -96,7 +96,7 @@ import es.gob.afirma.utils.UtilsTimestampPdfBc;
 /**
  * <p>Class that manages the generation, validation and upgrade of PAdES signatures.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 21/03/2017.
+ * @version 1.3, 13/04/2020.
  */
 public final class PadesSigner implements Signer {
 
@@ -965,6 +965,9 @@ public final class PadesSigner implements Signer {
 
 	    // Indicamos en el log que la firma es correcta
 	    LOGGER.info(Language.getResIntegra(ILogConstantKeys.PS_LOG014));
+	    
+	    // Calculamos la fecha de expiración de la firma.
+	    validationResult.setExpirationDate(UtilsSignatureOp.calculateExpirationDate(listSignatureDictionaries, listTimestampDictionaries));
 	} catch (Exception e) {
 	    // Establecemos en la información asociada a la validación
 	    // de la firma que ésta no es correcta

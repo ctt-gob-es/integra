@@ -15,6 +15,7 @@ import es.gob.afirma.integraws.beans.RequestUpgradeSign;
 import es.gob.afirma.integraws.beans.RequestVerifySign;
 import es.gob.afirma.integraws.beans.ResponseGetSignedData;
 import es.gob.afirma.integraws.beans.ResponseSign;
+import es.gob.afirma.integraws.beans.ResponseUpgradeSign;
 import es.gob.afirma.integraws.beans.ResponseVerifySign;
 import es.gob.afirma.integraws.beans.SignerToUpgrade;
 import es.gob.afirma.integraws.ws.impl.IntegraServices;
@@ -190,8 +191,7 @@ public class IntegraServicesTest extends TestCase {
 
 		request.setSignature(localSign);
 
-		// IntegraServices service = new IntegraServices();
-		ResponseSign resp = service.upgradeSignature(request);
+		ResponseUpgradeSign resp = service.upgradeSignature(request);
 
 		assertTrue(resp.isIntegraSuccess());
 

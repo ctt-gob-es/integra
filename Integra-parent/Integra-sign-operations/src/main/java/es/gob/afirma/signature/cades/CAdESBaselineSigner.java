@@ -1,4 +1,4 @@
-// Copyright (C) 2017 MINHAP, Gobierno de España
+// Copyright (C) 2020 MINHAP, Gobierno de España
 // This program is licensed and may be used, modified and redistributed under the terms
 // of the European Public License (EUPL), either version 1.1 or (at your
 // option) any later version as soon as they are approved by the European Commission.
@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>18/01/2016.</p>
  * @author Gobierno de España.
- * @version 1.6, 06/03/2020.
+ * @version 1.7, 13/04/2020.
  */
 package es.gob.afirma.signature.cades;
 
@@ -77,7 +77,7 @@ import es.gob.afirma.utils.UtilsTimestampPdfBc;
 /**
  * <p>Class that manages the generation, validation and upgrade of CAdES Baseline signatures.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.6, 06/03/2020.
+ * @version 1.7, 13/04/2020.
  */
 public final class CAdESBaselineSigner implements Signer {
 
@@ -197,12 +197,12 @@ public final class CAdESBaselineSigner implements Signer {
 	    // Instanciamos los parámetros que recibirá el método encargado de
 	    // generar la firma CAdES Baseline
 	    P7ContentSignerParameters csp = null;
-		if (isExplicitHash) {
-		    csp = new P7ContentSignerParameters(null, SignatureConstants.DIGEST_ALGORITHMS_SUPPORT_CADES.get(algorithm), privateKey);
-		    csp.setDigestValue(data);
-		} else {
-		    csp = new P7ContentSignerParameters(data, algorithm, privateKey);
-		}
+	    if (isExplicitHash) {
+		csp = new P7ContentSignerParameters(null, SignatureConstants.DIGEST_ALGORITHMS_SUPPORT_CADES.get(algorithm), privateKey);
+		csp.setDigestValue(data);
+	    } else {
+		csp = new P7ContentSignerParameters(data, algorithm, privateKey);
+	    }
 
 	    // Instanciamos el OID para el atributo content-type, que deberá
 	    // tener el valor id-data
@@ -586,6 +586,9 @@ public final class CAdESBaselineSigner implements Signer {
 	    List<SignerValidationResult> listSignersValidationResults = new ArrayList<SignerValidationResult>();
 	    validationResult.setListSignersValidationResults(listSignersValidationResults);
 
+	    // inicializamos la fecha que determinará la caducidad de la firma.
+	    Date currentDate = null;
+
 	    // Recorremos la lista de firmantes
 	    for (CAdESSignerInfo signerInfo: listSigners) {
 		// Primero, determinamos el formato del firmante
@@ -613,7 +616,17 @@ public final class CAdESBaselineSigner implements Signer {
 
 		// Validamos los contra-firmantes asociados al firmante
 		validateCounterSigners(signerInfo, signerValidationResult, signedData, validationResult, idClient);
+
+		// Recuperamos la fecha de expiración de los archiveTimestamp.
+		X509Certificate archiveTstClosestCert = UtilsSignatureOp.obtainCertificateArchiveTimestamps(signerInfo.getSignerInformation().getUnsignedAttributes());
+		signerValidationResult.setLastArchiveTst(archiveTstClosestCert);
+
+		// Obtenemos la fecha de caducidad de la firma.
+		currentDate = UtilsSignatureOp.calculateExpirationDateForValidations(signerValidationResult, currentDate);
 	    }
+	    
+	    validationResult.setExpirationDate(currentDate);
+	                                       
 	    // Indicamos en el log que la firma es correcta
 	    LOGGER.info(Language.getResIntegra(ILogConstantKeys.CBS_LOG031));
 	} catch (SigningException e) {

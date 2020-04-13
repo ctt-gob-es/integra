@@ -1,4 +1,4 @@
-// Copyright (C) 2017 MINHAP, Gobierno de España
+// Copyright (C) 2020 MINHAP, Gobierno de España
 // This program is licensed and may be used, modified and redistributed under the terms
 // of the European Public License (EUPL), either version 1.1 or (at your
 // option) any later version as soon as they are approved by the European Commission.
@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>28/06/2011.</p>
  * @author Gobierno de España.
- * @version 1.6, 06/03/2020.
+ * @version 1.7, 13/04/2020.
  */
 package es.gob.afirma.signature.cades;
 
@@ -77,7 +77,7 @@ import es.gob.afirma.utils.UtilsTimestampPdfBc;
 /**
  * <p>Class that manages the generation, validation and upgrade of CAdES signatures.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.6, 06/03/2020.
+ * @version 1.7, 13/04/2020.
  */
 public final class CadesSigner implements Signer {
 
@@ -112,7 +112,7 @@ public final class CadesSigner implements Signer {
 
 	// Validación de los parámetros de entrada
 	checkInputs(isExplicitHash, algorithm, data, privateKey);
-	
+
 	if (data == null || !GenericUtilsCommons.assertStringValue(algorithm) || privateKey == null) {
 	    String errorMsg = Language.getResIntegra(ILogConstantKeys.CS_LOG003);
 	    LOGGER.error(errorMsg);
@@ -167,7 +167,7 @@ public final class CadesSigner implements Signer {
 	    checkInputParamHash(algorithm, data, privateKey);
 	} else {
 	    checkInputParam(algorithm, data, privateKey);
-	}	
+	}
     }
 
     /**
@@ -319,7 +319,7 @@ public final class CadesSigner implements Signer {
 	    throw new SigningException(msg);
 	}
     }
-    
+
     /**
      * Checks if the values of input parameters (signature algorithm and a set of values) are valid.
      * @param algorithm signature algorithm.
@@ -337,7 +337,7 @@ public final class CadesSigner implements Signer {
 	    LOGGER.error(msg);
 	    throw new SigningException(msg);
 	}
-	
+
     }
 
     /**
@@ -479,6 +479,9 @@ public final class CadesSigner implements Signer {
 	    List<SignerValidationResult> listSignersValidationResults = new ArrayList<SignerValidationResult>();
 	    validationResult.setListSignersValidationResults(listSignersValidationResults);
 
+	    // inicializamos la fecha que determinará la caducidad de la firma.
+	    Date currentDate = null;
+
 	    // Recorremos la lista de firmantes
 	    for (CAdESSignerInfo signerInfo: listSigners) {
 		// Primero, determinamos el formato del firmante
@@ -503,10 +506,18 @@ public final class CadesSigner implements Signer {
 		// Añadimos los datos de validación del firmante a la lista
 		// asociada.
 		listSignersValidationResults.add(signerValidationResult);
-
+		
 		// Validamos los contra-firmantes asociados al firmante
 		validateCounterSigners(signerInfo, signerValidationResult, signedData, validationResult, idClient);
+		
+		// Recuperamos la fecha de expiración de los archiveTimestamp.
+		X509Certificate archiveTstClosestCert = UtilsSignatureOp.obtainCertificateArchiveTimestamps(signerInfo.getSignerInformation().getUnsignedAttributes());
+		signerValidationResult.setLastArchiveTst(archiveTstClosestCert);
+
+		// Obtenemos la fecha de caducidad de la firma.
+		currentDate = UtilsSignatureOp.calculateExpirationDateForValidations(signerValidationResult, currentDate);
 	    }
+	    validationResult.setExpirationDate(currentDate);
 
 	    // Indicamos en el log que la firma es correcta
 	    LOGGER.info(Language.getResIntegra(ILogConstantKeys.CS_LOG013));

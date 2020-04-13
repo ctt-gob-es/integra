@@ -1,4 +1,4 @@
-// Copyright (C) 2017 MINHAP, Gobierno de España
+// Copyright (C) 2020 MINHAP, Gobierno de España
 // This program is licensed and may be used, modified and redistributed under the terms
 // of the European Public License (EUPL), either version 1.1 or (at your
 // option) any later version as soon as they are approved by the European Commission.
@@ -17,17 +17,18 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>11/08/2016.</p>
  * @author Gobierno de España.
- * @version 1.2, 14/03/2017.
+ * @version 1.3, 13/04/2020.
  */
 package es.gob.afirma.signature.validation;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
  * <p>Class that contains all the information related to the result of a PDF document validation process.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 14/03/2017.
+ * @version 1.3, 13/04/2020.
  */
 public class PDFValidationResult implements Serializable {
 
@@ -65,6 +66,11 @@ public class PDFValidationResult implements Serializable {
      * Attribute that represents the signature format associated to the signed PDF document.
      */
     private String signatureFormat;
+
+    /**
+     * Attribute that represents the expiration date of the PDF signature.
+     */
+    private Date expirationDate;
 
     /**
      * Gets the value of the attribute {@link #isIntegrallyCorrect}.
@@ -162,4 +168,20 @@ public class PDFValidationResult implements Serializable {
 	this.signatureFormat = signatureFormatParam;
     }
 
+    /**
+     * Gets the value of the attribute {@link #expirationDate}.
+     * @return the value of the attribute {@link #expirationDate}.
+     */
+    public Date getExpirationDate() {
+        return expirationDate;
+    }
+
+    /**
+     * Sets the value of the attribute {@link #expirationDate}.
+     * @param expirationDate The value for the attribute {@link #expirationDate}.
+     */
+    public void setExpirationDate(Date expirationDate) {
+        this.expirationDate = expirationDate;
+    }
+    
 }

@@ -1,4 +1,4 @@
-// Copyright (C) 2017 MINHAP, Gobierno de España
+// Copyright (C) 2020 MINHAP, Gobierno de España
 // This program is licensed and may be used, modified and redistributed under the terms
 // of the European Public License (EUPL), either version 1.1 or (at your
 // option) any later version as soon as they are approved by the European Commission.
@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>04/07/2011.</p>
  * @author Gobierno de España.
- * @version 1.7, 04/03/2020.
+ * @version 1.8, 13/04/2020.
  */
 package es.gob.afirma.signature.xades;
 
@@ -121,7 +121,7 @@ import net.java.xades.security.xml.XAdES.XAdES_EPES;
 /**
  * <p>Class for create XAdES signatures.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.7, 04/03/2020.
+ * @version 1.8, 13/04/2020.
  */
 public final class XadesSigner implements Signer {
 
@@ -196,7 +196,7 @@ public final class XadesSigner implements Signer {
 	    Security.addProvider(new BouncyCastleProvider());
 	}
 	org.apache.xml.security.Init.init();
-		
+
     }
 
     /**
@@ -1582,8 +1582,9 @@ public final class XadesSigner implements Signer {
 	checkDataObjectFormat(optionalParams);
 	// Generamos el objeto que representará la firma
 	XAdES_EPES xades = generateXAdESElement(privateKey, optionalParams, docSignature.getDocumentElement());
-	
-	// Insertamos nuestro provider en la primera posición de la lista de provders.
+
+	// Insertamos nuestro provider en la primera posición de la lista de
+	// provders.
 	Security.insertProviderAt(new IntegraProvider(), 1);
 
 	// Instanciamos el objeto que permite la generación de la firma XAdES
@@ -2097,6 +2098,9 @@ public final class XadesSigner implements Signer {
 	    List<SignerValidationResult> listSignersValidationResults = new ArrayList<SignerValidationResult>();
 	    validationResult.setListSignersValidationResults(listSignersValidationResults);
 
+	    // inicializamos la fecha que determinará la caducidad de la firma.
+	    Date currentDate = null;
+
 	    // Recorremos la lista de firmantes
 	    for (XAdESSignerInfo signerInfo: listSigners) {
 		// Primero, determinamos el formato del firmante
@@ -2124,7 +2128,16 @@ public final class XadesSigner implements Signer {
 
 		// Validamos los contra-firmantes asociados al firmante
 		validateCounterSigners(signingMode, signerInfo, signerValidationResult, validationResult, idClient);
+
+		// Recuperamos la fecha de expiración de los archiveTimestamp.
+		X509Certificate archiveTstClosestCert = UtilsSignatureOp.obtainCertificateArchiveTimestampsXAdES(signerInfo);
+		signerValidationResult.setLastArchiveTst(archiveTstClosestCert);
+
+		// Obtenemos la fecha de caducidad de la firma.
+		currentDate = UtilsSignatureOp.calculateExpirationDateForValidations(signerValidationResult, currentDate);
 	    }
+	    validationResult.setExpirationDate(currentDate);
+	    
 	    // Indicamos en el log que la firma es correcta
 	    LOGGER.info(Language.getResIntegra(ILogConstantKeys.XS_LOG042));
 	} catch (SigningException e) {
@@ -2601,9 +2614,9 @@ public final class XadesSigner implements Signer {
 	    byte[ ] stampedData = UtilsTimestampXML.getSignatureTimeStampDataToStamp(signerInfo.getElementSignature(), tst.getCanonicalizationAlgorithm());
 
 	    // Si el sello de tiempo es XML
-	    if (tst.getXmlTimestamp() != null) {
+	    if (tst.getXmlTimestamp() != null && tst.getXmlTimestamp().getFirstChild() != null) {
 		// Validamos las referencias del sello de tiempo
-		UtilsTimestampXML.validateTimeStampReferences(tst.getXmlTimestamp(), stampedData, tst.getId());
+		UtilsTimestampXML.validateTimeStampReferences(tst.getXmlTimestamp().getFirstChild(), stampedData, tst.getId());
 	    }
 	    // Si el sello de tiempo es ASN.1
 	    else {

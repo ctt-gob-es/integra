@@ -1,4 +1,4 @@
-// Copyright (C) 2017 MINHAP, Gobierno de España
+// Copyright (C) 2020 MINHAP, Gobierno de España
 // This program is licensed and may be used, modified and redistributed under the terms
 // of the European Public License (EUPL), either version 1.1 or (at your
 // option) any later version as soon as they are approved by the European Commission.
@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>12/05/2016.</p>
  * @author Gobierno de España.
- * @version 1.2, 14/03/2017.
+ * @version 1.3, 13/04/2020.
  */
 package es.gob.afirma.integraws.ws.impl;
 
@@ -49,6 +49,7 @@ import es.gob.afirma.integraws.beans.RequestUpgradeSign;
 import es.gob.afirma.integraws.beans.RequestVerifySign;
 import es.gob.afirma.integraws.beans.ResponseGetSignedData;
 import es.gob.afirma.integraws.beans.ResponseSign;
+import es.gob.afirma.integraws.beans.ResponseUpgradeSign;
 import es.gob.afirma.integraws.beans.ResponseVerifySign;
 import es.gob.afirma.integraws.beans.SignerToUpgrade;
 import es.gob.afirma.integraws.beans.ValidationResultWS;
@@ -62,11 +63,12 @@ import es.gob.afirma.signature.validation.ValidationResult;
 import es.gob.afirma.utils.DSSConstants.SignTypesURIs;
 import es.gob.afirma.utils.DSSConstants.SignatureForm;
 import es.gob.afirma.utils.UtilsCertificate;
+import es.gob.afirma.utils.UtilsSignatureOp;
 
 /**
  * <p>Class that contains integra sing service implementations.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 14/03/2017.
+ * @version 1.3, 13/04/2020.
  */
 public class IntegraServices implements IIntegraServices {
 
@@ -331,11 +333,11 @@ public class IntegraServices implements IIntegraServices {
 	 * {@inheritDoc}
 	 * @see es.gob.afirma.integraws.ws.IIntegraServices#upgradeSignature(es.gob.afirma.integraws.beans.RequestUpgradeSign)
 	 */
-	public final ResponseSign upgradeSignature(RequestUpgradeSign request) {
+	public final ResponseUpgradeSign upgradeSignature(RequestUpgradeSign request) {
 
 		if (request.getIdClient() == null) {
 			LOGGER.error(Language.getResIntegra(IWSConstantKeys.IWS_002));
-			return new ResponseSign(false, Language.getResIntegra(IWSConstantKeys.IWS_002));
+			return new ResponseUpgradeSign(false, Language.getResIntegra(IWSConstantKeys.IWS_002));
 		}
 
 		List<X509Certificate> signerList = null;
@@ -346,20 +348,21 @@ public class IntegraServices implements IIntegraServices {
 				try {
 					signerList.add(UtilsCertificate.generateCertificate(signer.getSigner()));
 				} catch (CertificateException e) {
-					return new ResponseSign(false, e.getMessage());
+					return new ResponseUpgradeSign(false, e.getMessage());
 				}
 			}
 		}
 
 		if (request.getSignature() == null) {
 			LOGGER.error(Language.getResIntegra(IWSConstantKeys.IWS_008));
-			return new ResponseSign(false, Language.getResIntegra(IWSConstantKeys.IWS_008));
+			return new ResponseUpgradeSign(false, Language.getResIntegra(IWSConstantKeys.IWS_008));
 		}
 
 		try {
-			return new ResponseSign(IntegraFacadeBind.upgradeSignature(request.getSignature(), signerList, request.getIdClient()), true);
+		    byte [] signature = IntegraFacadeBind.upgradeSignature(request.getSignature(), signerList, request.getIdClient());
+			return new ResponseUpgradeSign(signature, true, UtilsSignatureOp.getExpirationDate(signature));
 		} catch (SigningException e) {
-			return new ResponseSign(false, e.getMessage());
+			return new ResponseUpgradeSign(false, e.getMessage());
 		}
 	}
 

@@ -1,4 +1,4 @@
-// Copyright (C) 2012-13 MINHAP, Gobierno de España
+// Copyright (C) 2020 MINHAP, Gobierno de España
 // This program is licensed and may be used, modified and redistributed under the terms
 // of the European Public License (EUPL), either version 1.1 or (at your
 // option) any later version as soon as they are approved by the European Commission.
@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>07/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.3, 04/03/2020.
+ * @version 1.4, 13/04/2020.
  */
 package es.gob.afirma.utils;
 
@@ -32,6 +32,7 @@ import java.security.NoSuchProviderException;
 import java.security.Signature;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -49,16 +50,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
-import org.apache.xml.crypto.MarshalException;
-import org.apache.xml.crypto.dsig.Reference;
-import org.apache.xml.crypto.dsig.XMLSignature;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
-import org.apache.xml.dsig.internal.dom.DOMReference;
 import org.apache.log4j.Logger;
+import org.apache.xml.crypto.MarshalException;
+import org.apache.xml.crypto.dsig.Reference;
+import org.apache.xml.crypto.dsig.XMLSignature;
+import org.apache.xml.dsig.internal.dom.DOMReference;
+import org.apache.xml.security.keys.KeyInfo;
 import org.apache.xml.security.signature.XMLSignatureInput;
 import org.apache.xml.security.utils.resolver.ResourceResolver;
 import org.apache.xml.security.utils.resolver.ResourceResolverException;
@@ -69,12 +73,14 @@ import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1UTCTime;
 import org.bouncycastle.asn1.DEREncodable;
 import org.bouncycastle.asn1.DERObject;
+import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.CMSAttributes;
 import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.asn1.cms.SignedData;
+import org.bouncycastle.asn1.esf.ESFAttributes;
 import org.bouncycastle.asn1.ess.ESSCertID;
 import org.bouncycastle.asn1.ess.ESSCertIDv2;
 import org.bouncycastle.asn1.ess.SigningCertificate;
@@ -95,6 +101,7 @@ import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.tsp.TSPUtil;
 import org.bouncycastle.tsp.TSPValidationException;
 import org.bouncycastle.tsp.TimeStampToken;
@@ -127,7 +134,10 @@ import es.gob.afirma.integraFacade.IntegraFacadeConstants;
 import es.gob.afirma.logger.IntegraLogger;
 import es.gob.afirma.properties.IIntegraConstants;
 import es.gob.afirma.properties.IntegraProperties;
+import es.gob.afirma.signature.ISignatureFormatDetector;
 import es.gob.afirma.signature.SignatureConstants;
+import es.gob.afirma.signature.SignatureFormatDetector;
+import es.gob.afirma.signature.SignatureFormatDetectorASiC;
 import es.gob.afirma.signature.SignatureFormatDetectorCadesPades;
 import es.gob.afirma.signature.SignatureFormatDetectorXades;
 import es.gob.afirma.signature.SignatureProperties;
@@ -137,18 +147,19 @@ import es.gob.afirma.signature.pades.PDFDocumentTimestampDictionary;
 import es.gob.afirma.signature.pades.PDFSignatureDictionary;
 import es.gob.afirma.signature.policy.SignaturePolicyException;
 import es.gob.afirma.signature.policy.SignaturePolicyManager;
+import es.gob.afirma.signature.validation.SignerValidationResult;
+import es.gob.afirma.signature.validation.TimestampValidationResult;
 import es.gob.afirma.signature.xades.ExternalFileURIDereferencer;
 import es.gob.afirma.signature.xades.IXMLConstants;
 import es.gob.afirma.signature.xades.IdRegister;
 import es.gob.afirma.signature.xades.XAdESSignerInfo;
 import es.gob.afirma.transformers.TransformersException;
-import org.apache.xml.security.keys.KeyInfo;
 import net.java.xades.security.xml.XMLSignatureElement;
 
 /**
  * <p>Class that contains methods related to the manage of signatures.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.3, 04/03/2020.
+ * @version 1.4, 13/04/2020.
  */
 @SuppressWarnings("unchecked")
 public final class UtilsSignatureOp implements IUtilsSignature {
@@ -178,6 +189,21 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * Constant attribute that represents the value to identify the <i>DSS</i> entry in a PDF's Catalog.
      */
     public static final PdfName DSS_DICTIONARY_NAME = new PdfName("DSS");
+
+    /**
+     * Constant attribute that represents the OID of the <code>archive-time-stamp-v3</code> attribute.
+     */
+    private static final DERObjectIdentifier ID_ARCHIVE_TIME_STAMP_V3 = new ASN1ObjectIdentifier("0.4.0.1733.2.4");
+
+    /**
+     * Constant attribute that represents the local name of a ASN.1 archiveTimestamp.
+     */
+    private static final String LOCAL_NAME_ARCHIVE_TIMESTAMP_ASN1 = "EncapsulatedTimeStamp";
+
+    /**
+     * Constant attribute that represents the local name of a XML archiveTimestamp.
+     */
+    private static final String LOCAL_NAME_ARCHIVE_TIMESTAMP_XML = "XMLTimeStamp";
 
     /**
      * Constructor method for the class SignatureUtils.java.
@@ -1195,7 +1221,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		// Procesamos el conjunto de contra-firmas
 		SignerInformation siCounter = siIt.next();
 		CAdESSignerInfo signerInfoCounter = new CAdESSignerInfo();
-		List<CAdESSignerInfo> listCounterSigners = new ArrayList<CAdESSignerInfo>();
+		List<CAdESSignerInfo> listCounterSigners = signerInfo.getListCounterSigners() != null ? signerInfo.getListCounterSigners() : new ArrayList<CAdESSignerInfo>();
 		signerInfo.setListCounterSigners(listCounterSigners);
 		listCounterSigners.add(signerInfoCounter);
 		processCAdESSignerInfos(signedData, siCounter, signerInfoCounter);
@@ -1514,7 +1540,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 				// tiempo
 				XAdESTimeStampType xadesTimeStampType = new XAdESTimeStampType();
 				xadesTimeStampType.setId(signatureTimeStampId);
-				xadesTimeStampType.setTimestampGenerationDate(UtilsTimestampXML.getGenTimeXMLTimestamp(timeStampElement));
+				xadesTimeStampType.setTimestampGenerationDate(UtilsTimestampXML.getGenTimeXMLTimestamp((Element) UtilsXML.getChildNodesByLocalNames(timeStampElement, "Timestamp").item(0)));
 				xadesTimeStampType.setTstCertificate(UtilsTimestampXML.getCertificateFromXMLTimestamp(timeStampElement));
 				xadesTimeStampType.setXmlTimestamp(timeStampElement);
 				xadesTimeStampType.setCanonicalizationAlgorithm(getCanonicalizationMethod(signatureTimeStampElement));
@@ -3022,7 +3048,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		    String hashAlgorithm = CryptoUtilPdfBc.translateAlgorithmIdentifier(ai2);
 
 		    // Obtenemos el hash del certificado firmante
-		    MessageDigest md = MessageDigest.getInstance(hashAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
+		    MessageDigest md = MessageDigest.getInstance(hashAlgorithm, new BouncyCastleProvider());
 		    byte[ ] signingCertificateHash = md.digest(signingCertificate.getEncoded());
 
 		    // Comprobamos que los hash coincidan
@@ -4789,6 +4815,1065 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	} finally {
 	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG038));
 	}
+    }
+
+    /**
+     * Auxiliary method that calculate the expiration date of a validation or update response. 
+     * The expiration date will be the closer expiration date between every signer and/or timestamp of the signature.
+     * @param signerValidationResult Result of the signature validation/update.
+     * @param currentDate The current closest expiration date.
+     * @return the expiration date of the signature.
+     */
+    public static Date calculateExpirationDateForValidations(SignerValidationResult signerValidationResult, Date currentDate) {
+	Date date = currentDate;
+	boolean hasArchiveTimeStamp = false;
+	boolean hasTimeStamp = false;
+	X509Certificate archiveTimestampCert = signerValidationResult.getLastArchiveTst();
+
+	// Si el firmante está protegido por sellos de tiempo de tipo
+	// archiveTimeStamp, la caducidad vendrá definida por la fecha de
+	// expiración del certificado firmante del sello de tiempo
+	// archiveTimeStamp.
+	if (archiveTimestampCert != null) {
+	    date = closestExpirationDate(archiveTimestampCert.getNotAfter(), currentDate);
+	    hasArchiveTimeStamp = true;
+	}
+
+	// Si el firmante está protegido por sellos de tiempo, la caducidad
+	// vendrá definida por la fecha de expiración del certificado del último
+	// sello de tiempo.
+	List<TimestampValidationResult> timestamps = signerValidationResult.getListTimestampsValidations();
+	if (!hasArchiveTimeStamp && !checkIsNullOrEmpty(timestamps)) {
+	    date = closestExpirationDate(calculateExpirationDateTimestamps(timestamps), date);
+	    hasTimeStamp = true;
+	}
+
+	// Si no tiene sellos de tiempo, la caducidad vendrá determinada por la
+	// fecha de expiración del certificado firmante.
+	X509Certificate signerCert = signerValidationResult.getSigningCertificate();
+	if (!hasArchiveTimeStamp && !hasTimeStamp && signerCert != null) {
+	    date = closestExpirationDate(signerCert.getNotAfter(), date);
+	}
+
+	// Además, si el firmante no tiene sellos de tiempo archiveTimestamp y
+	// tiene contrafirmas, buscamos la caducidad de los contrafirmantes.
+	List<SignerValidationResult> counterSigners = signerValidationResult.getListCounterSignersValidationsResults();
+	if (!hasArchiveTimeStamp && !checkIsNullOrEmpty(counterSigners)) {
+	    for (SignerValidationResult counterSigner: counterSigners) {
+		date = closestExpirationDate(calculateExpirationDateForValidations(counterSigner, date), date);
+	    }
+	}
+
+	return date;
+
+    }
+
+    /**
+     * Auxiliary method that checks two dates and returns the one whose date is closest to the current date.
+     * @param date1 Date to compare.
+     * @param date2 Date to compare.
+     * @return the closest date to the current one.
+     */
+    private static Date closestExpirationDate(Date date1, Date date2) {
+	if (date1 == null && date2 != null) {
+	    return date2;
+	}
+	if (date2 == null && date1 != null) {
+	    return date1;
+	}
+	if (date1 == null && date2 == null) {
+	    return null;
+	}
+	return date1.before(date2) ? date1 : date2;
+    }
+
+    /**
+     * Auxiliary method that gets the expiration date from a list of timestamp.
+     * @param timestamps List of timestamp validations to check.
+     * @return The expiration date of the the timestamp with a the closest expiration date.
+     */
+    private static Date calculateExpirationDateTimestamps(List<TimestampValidationResult> timestamps) {
+	Date date = null;
+	if (timestamps != null && !timestamps.isEmpty()) {
+
+	    // Si sólo existe un sello de tiempo, devolvemos su fecha de
+	    // expiración, que vendrá determinada por la fecha de expiración del
+	    // certificado firmante del sello de tiempo.
+	    if (timestamps.size() == 1) {
+		date = timestamps.get(0).getSigningCertificate().getNotAfter();
+	    }
+
+	    // Si hay más de un sello de tiempo, nos quedamos con aquel que
+	    // tenga una fecha de expiración más próxima.
+	    if (timestamps.size() > 1) {
+		for (TimestampValidationResult timestamp: timestamps) {
+		    date = closestExpirationDate(timestamp.getSigningCertificate().getNotAfter(), date);
+		}
+	    }
+	}
+	return date;
+    }
+
+    /**
+     * Auxiliary method that gets the expiration date from a list of timestamp.
+     * @param timestamps List of timestamp to check.
+     * @return  The expiration date of the the timestamp with a the closest expiration date.
+     * @throws SigningException if is not possible to calculate the expiration date of the timestamps.
+     */
+    private static Date calculateExpirationDateTimestamps2(List<TimeStampToken> timestamps) throws SigningException {
+	Date date = null;
+	try {
+	    if (timestamps != null && !timestamps.isEmpty()) {
+
+		// Si sólo existe un sello de tiempo, devolvemos su fecha de
+		// expiración, que vendrá determinada por la fecha de expiración
+		// del certificado firmante del sello de tiempo.
+		if (timestamps.size() == 1) {
+		    date = UtilsTimestampXML.getSigningCertificate(timestamps.get(0)).getNotAfter();
+		}
+
+		// Si hay más de un sello de tiempo, nos quedamos con aquel que
+		// tenga una fecha de expiración más próxima.
+		if (timestamps.size() > 1) {
+		    for (TimeStampToken timestamp: timestamps) {
+			date = closestExpirationDate(UtilsTimestampXML.getSigningCertificate(timestamp).getNotAfter(), date);
+		    }
+		}
+	    }
+	} catch (SigningException e) {
+	    LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG244), e);
+	    throw e;
+	}
+	return date;
+    }
+
+    /**
+     * Method that gets the last archive timestamp certificate from the the list of archive timestamps of a signature.
+     * @param unsignedAttributes Unsigned attributes of the signature.
+     * @return the signing certificate if the last archive timestamp.
+     */
+    public static X509Certificate obtainCertificateArchiveTimestamps(AttributeTable unsignedAttributes) {
+	List<TimeStampToken> archiveTimestampsList = new ArrayList<>();
+	X509Certificate closestCert = null;
+
+	if (unsignedAttributes != null) {
+	    try {
+
+		// Recuperamos la lista de sellos de tiempo archiveTimestamp.
+		ASN1EncodableVector archiveTrst = unsignedAttributes.getAll(ESFAttributes.archiveTimestamp);
+		if (archiveTrst.size() > 0) {
+		    archiveTimestampsList = UtilsTimestampPdfBc.getOrderedTimeStampTokens(archiveTrst);
+
+		    // Nos quedamos con el último sello de tiempo de la lista,
+		    // ya que es éste quien determina la fecha de expiración del
+		    // conjunto de sellos de tiempo archivetimestamp.
+		    TimeStampToken lastTst = archiveTimestampsList.get(archiveTimestampsList.size() - 1);
+
+		    // Obtenemos la fecha de expiración del certificado firmante
+		    // del último sello de tiempo.
+		    closestCert = UtilsTimestampPdfBc.getSigningCertificate(lastTst);
+		}
+
+		// Recuperamos la lista de sellos de tiempo archiveTimestamp V2.
+		ASN1EncodableVector archiveTrstV2 = unsignedAttributes.getAll(ESFAttributes.archiveTimestampV2);
+		if (archiveTrstV2.size() > 0) {
+		    archiveTimestampsList = UtilsTimestampPdfBc.getOrderedTimeStampTokens(archiveTrstV2);
+
+		    // Nos quedamos con el último sello de tiempo de la lista,
+		    // ya que es éste quien determina la fecha de expiración del
+		    // conjunto de sellos de tiempo archivetimestamp.
+		    TimeStampToken lastTst = archiveTimestampsList.get(archiveTimestampsList.size() - 1);
+
+		    // Obtenemos la fecha de expiración del certificado firmante
+		    // del último sello de tiempo.
+		    X509Certificate lastTstCert = UtilsTimestampPdfBc.getSigningCertificate(lastTst);
+		    closestCert = closestExpirationCertificate(lastTstCert, closestCert);
+		}
+
+		// Recuperamos la lista de sellos de tiempo archiveTimestamp V3.
+		ASN1EncodableVector archiveTrstV3 = unsignedAttributes.getAll(ID_ARCHIVE_TIME_STAMP_V3);
+		if (archiveTrstV3.size() > 0) {
+		    archiveTimestampsList = UtilsTimestampPdfBc.getOrderedTimeStampTokens(archiveTrstV3);
+
+		    // Nos quedamos con el último sello de tiempo de la lista,
+		    // ya que es éste quien determina la fecha de expiración del
+		    // conjunto de sellos de tiempo archivetimestamp.
+		    TimeStampToken lastTst = archiveTimestampsList.get(archiveTimestampsList.size() - 1);
+
+		    // Obtenemos la fecha de expiración del certificado firmante
+		    // del último sello de tiempo.
+		    X509Certificate lastTstCert = UtilsTimestampPdfBc.getSigningCertificate(lastTst);
+		    closestCert = closestExpirationCertificate(lastTstCert, closestCert);
+		}
+
+	    } catch (SigningException e) {
+		LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG241), e);
+	    }
+	}
+	return closestCert;
+    }
+
+    /**
+     * Auxiliary method that checks which certificate has an expiration date closest to the current date.
+     * @param cert1 Certificate to compare.
+     * @param cert2 Certificate to compare.
+     * @return the certificarte with a closest expiration date of the certificates.
+     */
+    private static X509Certificate closestExpirationCertificate(X509Certificate cert1, X509Certificate cert2) {
+	if (cert1 == null && cert2 == null) {
+	    return null;
+	}
+	if (cert1 == null && cert2 != null) {
+	    return cert2;
+	}
+	if (cert1 != null && cert2 == null) {
+	    return cert1;
+	}
+	return cert1.getNotAfter().before(cert2.getNotAfter()) ? cert1 : cert2;
+    }
+
+    /**
+     * Method that calculates the expiration date of a signature.
+     * @param signature Signature to analyze.
+     * @return the expiration date, that is, the date in which the signature will be invalid, or null if its not possible to determinate the date.
+     */
+    public static Date getExpirationDate(byte[ ] signature) {
+	Date res = null;
+	if (signature != null) {
+	    try {
+		// Detectamos el formato de la firma.
+		String signatureFormat = SignatureFormatDetector.getSignatureFormat(signature);
+
+		// Si el formato es CAdES.
+		if (isCAdES(signatureFormat)) {
+
+		    // Obtenemos la firma CAdES.
+		    CMSSignedData signedData = getCMSSignedData(signature);
+		    // Obtenemos la información del firmante.
+		    SignerInformationStore signerInformationStore = signedData.getSignerInfos();
+		    // Obtenemos la lista con todos los firmantes contenidos en
+		    // la firma
+		    List<SignerInformation> listSignersSignature = (List<SignerInformation>) signerInformationStore.getSigners();
+		    // Calculamos la fecha de expiración de la firma.
+		    return calculateExpirationDate(signedData, listSignersSignature);
+		}
+
+		// Si el formato es XAdES.
+		if (isXAdES(signatureFormat)) {
+
+		    // Accedemos al documento XML firmado.
+		    Document doc = UtilsSignatureCommons.getDocumentFromXML(signature);
+		    // Recuperamos la lista de firmantes.
+		    List<XAdESSignerInfo> signers = UtilsSignatureOp.getXAdESListSigners(doc);
+		    return calculateExpirationDate(signers, null);
+		}
+
+		// Si el formato es PAdES.
+		if (isPAdES(signatureFormat)) {
+
+		    // Construimos el objeto para poder leer el PDF
+		    PdfReader reader = new PdfReader(signature);
+		    // Instanciamos un objeto para consultar campos del PDF
+		    AcroFields af = reader.getAcroFields();
+		    // Inicializamos las listas donde se almacenarán los
+		    // diccionarios.
+		    List<PDFSignatureDictionary> signatureDictionaries = new ArrayList<>();
+		    List<PDFDocumentTimestampDictionary> timestampDictionaries = new ArrayList<>();
+		    // Recuperamos la lista de diccionarios de firma y
+		    // sellos de tiempo.
+		    obtainListOfDictionaries(reader, af, timestampDictionaries, signatureDictionaries);
+		    // Calculamos la fecha de expiración.
+		    return calculateExpirationDate(signatureDictionaries, timestampDictionaries);
+		}
+
+		// Si el formato es ASiC-S Baseline.
+		if (isASiCSBaselineSignatureFormat(signatureFormat)) {
+		    // Procesamos la firma ASiC-S.
+		    return getASiCExpirationDate(signature);
+		}
+	    } catch (SigningException e) {
+		LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG245), e);
+	    } catch (IOException e) {
+		LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG246));
+	    }
+	}
+	return res;
+    }
+
+    /**
+     * Auxiliary method that calculate the expiration date of a ASiC signature.
+     * @param signature ASiC signature to process.
+     * @return the expiration date of the signature.
+     * @throws IOException if there is some problem with the signature extraction from the ZIP.
+     * @throws SigningException if there is some problem with the signature processing.
+     */
+    private static Date getASiCExpirationDate(byte[] signature) throws IOException, SigningException {
+	    byte[ ] asn1Signature = null;
+	    byte[ ] signedXML = null;
+	    InputStream is = new ByteArrayInputStream(signature);
+	    InputStream asicsInputStream = new ZipInputStream(is);
+
+	    // Recorremos las entradas del fichero ZIP
+	    for (ZipEntry entry = ((ZipInputStream) asicsInputStream).getNextEntry(); entry != null; entry = ((ZipInputStream) asicsInputStream).getNextEntry()) {
+		// Accedemos al nombre de la entrada
+		String entryName = entry.getName();
+
+		// Si la entrada es la firma ASN.1
+		if (SignatureFormatDetectorASiC.isCAdESEntry(entryName)) {
+		    // Accedemos al elemento SignedData
+		    asn1Signature = GenericUtilsCommons.getDataFromInputStream(asicsInputStream);
+
+		}
+
+		// Si la entrada es la firma XML
+		else if (SignatureFormatDetectorASiC.isXAdESEntry(entryName)) {
+		    signedXML = GenericUtilsCommons.getDataFromInputStream(asicsInputStream);
+		}
+	    }
+
+	    Date date = null;
+	    // Si la firma es CAdES.
+	    if (asn1Signature != null) {
+		// Obtenemos la firma CAdES.
+		CMSSignedData signedData = getCMSSignedData(asn1Signature);
+		// Obtenemos la información del firmante.
+		SignerInformationStore signerInformationStore = signedData.getSignerInfos();
+		// Obtenemos la lista con todos los firmantes contenidos
+		// en
+		// la firma
+		List<SignerInformation> listSignersSignature = (List<SignerInformation>) signerInformationStore.getSigners();
+		// Calculamos la fecha de expiración de la firma.
+		date = calculateExpirationDate(signedData, listSignersSignature);
+	    }
+
+	    // Si la firma es XAdES.
+	    if (signedXML != null) {
+		// Accedemos al documento XML firmado.
+		Document doc = UtilsSignatureCommons.getDocumentFromXML(signedXML);
+		// Recuperamos la lista de firmantes.
+		List<XAdESSignerInfo> signers = UtilsSignatureOp.getXAdESListSigners(doc);
+		date = closestExpirationDate(calculateExpirationDate(signers, null), date);
+	    }
+	    return date;
+
+    }
+
+    /**
+     * Auxiliary method that check if the signature format detected is PAdES.
+     * @param signatureFormat Signature format detected.
+     * @return <i>True</i> if the signature format is PAdES, or <i>False</i> in other cases.
+     */
+    private static boolean isPAdES(String signatureFormat) {
+	return isPAdESSignatureFormat(signatureFormat) || isPAdESBaselineSignatureFormat(signatureFormat);
+    }
+
+    /**
+     * Auxiliary method that check if the signature format detected is XAdES.
+     * @param signatureFormat Signature format detected.
+     * @return <i>True</i> if the signature format is XAdES, or <i>False</i> in other cases.
+     */
+    private static boolean isXAdES(String signatureFormat) {
+	return isXAdESSignatureFormat(signatureFormat) || isXAdESBaselineSignatureFormat(signatureFormat);
+    }
+
+    /**
+     * Auxiliary method that check if the signature format detected is CAdES.
+     * @param signatureFormat Signature format detected.
+     * @return <i>True</i> if the signature format is CAdES, or <i>False</i> in other cases.
+     */
+    private static boolean isCAdES(String signatureFormat) {
+	return isCAdESSignatureFormat(signatureFormat) || isCAdESBaselineSignatureFormat(signatureFormat);
+    }
+
+    /**
+     * Method that indicates if the format of a signature is related to CAdES signature format.
+     * @param signatureFormat Parameter that represents the signature format to process.
+     * @return a boolean that indicates if the format of a signature is related to CAdES signature format (true) or not (false).
+     */
+    private static boolean isCAdESSignatureFormat(String signatureFormat) {
+	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_BES)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_EPES)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_T)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_C)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_X1)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_X2)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_XL1)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_XL2)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_A)) {
+	    return true;
+	}
+	return false;
+    }
+
+    /**
+     * Method that indicates if the format of a signature is related to CAdES Baseline signature format.
+     * @param signatureFormat Parameter that represents the signature format to process.
+     * @return a boolean that indicates if the format of a signature is related to CAdES Baseline signature format (true) or not (false).
+     */
+    private static boolean isCAdESBaselineSignatureFormat(String signatureFormat) {
+	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_T_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_LT_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_LTA_LEVEL)) {
+	    return true;
+	}
+	return false;
+    }
+
+    /**
+     * Method that indicates if the format of a signature is related to XAdES signature format.
+     * @param signatureFormat Parameter that represents the signature format to process.
+     * @return a boolean that indicates if the format of a signature is related to XAdES signature format (true) or not (false).
+     */
+    private static boolean isXAdESSignatureFormat(String signatureFormat) {
+	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_BES)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_EPES)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_T)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_C)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_X1)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_X2)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_XL1)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_XL2)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_A)) {
+	    return true;
+	}
+	return false;
+    }
+
+    /**
+     * Method that indicates if the format of a signature is related to XAdES Baseline signature format.
+     * @param signatureFormat Parameter that represents the signature format to process.
+     * @return a boolean that indicates if the format of a signature is related to XAdES Baseline signature format (true) or not (false).
+     */
+    private static boolean isXAdESBaselineSignatureFormat(String signatureFormat) {
+	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_T_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_LT_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_LTA_LEVEL)) {
+	    return true;
+	}
+	return false;
+    }
+
+    /**
+     * Method that indicates if the format of a signature is related to PAdES signature format.
+     * @param signatureFormat Parameter that represents the signature format to process.
+     * @return a boolean that indicates if the format of a signature is related to PAdES signature format (true) or not (false).
+     */
+    private static boolean isPAdESSignatureFormat(String signatureFormat) {
+	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_BASIC)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_BES)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_EPES)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_LTV)) {
+	    return true;
+	}
+	return false;
+    }
+
+    /**
+     * Method that indicates if the format of a signature is related to PAdES Baseline signature format.
+     * @param signatureFormat Parameter that represents the signature format to process.
+     * @return a boolean that indicates if the format of a signature is related to PAdES Baseline signature format (true) or not (false).
+     */
+    private static boolean isPAdESBaselineSignatureFormat(String signatureFormat) {
+	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_B_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_T_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_LT_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_LTA_LEVEL)) {
+	    return true;
+	}
+	return false;
+    }
+
+    /**
+     * Method that indicates if the format of a signature is related to ASiC-S Baseline signature format.
+     * @param signatureFormat Parameter that represents the signature format to process.
+     * @return a boolean that indicates if the format of a signature is related to ASiC-S Baseline signature format (true) or not (false).
+     */
+    private static boolean isASiCSBaselineSignatureFormat(String signatureFormat) {
+	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_B_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_T_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_LT_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_LTA_LEVEL)) {
+	    return true;
+	}
+	return false;
+    }
+
+    /**
+     * Method that calculates the expiration date of a given signature.
+     * @param signedData CMS signed Data.
+     * @param listSignersSignature Signers information.
+     * @return the expiration date of the signature.
+     */
+    private static Date calculateExpirationDate(CMSSignedData signedData, List<SignerInformation> listSignersSignature) {
+	if (signedData == null) {
+	    return null;
+	}
+	Date date = null;
+
+	try {
+
+	    // Recorremos la lista de firmantes.
+	    for (SignerInformation signer: listSignersSignature) {
+
+		// Comprobamos si tiene sellos de tiempo de tipo
+		// archiveTimestamp.
+		// Si tiene sellos de tiempo archiveTimestamp, la fecha de
+		// expiración será definida por la caducidad del certificado
+		// firmante del último sello de tiempo arcvhiveTimestamp.
+		X509Certificate lastArchiveTstCert = obtainCertificateArchiveTimestamps(signer.getUnsignedAttributes());
+		if (lastArchiveTstCert != null) {
+		    date = closestExpirationDate(lastArchiveTstCert.getNotAfter(), date);
+		    continue;
+		}
+
+		// Comprobamos si tiene sellos de tiempo. Si tiene sellos de
+		// tiempo, la fecha de expiración vendrá definida por la fecha
+		// de caducidad del certificado firmante con una fecha de
+		// caducidad más próxima a la fecha actual.
+		boolean hasTimestamps = false;
+		List<TimeStampToken> timestamps = obtainCertificateTimestamps(signer.getUnsignedAttributes());
+		if (!checkIsNullOrEmpty(timestamps)) {
+		    date = closestExpirationDate(calculateExpirationDateTimestamps2(timestamps), date);
+		    hasTimestamps = true;
+		}
+
+		// Si la firma no tiene sellos de tiempo, la fecha de caducidad
+		// puede venir definida por el certificado firmante.
+		X509Certificate signingCert = getSigningCertificate(signedData, signer);
+		if (!hasTimestamps && signingCert != null) {
+		    date = closestExpirationDate(signingCert.getNotAfter(), date);
+		}
+
+		// Comprobamos si existen contrafirmantes. Si existen
+		// contrafirmantes, verificamos si la fecha de caducidad de
+		// algún contrafirmante es más próxima que la del firmante
+		// principal. En ese caso, actualizamos la fecha de expiración
+		// global.
+		SignerInformationStore counterSignatures = signer.getCounterSignatures();
+		if (!checkIsNullOrEmpty(counterSignatures)) {
+		    Iterator<?> it = counterSignatures.getSigners().iterator();
+		    while (it.hasNext()) {
+			SignerInformation counterSigner = (SignerInformation) it.next();
+			date = closestExpirationDate(calculateExpirationDate(signedData, Arrays.asList(counterSigner)), date);
+		    }
+
+		}
+	    }
+	} catch (SigningException e) {
+	    LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG243));
+	}
+	return date;
+    }
+
+    /**
+     * Method that calculates the expiration date of a XAdES signature.
+     * @param signers List of signer.
+     * @param currentDate Current closest expiration date.
+     * @return the closest expiration date of the signature.
+     */
+    private static Date calculateExpirationDate(List<XAdESSignerInfo> signers, Date currentDate) {
+	Date date = currentDate;
+	if (!checkIsNullOrEmpty(signers)) {
+
+	    // Recorremos la lista de firmantes. Por cada firmante...
+	    X509Certificate archiveTstCert = null;
+	    List<XAdESTimeStampType> tstList = null;
+	    List<XAdESSignerInfo> counterSigners = null;
+	    for (XAdESSignerInfo signer: signers) {
+		// Recuperamos los sellos de tiempo archiveTimestamp (en caso de
+		// que tenga).
+		archiveTstCert = obtainCertificateArchiveTimestampsXAdES(signer);
+		if (archiveTstCert != null) {
+		    date = closestExpirationDate(archiveTstCert.getNotAfter(), date);
+		    continue;
+		}
+
+		// Recuperamos los sellos de tiempo timestamp (en caso de que
+		// tenga).
+		tstList = signer.getListTimeStamps();
+		boolean hasTst = false;
+		if (!checkIsNullOrEmpty(tstList)) {
+		    date = closestExpirationDate(tstList.get(tstList.size() - 1).getTstCertificate().getNotAfter(), date);
+		    hasTst = true;
+		}
+
+		// Si el firmante no tiene ningún tipo de sello de tiempo, la
+		// fecha de expiración será la del certificado firmante.
+		if (!hasTst) {
+		    date = closestExpirationDate(signer.getSigningCertificate().getNotAfter(), date);
+		}
+
+		// Comprobamos si tiene contrafirmantes...
+		counterSigners = signer.getListCounterSigners();
+		if (!checkIsNullOrEmpty(counterSigners)) {
+		    date = closestExpirationDate(calculateExpirationDate(counterSigners, date), date);
+		}
+
+	    }
+	}
+	return date;
+
+    }
+
+    /**
+     * Method that obtains the list of timestamp of type <i>signature-time-stamp</i> from the unsigned attributes of a signature.
+     * @param unsignedAttributes Unsigned attributes set of the signature to analyze.
+     * @return a list with the timestamp of the signature.
+     * @throws SigningException if it is not possible to obtain the timestamps.
+     */
+    private static List<TimeStampToken> obtainCertificateTimestamps(AttributeTable unsignedAttributes) throws SigningException {
+	List<TimeStampToken> res = null;
+	try {
+	    if (unsignedAttributes != null) {
+		// Accedemos a todos los atributos signature-time-stamp
+		ASN1EncodableVector signatureTimeStampattributes = unsignedAttributes.getAll(PKCSObjectIdentifiers.id_aa_signatureTimeStampToken);
+
+		// Si el firmante incluye algún atributo signature-time-stamp
+		if (signatureTimeStampattributes.size() > 0) {
+		    // Obtenemos la lista de sellos de tiempo contenidos en los
+		    // atributos signature-time-stamp, ordenados ascendentemente
+		    // por fecha de generación, en el caso de que el firmante
+		    // contenga dichos atributos
+		    res = UtilsTimestampPdfBc.getOrderedTimeStampTokens(signatureTimeStampattributes);
+		}
+	    }
+	} catch (SigningException e) {
+	    LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG242), e);
+	    throw e;
+	}
+	return res;
+    }
+
+    /**
+     * Auxiliary method that checks if a list is null or empty.
+     * @param value List to check.
+     * @return <i>True</i> if the list is null or empty, and <i>False</i> if not.
+     */
+    private static boolean checkIsNullOrEmpty(List<?> value) {
+	return value == null || value.isEmpty() ? true : false;
+    }
+
+    /**
+     * Auxliary method that checks if a given signer information store is null or empty.
+     * @param value Object to check.
+     * @return <i>True</i> if the signer information store is null or empty, and <i>False</i> if not.
+     */
+    private static boolean checkIsNullOrEmpty(SignerInformationStore value) {
+	return value == null || value.size() < 1 ? true : false;
+    }
+
+    /**
+     * Auxiliary method that checks if a NodeList is null or empty.
+     * @param value NodeList to check.
+     * @return <i>True</i> if the object is null or empty, and <i>False</i> if not.
+     */
+    private static boolean checkIsNullOrEmpty(NodeList value) {
+	return value == null || value.getLength() < 1;
+    }
+
+    /**
+     * Method that obtains the signing certificate of the last archiveTimestamp of a XAdES signature.
+     * @param signerInfo Unsigned properties element of the signer.
+     * @return the X509Certificate of the last archiveTimestamp or null of there is not one archiveTimestamp.
+     */
+    public static X509Certificate obtainCertificateArchiveTimestampsXAdES(XAdESSignerInfo signerInfo) {
+	X509Certificate cert = null;
+
+	// Si hemos encontrado el elemento xades:UnsignedProperties
+	if (signerInfo != null) {
+
+	    try {
+
+		// Obtenemos el elemento unsignedPropertiesElement.
+		Element unsignedPropertiesElement = UtilsXML.getChildElement((Element) signerInfo.getQualifyingPropertiesElement(), IXMLConstants.ELEMENT_UNSIGNED_PROPERTIES, signerInfo.getId(), false);
+
+		if (unsignedPropertiesElement != null) {
+
+		    // Obtenemos el elemento unsignedSignaturePropertiesElement.
+		    Element unsignedSignaturePropertiesElement = UtilsXML.getChildElement(unsignedPropertiesElement, IXMLConstants.ELEMENT_UNSIGNED_SIGNATURE_PROPERTIES, signerInfo.getId(), false);
+
+		    // Buscamos si existen archiveTimestamps v1.4.1 o v1.3.2.
+		    NodeList archiveTimeStamps = unsignedSignaturePropertiesElement.getElementsByTagNameNS(IXMLConstants.XADES_1_4_1_NAMESPACE, IXMLConstants.ELEMENT_ARCHIVE_TIMESTAMP);
+		    if (checkIsNullOrEmpty(archiveTimeStamps)) {
+			archiveTimeStamps = unsignedSignaturePropertiesElement.getElementsByTagNameNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_ARCHIVE_TIMESTAMP);
+		    }
+		    if (!checkIsNullOrEmpty(archiveTimeStamps)) {
+			// Recuperamos el último archiveTimeStamp.
+			X509Certificate signingCert = null;
+			Node archiveTst = obtainLastArchiveTimestampNode(archiveTimeStamps);
+			// Recuperamos el certificado firmante del último sello
+			// de tiempo archiveTimestamp.
+			if (archiveTst != null) {
+			    signingCert = getTstSigningCertificateFromNode(archiveTst);
+			    if (cert == null || signingCert.getNotAfter().before(cert.getNotAfter())) {
+				cert = signingCert;
+			    }
+			}
+		    }
+		}
+	    } catch (SigningException e) {
+		LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG247), e);
+	    }
+	}
+
+	return cert;
+    }
+
+    /**
+     * Method that obtains the node that represents the last archiveTimestamp of the signature, that is, the archiveTimestamp that is not protected by another one.
+     * @param archiveTimeStampsNodeList List of archiveTimestamp nodes to analyze.
+     * @return a node that represents the last archiveTimestamp.
+     */
+    private static Node obtainLastArchiveTimestampNode(NodeList archiveTimeStampsNodeList) {
+	Node res = null;
+	if (!checkIsNullOrEmpty(archiveTimeStampsNodeList)) {
+	    Node archiveTstNode = null;
+	    Node tstNode = null;
+	    TimeStampToken tst = null;
+	    Date xmlTstDate = null;
+
+	    try {
+		// recorremos la lista de archiveTimestamp.
+		for (int i = 0; i < archiveTimeStampsNodeList.getLength(); i++) {
+		    archiveTstNode = archiveTimeStampsNodeList.item(i);
+
+		    res = obtainLastArchiveTimestampNodeAux(archiveTstNode, tstNode, tst, res, xmlTstDate);
+		}
+	    } catch (TSPException | IOException e) {
+		LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG248), e);
+	    } catch (CMSException e) {
+		LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG249), e);
+	    } catch (XPathExpressionException e) {
+		LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG250), e);
+	    } catch (ParseException e) {
+		LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG251), e);
+	    }
+	}
+	return res;
+    }
+
+    /**
+     * Auxiliary method created to reduce the cyclomatic complexity.
+     * @param archiveTstNode Node that contains the archiveTimestamps list.
+     * @param tstNode Node that represents a archiveTimestamp.
+     * @param tst Timestamp token of a given archiveTimestamp.
+     * @param res Local result variable.
+     * @param xmlTstDate Local expiration date of the timestamp.
+     * @return the node of the last archiveTimestamp of the signature.
+     * @throws TSPException if it is not possible to create the timestamp token of the archiveTimestamp.
+     * @throws IOException if it is not possible to create the timestamp token of the archiveTimestamp.
+     * @throws CMSException if it is not possible to create the CMS signed data of the node.
+     * @throws XPathExpressionException  if it is not possible to find  the creation time element of the archiveTimestamp.
+     * @throws ParseException if it is not possible to parse the creation date of the timestamp.  
+     */
+    private static Node obtainLastArchiveTimestampNodeAux(Node archiveTstNode, Node tstNode, TimeStampToken tst, Node res, Date xmlTstDate) throws TSPException, IOException, CMSException, XPathExpressionException, ParseException {
+	Node result = res;
+	Node tstNodeAux = tstNode;
+	TimeStampToken tstAux = tst;
+	Date xmlTstDateAux = xmlTstDate;
+	// Recorremos los nodos hijos del archiveTimestamp.
+	for (int e = 0; e < archiveTstNode.getChildNodes().getLength(); e++) {
+	    tstNodeAux = archiveTstNode.getChildNodes().item(e);
+
+	    // Si el sello de tiempo es de tipo ASN.1...
+	    if (tstNodeAux.getLocalName().equals(LOCAL_NAME_ARCHIVE_TIMESTAMP_ASN1)) {
+		String nodeValBase64 = tstNodeAux.getTextContent();
+		// Recuperamos el sello de tiempo ASN.1.
+		TimeStampToken localTst = new TimeStampToken(new CMSSignedData(Base64.decode(nodeValBase64)));
+
+		// Si el sello de tiempo recuperado tiene una fecha
+		// de generación anterior al sello de tiempo
+		// actualmente almacenado, lo actualizamos.
+		if (tstAux == null || localTst.getTimeStampInfo().getGenTime().after(tstAux.getTimeStampInfo().getGenTime())) {
+		    tstAux = localTst;
+		    result = archiveTstNode;
+		}
+		break;
+	    } else if (tstNodeAux.getLocalName().equals(LOCAL_NAME_ARCHIVE_TIMESTAMP_XML)) {
+		NodeList creationTimeNode = UtilsXML.getChildNodesByLocalNames(tstNodeAux, "Timestamp/Signature/Object/TstInfo/CreationTime");
+		if (creationTimeNode != null) {
+		    String creationDateTst = creationTimeNode.item(0).getTextContent();
+		    Date localDate = new SimpleDateFormat("yyyy-mm-dd'T'hh:mm:ss.SSSXXX").parse(creationDateTst);
+		    if (xmlTstDateAux == null || localDate.before(xmlTstDateAux)) {
+			xmlTstDateAux = localDate;
+			result = archiveTstNode;
+		    }
+		}
+		break;
+	    }
+	}
+	return result;
+    }
+
+    /**
+     * Auxiliary method that gets the signing certificate of a timeStamp in a XAdES signature.
+     * @param node ArchiveTimestamp node of the XML signature.
+     * @return the signing certificate of the archiveTimestamp node.
+     */
+    private static X509Certificate getTstSigningCertificateFromNode(Node node) {
+	X509Certificate res = null;
+
+	if (node != null) {
+	    try {
+
+		NodeList children = node.getChildNodes();
+		Node child = null;
+		for (int i = 0; i < children.getLength(); i++) {
+		    child = children.item(i);
+		    TimeStampToken tst = null;
+		    // Si es un sello de tiempo de tipo ASN.1...
+		    if (child.getLocalName().equals(LOCAL_NAME_ARCHIVE_TIMESTAMP_ASN1)) {
+			String nodeValBase64 = child.getTextContent();
+			// Recuperamos el sello de tiempo ASN.1.
+			tst = new TimeStampToken(new CMSSignedData(Base64.decode(nodeValBase64)));
+			res = UtilsTimestampXML.getSigningCertificate(tst);
+			break;
+		    }
+		    // Si es un sello de tiempo de tipo XML...
+		    else if (child.getLocalName().equals(LOCAL_NAME_ARCHIVE_TIMESTAMP_XML)) {
+			// Accedemos al elemento X509Certificate del sello de
+			// tiempo XML.
+			NodeList x509CertNodeList = UtilsXML.getChildNodesByLocalNames(child, "Timestamp/Signature/KeyInfo/X509Data/X509Certificate");
+
+			// Si se ha recuperado correctamente el elemento,
+			// transformamos el valor del nodo en un certificado
+			// X509Certificate.
+			if (!checkIsNullOrEmpty(x509CertNodeList)) {
+			    String certBase64 = x509CertNodeList.item(0).getTextContent();
+			    byte encodedCert[] = Base64.decode(certBase64);
+			    ByteArrayInputStream inputStream = new ByteArrayInputStream(encodedCert);
+			    CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+			    res = (X509Certificate) certFactory.generateCertificate(inputStream);
+			    break;
+			}
+		    }
+		}
+	    } catch (TSPException | IOException | CMSException
+		    | XPathExpressionException e) {
+		LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG252), e);
+	    } catch (SigningException | CertificateException e) {
+		LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG253), e);
+	    }
+	}
+	return res;
+    }
+
+    /**
+     * Method that calculates the expiration date of a PAdES signature, that is, the moment in which the signature will become invalid.
+     * @param signatureDictionaries Signature dictionaries from the PAdES signature.
+     * @param timestampDictionaries Timestamp dictionaries from the PAdES signature.
+     * @return the expiration date of the signature.
+     */
+    public static Date calculateExpirationDate(List<PDFSignatureDictionary> signatureDictionaries, List<PDFDocumentTimestampDictionary> timestampDictionaries) {
+	Date expirationDate = null;
+	PDFSignatureDictionary lastSignatureDictionary = null;
+	PDFDocumentTimestampDictionary lastTimestampDictionary = null;
+
+	try {
+
+	    // Recuperamos el último diccionario de firma (el diccionario
+	    // generado más recientemente).
+	    if (!checkIsNullOrEmpty(signatureDictionaries)) {
+		lastSignatureDictionary = (PDFSignatureDictionary) getLastDictionary(signatureDictionaries);
+	    }
+
+	    // Recuperamos el último diccionario de sello de tiempo (el
+	    // diccionario generado más recientemente).
+	    if (!checkIsNullOrEmpty(timestampDictionaries)) {
+		lastTimestampDictionary = (PDFDocumentTimestampDictionary) getLastDictionary(timestampDictionaries);
+	    }
+
+	    // Nos quedamos con el diccionario que haya sido generado más
+	    // recientemente.
+	    Object lastDictionary = getLastDictionary(lastSignatureDictionary, lastTimestampDictionary);
+
+	    // Si el diccionario es de firma, comprobamos si la firma tiene
+	    // sellos de tiempo, en caso de tenerlos, la fecha de expiración
+	    // vendrá determinada por la fecha de expiración del certificado
+	    // firmante del último sello de tiempo, sino, la fecha la
+	    // determinará la fecha de expiración del certificado firmante.
+	    if (lastDictionary instanceof PDFSignatureDictionary) {
+		CMSSignedData signature = getCMSSignature((PDFSignatureDictionary) lastDictionary);
+		expirationDate = calculateExpirationDate(signature, (List<SignerInformation>) signature.getSignerInfos().getSigners());
+	    }
+	    // Si el diccionario es de sello de tiempo, la fecha de expiración
+	    // vendrá determinada por el certificado firmante del sello de
+	    // tiempo.
+	    else if (lastDictionary instanceof PDFDocumentTimestampDictionary) {
+		PDFDocumentTimestampDictionary tstDic = (PDFDocumentTimestampDictionary) lastDictionary;
+		expirationDate = tstDic.getCertificate().getNotAfter();
+	    }
+	} catch (SigningException e) {
+	    LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG254), e);
+	}
+
+	return expirationDate;
+    }
+
+    /**
+     * Auxiliary method that obtains the last dictionary from a list of them. 
+     * The last dictionary will be the dictionary with the greatest revision number.
+     * @param dictionariesList List of PDF dictionaries to check. It can be of two types: 
+     * PDFSignatureDictionary or PDFDocumentTimestampDictionary.
+     * @return the last signature dictionary if the parameter is a list of signature dictionary, 
+     * the last timestamp signature if the parameter is a list of timestamp dictionaries or 
+     * null if the list is null, empty or it's not a valid dictionary list.
+     */
+    private static Object getLastDictionary(List<?> dictionariesList) {
+	// Si la lista no es nula ni está vacía, procesamos los diccionarios
+	// recibidos.
+	if (!checkIsNullOrEmpty(dictionariesList)) {
+
+	    // Si la lista de diccionarios es de firma...
+	    if (dictionariesList.get(0) instanceof PDFSignatureDictionary) {
+		PDFSignatureDictionary res = null;
+		List<PDFSignatureDictionary> signatureDictionaries = (List<PDFSignatureDictionary>) dictionariesList;
+		// Recorremos la lista de diccionarios y nos quedamos con aquel
+		// que tenga una revisión mayor.
+		for (PDFSignatureDictionary signatureDictionary: signatureDictionaries) {
+		    if (res == null) {
+			res = signatureDictionary;
+		    } else {
+			res = res.getRevision() < signatureDictionary.getRevision() ? signatureDictionary : res;
+		    }
+		}
+		return res;
+
+		// Si la lista de diccionarios es de sellos de tiempo...
+	    } else if (dictionariesList.get(0) instanceof PDFDocumentTimestampDictionary) {
+		PDFDocumentTimestampDictionary res = null;
+		List<PDFDocumentTimestampDictionary> timestampDictionaries = (List<PDFDocumentTimestampDictionary>) dictionariesList;
+		// Recorremos la lista de diccionarios y nos quedamos con aquel
+		// que tenga una revisión mayor.
+		for (PDFDocumentTimestampDictionary timestampDictionary: timestampDictionaries) {
+		    if (res == null) {
+			res = timestampDictionary;
+		    } else {
+			res = res.getRevision() < timestampDictionary.getRevision() ? timestampDictionary : res;
+		    }
+		}
+		return res;
+	    }
+
+	}
+	return null;
+    }
+
+    /**
+     * Auxiliary method that checks a signature PDF dictionary and a timestamp PDF dictionary and choose which one is older (has a generation date closest to the current date).
+     * @param signatureDictionary Signature PDF dictionary.
+     * @param timestampDictionary Timestamp PDF dictionary.
+     * @return a dictionary which is the older of both.
+     */
+    private static Object getLastDictionary(PDFSignatureDictionary signatureDictionary, PDFDocumentTimestampDictionary timestampDictionary) {
+	if (signatureDictionary != null && timestampDictionary == null) {
+	    return signatureDictionary;
+	}
+	if (signatureDictionary == null && timestampDictionary != null) {
+	    return timestampDictionary;
+	}
+	if (signatureDictionary != null && timestampDictionary != null) {
+	    return signatureDictionary.getRevision() > timestampDictionary.getRevision() ? signatureDictionary : timestampDictionary;
+	}
+	return null;
+    }
+
+    /**
+     * Auxiliary method that finds the signature and timestamp dictionaries from a PDF signature.
+     * @param reader PDF reader of the signature.
+     * @param af Object that allows to access to the field of the signature. 
+     * @param listTimestampDictionaries List where the timestamp dictionaries will be stored.
+     * @param listSignatureDictionaries List where the signature dictionaries will be stored.
+     * @throws SigningException if it's not possible to access to the timestamp of a timestamp dictionary.
+     */
+    private static void obtainListOfDictionaries(PdfReader reader, AcroFields af, List<PDFDocumentTimestampDictionary> listTimestampDictionaries, List<PDFSignatureDictionary> listSignatureDictionaries) throws SigningException {
+	List<String> names = af.getSignatureNames();
+	// Recorremos las firmas
+	for (String signatureName: names) {
+
+	    // Obtenemos el diccionario
+	    PdfDictionary signatureDictionary = af.getSignatureDictionary(signatureName);
+
+	    // Determinamos el tipo de diccionario obtenido
+	    String pdfType = null;
+	    if (signatureDictionary.get(PdfName.TYPE) != null) {
+		pdfType = signatureDictionary.get(PdfName.TYPE).toString();
+	    }
+
+	    // Determinamos el contenido de la clave SubFilter
+	    String subFilter = signatureDictionary.get(PdfName.SUBFILTER).toString();
+
+	    // Es TST
+	    if (UtilsSignatureOp.isDocumentTimeStampDictionary(pdfType, subFilter)) {
+		// Accedemos al contenido de la clave /Contents
+		byte[ ] arrayTST = signatureDictionary.getAsString(PdfName.CONTENTS).getOriginalBytes();
+		TimeStampToken tst = null;
+		X509Certificate tstCertificate = null;
+		// Si la clave /Contents no es nula
+		if (arrayTST != null) {
+		    try {
+			// Accedemos al sello de tiempo
+			tst = new TimeStampToken(new CMSSignedData(arrayTST));
+
+			// Accedemos al certificado firmante del sello de tiempo
+			tstCertificate = UtilsTimestampPdfBc.getSigningCertificate(tst);
+		    } catch (Exception e) {
+			String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.PS_LOG011, new Object[ ] { signatureName });
+			LOGGER.error(errorMsg, e);
+			throw new SigningException(errorMsg, e);
+		    }
+		}
+
+		// Añadimos el diccionario a la lista de diccionarios de
+		// sello de tiempo
+		listTimestampDictionaries.add(new PDFDocumentTimestampDictionary(signatureDictionary, signatureName, af.getRevision(signatureName), tst, tstCertificate));
+	    }
+	    // Es firma
+	    else if (UtilsSignatureOp.isSignatureDictionary(pdfType, subFilter)) {
+		// Añadimos la firma al mapa de firmas
+		listSignatureDictionaries.add(new PDFSignatureDictionary(af.getRevision(signatureName), signatureDictionary, signatureName));
+	    }
+	}
+	// Ordenamos la lista donde ubicar todos los diccionarios de firma
+	// ascendentemente por revisión
+	Collections.sort(listSignatureDictionaries);
+
+	// Ordenamos la lista donde ubicar todos los diccionarios de sello
+	// de tiempo ordenados ascendentemente por revisión
+	Collections.sort(listTimestampDictionaries);
     }
 
 }

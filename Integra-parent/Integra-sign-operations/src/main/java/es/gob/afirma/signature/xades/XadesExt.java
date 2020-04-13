@@ -1,4 +1,4 @@
-// Copyright (C) 2012-13 MINHAP, Gobierno de España
+// Copyright (C) 2020 MINHAP, Gobierno de España
 // This program is licensed and may be used, modified and redistributed under the terms
 // of the European Public License (EUPL), either version 1.1 or (at your
 // option) any later version as soon as they are approved by the European Commission.
@@ -23,19 +23,17 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>04/08/2011.</p>
  * @author Gobierno de España.
- * @version 1.2, 04/03/2020.
+ * @version 1.3, 13/04/2020.
  */
 package es.gob.afirma.signature.xades;
 
 import java.security.GeneralSecurityException;
 import java.security.KeyException;
 import java.security.PrivateKey;
-import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.gob.afirma.utils.IntegraProvider;
 import org.apache.xml.crypto.MarshalException;
 import org.apache.xml.crypto.dom.DOMStructure;
 import org.apache.xml.crypto.dsig.CanonicalizationMethod;
@@ -48,6 +46,7 @@ import org.apache.xml.crypto.dsig.dom.DOMSignContext;
 import org.apache.xml.crypto.dsig.keyinfo.KeyInfo;
 import org.apache.xml.crypto.dsig.keyinfo.KeyInfoFactory;
 import org.apache.xml.crypto.dsig.spec.C14NMethodParameterSpec;
+
 import net.java.xades.security.xml.WrappedKeyStorePlace;
 import net.java.xades.security.xml.XmlWrappedKeyInfo;
 import net.java.xades.security.xml.XAdES.XAdES_BES;
@@ -62,7 +61,7 @@ import net.java.xades.security.xml.XAdES.XMLAdvancedSignature;
  * <li>Namespace of XAdES can be set.</li>
  * </ul></p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 04/03/2020.
+ * @version 1.3, 13/04/2020.
  */
 public final class XadesExt extends XMLAdvancedSignature {
 
@@ -143,8 +142,6 @@ public final class XadesExt extends XMLAdvancedSignature {
 	}
 	
 	addXMLObject(marshalXMLSignature(xadesNamespace, signatureIdPrefix, referencesIdList, tsaURL));
-	// final XMLSignatureFactory fac = getXMLSignatureFactory(new
-	// IntegraProvider());
 	final XMLSignatureFactory fac = getXMLSignatureFactory();
 	final List<Reference> documentReferences = getReferences(referencesIdList);
 	final String keyInfoId = getKeyInfoId(signatureIdPrefix);

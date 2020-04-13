@@ -1,4 +1,4 @@
-// Copyright (C) 2017 MINHAP, Gobierno de España
+// Copyright (C) 2020 MINHAP, Gobierno de España
 // This program is licensed and may be used, modified and redistributed under the terms
 // of the European Public License (EUPL), either version 1.1 or (at your
 // option) any later version as soon as they are approved by the European Commission.
@@ -17,14 +17,14 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>24/01/2014.</p>
  * @author Gobierno de España.
- * @version 1.6, 04/03/2020.
+ * @version 1.7, 13/04/2020.
  */
 package es.gob.afirma.i18n;
 
 /**
  * <p>Interface that defines all the keys of the log messages file.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.6, 04/03/2020.
+ * @version 1.7, 13/04/2020.
  */
 public interface ILogConstantKeys {
 
@@ -3947,6 +3947,76 @@ public interface ILogConstantKeys {
      * Constant attribute that represents the name of the property <code>US240</code> belonging to the file integra_xx_YY.properties.
      */
     String US_LOG240 = "US240";
+
+    /**
+     * Constant attribute that represents the name of the property <code>US241</code> belonging to the file integra_xx_YY.properties.
+     */
+    String US_LOG241 = "US241";
+
+    /**
+     * Constant attribute that represents the name of the property <code>US242</code> belonging to the file integra_xx_YY.properties.
+     */
+    String US_LOG242 = "US242";
+
+    /**
+     * Constant attribute that represents the name of the property <code>US243</code> belonging to the file integra_xx_YY.properties.
+     */
+    String US_LOG243 = "US243";
+
+    /**
+     * Constant attribute that represents the name of the property <code>US244</code> belonging to the file integra_xx_YY.properties.
+     */
+    String US_LOG244 = "US244";
+
+    /**
+     * Constant attribute that represents the name of the property <code>US245</code> belonging to the file integra_xx_YY.properties.
+     */
+    String US_LOG245 = "US245";
+
+    /**
+     * Constant attribute that represents the name of the property <code>US246</code> belonging to the file integra_xx_YY.properties.
+     */
+    String US_LOG246 = "US246";
+
+    /**
+     * Constant attribute that represents the name of the property <code>US247</code> belonging to the file integra_xx_YY.properties.
+     */
+    String US_LOG247 = "US247";
+
+    /**
+     * Constant attribute that represents the name of the property <code>US248</code> belonging to the file integra_xx_YY.properties.
+     */
+    String US_LOG248 = "US248";
+
+    /**
+     * Constant attribute that represents the name of the property <code>US249</code> belonging to the file integra_xx_YY.properties.
+     */
+    String US_LOG249 = "US249";
+
+    /**
+     * Constant attribute that represents the name of the property <code>US250</code> belonging to the file integra_xx_YY.properties.
+     */
+    String US_LOG250 = "US250";
+
+    /**
+     * Constant attribute that represents the name of the property <code>US251</code> belonging to the file integra_xx_YY.properties.
+     */
+    String US_LOG251 = "US251";
+
+    /**
+     * Constant attribute that represents the name of the property <code>US252</code> belonging to the file integra_xx_YY.properties.
+     */
+    String US_LOG252 = "US252";
+
+    /**
+     * Constant attribute that represents the name of the property <code>US253</code> belonging to the file integra_xx_YY.properties.
+     */
+    String US_LOG253 = "US253";
+
+    /**
+     * Constant attribute that represents the name of the property <code>US254</code> belonging to the file integra_xx_YY.properties.
+     */
+    String US_LOG254 = "US254";
 
     /**
      * Constant attribute that represents the name of the property <code>SFD001</code> belonging to the file integra_xx_YY.properties.
