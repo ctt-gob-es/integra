@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>25/01/2016.</p>
  * @author Gobierno de España.
- * @version 1.8, 13/04/2020.
+ * @version 1.9, 16/04/2020.
  */
 package es.gob.afirma.signature.xades;
 
@@ -46,6 +46,10 @@ import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.log4j.Logger;
 import org.apache.xml.crypto.MarshalException;
 import org.apache.xml.crypto.XMLStructure;
 import org.apache.xml.crypto.dom.DOMStructure;
@@ -60,10 +64,6 @@ import org.apache.xml.crypto.dsig.XMLSignatureException;
 import org.apache.xml.crypto.dsig.XMLSignatureFactory;
 import org.apache.xml.crypto.dsig.spec.TransformParameterSpec;
 import org.apache.xml.crypto.dsig.spec.XPathFilterParameterSpec;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.log4j.Logger;
 import org.apache.xml.security.c14n.InvalidCanonicalizerException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.tsp.TimeStampToken;
@@ -125,7 +125,7 @@ import net.java.xades.security.xml.XAdES.XAdES_EPES;
 /**
  * <p>Class that manages the generation, validation and upgrade of XAdES Baseline signatures.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.8, 13/04/2020.
+ * @version 1.9, 16/04/2020.
  */
 public final class XAdESBaselineSigner implements Signer {
 
@@ -321,7 +321,6 @@ public final class XAdESBaselineSigner implements Signer {
 	signBuilder.setCanonicalizationMethod(defineCanonicalizationMethod(optionalParams));
 
 	// Creamos el conjunto de referencias
-
 	List<Reference> references = buildReferences(signBuilder, signatureFormat, optionalParams, fileToSignName, data);
 
 	// Definimos una variable para determinar si añadir política de
@@ -964,7 +963,7 @@ public final class XAdESBaselineSigner implements Signer {
 
 	    // crea una referencia para un objeto Manifest que contedrá las
 	    // referencias externas al documento de la firma
-	} else if (signatureFormat.equals(SIGN_FORMAT_XADES_EXTERNALLY_DETACHED) && extraParams != null) {
+	} else if (signatureFormat.equals(SIGN_FORMAT_XADES_EXTERNALLY_DETACHED) && extraParams.get(SignatureConstants.MF_REFERENCES_PROPERTYNAME) != null) {
 	    addManifestObject(xmlSignature, referenceList, digestMethod, extraParams);
 
 	}
@@ -1012,31 +1011,48 @@ public final class XAdESBaselineSigner implements Signer {
      * @param extraParams Set with optional parameters.
      * @throws SigningException If the method fails.
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({ "unchecked" })
     private void addManifestObject(XadesExt xmlSignature, List<Reference> referenceList, DigestMethod digestMethod, Properties extraParams) throws SigningException {
-	List<ReferenceData> mfReferences;
 	try {
-	    Object manifestData = extraParams.get(SignatureConstants.MF_REFERENCES_PROPERTYNAME);
-	    // creamos el objeto <Manifest>
-	    String manifestID = "ManifestObject-" + UUID.randomUUID().toString();
+	    // Recuperamos la lista que contiene los manifests y los data format
+	    // object.
+	    List<ReferenceDataBaseline> refAndDataFormatObjList = (List<ReferenceDataBaseline>) extraParams.get(SignatureConstants.MF_REFERENCES_PROPERTYNAME);
+
+	    // Instanciamos el documento que contendrá el elemento Manifest de
+	    // la firma.
 	    Document mfDoc = UtilsXML.newDocument();
 
-	    if (manifestData instanceof List) {
-		mfReferences = (List) manifestData;
+	    // Si existen pares de referencias/dataObjectFormat en los
+	    // parámetros adicionales, los incluimos en el Manifest.
+	    if (refAndDataFormatObjList.size() > 0) {
+
+		// Instanciamos el elemento Manifest y lo incluimos en su nodo
+		// padre.
 		Element mfElement = mfDoc.createElement(IXMLConstants.MANIFEST_TAG_NAME);
 		mfDoc.appendChild(mfElement);
-		for (int i = 0; i < mfReferences.size(); i++) {
-		    ReferenceData referenceData = mfReferences.get(i);
-		    mfElement.appendChild(buildReferenceXmlNode(referenceData, mfDoc));
+
+		// Por cada par referencia/dataObjectFormat, los procesamos e
+		// incluimos en la firma.
+		for (ReferenceDataBaseline ref: refAndDataFormatObjList) {
+
+		    // Incluimos la referencia en el Manifest.
+		    if (ref instanceof ReferenceDataBaseline) {
+			ReferenceData referenceData = new ReferenceData(ref.getDigestMethodAlg(), ref.getDigestValue());
+			referenceData.setId(ref.getId());
+			referenceData.setType(ref.getType());
+			referenceData.setUri(ref.getUri());
+			referenceData.setTransforms(ref.getTransforms());
+			mfElement.appendChild(buildReferenceXmlNode(referenceData, mfDoc));
+		    } else {
+			String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG023);
+			LOGGER.error(errorMsg);
+			throw new SigningException(errorMsg);
+		    }
 		}
-	    } else if (manifestData instanceof Element) {
-		mfDoc.appendChild(mfDoc.importNode((Element) manifestData, true));
-	    } else {
-		String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG023);
-		LOGGER.error(errorMsg);
-		throw new SigningException(errorMsg);
 	    }
 
+	    // Incluimos el elemento Manifest en la firma.
+	    String manifestID = "ManifestObject-" + UUID.randomUUID().toString();
 	    xmlSignature.addXMLObject(xmlSignatureFactory.newXMLObject(Collections.singletonList(new DOMStructure(mfDoc.getDocumentElement())), manifestID, null, null));
 
 	    // Instanciamos el identificador para la referencia
@@ -1045,10 +1061,6 @@ public final class XAdESBaselineSigner implements Signer {
 	    // Creamos la referencia al objeto manifest.
 	    Reference ref = xmlSignatureFactory.newReference("#" + manifestID, digestMethod, null, Manifest.TYPE, referenceId);
 	    referenceList.add(ref);
-
-	    // incluimos la referencia en el objeto que informa del formato del
-	    // documento a firmar
-	    ((DataObjectFormatImpl) dataObjectFormat).setObjectReference("#" + referenceId);
 
 	} catch (ParserConfigurationException e) {
 	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG024);
@@ -1108,6 +1120,7 @@ public final class XAdESBaselineSigner implements Signer {
      * @param element Parameter that represents the XML element where to include the XAdES signature.
      * @return the initializated XAdES signature.
      */
+    @SuppressWarnings("unchecked")
     private XAdES_EPES generateXAdESElement(PrivateKeyEntry privateKey, Properties extraParams, Element element) {
 	// Generamos el objeto que generará la firma
 	XAdES_EPES xades = (XAdES_EPES) XAdES.newInstance(XAdES.EPES, IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.XADES_PREFIX, IXMLConstants.DS_PREFIX, digestAlgorithmRef, element);
@@ -1139,24 +1152,52 @@ public final class XAdESBaselineSigner implements Signer {
 	    xades.setSignerRole(signerRole);
 	}
 
-	// Accedemos a la propiedad con la descripción del
-	// documento original
-	String dataFormDesc = extraParams.getProperty(SignatureProperties.XADES_DATA_FORMAT_DESCRIPTION_PROP);
+	ArrayList<DataObjectFormat> dofList = new ArrayList<DataObjectFormat>();
+	// recuperamos la lista de pares referencias/dataObjectFormat.
+	List<ReferenceDataBaseline> dataObjectList = (List<ReferenceDataBaseline>) extraParams.get(SignatureConstants.MF_REFERENCES_PROPERTYNAME);
 
-	// Accedemos a la propiedad con la codificación para el
-	// documento original
-	String dataFormEnc = extraParams.getProperty(SignatureProperties.XADES_DATA_FORMAT_ENCODING_PROP);
+	// Si es una XAdES externally detached...
+	if (dataObjectList != null) {
+	    // Por cada par, creamos el correspondiente elemento
+	    // dataObjectFormat.
+	    for (ReferenceDataBaseline ref: dataObjectList) {
+		// Accedemos a la propiedad con la descripción del
+		// documento original
+		String dataFormDesc = ref.getDataFormatDescription();
 
-	// Accedemos a la propiedad con el tipo de datos del
-	// documento original
-	String dataFormMime = extraParams.getProperty(SignatureProperties.XADES_DATA_FORMAT_MIME_PROP);
+		// Accedemos a la propiedad con la codificación para el
+		// documento original
+		String dataFormEnc = ref.getDataFormatEncoding();
 
-	// Establecemos el elemento DataObjectFormat
-	dataObjectFormat = new DataObjectFormatImpl(dataFormDesc, null, dataFormMime, dataFormEnc, null);
-	ArrayList<DataObjectFormat> dofList = new ArrayList<DataObjectFormat>(1);
-	dofList.add(dataObjectFormat);
+		// Accedemos a la propiedad con el tipo de datos del
+		// documento original
+		String dataFormMime = ref.getDataFormatMimeType();
+
+		// Establecemos el elemento DataObjectFormat
+		dataObjectFormat = new DataObjectFormatImpl(dataFormDesc, null, dataFormMime, dataFormEnc, "#" + ref.getId());
+
+		dofList.add(dataObjectFormat);
+	    }
+	    // Si es otro de otro tipo...
+	} else {
+	    // Accedemos a la propiedad con la descripción del
+	    // documento original
+	    String dataFormDesc = extraParams.getProperty(SignatureProperties.XADES_DATA_FORMAT_DESCRIPTION_PROP);
+
+	    // Accedemos a la propiedad con la codificación para el
+	    // documento original
+	    String dataFormEnc = extraParams.getProperty(SignatureProperties.XADES_DATA_FORMAT_ENCODING_PROP);
+
+	    // Accedemos a la propiedad con el tipo de datos del
+	    // documento original
+	    String dataFormMime = extraParams.getProperty(SignatureProperties.XADES_DATA_FORMAT_MIME_PROP);
+
+	    // Establecemos el elemento DataObjectFormat
+	    dataObjectFormat = new DataObjectFormatImpl(dataFormDesc, null, dataFormMime, dataFormEnc, null);
+	    dofList.add(dataObjectFormat);
+	}
 	xades.setDataObjectFormats(dofList);
-
+	
 	return xades;
     }
 
@@ -1164,12 +1205,27 @@ public final class XAdESBaselineSigner implements Signer {
      * Method that checks if the set of extra parameters contains the property {@link SignatureProperties#XADES_DATA_FORMAT_DESCRIPTION_PROP} to assign a default value.
      * @param extraParams Parameter that represents the set of extra parameters to check.
      */
+    @SuppressWarnings("unchecked")
     private void checkDataObjectFormatDescriptionInputParameter(Properties extraParams) {
 	// Si no se ha indicado la propiedad
 	// SignatureProperties.XADES_DATA_FORMAT_DESCRIPTION_PROP
 	if (!extraParams.containsKey(SignatureProperties.XADES_DATA_FORMAT_DESCRIPTION_PROP) || extraParams.getProperty(SignatureProperties.XADES_DATA_FORMAT_DESCRIPTION_PROP).isEmpty()) {
-	    // Añadimos un valor constante
-	    extraParams.put(SignatureProperties.XADES_DATA_FORMAT_DESCRIPTION_PROP, SignatureConstants.XADES_DATA_FORMAT_DESCRIPTION_PROP_DEFAULT);
+	    // Comprobamos si se trata de una firma con manifest y verificamos
+	    // si tiene valores válidos para la propiedad.
+	    if (extraParams.get(SignatureConstants.MF_REFERENCES_PROPERTYNAME) != null) {
+		List<ReferenceDataBaseline> list = (List<ReferenceDataBaseline>) extraParams.get(SignatureConstants.MF_REFERENCES_PROPERTYNAME);
+		List<ReferenceDataBaseline> manifestRef = list;
+		for (ReferenceDataBaseline ref: manifestRef) {
+		    String description = ref.getDataFormatDescription();
+		    if (description == null || description.isEmpty()) {
+			// Añadimos un valor constante
+			ref.setDataFormatDescription(SignatureConstants.XADES_DATA_FORMAT_DESCRIPTION_PROP_DEFAULT);
+		    }
+		}
+	    } else {
+		// Añadimos un valor constante
+		extraParams.put(SignatureProperties.XADES_DATA_FORMAT_DESCRIPTION_PROP, SignatureConstants.XADES_DATA_FORMAT_DESCRIPTION_PROP_DEFAULT);
+	    }
 	}
     }
 
@@ -1178,13 +1234,28 @@ public final class XAdESBaselineSigner implements Signer {
      * @param extraParams Parameter that represents the set of extra parameters to check.
      * @param data Parameter that represents the input data to sign.
      */
+    @SuppressWarnings("unchecked")
     private void checkDataObjectFormatMimeType(Properties extraParams, byte[ ] data) {
 	// Si no se ha indicado la propiedad
 	// SignatureProperties.XADES_DATA_FORMAT_MIME_PROP
 	if (!extraParams.containsKey(SignatureProperties.XADES_DATA_FORMAT_MIME_PROP) || extraParams.getProperty(SignatureProperties.XADES_DATA_FORMAT_MIME_PROP).isEmpty()) {
-	    // Indicamos el Mime-Type de los datos a firmar mediante la
-	    // librería Tika
-	    extraParams.put(SignatureProperties.XADES_DATA_FORMAT_MIME_PROP, UtilsResourcesSignOperations.getMimeType(data));
+	    // Comprobamos si se trata de una firma con manifest y verificamos
+	    // si tiene valores válidos para la propiedad.
+	    if (extraParams.get(SignatureConstants.MF_REFERENCES_PROPERTYNAME) != null) {
+		List<ReferenceDataBaseline> list = (List<ReferenceDataBaseline>) extraParams.get(SignatureConstants.MF_REFERENCES_PROPERTYNAME);
+		List<ReferenceDataBaseline> manifestRef = list;
+		for (ReferenceDataBaseline ref: manifestRef) {
+		    String mime = ref.getDataFormatMimeType();
+		    if (mime == null || mime.isEmpty()) {
+			// Añadimos un valor constante
+			ref.setDataFormatMimeType(UtilsResourcesSignOperations.getMimeType(data));
+		    }
+		}
+	    } else {
+		// Indicamos el Mime-Type de los datos a firmar mediante la
+		// librería Tika
+		extraParams.put(SignatureProperties.XADES_DATA_FORMAT_MIME_PROP, UtilsResourcesSignOperations.getMimeType(data));
+	    }
 	}
     }
 
@@ -1517,7 +1588,17 @@ public final class XAdESBaselineSigner implements Signer {
 		newCoSignDoc = eSignDoc;
 		// Búsqueda de los datos a firmar externos(objeto Manifest)
 		NodeList manifestObjects = newCoSignDoc.getElementsByTagName(IXMLConstants.MANIFEST_TAG_NAME);
-		optionalParams.put(SignatureConstants.MF_REFERENCES_PROPERTYNAME, manifestObjects.item(0));
+
+		// Parseamos el elemento manifest y dataObjectFormat al tipo ReferenceDataBaseline.
+		NodeList dataObjectFormatObjects = newCoSignDoc.getElementsByTagName(IXMLConstants.XADES_PREFIX + ":" + IXMLConstants.ELEMENT_SIGNED_DATA_OBJECT_PROPERTIES);
+		if (manifestObjects != null && manifestObjects.getLength() > 0 && dataObjectFormatObjects != null && dataObjectFormatObjects.getLength() > 0) {
+		    List<ReferenceDataBaseline> refs = UtilsSignatureOp.fromNodeListToReferenceDataBaselineList(manifestObjects.item(0), dataObjectFormatObjects.item(0));
+		    optionalParams.put(SignatureConstants.MF_REFERENCES_PROPERTYNAME, refs);
+		} else {
+		    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG258);
+		    LOGGER.error(errorMsg);
+		    throw new SigningException(errorMsg);
+		}
 		generateXAdESCoSignature(newCoSignDoc, uriSignAlgorithm, privateKey, signType, optionalParams, signaturePolicyID, includeTimestamp, idClient);
 
 	    }
@@ -2275,7 +2356,7 @@ public final class XAdESBaselineSigner implements Signer {
 		currentDate = UtilsSignatureOp.calculateExpirationDateForValidations(signerValidationResult, currentDate);
 	    }
 	    validationResult.setExpirationDate(currentDate);
-	    
+
 	    // Indicamos en el log que la firma es correcta
 	    LOGGER.info(Language.getResIntegra(ILogConstantKeys.XBS_LOG055));
 	} catch (SigningException e) {
@@ -2438,7 +2519,7 @@ public final class XAdESBaselineSigner implements Signer {
 	     *   referencia que no apunta hacia el elemento xades:SignedProperties.
 	     * > Se comprobará que existe una referencia que apunta al elemento xades:SignedProperties.
 	     */
-	    validateSignatureCore(signerValidationResult, signerInfo, validationResult, signedSignaturePropertiesElement, signedPropertiesElement, isBaseline, signedFile, signedFileName);
+	    validateSignatureCore(signerValidationResult, signerInfo, validationResult, signedSignaturePropertiesElement, signedPropertiesElement, isBaseline, signedFile, signedFileName, isCounterSignature);
 
 	    // Validación del Instante de Firma: Si se incluye el elemento
 	    // firmado xades:SigningTime se comprobará que está correctamente
@@ -2666,9 +2747,10 @@ public final class XAdESBaselineSigner implements Signer {
      * @param isBaseline Parameter that indicates if the XML signature has Baseline form (true) or not (false).
      * @param signedFile Parameter that represents the file signed by the XML signature when the signed data isn't included into the signed XML document.
      * @param signedFileName Parameter that represents the name of the file signed by the XML signature when the signed data isn't included into the signed XML document.
+     * @param isCounterSignature Parameter that indicates if the signature to validate is a counterSignature.
      * @throws SigningException If the validation fails.
      */
-    private void validateSignatureCore(SignerValidationResult signerValidationResult, XAdESSignerInfo signerInfo, ValidationResult validationResult, Element signedSignaturePropertiesElement, Element signedPropertiesElement, boolean isBaseline, byte[ ] signedFile, String signedFileName) throws SigningException {
+    private void validateSignatureCore(SignerValidationResult signerValidationResult, XAdESSignerInfo signerInfo, ValidationResult validationResult, Element signedSignaturePropertiesElement, Element signedPropertiesElement, boolean isBaseline, byte[ ] signedFile, String signedFileName, boolean isCounterSignature) throws SigningException {
 	// Instanciamos el objeto que ofrece información sobre la validación
 	// llevada a cabo
 	ValidationInfo validationInfo = new ValidationInfo();
@@ -2679,7 +2761,7 @@ public final class XAdESBaselineSigner implements Signer {
 	signerValidationResult.getListValidations().add(validationInfo);
 	try {
 	    // Comprobamos que el firmante verifica la firma
-	    UtilsSignatureOp.validateXAdESSignatureCore(signerInfo.getQualifyingPropertiesElement(), signerInfo.getId(), signerInfo.getElementSignature(), signerInfo.getSignature(), signedFile, signedFileName, signerInfo.getSigningCertificate(), signedSignaturePropertiesElement, signedPropertiesElement, isBaseline);
+	    UtilsSignatureOp.validateXAdESSignatureCore(signerInfo.getQualifyingPropertiesElement(), signerInfo.getId(), signerInfo.getElementSignature(), signerInfo.getSignature(), signedFile, signedFileName, signerInfo.getSigningCertificate(), signedSignaturePropertiesElement, signedPropertiesElement, isBaseline, isCounterSignature);
 
 	    // Indicamos que la validación ha sido correcta
 	    validationInfo.setSucess(true);

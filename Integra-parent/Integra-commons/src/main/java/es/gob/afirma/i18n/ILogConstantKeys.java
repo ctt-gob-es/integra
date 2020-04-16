@@ -17,14 +17,14 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>24/01/2014.</p>
  * @author Gobierno de España.
- * @version 1.7, 13/04/2020.
+ * @version 1.8, 16/04/2020.
  */
 package es.gob.afirma.i18n;
 
 /**
  * <p>Interface that defines all the keys of the log messages file.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.7, 13/04/2020.
+ * @version 1.8, 16/04/2020.
  */
 public interface ILogConstantKeys {
 
@@ -4017,6 +4017,26 @@ public interface ILogConstantKeys {
      * Constant attribute that represents the name of the property <code>US254</code> belonging to the file integra_xx_YY.properties.
      */
     String US_LOG254 = "US254";
+
+    /**
+     * Constant attribute that represents the name of the property <code>US255</code> belonging to the file integra_xx_YY.properties.
+     */
+    String US_LOG255 = "US255";
+
+    /**
+     * Constant attribute that represents the name of the property <code>US256</code> belonging to the file integra_xx_YY.properties.
+     */
+    String US_LOG256 = "US256";
+
+    /**
+     * Constant attribute that represents the name of the property <code>US257</code> belonging to the file integra_xx_YY.properties.
+     */
+    String US_LOG257 = "US257";
+    
+    /**
+     * Constant attribute that represents the name of the property <code>US258</code> belonging to the file integra_xx_YY.properties.
+     */
+    String US_LOG258 = "US258";
 
     /**
      * Constant attribute that represents the name of the property <code>SFD001</code> belonging to the file integra_xx_YY.properties.

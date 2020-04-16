@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>07/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.4, 13/04/2020.
+ * @version 1.5, 16/04/2020.
  */
 package es.gob.afirma.utils;
 
@@ -131,6 +131,7 @@ import com.lowagie.text.pdf.PdfSignatureAppearance;
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
 import es.gob.afirma.integraFacade.IntegraFacadeConstants;
+import es.gob.afirma.integraFacade.pojo.TransformData;
 import es.gob.afirma.logger.IntegraLogger;
 import es.gob.afirma.properties.IIntegraConstants;
 import es.gob.afirma.properties.IntegraProperties;
@@ -152,14 +153,20 @@ import es.gob.afirma.signature.validation.TimestampValidationResult;
 import es.gob.afirma.signature.xades.ExternalFileURIDereferencer;
 import es.gob.afirma.signature.xades.IXMLConstants;
 import es.gob.afirma.signature.xades.IdRegister;
+import es.gob.afirma.signature.xades.ReferenceData;
+import es.gob.afirma.signature.xades.ReferenceDataBaseline;
 import es.gob.afirma.signature.xades.XAdESSignerInfo;
 import es.gob.afirma.transformers.TransformersException;
 import net.java.xades.security.xml.XMLSignatureElement;
+import net.java.xades.security.xml.XAdES.DataObjectFormat;
+import net.java.xades.security.xml.XAdES.DataObjectFormatImpl;
+import net.java.xades.security.xml.XAdES.ObjectIdentifier;
+import net.java.xades.security.xml.XAdES.ObjectIdentifierImpl;
 
 /**
  * <p>Class that contains methods related to the manage of signatures.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.4, 13/04/2020.
+ * @version 1.5, 16/04/2020.
  */
 @SuppressWarnings("unchecked")
 public final class UtilsSignatureOp implements IUtilsSignature {
@@ -3183,9 +3190,10 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signedSignaturePropertiesElement Parameter that represents <code>xades:SignedSignatureProperties</code> element.
      * @param signedPropertiesElement Parameter that represents <code>xades:SignedProperties</code> element.
      * @param isBaseline Parameter that indicates if the signature to validate has Baseline form (true) or not (false).
+     * @param isCounterSignature Parameter that indicates if the signature to validate is a countersignature (true) or not (false).
      * @throws SigningException If the validation fails.
      */
-    public static void validateXAdESSignatureCore(Element qualifyingPropertiesElement, String signatureId, Element signatureElement, org.apache.xml.security.signature.XMLSignature xmlSignature, byte[ ] signedFile, String signedFileName, X509Certificate signingCertificate, Element signedSignaturePropertiesElement, Element signedPropertiesElement, boolean isBaseline) throws SigningException {
+    public static void validateXAdESSignatureCore(Element qualifyingPropertiesElement, String signatureId, Element signatureElement, org.apache.xml.security.signature.XMLSignature xmlSignature, byte[ ] signedFile, String signedFileName, X509Certificate signingCertificate, Element signedSignaturePropertiesElement, Element signedPropertiesElement, boolean isBaseline, boolean isCounterSignature) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG179));
 	/*
 	 * Validación del Núcleo de Firma: Se realizarán las siguientes verificaciones (en el caso de que la firma no sea Baseline):
@@ -3256,7 +3264,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // Validamos la estructura del elemento xades:DataObjectFormat, si
 	    // la firma es Baseline
 	    if (isBaseline) {
-		checkDataObjectFormatStructure(signatureId, signedPropertiesElement, xmlSignature);
+		checkDataObjectFormatStructure(signatureId, signedPropertiesElement, xmlSignature, isCounterSignature);
 	    }
 
 	    // Comprobamos que el firmante verifica la firma
@@ -3273,9 +3281,10 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signatureId Parameter that represents the value of <code>Id</code> attribute of <code>ds:Signature</code> element.
      * @param signedPropertiesElement Parameter that represents <code>xades:SignedProperties</code> element.
      * @param xmlSignature Parameter that represents the XML signature.
+     * @param isCounterSignature Parameter that indicates if the signature to validate is a countersignature (true) or not (false).
      * @throws SigningException If the validation fails.
      */
-    private static void checkDataObjectFormatStructure(String signatureId, Element signedPropertiesElement, org.apache.xml.security.signature.XMLSignature xmlSignature) throws SigningException {
+    private static void checkDataObjectFormatStructure(String signatureId, Element signedPropertiesElement, org.apache.xml.security.signature.XMLSignature xmlSignature, boolean isCounterSignature) throws SigningException {
 	// Accedemos al elemento xades:SignedDataObjectProperties
 	Element signedDataObjectPropertiesElement = UtilsXML.getChildElement(signedPropertiesElement, IXMLConstants.ELEMENT_SIGNED_DATA_OBJECT_PROPERTIES, signatureId, true);
 
@@ -3330,20 +3339,21 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 	    // Recorremos la lista de referencias buscando aquella apuntada por
 	    // el atributo ObjectReference
-	    findReferenceFromDataObjectFormat(xmlSignature, objectReference, idSignedProperties, signatureId);
+	    findReferenceFromDataObjectFormat(xmlSignature, objectReference, idSignedProperties, signatureId, isCounterSignature);
 	}
     }
 
     /**
      * Method that checks if the mandatory <code>ObjectReference</code> attribute of <code>xades:DataObjectFormat</code> element reference the <code>ds:Reference</code> element
-     * of the <code>ds:Signature</code> corresponding with the data object qualified by this property.
+     * of the <code>ds:Signature</code> corresponding with the data object qualified by this property or if there is a manifest reference by each data object format.
      * @param xmlSignature Parameter that represents the XML signature.
      * @param objectReference Parameter that represents the value of <code>ObjectReference</code> attribute.
      * @param idSignedProperties Parameter that represents the value of <code>Id</code> attribute of <code>xades:SignedProperties</code> element.
      * @param signatureId Parameter that represents the value of <code>Id</code> attribute of <code>ds:Signature</code> element.
+     * @param isCounterSignature parameter that indicates if the signature to validate is a countersignature (true) or not (false).
      * @throws SigningException If the validation fails.
      */
-    private static void findReferenceFromDataObjectFormat(org.apache.xml.security.signature.XMLSignature xmlSignature, String objectReference, String idSignedProperties, String signatureId) throws SigningException {
+    private static void findReferenceFromDataObjectFormat(org.apache.xml.security.signature.XMLSignature xmlSignature, String objectReference, String idSignedProperties, String signatureId, boolean isCounterSignature) throws SigningException {
 	try {
 	    // Recorremos la lista de referencias buscando aquella apuntada por
 	    // el atributo ObjectReference
@@ -3373,15 +3383,81 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    }
 	    // Si no hemos encontrado ninguna referencia
 	    if (!found) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG210, new Object[ ] { signatureId, objectReference.substring(1) });
-		LOGGER.error(errorMsg);
-		throw new SigningException(errorMsg);
+		// Comprobamos si al menos existe un dataObjectFormat por cada
+		// reference del manifest.
+		findManifestReferenceFromDataObjectFormat(xmlSignature, objectReference, isCounterSignature);
 	    }
 	} catch (org.apache.xml.security.exceptions.XMLSecurityException e) {
 	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG188, new Object[ ] { signatureId });
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	}
+    }
+
+    /**
+     * Method that checks if there is any manifest reference with a identifier who matches with the data object format object reference.
+     * @param xmlSignature XML signature.
+     * @param objectReference Object reference of the data object format to find.
+     * @param isCounterSignature Parameter that indicates if the signature to verify is a countersignature (true) or not (false).
+     * @throws SigningException if there is not possible to find any manifest reference that matches with the data object format.
+     */
+    private static void findManifestReferenceFromDataObjectFormat(org.apache.xml.security.signature.XMLSignature xmlSignature, String objectReference, boolean isCounterSignature) throws SigningException {
+	String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG210, new Object[ ] { xmlSignature.getId(), objectReference.substring(1) });
+
+	// Recuperamos el elemento Manifest de la firma.
+	Element object = UtilsXML.getChildElement(xmlSignature.getElement(), IXMLConstants.ELEMENT_OBJECT, null, false);
+	while (!object.getFirstChild().getNodeName().equals(IXMLConstants.MANIFEST_TAG_NAME)) {
+	    if (object.getNextSibling() != null && object.getNextSibling() instanceof Element) {
+		object = (Element) object.getNextSibling();
+	    } else if (isCounterSignature) {
+		// En caso de que la firma a validar sea un contrafirmante, las
+		// referencia del manifest ya han sido validadas previamente
+		// durante la firma principal, por lo que no es necesario volver
+		// a realizar dicha validación.
+		return;
+	    } else {
+		// Si no ha sido posible encontrar el elemento Manifest en la
+		// firma, ésta se considerará inválida, ya que el elemento data
+		// object format es obligatorio y debe estar asociado a una
+		// referencia de la firma y, puesto que previamente se ha
+		// comprobado si existía una referencia en el signedInfo con un
+		// identificador asociado al data object format, la firma se
+		// considera inválida.
+		LOGGER.error(errorMsg);
+		throw new SigningException(errorMsg);
+	    }
+	}
+	Element manifestElem = (Element) object.getFirstChild();
+
+	// Recorremos las referencias del manifest para poder acceder a sus
+	// identificadores.
+	Element reference = (Element) manifestElem.getFirstChild();
+	String referenceId = null;
+	while (reference != null) {
+	    // accedemos al atributo Id.
+	    referenceId = reference.getAttribute(IXMLConstants.ATTRIBUTE_ID);
+	    // Si el identificador coincide con el del dataObjectFormat,
+	    // terminamos la busqueda.
+	    if (referenceId != null && referenceId.equals(objectReference.substring(1))) {
+		return;
+	    }
+	    // Si no coincide, continuamos con la siguiente referencia del
+	    // manifest.
+	    else if (reference.getNextSibling() != null) {
+		reference = (Element) reference.getNextSibling();
+	    } else {
+		reference = null;
+	    }
+	}
+
+	// Si llegamos a este punto, es que no se ha encontrado ninguna
+	// referencia en el manifest con un identificador igual al del
+	// dataObjectFormat que buscamos, y por tanto, consideramos que la
+	// firma es inválida (ya que previamente se ha buscado si existe una
+	// referencia en el signedInfo que coincida con el identificador
+	// buscado).
+	LOGGER.error(errorMsg);
+	throw new SigningException(errorMsg);
     }
 
     /**
@@ -5107,54 +5183,54 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @throws IOException if there is some problem with the signature extraction from the ZIP.
      * @throws SigningException if there is some problem with the signature processing.
      */
-    private static Date getASiCExpirationDate(byte[] signature) throws IOException, SigningException {
-	    byte[ ] asn1Signature = null;
-	    byte[ ] signedXML = null;
-	    InputStream is = new ByteArrayInputStream(signature);
-	    InputStream asicsInputStream = new ZipInputStream(is);
+    private static Date getASiCExpirationDate(byte[ ] signature) throws IOException, SigningException {
+	byte[ ] asn1Signature = null;
+	byte[ ] signedXML = null;
+	InputStream is = new ByteArrayInputStream(signature);
+	InputStream asicsInputStream = new ZipInputStream(is);
 
-	    // Recorremos las entradas del fichero ZIP
-	    for (ZipEntry entry = ((ZipInputStream) asicsInputStream).getNextEntry(); entry != null; entry = ((ZipInputStream) asicsInputStream).getNextEntry()) {
-		// Accedemos al nombre de la entrada
-		String entryName = entry.getName();
+	// Recorremos las entradas del fichero ZIP
+	for (ZipEntry entry = ((ZipInputStream) asicsInputStream).getNextEntry(); entry != null; entry = ((ZipInputStream) asicsInputStream).getNextEntry()) {
+	    // Accedemos al nombre de la entrada
+	    String entryName = entry.getName();
 
-		// Si la entrada es la firma ASN.1
-		if (SignatureFormatDetectorASiC.isCAdESEntry(entryName)) {
-		    // Accedemos al elemento SignedData
-		    asn1Signature = GenericUtilsCommons.getDataFromInputStream(asicsInputStream);
+	    // Si la entrada es la firma ASN.1
+	    if (SignatureFormatDetectorASiC.isCAdESEntry(entryName)) {
+		// Accedemos al elemento SignedData
+		asn1Signature = GenericUtilsCommons.getDataFromInputStream(asicsInputStream);
 
-		}
-
-		// Si la entrada es la firma XML
-		else if (SignatureFormatDetectorASiC.isXAdESEntry(entryName)) {
-		    signedXML = GenericUtilsCommons.getDataFromInputStream(asicsInputStream);
-		}
 	    }
 
-	    Date date = null;
-	    // Si la firma es CAdES.
-	    if (asn1Signature != null) {
-		// Obtenemos la firma CAdES.
-		CMSSignedData signedData = getCMSSignedData(asn1Signature);
-		// Obtenemos la información del firmante.
-		SignerInformationStore signerInformationStore = signedData.getSignerInfos();
-		// Obtenemos la lista con todos los firmantes contenidos
-		// en
-		// la firma
-		List<SignerInformation> listSignersSignature = (List<SignerInformation>) signerInformationStore.getSigners();
-		// Calculamos la fecha de expiración de la firma.
-		date = calculateExpirationDate(signedData, listSignersSignature);
+	    // Si la entrada es la firma XML
+	    else if (SignatureFormatDetectorASiC.isXAdESEntry(entryName)) {
+		signedXML = GenericUtilsCommons.getDataFromInputStream(asicsInputStream);
 	    }
+	}
 
-	    // Si la firma es XAdES.
-	    if (signedXML != null) {
-		// Accedemos al documento XML firmado.
-		Document doc = UtilsSignatureCommons.getDocumentFromXML(signedXML);
-		// Recuperamos la lista de firmantes.
-		List<XAdESSignerInfo> signers = UtilsSignatureOp.getXAdESListSigners(doc);
-		date = closestExpirationDate(calculateExpirationDate(signers, null), date);
-	    }
-	    return date;
+	Date date = null;
+	// Si la firma es CAdES.
+	if (asn1Signature != null) {
+	    // Obtenemos la firma CAdES.
+	    CMSSignedData signedData = getCMSSignedData(asn1Signature);
+	    // Obtenemos la información del firmante.
+	    SignerInformationStore signerInformationStore = signedData.getSignerInfos();
+	    // Obtenemos la lista con todos los firmantes contenidos
+	    // en
+	    // la firma
+	    List<SignerInformation> listSignersSignature = (List<SignerInformation>) signerInformationStore.getSigners();
+	    // Calculamos la fecha de expiración de la firma.
+	    date = calculateExpirationDate(signedData, listSignersSignature);
+	}
+
+	// Si la firma es XAdES.
+	if (signedXML != null) {
+	    // Accedemos al documento XML firmado.
+	    Document doc = UtilsSignatureCommons.getDocumentFromXML(signedXML);
+	    // Recuperamos la lista de firmantes.
+	    List<XAdESSignerInfo> signers = UtilsSignatureOp.getXAdESListSigners(doc);
+	    date = closestExpirationDate(calculateExpirationDate(signers, null), date);
+	}
+	return date;
 
     }
 
@@ -5874,6 +5950,223 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	// Ordenamos la lista donde ubicar todos los diccionarios de sello
 	// de tiempo ordenados ascendentemente por revisión
 	Collections.sort(listTimestampDictionaries);
+    }
+
+    /**
+     * Method that parse a manifest and signedDataObjectProperties element into a list of ReferenceDataBaseline objects.
+     * @param manifestNode Node Element that represents the manifest node.
+     * @param signedDataObjectPropertiesNode Element taht represents the signed data object properties node.
+     * @return a list with the elements data parse into a list of reference data baseline objects.
+     * @throws SigningException if the signature is invalid, that is, the elements has a invalid structure or the data are not correct.
+     */
+    public static List<ReferenceDataBaseline> fromNodeListToReferenceDataBaselineList(Node manifestNode, Node signedDataObjectPropertiesNode) throws SigningException {
+	// Instanciamos las listas que necesitaremos para realizar la operación.
+	List<ReferenceDataBaseline> res = new ArrayList<ReferenceDataBaseline>();
+	List<ReferenceData> manifestReferencesList = new ArrayList<ReferenceData>();
+	List<DataObjectFormat> dataObjectFormatList = new ArrayList<DataObjectFormat>();
+	// Accedemos a los primeros elementos necesarios.
+	Element referenceNode = (Element) manifestNode.getFirstChild();
+	Element dataObjectFormatNode = (Element) signedDataObjectPropertiesNode.getFirstChild();
+
+	// Recuperamos la lista de referencias del manifest.
+	String id, type, uri, digestAlgorithm, digestValue;
+	while (referenceNode != null) {
+	    // Recuperamos los valores del nodo.
+	    id = referenceNode.getAttribute(IXMLConstants.ATTRIBUTE_ID);
+	    type = referenceNode.getAttribute(IXMLConstants.ATTRIBUTE_TYPE);
+	    uri = referenceNode.getAttribute(IXMLConstants.ATTRIBUTE_URI);
+	    digestAlgorithm = UtilsXML.getChildElement(referenceNode, IXMLConstants.ELEMENT_DIGEST_METHOD, null, true).getAttribute(IXMLConstants.ATTRIBUTE_ALGORITHM);
+	    digestValue = UtilsXML.getChildElement(referenceNode, IXMLConstants.ELEMENT_DIGEST_VALUE, null, true).getTextContent();
+	    List<TransformData> transforms = getTransformsElementsFromManifestReference(referenceNode);
+	    // Creamos una nueva instancia de ReferenceData.
+	    ReferenceData reference = new ReferenceData(digestAlgorithm, digestValue);
+	    reference.setId(id);
+	    reference.setType(type);
+	    reference.setUri(uri);
+	    reference.setTransforms(transforms);
+
+	    // Añadimos a la lista la nueva referencia.
+	    manifestReferencesList.add(reference);
+
+	    // Continuamos con el siguiente reference.
+	    if (referenceNode.getNextSibling() != null) {
+		referenceNode = (Element) referenceNode.getNextSibling();
+	    } else {
+		referenceNode = null;
+	    }
+	}
+
+	// Recuperamos la lista de dataObjectFormat.
+	String reference, description, encoding, mimetype;
+	Element temp = null;
+	while (dataObjectFormatNode != null) {
+	    // Recuperamos los valores del nodo.
+	    reference = dataObjectFormatNode.getAttribute(IXMLConstants.ATTRIBUTE_OBJECT_REFERENCE);
+	    temp = UtilsXML.getChildElement(dataObjectFormatNode, IXMLConstants.ELEMENT_DESCRIPTION, null, true);
+	    description = temp != null ? temp.getTextContent() : null;
+	    temp = UtilsXML.getChildElement(dataObjectFormatNode, IXMLConstants.ELEMENT_ENCODING, null, false);
+	    encoding = temp != null ? temp.getTextContent() : null;
+	    temp = UtilsXML.getChildElement(dataObjectFormatNode, IXMLConstants.ELEMENT_MIME_TYPE, null, true);
+	    mimetype = temp != null ? temp.getTextContent() : null;
+	    ObjectIdentifier objIdentifier = parseObjectIdentifier(dataObjectFormatNode);
+
+	    // Creamos una nueva instancia de DataObjectFormat.
+	    DataObjectFormat dataObj = new DataObjectFormatImpl(description, objIdentifier, mimetype, encoding, reference);
+
+	    // Añadimos a la lista el nuevo dataObjectFormat.
+	    dataObjectFormatList.add(dataObj);
+
+	    // Continuamos con el siguiente elemento.
+	    if (dataObjectFormatNode.getNextSibling() != null) {
+		dataObjectFormatNode = (Element) dataObjectFormatNode.getNextSibling();
+	    } else {
+		dataObjectFormatNode = null;
+	    }
+	}
+
+	// Creamos los objetos referenceDataBaseline a partir de las listas
+	// anteriores.
+	matchManifestAndDataObjectsLists(manifestReferencesList, dataObjectFormatList, res);
+
+	return res;
+    }
+
+    /**
+     * Auxiliary method that create a list of ReferenceDataBaseline object from a manifest reference list and a data object format list.
+     * @param manifestReferencesList List that represents the set of references of the manifest in the XML signature.
+     * @param dataObjectFormatList List that represents the set of data object format in the XML signature.
+     * @param res List where the new references will be stored.
+     * @throws SigningException if the signature is invalid, that is, if there exists some manifest reference without a data object format associated.
+     */
+    private static void matchManifestAndDataObjectsLists(List<ReferenceData> manifestReferencesList, List<DataObjectFormat> dataObjectFormatList, List<ReferenceDataBaseline> res) throws SigningException {
+	if (!checkIsNullOrEmpty(manifestReferencesList) && !checkIsNullOrEmpty(dataObjectFormatList)) {
+	    String id = null;
+	    for (ReferenceData rd: manifestReferencesList) {
+		DataObjectFormat dataObjectFormat = null;
+		id = rd.getId();
+		for (DataObjectFormat dof: dataObjectFormatList) {
+		    if (id.equals(dof.getObjectReference().substring(1))) {
+			dataObjectFormat = dof;
+			break;
+		    }
+		}
+		if (dataObjectFormat != null) {
+		    ReferenceDataBaseline rdb = new ReferenceDataBaseline(rd.getDigestMethodAlg(), rd.getDigestValue());
+		    rdb.setId(id);
+		    rdb.setTransforms(rd.getTransforms());
+		    rdb.setType(rd.getType());
+		    rdb.setUri(rd.getUri());
+		    rdb.setDataFormatDescription(dataObjectFormat.getDescription());
+		    rdb.setDataFormatEncoding(dataObjectFormat.getEncoding());
+		    rdb.setDataFormatMimeType(dataObjectFormat.getMimeType());
+		    res.add(rdb);
+		} else {
+		    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG257);
+		    LOGGER.error(errorMsg);
+		    throw new SigningException(errorMsg);
+		}
+	    }
+	}
+
+    }
+
+    /**
+     * Auxiliarty method that parses the objectIdentifier element to an object.
+     * @param dataObjectFormatNode Element that represents the objectIdentifier.
+     * @return a new object that represents the objectIdentifier element or null if the element doesn't exist.
+     */
+    private static ObjectIdentifier parseObjectIdentifier(Element dataObjectFormatNode) {
+	ObjectIdentifier objIdentifier = null;
+	if (dataObjectFormatNode != null) {
+	    Element objectIdentifierNode;
+	    try {
+		objectIdentifierNode = UtilsXML.getChildElement(dataObjectFormatNode, IXMLConstants.ELEMENT_OBJECT_IDENTIFIER, null, false);
+
+		if (objectIdentifierNode != null) {
+		    String identifier = null, description;
+		    ArrayList<String> documentationReferences = null;
+		    Element temp = null;
+		    try {
+			// Recuperamos los valores del nodo.
+			identifier = objectIdentifierNode.getAttribute(IXMLConstants.ATTRIBUTE_IDENTIFIER);
+			temp = UtilsXML.getChildElement(objectIdentifierNode, IXMLConstants.ELEMENT_DESCRIPTION, null, false);
+			description = temp != null ? temp.getTextContent() : null;
+			temp = UtilsXML.getChildElement(objectIdentifierNode, IXMLConstants.ELEMENT_DOCUMENTATION_REFERENCES, null, false);
+			if (temp != null && temp.getFirstChild() != null) {
+			    Element documentationReferenceNode = (Element) temp.getFirstChild();
+			    documentationReferences = new ArrayList<String>();
+			    while (documentationReferenceNode != null) {
+				documentationReferences.add(documentationReferenceNode.getTextContent());
+				if (documentationReferenceNode.getNextSibling() != null) {
+				    documentationReferenceNode = (Element) documentationReferenceNode.getNextSibling();
+				} else {
+				    documentationReferenceNode = null;
+				}
+			    }
+			}
+
+			// Asignamos el valor del ObjectIdentifier.
+			objIdentifier = new ObjectIdentifierImpl("OIDAsURI", identifier, description, documentationReferences);
+		    } catch (SigningException e) {
+			LOGGER.info(Language.getResIntegra(ILogConstantKeys.US_LOG256));
+		    }
+		}
+	    } catch (SigningException e) {
+		LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.US_LOG255, new Object[ ] { IXMLConstants.ELEMENT_OBJECT_IDENTIFIER, dataObjectFormatNode.getLocalName() }));
+	    }
+	}
+	return objIdentifier;
+
+    }
+
+    /**
+     * Auxiliary method that obtains a list of transform object from a manifest reference element.
+     * @param referenceNode Manifest reference element.
+     * @return a list with the TransformData object found in the reference element or null if there is no one.
+     */
+    private static List<TransformData> getTransformsElementsFromManifestReference(Element referenceNode) {
+	List<TransformData> res = null;
+	try {
+	    if (referenceNode != null) {
+		Element transforms = UtilsXML.getChildElement(referenceNode, IXMLConstants.ELEMENT_TRANSFORMS, null, false);
+		if (transforms != null && transforms.getFirstChild() != null) {
+		    Element transform = (Element) transforms.getFirstChild();
+		    String algorithm = null;
+		    List<Element> xpaths = null;
+		    res = new ArrayList<TransformData>();
+		    while (transform != null) {
+			algorithm = transform.getAttribute(IXMLConstants.ATTRIBUTE_ALGORITHM);
+			xpaths = UtilsXML.getChildElements(transform, IXMLConstants.ELEMENT_XPATH);
+			TransformData transformObj = new TransformData(algorithm, parseXPathElements(xpaths));
+			res.add(transformObj);
+			if (transform.getNextSibling() != null) {
+			    transform = (Element) transform.getNextSibling();
+			} else {
+			    transform = null;
+			}
+		    }
+		}
+	    }
+	} catch (SigningException e) {
+	    LOGGER.warn(Language.getFormatResIntegra(ILogConstantKeys.US_LOG255, new Object[ ] { IXMLConstants.ELEMENT_TRANSFORMS, referenceNode.getLocalName() }));
+	}
+	return res;
+    }
+
+    /**
+     * Auxiliary method that obtains a list of xPaths from a transform element of a XML signature.
+     * @param xPaths list of XPath elements.
+     * @return a list with the xpath element values or null if the list is null or empty.
+     */
+    private static List<String> parseXPathElements(List<Element> xPaths) {
+	List<String> res = null;
+	if (xPaths != null && !xPaths.isEmpty()) {
+	    res = new ArrayList<String>();
+	    for (Element xPath: xPaths) {
+		res.add(xPath.getTextContent());
+	    }
+	}
+	return res;
     }
 
 }

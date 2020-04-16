@@ -1,4 +1,4 @@
-// Copyright (C) 2012-13 MINHAP, Gobierno de España
+// Copyright (C) 2020 MINHAP, Gobierno de España
 // This program is licensed and may be used, modified and redistributed under the terms
 // of the European Public License (EUPL), either version 1.1 or (at your
 // option) any later version as soon as they are approved by the European Commission.
@@ -48,6 +48,8 @@ import org.apache.xml.crypto.dsig.keyinfo.X509Data;
 
 import org.w3c.dom.Element;
 
+import es.gob.afirma.utils.IntegraProvider;
+
 /**
  * 
  * @author miro
@@ -88,7 +90,7 @@ public class XMLSignatureElement {
 
     protected XMLSignatureFactory getXMLSignatureFactory() {
 	if (xmlSignatureFactory == null) {
-	    xmlSignatureFactory = XMLSignatureFactory.getInstance("DOM");
+	    xmlSignatureFactory = XMLSignatureFactory.getInstance("DOM", new IntegraProvider());
 	}
 	return xmlSignatureFactory;
     }

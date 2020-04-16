@@ -1,4 +1,4 @@
-// Copyright (C) 2012-13 MINHAP, Gobierno de España
+// Copyright (C) 2020 MINHAP, Gobierno de España
 // This program is licensed and may be used, modified and redistributed under the terms
 // of the European Public License (EUPL), either version 1.1 or (at your
 // option) any later version as soon as they are approved by the European Commission.
@@ -17,14 +17,14 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>17/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 17/11/2014.
+ * @version 1.1, 16/04/2020.
  */
 package es.gob.afirma.signature.xades;
 
 /**
  * <p>Interface that defines constants related to XML signature elements.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 17/11/2014.
+ * @version 1.1, 16/04/2020.
  */
 public interface IXMLConstants {
 
@@ -147,6 +147,11 @@ public interface IXMLConstants {
 	 * Constant attribute that identifies <code>Transforms</code> element.
 	 */
 	String ELEMENT_TRANSFORMS = "Transforms";
+	
+	/**
+	 * Constant attribute that identifies <code>XPath</code> element.
+	 */
+	String ELEMENT_XPATH = "XPath";
 
 	/**
 	 * Constant attribute that identifies <code>idAplicacion</code> element.
@@ -519,8 +524,33 @@ public interface IXMLConstants {
 	String ATTRIBUTE_OBJECT_REFERENCE = "ObjectReference";
 	
 	/**
-	 * Constant element that identifies <code>XAdESSignatures</code> attribute.
+	 * Constant element that identifies <code>XAdESSignatures</code> element.
 	 */
 	String ELEMENT_XADES_SIGNATURE = "XAdESSignatures";
+
+	/**
+	 * Constant element that identifies <code>Description</code> element.
+	 */
+	String ELEMENT_DESCRIPTION = "Description";
+
+	/**
+	 * Constant element that identifies <code>Encoding</code> element.
+	 */
+	String ELEMENT_ENCODING = "Encoding";
+
+	/**
+	 * Constant element that identifies <code>ObjectIdentifier</code> element.
+	 */
+	String ELEMENT_OBJECT_IDENTIFIER = "ObjectIdentifier";
+
+	/**
+	 * Constant element that identifies <code>Identifier</code> attribute.
+	 */
+	String ATTRIBUTE_IDENTIFIER = "Identifier";
+
+	/**
+	 * Constant element that identifies <code>DocumentationReferences</code> element.
+	 */
+	String ELEMENT_DOCUMENTATION_REFERENCES = "DocumentationReferences";
 
 }

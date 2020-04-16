@@ -1,4 +1,4 @@
-// Copyright (C) 2017 MINHAP, Gobierno de España
+// Copyright (C) 2020 MINHAP, Gobierno de España
 // This program is licensed and may be used, modified and redistributed under the terms
 // of the European Public License (EUPL), either version 1.1 or (at your
 // option) any later version as soon as they are approved by the European Commission.
@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>05/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.5, 04/03/2020.
+ * @version 1.6, 16/04/2020.
  */
 package es.gob.afirma.utils;
 
@@ -69,7 +69,7 @@ import org.apache.xml.security.c14n.InvalidCanonicalizerException;
 /**
  * <p>Class that contains methods related to the manage of timestamps.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.5, 04/03/2020.
+ * @version 1.6, 16/04/2020.
  */
 public final class UtilsTimestampXML {
 
@@ -147,7 +147,7 @@ public final class UtilsTimestampXML {
 
 	    // Obtenemos la factoría para firmas XML
 	    XMLSignatureFactory fac;
-	    String providerName = System.getProperty("jsr105Provider", "org.jcp.xml.dsig.internal.dom.XMLDSigRI");
+	    String providerName = System.getProperty("jsr105Provider", "org.apache.xml.dsig.internal.dom.XMLDSigRI");
 	    try {
 		fac = XMLSignatureFactory.getInstance("DOM", (Provider) Class.forName(providerName).newInstance());
 	    } catch (Exception e) {

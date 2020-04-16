@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>04/07/2011.</p>
  * @author Gobierno de España.
- * @version 1.8, 13/04/2020.
+ * @version 1.9, 16/04/2020.
  */
 package es.gob.afirma.signature.xades;
 
@@ -121,7 +121,7 @@ import net.java.xades.security.xml.XAdES.XAdES_EPES;
 /**
  * <p>Class for create XAdES signatures.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.8, 13/04/2020.
+ * @version 1.9, 16/04/2020.
  */
 public final class XadesSigner implements Signer {
 
@@ -2297,7 +2297,7 @@ public final class XadesSigner implements Signer {
 	     *   referencia que no apunta hacia el elemento xades:SignedProperties.
 	     * > Se comprobará que existe una referencia que apunta al elemento xades:SignedProperties.
 	     */
-	    validateSignatureCore(signerValidationResult, signerInfo, validationResult, signedSignaturePropertiesElement, signedPropertiesElement, isBaseline);
+	    validateSignatureCore(signerValidationResult, signerInfo, validationResult, signedSignaturePropertiesElement, signedPropertiesElement, isBaseline, isCounterSignature);
 
 	    // Validación del Instante de Firma: Si se incluye el elemento
 	    // firmado xades:SigningTime se comprobará que está correctamente
@@ -3026,9 +3026,10 @@ public final class XadesSigner implements Signer {
      * @param signedSignaturePropertiesElement Parameter that represents <code>xades:SignedSignatureProperties</code> element.
      * @param signedPropertiesElement Parameter that represents <code>xades:SignedProperties</code> element.
      * @param isBaseline Parameter that indicates if the XML signature has Baseline form (true) or not (false).
+     * @param isCounterSignature Parameter that indicates if the signature is a countersignature (true) or not (false).
      * @throws SigningException If the validation fails.
      */
-    private void validateSignatureCore(SignerValidationResult signerValidationResult, XAdESSignerInfo signerInfo, es.gob.afirma.signature.validation.ValidationResult validationResult, Element signedSignaturePropertiesElement, Element signedPropertiesElement, boolean isBaseline) throws SigningException {
+    private void validateSignatureCore(SignerValidationResult signerValidationResult, XAdESSignerInfo signerInfo, es.gob.afirma.signature.validation.ValidationResult validationResult, Element signedSignaturePropertiesElement, Element signedPropertiesElement, boolean isBaseline, boolean isCounterSignature) throws SigningException {
 	// Instanciamos el objeto que ofrece información sobre la validación
 	// llevada a cabo
 	ValidationInfo validationInfo = new ValidationInfo();
@@ -3039,7 +3040,7 @@ public final class XadesSigner implements Signer {
 	signerValidationResult.getListValidations().add(validationInfo);
 	try {
 	    // Comprobamos que el firmante verifica la firma
-	    UtilsSignatureOp.validateXAdESSignatureCore(signerInfo.getQualifyingPropertiesElement(), signerInfo.getId(), signerInfo.getElementSignature(), signerInfo.getSignature(), null, null, signerInfo.getSigningCertificate(), signedSignaturePropertiesElement, signedPropertiesElement, isBaseline);
+	    UtilsSignatureOp.validateXAdESSignatureCore(signerInfo.getQualifyingPropertiesElement(), signerInfo.getId(), signerInfo.getElementSignature(), signerInfo.getSignature(), null, null, signerInfo.getSigningCertificate(), signedSignaturePropertiesElement, signedPropertiesElement, isBaseline, isCounterSignature);
 
 	    // Indicamos que la validación ha sido correcta
 	    validationInfo.setSucess(true);
