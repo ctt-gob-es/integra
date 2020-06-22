@@ -1,4 +1,4 @@
-// Copyright (C) 2012-13 MINHAP, Gobierno de España
+// Copyright (C) 2020 MINHAP, Gobierno de España
 // This program is licensed and may be used, modified and redistributed under the terms
 // of the European Public License (EUPL), either version 1.1 or (at your
 // option) any later version as soon as they are approved by the European Commission.
@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>24/01/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 24/01/2014.
+ * @version 1.1, 22/06/2020.
  */
 package es.gob.afirma.i18n;
 
@@ -36,13 +36,12 @@ import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
-import es.gob.afirma.hsm.IHSMConstants;
 import es.gob.afirma.logger.IntegraLogger;
 
 /**
  * <p>Class that manages the access to the properties files used for generating messages in the platform.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 24/01/2014.
+ * @version 1.1, 22/06/2020.
  */
 public final class Language {
 

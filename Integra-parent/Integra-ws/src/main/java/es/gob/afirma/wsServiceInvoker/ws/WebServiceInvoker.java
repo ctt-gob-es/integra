@@ -1,4 +1,4 @@
-// Copyright (C) 2012-13 MINHAP, Gobierno de España
+// Copyright (C) 2020 MINHAP, Gobierno de España
 // This program is licensed and may be used, modified and redistributed under the terms
 // of the European Public License (EUPL), either version 1.1 or (at your
 // option) any later version as soon as they are approved by the European Commission.
@@ -17,11 +17,12 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>26/12/2014.</p>
  * @author Gobierno de España.
- * @version 1.4, 11/03/2020.
+ * @version 1.5, 22/06/2020.
  */
 package es.gob.afirma.wsServiceInvoker.ws;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -42,6 +43,7 @@ import org.apache.log4j.Logger;
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
 import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.utils.GeneralConstants;
 import es.gob.afirma.utils.GenericUtilsCommons;
 import es.gob.afirma.utils.UtilsAxis;
 import es.gob.afirma.wsServiceInvoker.WSServiceInvokerConstants;
@@ -50,7 +52,7 @@ import es.gob.afirma.wsServiceInvoker.WSServiceInvokerException;
 /**
  * <p>Class that manages the invoke of @Firma and eVisor web services.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.4, 11/03/2020.
+ * @version 1.5, 22/06/2020.
  */
 public class WebServiceInvoker {
 
@@ -83,6 +85,11 @@ public class WebServiceInvoker {
      * Attribute that represents the list of handlers added to the Axis engine. 
      */
     private static List<String> handlerAdded = new ArrayList<String>();
+
+    /**
+     * Attribute that represents the list of DSS services defined by the @firma platform. 
+     */
+    private static final List<String> DSS_SERVICES_NAMES = Arrays.asList(new String[ ] { GeneralConstants.DSS_AFIRMA_VERIFY_CERTIFICATE_REQUEST, GeneralConstants.DSS_AFIRMA_ARCHIVE_RETRIEVAL, GeneralConstants.DSS_AFIRMA_SIGN_REQUEST, GeneralConstants.DSS_AFIRMA_VERIFY_REQUEST, GeneralConstants.DSS_ASYNC_REQUEST_STATUS, GeneralConstants.DSS_BATCH_VERIFY_CERTIFICATE_REQUEST, GeneralConstants.DSS_BATCH_VERIFY_SIGNATURE_REQUESTS });
 
     /**
      * Constructor method for the class WebServiceInvoker.java.
@@ -145,7 +152,7 @@ public class WebServiceInvoker {
 	    OMFactory fac = OMAbstractFactory.getOMFactory();
 
 	    // Creamos el namespace de la petición.
-	    OMNamespace ns = fac.createOMNamespace("http://soapinterop.org/", "ns1");
+	    OMNamespace ns = createNamespace(fac, afirmaService);
 	    // Creamos el elemento XML raíz del SOAP body que indica la
 	    // operación a realizar.
 	    OMElement operationElem = fac.createOMElement(methodName, ns);
@@ -222,7 +229,7 @@ public class WebServiceInvoker {
 	    for (Phase phase: phasesIn) {
 		if (PHASE_NAME_SECURITY.equals(phase.getPhaseName())) {
 		    try {
-			 addHandler(phase, responseHandler, 2);
+			addHandler(phase, responseHandler, 2);
 			break;
 		    } catch (PhaseException e) {
 			e.printStackTrace();
@@ -391,6 +398,20 @@ public class WebServiceInvoker {
      */
     public final void setWSCallerProperties(Properties wsProperties) {
 	this.properties = wsProperties == null ? new Properties() : wsProperties;
+    }
+
+    /**
+     * Auxiliary method that create the specific namespace for the specific service.
+     * @param fac OM factory.
+     * @param afirmaService service name.
+     * @return the target namespace of the service.
+     */
+    private OMNamespace createNamespace(OMFactory fac, String afirmaService) {
+	OMNamespace ns = fac.createOMNamespace("http://soapinterop.org/", "ns1");
+	if (!DSS_SERVICES_NAMES.contains(afirmaService)) {
+	    ns = fac.createOMNamespace("http://afirmaws/services/" + afirmaService, "ns1");
+	}
+	return ns;
     }
 
 }
