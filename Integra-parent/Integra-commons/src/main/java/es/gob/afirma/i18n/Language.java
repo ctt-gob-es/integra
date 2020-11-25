@@ -79,6 +79,11 @@ public final class Language {
      * Constant attribute that represents the string to identify the bundle name to the logs.
      */
     private static final String BUNDLENAME_INTEGRA = "integra";
+    
+    /**
+     * Constant attribute that represents the string to identify the bundle name to the logs.
+     */
+    private static final String BUNDLENAME_INTEGRA_TSL = "tsl";
 
     /**
      * Attribute that represents the locale specified in the configuration.
@@ -89,6 +94,11 @@ public final class Language {
      * Attribute that represents the properties for the locale for the messages.
      */
     private static ResourceBundle resIntegra = null;
+
+    /**
+     * Attribute that represents the resource boundle with the general messages for the Integra-tsl module.
+     */
+    private static ResourceBundle resIntegraTsl = null;
 
     /**
      * Attribute that represents the object that manages the log of the class.
@@ -176,6 +186,8 @@ public final class Language {
 
 	    // Se cargan los mensajes
 	    resIntegra = ResourceBundle.getBundle(MESSAGES_DIRECTORY + "." + BUNDLENAME_INTEGRA, currentLocale);
+	    
+	    resIntegraTsl = ResourceBundle.getBundle(MESSAGES_DIRECTORY + "." + BUNDLENAME_INTEGRA_TSL, currentLocale);
 	}
     }
 
@@ -196,5 +208,23 @@ public final class Language {
      */
     public static String getFormatResIntegra(String key, Object[ ] values) {
 	return new MessageFormat(resIntegra.getString(key), currentLocale).format(values);
+    }
+    /**
+     * Method that gets the bundle message for certain key.
+     * @param key Parameter that represents the key for obtain the message.
+     * @return The bundle message of the persistence module for certain key.
+     */
+    public static String getResIntegraTsl(String key) {
+	return resIntegraTsl.getString(key);
+    }
+
+    /**
+     * Method that gets the bundle message for certain key and values indicated as input parameters.
+     * @param key Parameter that represents the key for obtain the message.
+     * @param values Parameter that represents the list of values for insert in the message.
+     * @return the bundle message for certain key and values indicated as input parameters.
+     */
+    public static String getFormatResIntegraTsl(String key, Object[ ] values) {
+	return new MessageFormat(resIntegraTsl.getString(key), currentLocale).format(values);
     }
 }

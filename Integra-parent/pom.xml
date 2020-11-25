@@ -18,6 +18,7 @@
 		<module>Integra-utils</module>
 		<module>Integra-encryption</module>
 		<module>Integra-services</module>
+		<module>Integra-tsl</module>
 	</modules>
 	<properties>
 		<version.Integra.commons>2.2.1_000</version.Integra.commons>

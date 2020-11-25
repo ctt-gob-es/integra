@@ -97,6 +97,16 @@ public interface NumberConstants {
      * Constant attribute that represents the number 20.
      */
     int INT_20 = 20;
+    
+    /**
+     * Constant attribute that represents the number 21.
+     */
+    int INT_21 = 21;
+    
+    /**
+     * Constant attribute that represents the number 22.
+     */
+    int INT_22 = 22;
 
     /**
      * Constant attribute that represents the number 23.
@@ -107,6 +117,21 @@ public interface NumberConstants {
      * Constant attribute that represents the number 24.
      */
     int INT_24 = 24;
+
+    /**
+     * Constant attribute that represents the number 25.
+     */
+    int INT_25 = 25;
+
+    /**
+     * Constant attribute that represents the number 26.
+     */
+    int INT_26 = 26;
+
+    /**
+     * Constant attribute that represents the number 27.
+     */
+    int INT_27 = 27;
 
     /**
      * Constant attribute that represents the number 28.
@@ -152,6 +177,11 @@ public interface NumberConstants {
      * Constant attribute that represents the number 76.
      */
     int INT_76 = 76;
+
+    /**
+     * Constant attribute that represents the number 80.
+     */
+    int INT_80 = 80;
     
     /**
      * Constant attribute that represents the number 99.
@@ -172,6 +202,10 @@ public interface NumberConstants {
      * Constant attribute that represents the number 256.
      */
     int INT_256 = 256;
+    /**
+     * Constant attribute that represents the number 443.
+     */
+    int INT_443 = 443;
 
     /**
      * Constant attribute that represents the number 1000.
@@ -184,10 +218,20 @@ public interface NumberConstants {
     int INT_1024 = 1024;
 
     /**
+     * Constant attribute that represents the number 2016.
+     */
+    int INT_2016 = 2016;
+    
+    /**
      * Constant attribute that represents the number 2048.
      */
     int INT_2048 = 2048;
 
+    /**
+     * Constant attribute that represents the number 3600.
+     */
+    int INT_3600 = 3600;
+    
     /**
      * Constant attribute that represents the number 4096.
      */
@@ -217,7 +261,20 @@ public interface NumberConstants {
      * Constant attribute that represents the number 16384.
      */
     int INT_16384 = 16384;
-
+    
+    /**
+     * Constant attribute that represents the number 30000.
+     */
+    int INT_30000 = 30000;
+    /**
+     * Constant attribute that represents the number 65535.
+     */
+    int INT_65535 = 65535;
+    /**
+     * Constant attribute that represents the number 5242880.
+     */
+    int INT_5242880 = 5242880;
+    
     /**
      * Constant attribute that represents the number 0x3f.
      */
@@ -242,4 +299,6 @@ public interface NumberConstants {
      * Constant attribute that represents the number 60000.
      */
     Long LONG_60000 = 60000L;
+
+
 }
