@@ -13,7 +13,7 @@
 
 /** 
  * <b>File:</b><p>es.gob.afirma.tsl.TslValidation.java.</p>
- * <b>Description:</b><p> .</p>
+ * <b>Description:</b><p> Class that implements the necessary methods to perform certificate validation using a TSL.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 10/11/2020.</p>
  * @author Gobierno de España.
@@ -61,7 +61,7 @@ import es.gob.afirma.tsl.utils.UtilsStringChar;
 import es.gob.afirma.utils.UtilsFileSystemCommons;
 
 /** 
- * <p>Class .</p>
+ * <p>Class that implements the necessary methods to perform certificate validation using a TSL.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * @version 1.0, 10/11/2020.
  */

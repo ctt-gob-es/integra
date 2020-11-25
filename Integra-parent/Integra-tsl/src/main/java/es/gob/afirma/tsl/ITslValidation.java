@@ -13,7 +13,7 @@
 
 /** 
  * <b>File:</b><p>es.gob.afirma.tsl.ITslValidation.java.</p>
- * <b>Description:</b><p> .</p>
+ * <b>Description:</b><p>Interface that publishes the necessary methods to perform certificate validation through a TSL.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 19/11/2020.</p>
  * @author Gobierno de España.
@@ -29,7 +29,7 @@ import es.gob.afirma.tsl.parsing.ifaces.ITSLObject;
 import es.gob.afirma.tsl.parsing.impl.common.TSLObject;
 
 /** 
- * <p>Class .</p>
+ * <p>Interface that publishes the necessary methods to perform certificate validation through a TSL.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * @version 1.0, 19/11/2020.
  */
