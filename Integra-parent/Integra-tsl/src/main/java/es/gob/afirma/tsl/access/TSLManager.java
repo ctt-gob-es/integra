@@ -26,6 +26,8 @@ import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
@@ -36,6 +38,7 @@ import es.gob.afirma.i18n.Language;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidator;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult;
 import es.gob.afirma.tsl.certValidation.impl.TSLValidatorFactory;
+import es.gob.afirma.tsl.certValidation.impl.TSLValidatorMappingCalculator;
 import es.gob.afirma.tsl.exceptions.CommonUtilsException;
 import es.gob.afirma.tsl.exceptions.TSLArgumentException;
 import es.gob.afirma.tsl.exceptions.TSLMalformedException;
@@ -78,15 +81,6 @@ public final class TSLManager {
      */
     private String setOfURLStringThatRepresentsEuLOTLinString = null;
 
-    /**
-     * Attribute that represents the number of milliseconds for the connection timeout.
-     */
-    private static final int connectionTimeout = 62000;
-
-    /**
-     * Attribute that represents the number of milliseconds for the reading timeout.
-     */
-    private static final int readTimeout = 62000;
 
     /**
      * Constructor method for the class TSLManager.java.
@@ -243,6 +237,11 @@ public final class TSLManager {
 	} catch (TSLValidationException e) {
 	    throw new TSLManagingException(Language.getFormatResIntegraTsl(ILogTslConstant.TM_LOG007, new Object[ ] { tslObject.getSchemeInformation().getSchemeTerritory(), tslObject.getSchemeInformation().getTslSequenceNumber() }), e);
 	}
+	
+	//si no se ha producido excepción, el resutlado no es nulo, y el certificado ha sido detectado, calculamos los mapeos asociados.
+	if(calculateMappings){
+	    calculateMappingsForCertificateAndSetInResult(cert, tslObject, result);
+	}
 
 	return result;
 
@@ -276,40 +275,43 @@ public final class TSLManager {
     }
 
     /**
-     * Calculates the mapping for the input certificate and set these in the result. If there is some
-     * error parsing any mapping, then this is not returned.
-     * @param cert X509v3 certificate from which extracts the mapping information values.
-     * @param tslObject TSL object representation to use.
-     * @param tslValidationResult TSL validation result in which store the result mappings.
-    //		 */
-    // private void
-    // calculateMappingsForCertificateAndSetInResult(X509Certificate cert,
-    // TSLObject tslObject, ITSLValidatorResult tslValidationResult) {
-    //
-    // // Si el resultado no es nulo,
-    // // y el certificado ha sido detectado,
-    // // calculamos los mapeos asociados.
-    // if (tslValidationResult != null &&
-    // tslValidationResult.hasBeenDetectedTheCertificate()) {
-    //
-    // // Obtenemos el código del país/región asociada al certificado.
-    // String countryCode =
-    // tslObject.getSchemeInformation().getSchemeTerritory();
-    // // Obtenemos de caché los mapeos asociados al país
-    // // del certificado.
-    // Set<TSLCountryRegionMappingCacheObject> tslCrmcoSet = null;
-    // try {
-    // tslCrmcoSet =
-    // ConfigurationCacheFacade.tslGetMappingFromCountryRegion(countryCode);
-    // } catch (Exception e) {
-    // LOGGER.error(Language.getResCoreTsl(ICoreTslMessages.LOGMTSL150), e);
-    // }
-    // // Los calculamos y establecemos en el resultado.
-    // calculateMappingsForCertificateAndSetInResult(cert, tslCrmcoSet,
-    // tslValidationResult);
-    //
-    // }
-    //
-    // }
+	 * Calculates the mapping for the input certificate and set these in the result. If there is some
+	 * error parsing any mapping, then this is not returned.
+	 * @param cert X509v3 certificate from which extracts the mapping information values.
+	 * @param tslObject TSL object representation to use.
+	 * @param tslValidationResult TSL validation result in which store the result mappings.
+	 */
+	private void calculateMappingsForCertificateAndSetInResult(X509Certificate cert, TSLObject tslObject, ITSLValidatorResult tslValidationResult) {
+		// Si el resultado no es nulo,
+		// y el certificado ha sido detectado,
+		// calculamos los mapeos asociados.
+		if (tslValidationResult != null && tslValidationResult.hasBeenDetectedTheCertificate()) {
+
+			// Los calculamos y establecemos en el resultado.
+			calculateMappingsForCertificateAndSetInResult( cert, tslValidationResult);
+
+		}
+
+	}
+	
+	/**
+	 * Calculates the mapping for the input certificate and set these in the result. If there is some
+	 * error parsing any mapping, then this is not returned.
+	 * @param cert X509v3 certificate from which extracts the mapping information values.
+	 * @param tslValidationResult TSL validation result where store the result mappings.
+	 */
+	private void calculateMappingsForCertificateAndSetInResult(X509Certificate cert,  ITSLValidatorResult tslValidationResult) {
+
+		// Iniciamos un map donde se almacenarán los pares <NombreMapeo,
+		// ValorMapeo>.
+		Map<String, String> mappings = new HashMap<String, String>();
+		// Extraemos los valores de los mapeos fijos para todas las validaciones
+		// mediante TSL.
+		TSLValidatorMappingCalculator.extractStaticMappingsFromResult(tslValidationResult.getTslCertificateExtensionAnalyzer(), mappings, tslValidationResult);
+		
+		// Guardamos los mapeos calculados en el resultado de la validación.
+		tslValidationResult.setMappings(mappings);
+
+	}
 
 }

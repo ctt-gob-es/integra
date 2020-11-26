@@ -24,7 +24,6 @@ package es.gob.afirma.tsl.parsing.impl;
 
 import es.gob.afirma.tsl.parsing.ifaces.ITSLBuilder;
 import es.gob.afirma.tsl.parsing.ifaces.ITSLObject;
-import es.gob.afirma.tsl.parsing.ifaces.ITSLSpecificationsVersions;
 import es.gob.afirma.tsl.parsing.impl.tsl119612.v020101.TSLBuilder;
 
 /** 

@@ -282,7 +282,7 @@ public final class UtilsHTTP {
 	// Creamos el gestor de credenciales.
 	CredentialsProvider credsProvider = new BasicCredentialsProvider();
 	// Obtenemos la configuración del proxy.
-	HttpHost proxy = UtilsProxy.setUpProxyConfigurationInHttpClient(credsProvider, method, uriString);
+	//HttpHost proxy = UtilsProxy.setUpProxyConfigurationInHttpClient(credsProvider, method, uriString);
 
 	// Construimos las credenciales y la factoría SSL si son necesarios.
 	client = buildCredentialsAndSSLSocketFactoryIfIsNecessary(credsProvider, user, password, host, port, protocol);
@@ -291,8 +291,10 @@ public final class UtilsHTTP {
 	// Establecemos el timeout de lectura de datos.
 	// Establecemos el proxy si es necesario.
 
-	RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(readTimeout).setConnectTimeout(connectionTimeout).setRedirectsEnabled(true).setProxy(proxy).build();
-
+	//RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(readTimeout).setConnectTimeout(connectionTimeout).setRedirectsEnabled(true).setProxy(proxy).build();//
+	// TODO Falta establecer configuración del proxy.
+	
+	RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(readTimeout).setConnectTimeout(connectionTimeout).setRedirectsEnabled(true).build();
 	method.setConfig(requestConfig);
 
 	try {
@@ -568,14 +570,16 @@ public final class UtilsHTTP {
 	// Creamos el gestor de credenciales.
 	CredentialsProvider credsProvider = new BasicCredentialsProvider();
 	// Obtenemos la configuración del proxy.
-	HttpHost proxy = UtilsProxy.setUpProxyConfigurationInHttpClient(credsProvider, method, uriString);
+	//HttpHost proxy = UtilsProxy.setUpProxyConfigurationInHttpClient(credsProvider, method, uriString);
 	// Construimos las credenciales y la factoría SSL si son necesarios.
 	client = buildCredentialsAndSSLSocketFactoryIfIsNecessary(credsProvider, user, password, host, port, protocol);
 
 	// Establecemos el timeout de conexión.
 	// Establecemos el timeout de lectura de datos.
 	// Establecemos el proxy si es necesario.
-	RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(readTimeout).setConnectTimeout(connectionTimeout).setRedirectsEnabled(true).setProxy(proxy).build();
+	// TODO Falta establecer configuración del proxy.
+	//RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(readTimeout).setConnectTimeout(connectionTimeout).setRedirectsEnabled(true).setProxy(proxy).build();
+	RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(readTimeout).setConnectTimeout(connectionTimeout).setRedirectsEnabled(true).build();
 
 	method.setConfig(requestConfig);
 
@@ -761,14 +765,16 @@ public final class UtilsHTTP {
 	RequestConfig requestConfig = null;
 	CredentialsProvider credsProvider = new BasicCredentialsProvider();
 	// Se establece la configuración del proxy si es necesario.
-	HttpHost proxy = UtilsProxy.setUpProxyConfigurationInHttpClient(credsProvider, method, path);
+	//HttpHost proxy = UtilsProxy.setUpProxyConfigurationInHttpClient(credsProvider, method, path);
 
 	// Creamos el cliente encargado de ejecutar la conexión.
 	// Especificamos el numeros de reintentos (false == Que no se relance de
 	// forma automática para evitar inconsistencia de datos).
 	// Desactivamos los reintentos ya que realmente no nos interesa.
 	client = createClient(protocolo, credsProvider, connectionTimeout, readTimeout, host, port);
-	requestConfig = RequestConfig.custom().setSocketTimeout(readTimeout).setConnectTimeout(connectionTimeout).setRedirectsEnabled(true).setProxy(proxy).build();
+	
+	// TODO Falta establecer configuración del proxy.
+	requestConfig = RequestConfig.custom().setSocketTimeout(readTimeout).setConnectTimeout(connectionTimeout).setRedirectsEnabled(true).build();
 	method.setConfig(requestConfig);
 	try {
 	    if (client != null) {

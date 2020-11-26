@@ -32,6 +32,11 @@ import java.io.Serializable;
 public class CTslImpl implements Serializable {
 
     /**
+     * Attribute that represents the serial version UID. 
+     */
+    private static final long serialVersionUID = -2111769136943080838L;
+
+    /**
 	 * Attribute that represents the object ID.
 	 */
 	private Long idTSLImpl;

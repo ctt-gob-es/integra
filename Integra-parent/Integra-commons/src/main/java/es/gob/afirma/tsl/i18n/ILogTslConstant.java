@@ -61,6 +61,10 @@ public interface ILogTslConstant {
      */
     String TM_LOG008 = "TM_LOG008";
     /**
+     * Constant attribute that represents the name of the property <code>TM_LOG009</code> belonging to the file tsl_xx_YY.properties
+     */
+    String TM_LOG009 = "TM_LOG009";
+    /**
      * Constant attribute that represents the name of the property <code>ATB_LOG001</code> belonging to the file tsl_xx_YY.properties
      */
     String ATB_LOG001 = "ATB_LOG001";

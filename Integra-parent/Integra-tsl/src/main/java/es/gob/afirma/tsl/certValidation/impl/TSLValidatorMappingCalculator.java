@@ -22,7 +22,6 @@
  */
 package es.gob.afirma.tsl.certValidation.impl;
 
-import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -463,5 +462,9 @@ public final class TSLValidatorMappingCalculator {
 		return result;
 
 	}
+	
+	
+	
+	
 
 }
