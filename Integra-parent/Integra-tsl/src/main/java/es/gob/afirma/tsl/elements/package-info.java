@@ -11,17 +11,7 @@
 // along with this program; if not, you may find it at
 // http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
 
-/** 
- * <b>File:</b><p>es.gob.afirma.tsl.elements.package-info.java.</p>
- * <b>Description:</b><p> .</p>
- * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * <b>Date:</b><p>10/10/2020.</p>
- * @author Gobierno de Espa�a.
- * @version 1.0, 10/10/2020.
- */
-/** 
- * <p>Class .</p>
- * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 10/10/2020.
+/**
+ * Package that provides all the elements/items for the configuration for the TSL.
  */
 package es.gob.afirma.tsl.elements;

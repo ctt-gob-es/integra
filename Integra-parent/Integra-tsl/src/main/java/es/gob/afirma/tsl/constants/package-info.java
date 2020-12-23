@@ -1,4 +1,4 @@
-// Copyright (C) 2012-15 MINHAP, Gobierno de España
+// Copyright (C) 2012-15 MINHAP, Gobierno de Espa�a
 // This program is licensed and may be used, modified and redistributed under the terms
 // of the European Public License (EUPL), either version 1.1 or (at your
 // option) any later version as soon as they are approved by the European Commission.
@@ -11,17 +11,7 @@
 // along with this program; if not, you may find it at
 // http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
 
-/** 
- * <b>File:</b><p>es.gob.afirma.tsl.constants.package-info.java.</p>
- * <b>Description:</b><p> .</p>
- * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * <b>Date:</b><p> 12/11/2020.</p>
- * @author Gobierno de España.
- * @version 1.0, 12/11/2020.
- */
-/** 
- * <p>Class .</p>
- * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 12/11/2020.
+/**
+ * Package that includes all the utilities and constant classes.
  */
 package es.gob.afirma.tsl.constants;

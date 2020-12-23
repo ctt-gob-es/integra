@@ -1,4 +1,4 @@
-// Copyright (C) 2012-15 MINHAP, Gobierno de España
+// Copyright (C) 2012-15 MINHAP, Gobierno de Espa�a
 // This program is licensed and may be used, modified and redistributed under the terms
 // of the European Public License (EUPL), either version 1.1 or (at your
 // option) any later version as soon as they are approved by the European Commission.
@@ -11,7 +11,8 @@
 // along with this program; if not, you may find it at
 // http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
 
-/** 
- * Contains the implementations of the Integra WS interfaces
+/**
+ * Package with all the different implementations of TSL
+ * distributed in other sub-packages.
  */
-package es.gob.afirma.integraws.ws.impl;
+package es.gob.afirma.tsl.parsing.impl;
