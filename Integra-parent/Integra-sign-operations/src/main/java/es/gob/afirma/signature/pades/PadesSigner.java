@@ -1234,7 +1234,7 @@ public final class PadesSigner implements Signer {
 			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado content-hints.
 			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado signer-location.
 			 * > Si el primer firmante de la firma CAdES contienida en el diccionario de firma posee el atributo firmado content-type y éste tiene el valor “id-data”.
-			 * > Si el primer firmante de la firma CAdES contenida en el diccionario de firma posee el atributo firmado signature-policy-id entonces no deberá poseer el
+			 * > Si el primer firmante de la firma CAdES contenida en el diccionario de firma no posee el atributo firmado signature-policy-id entonces no deberá poseer el
 			 * atributo firmado commitment-type-indication.
 			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo no firmado counter-signature.
 			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo no firmado content-reference.
@@ -1299,7 +1299,7 @@ public final class PadesSigner implements Signer {
 			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado content-hints.
 			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado signer-location.
 			 * > Si el primer firmante de la firma CAdES contienida en el diccionario de firma posee el atributo firmado content-type y éste tiene el valor “id-data”.
-			 * > Si el primer firmante de la firma CAdES contenida en el diccionario de firma posee el atributo firmado signature-policy-id entonces no deberá poseer el
+			 * > Si el primer firmante de la firma CAdES contenida en el diccionario de firma no posee el atributo firmado signature-policy-id entonces no deberá poseer el
 			 * atributo firmado commitment-type-indication.
 			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo no firmado counter-signature.
 			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo no firmado content-reference.

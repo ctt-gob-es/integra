@@ -4772,7 +4772,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado content-hints.
 	 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado signer-location.
 	 * > Si el primer firmante de la firma CAdES contienida en el diccionario de firma posee el atributo firmado content-type y éste tiene el valor “id-data”.
-	 * > Si el primer firmante de la firma CAdES contenida en el diccionario de firma posee el atributo firmado signature-policy-id entonces no deberá poseer el
+	 * > Si el primer firmante de la firma CAdES contenida en el diccionario de firma no posee el atributo firmado signature-policy-id entonces no deberá poseer el
 	 * atributo firmado commitment-type-indication.
 	 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo no firmado counter-signature.
 	 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo no firmado content-reference.
@@ -4854,11 +4854,14 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		throw new SigningException(errorMsg);
 	    }
 
-	    // Si el firmante contiene el atributo signature-policy-id
+	    // Recordamos si el firmante contiene el atributo signature-policy-id
 	    if (signedAttrs.get(PKCSObjectIdentifiers.id_aa_ets_sigPolicyId) != null) {
 		hasSignaturePolicyId = true;
-
-		// Comprobamos que el firmante no contiene el atributo
+	    }
+	    
+	    // Si no declara una politica de firma
+	    if (!hasSignaturePolicyId) {
+		// Comprobamos que el firmante no contenga el atributo
 		// commitment-type-indication
 		checkPAdESSignedAttribute(signedAttrs, PKCSObjectIdentifiers.id_aa_ets_commitmentType, signatureDictionary.getName(), "commitment-type-indication");
 	    }
