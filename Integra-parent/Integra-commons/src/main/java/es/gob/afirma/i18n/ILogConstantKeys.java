@@ -4947,6 +4947,11 @@ public interface ILogConstantKeys {
      * Constant attribute that represents the name of the property <code>SPM068</code> belonging to the file integra_xx_YY.properties.
      */
     String SPM_LOG068 = "SPM068";
+    
+    /**
+     * Constant attribute that represents the name of the property <code>SPM091</code> belonging to the file integra_xx_YY.properties.
+     */
+    String SPM_LOG081 = "SPM081";
 
     /**
      * Constant attribute that represents the name of the property <code>HSMP001</code> belonging to the file integra_xx_YY.properties.

@@ -213,6 +213,52 @@ public final class UtilsSignatureOp implements IUtilsSignature {
     private static final String LOCAL_NAME_ARCHIVE_TIMESTAMP_XML = "XMLTimeStamp";
 
     /**
+     * Constant that represents the OID of the RSA Encryption.
+     */
+    private static final String OID_RSA_ENCRYPTION = "1.2.840.113549.1.1.1";
+    
+    /**
+     * Constant that represents the OID of the SHA-1 algorithm.
+     */
+    private static final String OID_HASH_ALGORITHM_SHA1 = "1.3.14.3.2.26";
+    
+    /**
+     * Constant that represents the OID of the SHA-256 algorithm.
+     */
+    private static final String OID_HASH_ALGORITHM_SHA256 = "2.16.840.1.101.3.4.2.1";
+
+    /**
+     * Constant that represents the OID of the SHA-384 algorithm.
+     */
+    private static final String OID_HASH_ALGORITHM_SHA384 = "2.16.840.1.101.3.4.2.2";
+
+    /**
+     * Constant that represents the OID of the SHA-512 algorithm.
+     */
+    private static final String OID_HASH_ALGORITHM_SHA512 = "2.16.840.1.101.3.4.2.3";
+
+    /**
+     * Constant that represents the OID of the SHA1withRSA algorithm.
+     */
+    private static final String OID_SIGN_ALGORITHM_SHA1WITHRSA = "1.2.840.113549.1.1.5";
+
+    /**
+     * Constant that represents the OID of the SHA256withRSA algorithm.
+     */
+    private static final String OID_SIGN_ALGORITHM_SHA256WITHRSA = "1.2.840.113549.1.1.11";
+
+    /**
+     * Constant that represents the OID of the SHA384withRSA algorithm.
+     */
+    private static final String OID_SIGN_ALGORITHM_SHA384WITHRSA = "1.2.840.113549.1.1.12";
+
+    /**
+     * Constant that represents the OID of the SHA512withRSA algorithm.
+     */
+    private static final String OID_SIGN_ALGORITHM_SHA512WITHRSA = "1.2.840.113549.1.1.13";
+    
+    
+    /**
      * Constructor method for the class SignatureUtils.java.
      */
     private UtilsSignatureOp() {
@@ -2922,8 +2968,9 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		// llevar a cabo la validación manual
 		if (!signatureValid) {
 		    ASN1EncodableVector vectorSignedAttributes = signerInformation.getSignedAttributes().toASN1EncodableVector();
-		    Signature signatureValidator = Signature.getInstance(signerInformation.getEncryptionAlgOID(), BouncyCastleProvider.PROVIDER_NAME);
-		    signatureValidator.initVerify(signingCertificate);
+		    AlgorithmIdentifier signAlgorithmOID = getSignatureAlgorithm(signerInformation);
+		    Signature signatureValidator = Signature.getInstance(signAlgorithmOID.getAlgorithm().getId(), BouncyCastleProvider.PROVIDER_NAME);
+		    signatureValidator.initVerify(signingCertificate.getPublicKey());
 		    signatureValidator.update(new DERSet(vectorSignedAttributes).getDEREncoded());
 		    signatureValid = signatureValidator.verify(signerInformation.getSignature());
 		    if (!signatureValid) {
@@ -6172,4 +6219,63 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	return res;
     }
 
+
+    /**
+     * Obtiene el OID del algoritmo de firma empleado. Este algoritmo puede haberse declarado
+     * directamente en la firma o puede que deba construirse a partir del algoritmo de
+     * encriptaci&oacute;n y el algoritmo de hash. 
+     * @param signerInformation Informaci&oacute;n de la firma.
+     * @return OID del algoritmo de firma.
+     * @throws SignaturePolicyException Cuando no se puede identificar el algoritmo de firma a
+     * trav&eacute;s del de encriptaci&oacute;n y huella.
+     */
+    public static AlgorithmIdentifier getSignatureAlgorithm(SignerInformation signerInformation)
+	    throws SignaturePolicyException {
+
+	// Obtenemos el algoritmo declarado, que puede ser el de encriptacion o el de firma
+	String encryptionAlgOid = signerInformation.getEncryptionAlgOID();
+
+	// Obtenemos el algoritmo de huella
+	String hashAlgOid = signerInformation.getDigestAlgOID();
+
+	// Componemos el algoritmo de firma
+	return getSignatureAlgorithm(encryptionAlgOid, hashAlgOid);
+    }
+
+
+    /**
+     * Obtiene el identificador de algoritmo de firma que se corresponde al usar el
+     * algoritmo de encriptaci&oacute;n con el algoritmo de hash indicados. En caso
+     * de no haberse indicado un algoritmo de encriptaci&oacute;n reconocido, se
+     * interpretar&aacute; que este es en realidad el algoritmo de huella. 
+     * @param encryptionAlgOid OID del algoritmo de encriptaci&oacute;n.
+     * @param hashAlgOid OID del algoritmo de huella.
+     * @return Identificador del algorimo de firma.
+     * @throws SignaturePolicyException Cuando no se conozca el OID del algoritmo
+     * correspondiente a utilizar el algoritmo de encriptaci&oacute;n y el algoritmo
+     * de hash indicados.
+     */
+    public static AlgorithmIdentifier getSignatureAlgorithm(String encryptionAlgOid, String hashAlgOid)
+	    throws SignaturePolicyException {
+
+	String signatureAlgOid;
+	if (OID_RSA_ENCRYPTION.equals(encryptionAlgOid)) {
+	    if (OID_HASH_ALGORITHM_SHA1.equals(hashAlgOid)) {
+		signatureAlgOid = OID_SIGN_ALGORITHM_SHA1WITHRSA; 
+	    } else if (OID_HASH_ALGORITHM_SHA256.equals(hashAlgOid)) {
+		signatureAlgOid = OID_SIGN_ALGORITHM_SHA256WITHRSA; 
+	    } else if (OID_HASH_ALGORITHM_SHA384.equals(hashAlgOid)) {
+		signatureAlgOid = OID_SIGN_ALGORITHM_SHA384WITHRSA; 
+	    } else if (OID_HASH_ALGORITHM_SHA512.equals(hashAlgOid)) {
+		signatureAlgOid = OID_SIGN_ALGORITHM_SHA512WITHRSA; 
+	    } else {
+		throw new SignaturePolicyException(Language.getFormatResIntegra(ILogConstantKeys.SPM_LOG081, new Object[ ] { encryptionAlgOid, hashAlgOid }));
+	    }
+	}
+	else {
+	    signatureAlgOid = encryptionAlgOid;
+	}
+
+	return new AlgorithmIdentifier(signatureAlgOid);
+    }
 }

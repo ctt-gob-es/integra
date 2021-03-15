@@ -73,6 +73,7 @@ import es.gob.afirma.utils.CryptoUtilPdfBc;
 import es.gob.afirma.utils.GenericUtilsCommons;
 import es.gob.afirma.utils.ICryptoUtil;
 import es.gob.afirma.utils.IUtilsSignature;
+import es.gob.afirma.utils.UtilsSignatureOp;
 
 /**
  * <p>Class that manages all the operations related to signature policies.</p>
@@ -1244,10 +1245,12 @@ public final class SignaturePolicyManager {
 		    throw new SignaturePolicyException(Language.getFormatResIntegra(ILogConstantKeys.SPM_LOG022, new Object[ ] { hashOID.getAlgorithm().getId(), policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE }));
 		}
 
-		AlgorithmIdentifier signHashOID = new AlgorithmIdentifier(signerInformation.getEncryptionAlgOID());
+		// Obtenemos el algoritmo de firma
+		AlgorithmIdentifier signatureAlgorithmOID = UtilsSignatureOp.getSignatureAlgorithm(signerInformation);
+
 		// Comprobamos si el algoritmo de firma es válido
-		if (!isValidASN1SignAlgorithmByPolicy(signHashOID, policyID, policyProperties, idClient)) {
-		    throw new SignaturePolicyException(Language.getFormatResIntegra(ILogConstantKeys.SPM_LOG024, new Object[ ] { signHashOID.getAlgorithm().getId(), policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE }));
+		if (!isValidASN1SignAlgorithmByPolicy(signatureAlgorithmOID, policyID, policyProperties, idClient)) {
+		    throw new SignaturePolicyException(Language.getFormatResIntegra(ILogConstantKeys.SPM_LOG024, new Object[ ] { signatureAlgorithmOID.getAlgorithm().getId(), policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE }));
 		}
 
 		// Validamos los elementos firmados
@@ -1303,10 +1306,12 @@ public final class SignaturePolicyManager {
 		    throw new SignaturePolicyException(Language.getFormatResIntegra(ILogConstantKeys.SPM_LOG022, new Object[ ] { hashOID.getAlgorithm().getId(), policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE }));
 		}
 
-		AlgorithmIdentifier signHashOID = new AlgorithmIdentifier(signerInformation.getEncryptionAlgOID());
+		// Obtenemos el algoritmo de firma
+		AlgorithmIdentifier signatureAlgorithmOID = UtilsSignatureOp.getSignatureAlgorithm(signerInformation);
+		
 		// Comprobamos si el algoritmo de firma es válido
-		if (!isValidASN1SignAlgorithmByPolicy(signHashOID, policyID, policyProperties, idClient)) {
-		    throw new SignaturePolicyException(Language.getFormatResIntegra(ILogConstantKeys.SPM_LOG024, new Object[ ] { signHashOID.getAlgorithm().getId(), policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE }));
+		if (!isValidASN1SignAlgorithmByPolicy(signatureAlgorithmOID, policyID, policyProperties, idClient)) {
+		    throw new SignaturePolicyException(Language.getFormatResIntegra(ILogConstantKeys.SPM_LOG024, new Object[ ] { signatureAlgorithmOID.getAlgorithm().getId(), policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE }));
 		}
 
 		// Comprobamos si el modo de firma es válido
