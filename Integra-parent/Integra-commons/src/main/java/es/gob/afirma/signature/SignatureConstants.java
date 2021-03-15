@@ -89,14 +89,24 @@ public final class SignatureConstants {
     public static final String SIGN_FORMAT_XADES = "XAdES";
 
     /**
-     * Constant attribute that represents ASiC-S CAdES Baseline signature format.
+     * Constant attribute that represents ASiC-S CAdES Baseline TS signature format.
      */
-    public static final String SIGN_FORMAT_ASICS_CADES_BASELINE = "ASiC-S CAdES Baseline";
+    public static final String SIGN_FORMAT_ASICS_CADES_BASELINE_TS = "ASiC-S CAdES Baseline TS";
 
     /**
-     * Constant attribute that represents ASiC-S XAdES Baseline signature format.
+     * Constant attribute that represents ASiC-S XAdES Baseline TS signature format.
      */
-    public static final String SIGN_FORMAT_ASICS_XADES_BASELINE = "ASiC-S XAdES Baseline";
+    public static final String SIGN_FORMAT_ASICS_XADES_BASELINE_TS = "ASiC-S XAdES Baseline TS";
+
+    /**
+     * Constant attribute that represents ASiC-S CAdES Baseline European Standard signature format.
+     */
+    public static final String SIGN_FORMAT_ASICS_CADES_BASELINE_EN = "ASiC-S CAdES Baseline EN";
+
+    /**
+     * Constant attribute that represents ASiC-S XAdES Baseline European Standard signature format.
+     */
+    public static final String SIGN_FORMAT_ASICS_XADES_BASELINE_EN = "ASiC-S XAdES Baseline EN";
 
     /**
      * Constant attribute that represents explicit signature mode.
@@ -259,19 +269,34 @@ public final class SignatureConstants {
     public static final String PDF_APPROVAL = "NOT_CERTIFIED";
 
     /**
-     * Constant attribute that represents CAdES Baseline signature format.
+     * Constant attribute that represents CAdES Baseline Technical Specification signature format.
      */
-    public static final String SIGN_FORMAT_CADES_BASELINE = "CAdES Baseline";
+    public static final String SIGN_FORMAT_CADES_BASELINE_TS = "CAdES Baseline TS";
 
     /**
-     * Constant attribute that represents XAdES Baseline signature format.
+     * Constant attribute that represents XAdES Baseline Technical Specification signature format.
      */
-    public static final String SIGN_FORMAT_XADES_BASELINE = "XAdES Baseline";
+    public static final String SIGN_FORMAT_XADES_BASELINE_TS = "XAdES Baseline TS";
 
     /**
-     * Constant attribute that represents PAdES Baseline signature format.
+     * Constant attribute that represents PAdES Baseline Technical Specification signature format.
      */
-    public static final String SIGN_FORMAT_PADES_BASELINE = "PAdES Baseline";
+    public static final String SIGN_FORMAT_PADES_BASELINE_TS = "PAdES Baseline TS";
+    
+    /**
+     * Constant attribute that represents CAdES Baseline European Standard signature format.
+     */
+    public static final String SIGN_FORMAT_CADES_BASELINE_EN = "CAdES Baseline EN";
+
+    /**
+     * Constant attribute that represents XAdES Baseline European Standard signature format.
+     */
+    public static final String SIGN_FORMAT_XADES_BASELINE_EN = "XAdES Baseline EN";
+
+    /**
+     * Constant attribute that represents PAdES Baseline European Standard signature format.
+     */
+    public static final String SIGN_FORMAT_PADES_BASELINE_EN = "PAdES Baseline EN";
 
     /**
      * Constant attribute that represents the property description of data object format.

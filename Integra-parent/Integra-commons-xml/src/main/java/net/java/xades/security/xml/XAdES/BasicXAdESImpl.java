@@ -27,8 +27,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
-import org.apache.xml.crypto.MarshalException;
+import javax.xml.crypto.MarshalException;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -36,7 +37,7 @@ import org.w3c.dom.NodeList;
  * 
  * @author miro
  */
-public class BasicXAdESImpl implements XAdES_BES {
+public class BasicXAdESImpl extends BaseXAdESImpl implements XAdES_BES {
 
     protected boolean readOnlyMode = true;
     protected TreeMap<XAdES.Element, Object> data;
@@ -75,10 +76,10 @@ public class BasicXAdESImpl implements XAdES_BES {
 	return (Date) data.get(XAdES.Element.SIGNING_TIME);
     }
 
-    public X509Certificate getSigningCertificate() {
-	return (X509Certificate) data.get(XAdES.Element.SIGNING_CERTIFICATE);
+    public SigningCertificate getSigningCertificate() {
+	return (SigningCertificate) data.get(XAdES.Element.SIGNING_CERTIFICATE);
     }
-
+    
     public SignatureProductionPlace getSignatureProductionPlace() {
 	return (SignatureProductionPlace) data.get(XAdES.Element.SIGNATURE_PRODUCTION_PLACE);
     }
@@ -284,6 +285,10 @@ public class BasicXAdESImpl implements XAdES_BES {
 	return qp.getUnsignedProperties().getUnsignedSignatureProperties();
     }
 
+    protected void marshalQualifyingProperties(QualifyingProperties qp, String signatureIdPrefix, List referencesIdList) throws MarshalException {
+	marshalQualifyingProperties(qp, signatureIdPrefix, referencesIdList, null);
+    }
+    
     @SuppressWarnings("unchecked")
     protected void marshalQualifyingProperties(QualifyingProperties qp, String signatureIdPrefix, List referencesIdList, String tsaURL) throws MarshalException {
 	SignedSignatureProperties ssp;
@@ -387,5 +392,10 @@ public class BasicXAdESImpl implements XAdES_BES {
 
     public String getXadesNamespace() {
 	return this.xadesNamespace;
+    }
+
+    @Override
+    public Document getBaseDocument() {
+	return this.baseElement.getOwnerDocument();
     }
 }

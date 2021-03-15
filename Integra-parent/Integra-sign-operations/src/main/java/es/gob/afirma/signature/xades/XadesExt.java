@@ -49,7 +49,9 @@ import org.apache.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 
 import net.java.xades.security.xml.WrappedKeyStorePlace;
 import net.java.xades.security.xml.XmlWrappedKeyInfo;
-import net.java.xades.security.xml.XAdES.XAdES_BES;
+import net.java.xades.security.xml.XAdES.BLevelXAdESImpl;
+import net.java.xades.security.xml.XAdES.BasicXAdESImpl;
+import net.java.xades.security.xml.XAdES.XAdESBase;
 import net.java.xades.security.xml.XAdES.XMLAdvancedSignature;
 
 /**
@@ -69,7 +71,7 @@ public final class XadesExt extends XMLAdvancedSignature {
      * Constructor method for the class XadesExt.java.
      * @param xades Parameter that represents the XAdES signature element.
      */
-    private XadesExt(final XAdES_BES xades) {
+    private XadesExt(final XAdESBase xades) {
 	super(xades);
     }
 
@@ -138,7 +140,12 @@ public final class XadesExt extends XMLAdvancedSignature {
 	List<?> referencesIdList = new ArrayList(refsIdList);
 
 	if (WrappedKeyStorePlace.SIGNING_CERTIFICATE_PROPERTY.equals(getWrappedKeyStorePlace())) {
-	    xades.setSigningCertificate(certificate);
+	    if (xades instanceof BasicXAdESImpl) {
+		((BasicXAdESImpl) xades).setSigningCertificate(certificate);
+	    }
+	    else if (xades instanceof BLevelXAdESImpl) {
+		((BLevelXAdESImpl) xades).setSigningCertificateV2(certificate, null);
+	    }
 	}
 	
 	addXMLObject(marshalXMLSignature(xadesNamespace, signatureIdPrefix, referencesIdList, tsaURL));
@@ -149,7 +156,14 @@ public final class XadesExt extends XMLAdvancedSignature {
 	    documentReferences.add(fac.newReference("#" + keyInfoId, getDigestMethod()));
 	}
 
-	this.signature = fac.newXMLSignature(fac.newSignedInfo(fac.newCanonicalizationMethod(canonicalizationMethod, (C14NMethodParameterSpec) null), fac.newSignatureMethod(signatureMethod, null), documentReferences), newKeyInfo(certificate, keyInfoId), getXMLObjects(), getSignatureId(signatureIdPrefix), getSignatureValueId(signatureIdPrefix));
+	this.signature = fac.newXMLSignature(fac.newSignedInfo(
+	                                                       fac.newCanonicalizationMethod(canonicalizationMethod, (C14NMethodParameterSpec) null),
+	                                                       fac.newSignatureMethod(signatureMethod, null),
+	                                                       documentReferences),
+	                                     newKeyInfo(certificate, keyInfoId),
+	                                     getXMLObjects(),
+	                                     getSignatureId(signatureIdPrefix),
+	                                     getSignatureValueId(signatureIdPrefix));
 	this.signContext = new DOMSignContext(privateKey, baseElement);
 	this.signContext.putNamespacePrefix(XMLSignature.XMLNS, xades.getXmlSignaturePrefix());
 	this.signContext.putNamespacePrefix(xadesNamespace, xades.getXadesPrefix());
@@ -175,7 +189,7 @@ public final class XadesExt extends XMLAdvancedSignature {
 	}
 	// IdRegister.setIdAttributeIntoContext(signContext);
     }
-
+    
     /**
      * Creates a new instance of type {@link XadesExt}.
      * @param xades data container.
@@ -183,7 +197,7 @@ public final class XadesExt extends XMLAdvancedSignature {
      * @return a new object of type es.gob.afirma.signature.xades.XadesExt
      * @throws GeneralSecurityException in error case.
      */
-    public static XadesExt newInstance(final XAdES_BES xades, boolean isXAdESBaselineParam) throws GeneralSecurityException {
+    public static XadesExt newInstance(final XAdESBase xades, boolean isXAdESBaselineParam) throws GeneralSecurityException {
 	XadesExt result = new XadesExt(xades);
 	result.setDigestMethod(xades.getDigestMethod());
 	result.setXadesNamespace(xades.getXadesNamespace());

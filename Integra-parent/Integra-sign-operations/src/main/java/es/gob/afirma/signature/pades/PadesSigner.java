@@ -1100,7 +1100,7 @@ public final class PadesSigner implements Signer {
      * @param pdfDocument Parameter that represents the signed PDF document.
      * @param idClient Parameter that represents the client application identifier.
      */
-    private void validateSignatureDictionaries(List<PDFSignatureDictionary> listSignatureDictionaries, List<PDFSignatureDictionaryValidationResult> listPDFSignatureDictionariesValidationResult, AcroFields af, PDFValidationResult validationResult, List<PDFDocumentTimestampDictionary> listTimestampDictionaries, byte[ ] pdfDocument, String idClient) {
+    static void validateSignatureDictionaries(List<PDFSignatureDictionary> listSignatureDictionaries, List<PDFSignatureDictionaryValidationResult> listPDFSignatureDictionariesValidationResult, AcroFields af, PDFValidationResult validationResult, List<PDFDocumentTimestampDictionary> listTimestampDictionaries, byte[ ] pdfDocument, String idClient) {
 	// Iteramos sobre la lista de diccionarios de firma ordenada
 	// ascendentemente por revisión
 	for (PDFSignatureDictionary pdfSignatureDictionary: listSignatureDictionaries) {
@@ -1222,6 +1222,71 @@ public final class PadesSigner implements Signer {
 			 * 		se utilizará como fecha de validación la fecha actual. Además, se verificará que el certificado posee la extensión id-kp-timestamp.
 			 */
 			validateSignatureTimeStampAttributes(pdfSignatureDictionaryValidationResult, validationResult, signerInfo, listTimestampDictionaries, idClient);
+		    }
+		 // Si el diccionario de firma es PAdES B-B-Level
+		    else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_B_B_LEVEL)) {
+			/*
+			 * Validación Estructural PDF: Contemplará las siguientes verificaciones:
+			 * > La clave /ByteRange del diccionario de firma deberá estar presente y su contenido corresponderse con el resumen de la firma CAdES.
+			 * > La clave /SubFilter del diccionario de firma deberá estar presente y su valor corresponderse con “ETSI.CAdES.detached”.
+			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado signing-time.
+			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado content-identifier.
+			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado content-hints.
+			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado signer-location.
+			 * > Si el primer firmante de la firma CAdES contienida en el diccionario de firma posee el atributo firmado content-type y éste tiene el valor “id-data”.
+			 * > Si el primer firmante de la firma CAdES contenida en el diccionario de firma no posee el atributo firmado signature-policy-id entonces no deberá poseer el
+			 * atributo firmado commitment-type-indication.
+			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo no firmado counter-signature.
+			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo no firmado content-reference.
+			 * > La clave /Cert del diccionario de firma no deberá estar presente.
+			 */
+			boolean hasSignaturePolicyId = validatePAdESBaselineStructurally(pdfSignatureDictionaryValidationResult, pdfSignatureDictionary, pdfDocument, signedData, validationResult);
+
+			/*
+			 * Validación del Núcleo de Firma: Se comprobará que el primer firmante de la firma CAdES contenida en el diccionario de firma verifica la propia
+			 * firma CAdES.
+			 */
+			validateSignatureCore(pdfSignatureDictionaryValidationResult, signerInfo, validationResult);
+
+			/*
+			 * Validación de la Información de Clave Pública: Se comprobará que el primer firmante de la firma CAdES contenida en el diccionario de firma incluye
+			 * el atributo firmado signing-certificate o el atributo firmado signing-certificate-v2, y que dicho atributo identifica al certificado del firmante.
+			 * Además, en el caso de que el atributo que incluya de los dos sea signing-certificate se comprobará que el algoritmo de firma utilizado ha sido SHA-1.
+			 */
+			validateKeyInfo(pdfSignatureDictionaryValidationResult, validationResult, signerInfo, signedData);
+
+			// Si el primer firmante de la firma contenida en el
+			// diccionario de firma tiene el atributo
+			// signature-policy-id (incluye política de firma)
+			if (hasSignaturePolicyId) {
+			    /*
+			     * Validación de la Política de Firma: Si el primer firmante de la firma CAdES contenida en el diccionario de firma incluye el atributo
+			     * firmado signature-policy-identifier se comprobará si el OID de la política de firma definida en dicho atributo coincide con el OID
+			     * de la política de firma definida para firmas PDF en el fichero policy.properties, en cuyo caso, se comprobará que los datos de la
+			     * firma y del firmante concreto son válidos respecto a las propiedades definidas en dicho fichero.
+			     */
+			    validateSignaturePolicy(pdfSignatureDictionaryValidationResult, validationResult, signerInfo, pdfSignatureDictionary, idClient);
+			}
+
+			/*
+			 * Validación del Instante de Firma: Se comprobará que el diccionario de firma incluye la clave /M y que dicho campo posee un formato
+			 * correcto según [PDF_Reference], sección 3.8.3 (Dates), así como que la fecha contenida no sea futura respecto a la fecha de validación.
+			 * La fecha de validación será la fecha de generación del sello de tiempo menos reciente contenido en los diccionarios de firma de tipo
+			 * Document Time-stamp que incluyese el documento PDF. Si no se incluye ningún diccionario de firma de tipo Document Time-stamp la fecha
+			 * de validación será la fecha actual.
+			 */
+			validatePAdESSigningTime(pdfSignatureDictionaryValidationResult, validationResult, validationDate, pdfSignatureDictionary, true);
+
+			/*
+			 * Validación del Certificado Firmante: Se comprobará el estado del certificado del primer firmante de la firma CAdES contenida en el diccionario
+			 * de firma respecto a la fecha de validación utilizando el método de validación definido para el mismo, ya sea en el fichero integraFacade.properties
+			 * (si la validación se realiza desde la fachada de firma), o bien en el fichero signer.properties (si la validación se realiza desde la interfaz Signer).
+			 * La fecha de validación será la fecha de generación del sello de tiempo menos reciente contenido en un atributo no firmado signature-time-stamp del
+			 * primer firmante de la firma CAdES contenida en el diccionario de firma. Si dicho atributo no se incluye, la fecha de validación será la fecha de
+			 * generación del sello de tiempo menos reciente contenido en los diccionarios de firma de tipo Document Time-stamp que incluyese el documento PDF.
+			 * Si no se incluye ningún diccionario de firma de tipo Document Time-stamp la fecha de validación será la fecha actual.
+			 */
+			validateSigningCertificate(pdfSignatureDictionaryValidationResult, validationResult, signerInfo, validationDate, idClient);
 		    }
 		    // Si el diccionario de firma es PAdES B-Level
 		    else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_B_LEVEL)) {
@@ -1753,7 +1818,7 @@ public final class PadesSigner implements Signer {
      * @param idClient Parameter that represents the client application identifier.
      * @throws SigningException If the validation fails.
      */
-    private void validateSignaturePolicy(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, PDFValidationResult validationResult, CAdESSignerInfo signerInfo, PDFSignatureDictionary pdfSignatureDictionary, String idClient) throws SigningException {
+    private static void validateSignaturePolicy(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, PDFValidationResult validationResult, CAdESSignerInfo signerInfo, PDFSignatureDictionary pdfSignatureDictionary, String idClient) throws SigningException {
 	// Instanciamos el objeto que ofrece información sobre la validación
 	// llevada a cabo
 	ValidationInfo validationInfo = new ValidationInfo();
@@ -1806,7 +1871,7 @@ public final class PadesSigner implements Signer {
      * @param isBaseline Parameter that indicates if the PAdES signature has Baseline form (true) or not (false).
      * @throws SigningException If the validation fails.
      */
-    private void validatePAdESSigningTime(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, PDFValidationResult validationResult, Date validationDate, PDFSignatureDictionary pdfSignatureDictionary, boolean isBaseline) throws SigningException {
+    private static void validatePAdESSigningTime(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, PDFValidationResult validationResult, Date validationDate, PDFSignatureDictionary pdfSignatureDictionary, boolean isBaseline) throws SigningException {
 	// Instanciamos el objeto que ofrece información sobre la validación
 	// llevada a cabo
 	ValidationInfo validationInfo = new ValidationInfo();
@@ -1861,7 +1926,7 @@ public final class PadesSigner implements Signer {
      * @param signedData Parameter that represents the signature message.
      * @throws SigningException If the validation fails.
      */
-    private void validateKeyInfo(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, PDFValidationResult validationResult, CAdESSignerInfo signerInfo, CMSSignedData signedData) throws SigningException {
+    private static void validateKeyInfo(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, PDFValidationResult validationResult, CAdESSignerInfo signerInfo, CMSSignedData signedData) throws SigningException {
 	// Instanciamos el objeto que ofrece información sobre la validación
 	// llevada a cabo
 	ValidationInfo validationInfo = new ValidationInfo();
@@ -1916,7 +1981,7 @@ public final class PadesSigner implements Signer {
      * attribute (true) or not (false).
      * @throws SigningException If the validation fails.
      */
-    private boolean validatePAdESBaselineStructurally(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, PDFSignatureDictionary pdfSignatureDictionary, byte[ ] pdfDocument, CMSSignedData signedData, PDFValidationResult validationResult) throws SigningException {
+    private static boolean validatePAdESBaselineStructurally(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, PDFSignatureDictionary pdfSignatureDictionary, byte[ ] pdfDocument, CMSSignedData signedData, PDFValidationResult validationResult) throws SigningException {
 	boolean hasSignaturePolicyId = false;
 
 	// Instanciamos el objeto que ofrece información sobre la validación
@@ -1930,7 +1995,7 @@ public final class PadesSigner implements Signer {
 	try {
 	    // Validamos estructuralmente el diccionario de firma en base a
 	    // PAdES Baseline
-	    hasSignaturePolicyId = UtilsSignatureOp.validatePAdESBaselineStructurally(pdfSignatureDictionary, pdfDocument, signedData);
+	    hasSignaturePolicyId = UtilsSignatureOp.validatePAdESBaselineTSStructurally(pdfSignatureDictionary, pdfDocument, signedData);
 
 	    // Indicamos que la validación ha sido correcta
 	    validationInfo.setSucess(true);
@@ -1974,7 +2039,7 @@ public final class PadesSigner implements Signer {
      * @param isEPES Parameter that indicates if the signature dictionary represents a PAdES-EPES signature (true) or a PAdES-BES signature (false).
      * @throws SigningException If the validation fails.
      */
-    private void validatePAdESEnhancedStructurally(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, PDFSignatureDictionary pdfSignatureDictionary, byte[ ] pdfDocument, CMSSignedData signedData, PDFValidationResult validationResult, boolean isEPES) throws SigningException {
+    private static void validatePAdESEnhancedStructurally(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, PDFSignatureDictionary pdfSignatureDictionary, byte[ ] pdfDocument, CMSSignedData signedData, PDFValidationResult validationResult, boolean isEPES) throws SigningException {
 	// Instanciamos el objeto que ofrece información sobre la validación
 	// llevada a cabo
 	ValidationInfo validationInfo = new ValidationInfo();
@@ -2028,7 +2093,7 @@ public final class PadesSigner implements Signer {
      * @param idClient Parameter that represents the client application identifier.
      * @throws SigningException If the validation fails.
      */
-    private void validateSignatureTimeStampAttributes(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, PDFValidationResult validationResult, CAdESSignerInfo signerInfo, List<PDFDocumentTimestampDictionary> listTimestampDictionaries, String idClient) throws SigningException {
+    private static void validateSignatureTimeStampAttributes(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, PDFValidationResult validationResult, CAdESSignerInfo signerInfo, List<PDFDocumentTimestampDictionary> listTimestampDictionaries, String idClient) throws SigningException {
 	// Si el firmante posee algún atributo signature-time-stamp
 	if (signerInfo.getListTimeStamps() != null && !signerInfo.getListTimeStamps().isEmpty()) {
 	    // Instanciamos el objeto que ofrece información sobre la validación
@@ -2162,7 +2227,7 @@ public final class PadesSigner implements Signer {
      * @param idClient Parameter that represents the client application identifier.
      * @throws SigningException If the validation fails.
      */
-    private void validateTimeStamp(TimeStampToken tst, PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, TimestampValidationResult timestampValidationResult, PDFValidationResult validationResult, ValidationInfo validationInfo, CAdESSignerInfo signerInfo, Date validationDate, String idClient) throws SigningException {
+    private static void validateTimeStamp(TimeStampToken tst, PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, TimestampValidationResult timestampValidationResult, PDFValidationResult validationResult, ValidationInfo validationInfo, CAdESSignerInfo signerInfo, Date validationDate, String idClient) throws SigningException {
 	try {
 	    // Obtenemos el certificado firmante del sello de
 	    // tiempo
@@ -2232,7 +2297,7 @@ public final class PadesSigner implements Signer {
      * @param idClient Parameter that represents the client application identifier.
      * @throws SigningException If the validation fails.
      */
-    private void validateTimeStampCertificate(TimestampValidationResult timestampValidationResult, X509Certificate timestampCertificate, Date validationDate, String idClient) throws SigningException {
+    private static void validateTimeStampCertificate(TimestampValidationResult timestampValidationResult, X509Certificate timestampCertificate, Date validationDate, String idClient) throws SigningException {
 	// Instanciamos el objeto que ofrece información sobre la validación
 	// llevada a cabo
 	TimeStampValidationInfo timestampValidationInto = new TimeStampValidationInfo();
@@ -2264,7 +2329,7 @@ public final class PadesSigner implements Signer {
      * @param tst Parameter that represents the time-stamp to validate.
      * @throws SigningException If the validation fails.
      */
-    private void validateTimestampSignature(TimestampValidationResult timestampValidationResult, TimeStampToken tst) throws SigningException {
+    private static void validateTimestampSignature(TimestampValidationResult timestampValidationResult, TimeStampToken tst) throws SigningException {
 	// Instanciamos el objeto que ofrece información sobre la validación
 	// llevada a cabo
 	TimeStampValidationInfo timestampValidationInto = new TimeStampValidationInfo();
@@ -2297,7 +2362,7 @@ public final class PadesSigner implements Signer {
      * @param signerInfo Parameter that represents the information about the first signer of the CAdES signature.
      * @throws SigningException If the validation fails.
      */
-    private void validateTimeStampStampedData(TimestampValidationResult timestampValidationResult, TimeStampToken tst, CAdESSignerInfo signerInfo) throws SigningException {
+    private static void validateTimeStampStampedData(TimestampValidationResult timestampValidationResult, TimeStampToken tst, CAdESSignerInfo signerInfo) throws SigningException {
 	// Instanciamos el objeto que ofrece información sobre la validación
 	// llevada a cabo
 	TimeStampValidationInfo timestampValidationInto = new TimeStampValidationInfo();
@@ -2332,7 +2397,7 @@ public final class PadesSigner implements Signer {
      * @param idClient Parameter that represents the client application identifier.
      * @throws SigningException If the validation fails.
      */
-    private void validateSigningCertificate(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, PDFValidationResult validationResult, CAdESSignerInfo signerInfo, Date validationDate, String idClient) throws SigningException {
+    private static void validateSigningCertificate(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, PDFValidationResult validationResult, CAdESSignerInfo signerInfo, Date validationDate, String idClient) throws SigningException {
 	// Instanciamos el objeto que ofrece información sobre la validación
 	// llevada a cabo
 	ValidationInfo validationInfo = new ValidationInfo();
@@ -2385,7 +2450,7 @@ public final class PadesSigner implements Signer {
      * @return an object that contains information about the signer.
      * @throws SigningException If the method fails.
      */
-    private CAdESSignerInfo getSignerFromSignature(CMSSignedData signedData, PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, PDFValidationResult validationResult, PDFSignatureDictionary pdfSignatureDictionary) throws SigningException {
+    private static CAdESSignerInfo getSignerFromSignature(CMSSignedData signedData, PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, PDFValidationResult validationResult, PDFSignatureDictionary pdfSignatureDictionary) throws SigningException {
 	// Obtenemos la lista de firmantes y contra-firmantes contenidos en
 	// la firma
 	List<CAdESSignerInfo> listSignersFound = UtilsSignatureOp.getCAdESListSigners(signedData);
@@ -2444,7 +2509,7 @@ public final class PadesSigner implements Signer {
      * @param pdfSignatureDictionary Parameter that contains information about the signature dictionary to validate.
      * @throws SigningException If the validation fails.
      */
-    private void validatePAdESBasicSigningTime(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, PDFValidationResult validationResult, CAdESSignerInfo signerInfo, Date validationDate, PDFSignatureDictionary pdfSignatureDictionary) throws SigningException {
+    private static void validatePAdESBasicSigningTime(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, PDFValidationResult validationResult, CAdESSignerInfo signerInfo, Date validationDate, PDFSignatureDictionary pdfSignatureDictionary) throws SigningException {
 	// Instanciamos el objeto que ofrece información sobre la validación
 	// llevada a cabo
 	ValidationInfo validationInfo = new ValidationInfo();
@@ -2505,7 +2570,7 @@ public final class PadesSigner implements Signer {
      * @param validationResult Parameter that represents the information about the validation of the signed PDF document.
      * @throws SigningException If the validation fails.
      */
-    private void validateCMSKeyInfo(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, CAdESSignerInfo signerInfo, PDFValidationResult validationResult) throws SigningException {
+    private static void validateCMSKeyInfo(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, CAdESSignerInfo signerInfo, PDFValidationResult validationResult) throws SigningException {
 	// Instanciamos el objeto que ofrece información sobre la validación
 	// llevada a cabo
 	ValidationInfo validationInfo = new ValidationInfo();
@@ -2557,7 +2622,7 @@ public final class PadesSigner implements Signer {
      * @param validationResult Parameter that represents the information about the validation of the signed PDF document.
      * @throws SigningException If the validation fails.
      */
-    private void validateSignatureCore(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, CAdESSignerInfo signerInfo, PDFValidationResult validationResult) throws SigningException {
+    private static void validateSignatureCore(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, CAdESSignerInfo signerInfo, PDFValidationResult validationResult) throws SigningException {
 	// Instanciamos el objeto que ofrece información sobre la validación
 	// llevada a cabo
 	ValidationInfo validationInfo = new ValidationInfo();
@@ -2610,7 +2675,7 @@ public final class PadesSigner implements Signer {
      * @param validationResult Parameter that represents the information about the validation of the signed PDF document.
      * @throws SigningException If the validation fails.
      */
-    private void validatePAdESBasicStructurally(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, PDFSignatureDictionary pdfSignatureDictionary, byte[ ] pdfDocument, CMSSignedData signedData, PDFValidationResult validationResult) throws SigningException {
+    private static void validatePAdESBasicStructurally(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, PDFSignatureDictionary pdfSignatureDictionary, byte[ ] pdfDocument, CMSSignedData signedData, PDFValidationResult validationResult) throws SigningException {
 	// Instanciamos el objeto que ofrece información sobre la validación
 	// llevada a cabo
 	ValidationInfo validationInfo = new ValidationInfo();
@@ -2662,7 +2727,7 @@ public final class PadesSigner implements Signer {
      * @param af Parameter that allows to access to the fields of PDF document.
      * @param validationResult Parameter that represents the information about the validation of the signed PDF document.
      */
-    private void validatePDFSignatureDictionary(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, PDFSignatureDictionary pdfSignatureDictionary, AcroFields af, PDFValidationResult validationResult) {
+    private static void validatePDFSignatureDictionary(PDFSignatureDictionaryValidationResult pdfSignatureDictionaryValidationResult, PDFSignatureDictionary pdfSignatureDictionary, AcroFields af, PDFValidationResult validationResult) {
 	// Si el formato de firma es PDF no realizamos ninguna validación sobre
 	// el documento
 	// PDF ni sobre el firmante

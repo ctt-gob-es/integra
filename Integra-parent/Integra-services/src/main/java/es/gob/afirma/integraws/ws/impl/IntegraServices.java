@@ -479,7 +479,7 @@ public class IntegraServices implements IIntegraServices {
 		if (signatureFormat.getUriFormat() == null) {
 			return true;
 		} else {
-			if (isCAdESXAdES(signatureFormat.getUriFormat()) || isPAdES(signatureFormat.getUriFormat()) || isBaseline(signatureFormat.getUriFormat())) {
+			if (isCAdESXAdES(signatureFormat.getUriFormat()) || isPAdES(signatureFormat.getUriFormat()) || isBaselineTS(signatureFormat.getUriFormat()) || isBaselineEN(signatureFormat.getUriFormat())) {
 				return true;
 			}
 		}
@@ -487,11 +487,20 @@ public class IntegraServices implements IIntegraServices {
 	}
 
 	/**
-	 * Method that indicates if a uriFormat is a baseline format valid for integra sign.
+	 * Method that indicates if a uriFormat is a baseline european standard format valid for integra sign.
 	 * @param uriFormat format to check
-	 * @return true if uriFormat is a baseline format valid for integra sign, false otherwise.
+	 * @return true if uriFormat is a baseline european standard format valid for integra sign, false otherwise.
 	 */
-	private boolean isBaseline(String uriFormat) {
+	private boolean isBaselineEN(String uriFormat) {
+		return uriFormat.equals(SignatureForm.B_B_LEVEL) || uriFormat.equals(SignatureForm.B_T_LEVEL);
+	}
+	
+	/**
+	 * Method that indicates if a uriFormat is a baseline technical specification format valid for integra sign.
+	 * @param uriFormat format to check
+	 * @return true if uriFormat is a baseline technical specification format valid for integra sign, false otherwise.
+	 */
+	private boolean isBaselineTS(String uriFormat) {
 		return uriFormat.equals(SignatureForm.B_LEVEL) || uriFormat.equals(SignatureForm.T_LEVEL);
 	}
 
@@ -528,12 +537,18 @@ public class IntegraServices implements IIntegraServices {
 			format = getFormatIfNotUpdatedWithoutPolicy(signatureFormat, includeTimestamp);
 		}
 		if (format.isEmpty()) {
-			if (signatureFormat.getUriType().equals(SignTypesURIs.CADES_BASELINE_2_2_1)) {
+			if (signatureFormat.getUriType().equals(SignTypesURIs.CADES_BASELINE_TS_2_2_1)) {
 				format = includeTimestamp ? SignatureFormatEnum.CAdES_T_LEVEL.name() : SignatureFormatEnum.CAdES_B_LEVEL.name();
-			} else if (signatureFormat.getUriType().equals(SignTypesURIs.PADES_BASELINE_2_1_1)) {
+			} else if (signatureFormat.getUriType().equals(SignTypesURIs.PADES_BASELINE_TS_2_1_1)) {
 				format = includeTimestamp ? SignatureFormatEnum.PAdES_T_LEVEL.name() : SignatureFormatEnum.PAdES_B_LEVEL.name();
-			} else if (signatureFormat.getUriType().equals(SignTypesURIs.XADES_BASELINE_2_1_1)) {
+			} else if (signatureFormat.getUriType().equals(SignTypesURIs.XADES_BASELINE_TS_2_1_1)) {
 				format = includeTimestamp ? SignatureFormatEnum.XAdES_T_LEVEL.name() : SignatureFormatEnum.XAdES_B_LEVEL.name();
+			} else if (signatureFormat.getUriType().equals(SignTypesURIs.CADES_BASELINE_EN_1_1_1)) {
+				format = includeTimestamp ? SignatureFormatEnum.CAdES_B_T_LEVEL.name() : SignatureFormatEnum.CAdES_B_B_LEVEL.name();
+			} else if (signatureFormat.getUriType().equals(SignTypesURIs.PADES_BASELINE_EN_1_1_1)) {
+				format = includeTimestamp ? SignatureFormatEnum.PAdES_B_T_LEVEL.name() : SignatureFormatEnum.PAdES_B_B_LEVEL.name();
+			} else if (signatureFormat.getUriType().equals(SignTypesURIs.XADES_BASELINE_EN_1_1_1)) {
+				format = includeTimestamp ? SignatureFormatEnum.XAdES_B_T_LEVEL.name() : SignatureFormatEnum.XAdES_B_B_LEVEL.name();
 			}
 		}
 		return format;
@@ -580,12 +595,18 @@ public class IntegraServices implements IIntegraServices {
 	 */
 	private String getFacadeSignatureType(SignatureFormatEnum signatureFormat) {
 
-		if (signatureFormat.getUriType().equals(SignTypesURIs.CADES_BASELINE_2_2_1)) {
-			return "CAdES Baseline";
-		} else if (signatureFormat.getUriType().equals(SignTypesURIs.PADES_BASELINE_2_1_1)) {
-			return "PAdES Baseline";
-		} else if (signatureFormat.getUriType().equals(SignTypesURIs.XADES_BASELINE_2_1_1)) {
-			return "XAdES Baseline";
+		if (signatureFormat.getUriType().equals(SignTypesURIs.CADES_BASELINE_TS_2_2_1)) {
+			return "CAdES Baseline TS";
+		} else if (signatureFormat.getUriType().equals(SignTypesURIs.PADES_BASELINE_TS_2_1_1)) {
+			return "PAdES Baseline TS";
+		} else if (signatureFormat.getUriType().equals(SignTypesURIs.XADES_BASELINE_TS_2_1_1)) {
+			return "XAdES Baseline TS";
+		} else if (signatureFormat.getUriType().equals(SignTypesURIs.CADES_BASELINE_EN_1_1_1)) {
+			return "CAdES Baseline EN";
+		} else if (signatureFormat.getUriType().equals(SignTypesURIs.PADES_BASELINE_EN_1_1_1)) {
+			return "PAdES Baseline EN";
+		} else if (signatureFormat.getUriType().equals(SignTypesURIs.XADES_BASELINE_EN_1_1_1)) {
+			return "XAdES Baseline EN";
 		} else if (signatureFormat.getUriType().equals(SignTypesURIs.CADES)) {
 			return "CAdES";
 		} else if (signatureFormat.getUriType().equals(SignTypesURIs.PADES)) {

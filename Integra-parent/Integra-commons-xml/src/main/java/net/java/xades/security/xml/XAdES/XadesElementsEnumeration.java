@@ -34,17 +34,27 @@ public class XadesElementsEnumeration extends TreeMap<ObjectId, XadesElement> {
      */
     private static final long serialVersionUID = 2513927612250582253L;
 
-    public XadesElementsEnumeration(XadesElement[ ] xadesElements, XAdES xadesFilter) {
-	for (XadesElement element: xadesElements) {
-	    XAdES xades = element.getXAdES();
-	    if (xades != null && xades.equals(xadesFilter))
-		put(element.getObjectId(), element);
-	}
+    public XadesElementsEnumeration(XadesElement[] xadesElements, XAdES xadesFilter)
+    {
+        for (XadesElement element : xadesElements)
+        {
+            XAdES[] xadesProfiles = element.getXAdES();
+            if (xadesProfiles != null) {
+            	for (XAdES xades : xadesProfiles) {
+            		if (xades != null && xades.equals(xadesFilter)) {
+            			put(element.getObjectId(), element);
+            			break;
+            		}
+            	}
+            }
+        }
     }
 
-    public XadesElementsEnumeration(XadesElement[ ] xadesElements) {
-	for (XadesElement element: xadesElements) {
-	    put(element.getObjectId(), element);
-	}
+    public XadesElementsEnumeration(XadesElement[] xadesElements)
+    {
+        for (XadesElement element : xadesElements)
+        {
+            put(element.getObjectId(), element);
+        }
     }
 }

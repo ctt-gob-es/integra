@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -52,8 +53,8 @@ public class CertRefs extends XAdESStructure {
 
     private List<Cert> certs;
 
-    public CertRefs(XAdESStructure parent, Collection<X509Certificate> certificates, String signatureIdPrefix, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) throws GeneralSecurityException {
-	super(parent, "CertRefs", xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+    public CertRefs(Document document, XAdESStructure parent, Collection<X509Certificate> certificates, String signatureIdPrefix, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) throws GeneralSecurityException {
+	super(document, parent, "CertRefs", xadesPrefix, xadesNamespace, xmlSignaturePrefix);
 
 	if (certificates == null || certificates.isEmpty())
 	    throw new IllegalArgumentException("The certificates collection can not be NULL or empty.");

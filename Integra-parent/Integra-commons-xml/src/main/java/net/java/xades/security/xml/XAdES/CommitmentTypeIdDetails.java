@@ -19,6 +19,7 @@
  */
 package net.java.xades.security.xml.XAdES;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /*
@@ -35,23 +36,30 @@ import org.w3c.dom.Element;
 
 public class CommitmentTypeIdDetails extends XAdESStructure {
 
-    public CommitmentTypeIdDetails(CommitmentTypeIndicationDetails commitmentTypeIndicationDetails, CommitmentTypeId commitmentTypeId, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
-	super(commitmentTypeIndicationDetails, "CommitmentTypeId", xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+    public CommitmentTypeIdDetails(final Document document,
+	    final CommitmentTypeIndicationDetails commitmentTypeIndicationDetails,
+	    final CommitmentTypeId commitmentTypeId,
+	    final String xadesPrefix,
+	    final String xadesNamespace,
+	    final String xmlSignaturePrefix) {
+	super(document, commitmentTypeIndicationDetails, "CommitmentTypeId", xadesPrefix, xadesNamespace, xmlSignaturePrefix);
 
-	Element identifier = createElement("Identifier");
+	final Element identifier = createElement("Identifier");
 	identifier.setTextContent(commitmentTypeId.getIdentifier());
-	identifier.setAttribute("Qualifier", commitmentTypeId.getQualifier());
+	if (commitmentTypeId.getQualifier() != null) {
+	    identifier.setAttributeNS(xadesNamespace, "Qualifier", commitmentTypeId.getQualifier());
+	}
 	getNode().appendChild(identifier);
 
-	Element description = createElement("Description");
+	final Element description = createElement("Description");
 	description.setTextContent(commitmentTypeId.getDescription());
 	getNode().appendChild(description);
 
 	if (commitmentTypeId.getDocumentationReferences().size() > 0) {
-	    Element documentationReferences = createElement("DocumentationReferences");
+	    final Element documentationReferences = createElement("DocumentationReferences");
 
-	    for (String reference: commitmentTypeId.getDocumentationReferences()) {
-		Element documentationReference = createElement("DocumentationReference");
+	    for (final String reference : commitmentTypeId.getDocumentationReferences()) {
+		final Element documentationReference = createElement("DocumentationReference");
 		documentationReference.setTextContent(reference);
 		documentationReferences.appendChild(documentationReference);
 	    }

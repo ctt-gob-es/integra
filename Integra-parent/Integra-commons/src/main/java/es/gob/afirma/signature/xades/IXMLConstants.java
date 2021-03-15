@@ -284,9 +284,34 @@ public interface IXMLConstants {
 	String ELEMENT_SIGNATURE_POLICY_ID = "SignaturePolicyId";
 
 	/**
+	 * Constant attribute that identifies <code>SignaturePolicyStore</code> element.
+	 */
+	String ELEMENT_SIGNATURE_POLICY_STORE = "SignaturePolicyStore";
+	
+	/**
+	 * Constant attribute that identifies <code>SPDocSpecification</code> element.
+	 */
+	String ELEMENT_SP_DOC_SPECIFICATION = "SPDocSpecification";
+	
+	/**
+	 * Constant attribute that identifies <code>SignaturePolicyDocument</code> element.
+	 */
+	String ELEMENT_SIGNATURE_POLICY_DOCUMENT = "SignaturePolicyDocument";
+	
+	/**
+	 * Constant attribute that identifies <code>SigPolDocLocalURI</code> element.
+	 */
+	String ELEMENT_SIG_POL_DOC_LOCAL_URI = "SigPolDocLocalURI";
+
+	/**
 	 * Constant attribute that represents the string to identify the <i>SigningCertificate</i> element in a XML signature.
 	 */
 	String ELEMENT_SIGNING_CERTIFICATE = "SigningCertificate";
+	
+	/**
+	 * Constant attribute that represents the string to identify the <i>SigningCertificateV2</i> element in a XML signature.
+	 */
+	String ELEMENT_SIGNING_CERTIFICATE_V2 = "SigningCertificateV2";
 
 	/**
 	 * Constant attribute that represents the string to identify the <i>SigningTime</i> element in a XML signature.
@@ -317,6 +342,11 @@ public interface IXMLConstants {
 	 * Constant attribute that represents the string to identify the <i>AttributeCertificateRefs</i> element in a XML signature.
 	 */
 	String ELEMENT_ATTRIBUTE_CERTIFICATE_REFS = "AttributeCertificateRefs";
+	
+	/**
+	 * Constant attribute that represents the string to identify the <i>AttributeCertificateRefsV2</i> element in a XML signature.
+	 */
+	String ELEMENT_ATTRIBUTE_CERTIFICATE_REFS_V2 = "AttributeCertificateRefsV2";
 
 	/**
 	 * Constant attribute that represents the string to identify the <i>AttributeRevocationRefs</i> element in a XML signature.
@@ -357,16 +387,31 @@ public interface IXMLConstants {
 	 * Constant attribute that identifies <code>CompleteCertificateRefs</code> element.
 	 */
 	String ELEMENT_COMPLETE_CERTIFICATE_REFS = "CompleteCertificateRefs";
+	
+	/**
+	 * Constant attribute that identifies <code>CompleteCertificateRefsV2</code> element.
+	 */
+	String ELEMENT_COMPLETE_CERTIFICATE_REFS_V2 = "CompleteCertificateRefsV2";
 
 	/**
 	 * Constant attribute that identifies <code>RefsOnlyTimeStamp</code> element.
 	 */
 	String ELEMENT_REFS_ONLY_TIMESTAMP = "RefsOnlyTimeStamp";
+	
+	/**
+	 * Constant attribute that identifies <code>RefsOnlyTimeStampV2</code> element.
+	 */
+	String ELEMENT_REFS_ONLY_TIMESTAMP_V2 = "RefsOnlyTimeStampV2";
 
 	/**
 	 * Constant attribute that identifies <code>SigAndRefsTimeStamp</code> element.
 	 */
 	String ELEMENT_SIG_AND_REFS_TIMESTAMP = "SigAndRefsTimeStamp";
+	
+	/**
+	 * Constant attribute that identifies <code>SigAndRefsTimeStampV2</code> element.
+	 */
+	String ELEMENT_SIG_AND_REFS_TIMESTAMP_V2 = "SigAndRefsTimeStampV2";
 
 	/**
 	 * Constant attribute that identifies <code>RevocationValues</code> element.
@@ -487,11 +532,21 @@ public interface IXMLConstants {
 	 * Constant attribute that identifies <code>SignatureProductionPlace</code> element.
 	 */
 	String ELEMENT_SIGNATURE_PRODUCTION_PLACE = "SignatureProductionPlace";
+	
+	/**
+	 * Constant attribute that identifies <code>SignatureProductionPlaceV2</code> element.
+	 */
+	String ELEMENT_SIGNATURE_PRODUCTION_PLACE_V2 = "SignatureProductionPlaceV2";
 
 	/**
 	 * Constant attribute that identifies <code>SignerRole</code> element.
 	 */
 	String ELEMENT_SIGNER_ROLE = "SignerRole";
+	
+	/**
+	 * Constant attribute that identifies <code>SignerRoleV2</code> element.
+	 */
+	String ELEMENT_SIGNER_ROLE_V2 = "SignerRoleV2";
 
 	/**
 	 * Constant attribute that identifies <code>Cert</code> element.

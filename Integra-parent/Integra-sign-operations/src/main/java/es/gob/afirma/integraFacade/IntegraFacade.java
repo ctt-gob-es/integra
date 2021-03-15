@@ -40,15 +40,19 @@ import es.gob.afirma.signature.SignatureFormatDetector;
 import es.gob.afirma.signature.SignatureProperties;
 import es.gob.afirma.signature.Signer;
 import es.gob.afirma.signature.SigningException;
-import es.gob.afirma.signature.asic.ASiCSBaselineSigner;
-import es.gob.afirma.signature.cades.CAdESBaselineSigner;
+import es.gob.afirma.signature.asic.ASiCSBaselineENSigner;
+import es.gob.afirma.signature.asic.ASiCSBaselineTSSigner;
+import es.gob.afirma.signature.cades.CAdESBaselineENSigner;
+import es.gob.afirma.signature.cades.CAdESBaselineTSSigner;
 import es.gob.afirma.signature.cades.CadesSigner;
-import es.gob.afirma.signature.pades.PAdESBaselineSigner;
+import es.gob.afirma.signature.pades.PAdESBaselineENSigner;
+import es.gob.afirma.signature.pades.PAdESBaselineTSSigner;
 import es.gob.afirma.signature.pades.PadesSigner;
 import es.gob.afirma.signature.policy.ISignPolicyConstants;
 import es.gob.afirma.signature.validation.PDFValidationResult;
 import es.gob.afirma.signature.validation.ValidationResult;
-import es.gob.afirma.signature.xades.XAdESBaselineSigner;
+import es.gob.afirma.signature.xades.XAdESBaselineENSigner;
+import es.gob.afirma.signature.xades.XAdESBaselineTSSigner;
 import es.gob.afirma.signature.xades.XadesSigner;
 import es.gob.afirma.utils.GenericUtilsCommons;
 import es.gob.afirma.utils.UtilsResourcesSignOperations;
@@ -111,6 +115,12 @@ public final class IntegraFacade {
      * <li>{@link ISignatureFormatDetector#FORMAT_CADES_T_LEVEL}</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_T_LEVEL}</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_PADES_T_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_T_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_T_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_T_LEVEL}</li>
      * </ul>
      * @throws SigningException If the method fails.
      */
@@ -139,9 +149,19 @@ public final class IntegraFacade {
      * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_LEVEL}</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_LEVEL}</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_B_LEVEL}</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_CADES_T_LEVEL}</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_T_LEVEL}</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_PADES_T_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_T_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_T_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_T_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_T_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_B_T_LEVEL}</li>
      * </ul>
      * @throws SigningException If the method fails.
      */
@@ -182,25 +202,45 @@ public final class IntegraFacade {
 	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_PADES) || signatureType.equals(SignatureConstants.SIGN_FORMAT_PADES_BASIC)) {
 		return generatePAdESSignature(dataToSign, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, signatureType, idClient);
 	    }
-	    // Si la firma a generar es CAdES Baseline
-	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_CADES_BASELINE)) {
-		return generateCAdESBaselineSignature(dataToSign, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
+	    // Si la firma a generar es CAdES Baseline Technical Specification
+	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_CADES_BASELINE_TS)) {
+		return generateCAdESBaselineTSSignature(dataToSign, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
 	    }
-	    // Si la firma a generar es XAdES Baseline
-	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_XADES_BASELINE)) {
-		return generateXAdESBaselineSignature(dataToSign, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
+	    // Si la firma a generar es XAdES Baseline Technical Specification
+	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_XADES_BASELINE_TS)) {
+		return generateXAdESBaselineTSSignature(dataToSign, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
 	    }
-	    // Si la firma a generar es PAdES Baseline
-	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_PADES_BASELINE)) {
-		return generatePAdESBaselineSignature(dataToSign, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
+	    // Si la firma a generar es PAdES Baseline Technical Specification
+	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_PADES_BASELINE_TS)) {
+		return generatePAdESBaselineTSSignature(dataToSign, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
 	    }
-	    // Si la firma a generar es ASiC-S Baseline CAdES Baseline
-	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_ASICS_CADES_BASELINE)) {
-		return generateASiCSBaselineCAdESBaseline(dataToSign, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
+	    // Si la firma a generar es ASiC-S CAdES Baseline Technical Specification
+	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_ASICS_CADES_BASELINE_TS)) {
+		return generateASiCSCAdESBaselineTS(dataToSign, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
 	    }
-	    // Si la firma a generar es ASiC-S Baseline XAdES Baseline
-	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_ASICS_XADES_BASELINE)) {
-		return generateASiCSBaselineXAdESBaseline(dataToSign, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
+	    // Si la firma a generar es ASiC-S Baseline XAdES Baseline Technical Specification
+	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_ASICS_XADES_BASELINE_TS)) {
+		return generateASiCSXAdESBaselineTS(dataToSign, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
+	    }
+	 // Si la firma a generar es CAdES Baseline European Standard
+	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_CADES_BASELINE_EN)) {
+		return generateCAdESBaselineENSignature(dataToSign, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
+	    }
+	    // Si la firma a generar es XAdES Baseline European Standard
+	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_XADES_BASELINE_EN)) {
+		return generateXAdESBaselineENSignature(dataToSign, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
+	    }
+	    // Si la firma a generar es PAdES Baseline European Standard
+	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_PADES_BASELINE_EN)) {
+		return generatePAdESBaselineENSignature(dataToSign, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
+	    }
+	    // Si la firma a generar es ASiC-S Baseline CAdES Baseline European Standard
+	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_ASICS_CADES_BASELINE_EN)) {
+		return generateASiCSCAdESBaselineEN(dataToSign, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
+	    }
+	    // Si la firma a generar es ASiC-S Baseline XAdES Baseline European Standard
+	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_ASICS_XADES_BASELINE_EN)) {
+		return generateASiCSXAdESBaselineEN(dataToSign, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
 	    }
 	    // Si el tipo de firma a generar no está reconocido
 	    else {
@@ -236,6 +276,12 @@ public final class IntegraFacade {
      * <li>{@link ISignatureFormatDetector#FORMAT_CADES_T_LEVEL}</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_T_LEVEL}</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_PADES_T_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_T_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_T_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_T_LEVEL}</li>
      * </ul>
      * @throws SigningException If the method fails.
      */
@@ -268,6 +314,12 @@ public final class IntegraFacade {
      * <li>{@link ISignatureFormatDetector#FORMAT_CADES_T_LEVEL}</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_T_LEVEL}</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_PADES_T_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_T_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_T_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_T_LEVEL}</li>
      * </ul>
      * @throws SigningException If the method fails.
      */
@@ -308,17 +360,29 @@ public final class IntegraFacade {
 	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_PADES)) {
 		return generatePAdESCoSignature(signature, signedData, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
 	    }
-	    // Si la co-firma a generar es CAdES Baseline
-	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_CADES_BASELINE)) {
-		return generateCAdESBaselineCoSignature(signature, signedData, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
+	    // Si la co-firma a generar es CAdES Baseline Technical Specification
+	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_CADES_BASELINE_TS)) {
+		return generateCAdESBaselineTSCoSignature(signature, signedData, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
 	    }
-	    // Si la co-firma a generar es XAdES Baseline
-	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_XADES_BASELINE)) {
-		return generateXAdESBaselineCoSignature(signature, signedData, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
+	    // Si la co-firma a generar es XAdES Baseline Technical Specification
+	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_XADES_BASELINE_TS)) {
+		return generateXAdESBaselineTSCoSignature(signature, signedData, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
 	    }
-	    // Si la co-firma a generar es PAdES Baseline
-	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_PADES_BASELINE)) {
-		return generatePAdESBaselineCoSignature(signature, signedData, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
+	    // Si la co-firma a generar es PAdES Baseline Technical Specification
+	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_PADES_BASELINE_TS)) {
+		return generatePAdESBaselineTSCoSignature(signature, signedData, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
+	    }
+	    // Si la co-firma a generar es CAdES Baseline European Standard
+	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_CADES_BASELINE_EN)) {
+		return generateCAdESBaselineENCoSignature(signature, signedData, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
+	    }
+	    // Si la co-firma a generar es XAdES Baseline European Standard
+	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_XADES_BASELINE_EN)) {
+		return generateXAdESBaselineENCoSignature(signature, signedData, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
+	    }
+	    // Si la co-firma a generar es PAdES Baseline European Standard
+	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_PADES_BASELINE_EN)) {
+		return generatePAdESBaselineENCoSignature(signature, signedData, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
 	    }
 	    // Si el tipo de co-firma a generar no está reconocido
 	    else {
@@ -354,6 +418,12 @@ public final class IntegraFacade {
      * <li>{@link ISignatureFormatDetector#FORMAT_CADES_T_LEVEL}</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_T_LEVEL}</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_PADES_T_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_T_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_T_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_T_LEVEL}</li>
      * </ul>
      * @throws SigningException If the method fails.
      */
@@ -385,6 +455,12 @@ public final class IntegraFacade {
      * <li>{@link ISignatureFormatDetector#FORMAT_CADES_T_LEVEL}</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_T_LEVEL}</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_PADES_T_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_T_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_T_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_T_LEVEL}</li>
      * </ul>
      * @throws SigningException If the method fails.
      */
@@ -425,17 +501,29 @@ public final class IntegraFacade {
 	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_PADES)) {
 		return generatePAdESCounterSignature(signature, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
 	    }
-	    // Si la contra-firma a generar es CAdES Baseline
-	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_CADES_BASELINE)) {
-		return generateCAdESBaselineCounterSignature(signature, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
+	    // Si la contra-firma a generar es CAdES Baseline Technical Specification
+	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_CADES_BASELINE_TS)) {
+		return generateCAdESBaselineTSCounterSignature(signature, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
 	    }
-	    // Si la contra-firma a generar es XAdES Baseline
-	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_XADES_BASELINE)) {
-		return generateXAdESBaselineCounterSignature(signature, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
+	    // Si la contra-firma a generar es XAdES Baseline Technical Specification
+	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_XADES_BASELINE_TS)) {
+		return generateXAdESBaselineTSCounterSignature(signature, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
 	    }
-	    // Si la contra-firma a generar es PAdES Baseline
-	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_PADES_BASELINE)) {
-		return generatePAdESBaselineCounterSignature(signature, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
+	    // Si la contra-firma a generar es PAdES Baseline Technical Specification
+	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_PADES_BASELINE_TS)) {
+		return generatePAdESBaselineTSCounterSignature(signature, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
+	    }
+	    // Si la co-firma a generar es CAdES Baseline European Standard
+	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_CADES_BASELINE_EN)) {
+		return generateCAdESBaselineENCounterSignature(signature, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
+	    }
+	    // Si la co-firma a generar es XAdES Baseline European Standard
+	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_XADES_BASELINE_EN)) {
+		return generateXAdESBaselineENCounterSignature(signature, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
+	    }
+	    // Si la co-firma a generar es PAdES Baseline European Standard
+	    else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_PADES_BASELINE_EN)) {
+		return generatePAdESBaselineENCounterSignature(signature, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, idClient);
 	    }
 	    // Si el tipo de contra-firma a generar no está reconocido
 	    else {
@@ -526,9 +614,12 @@ public final class IntegraFacade {
 	    if (signatureType.equals(SignatureConstants.SIGN_FORMAT_PADES)) {
 		// Si la firma a generar es PAdES
 		return generatePAdESSignatureWithRubric(dataToSign, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, signatureType, extraParams, idClient);
-	    } else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_PADES_BASELINE)) {
+	    } else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_PADES_BASELINE_TS)) {
 		// si la firma a generar es PAdES Baseline
-		return generatePAdESBaselineSignatureWithRubric(dataToSign, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, extraParams, idClient);
+		return generatePAdESBaselineTSSignatureWithRubric(dataToSign, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, extraParams, idClient);
+	    } else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_PADES_BASELINE_EN)) {
+		// si la firma a generar es PAdES Baseline
+		return generatePAdESBaselineENSignatureWithRubric(dataToSign, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, extraParams, idClient);
 	    }
 	    // Si el tipo de firma a generar no está reconocido
 	    else {
@@ -619,8 +710,8 @@ public final class IntegraFacade {
 	    // Si la firma a generar es PAdES
 	    if (signatureType.equals(SignatureConstants.SIGN_FORMAT_PADES)) {
 		return generatePAdESSignatureWithRubric(dataToSign, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, signatureType, extraParams, idClient);
-	    } else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_PADES_BASELINE)) {
-		return generatePAdESBaselineSignatureWithRubric(dataToSign, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, extraParams, idClient);
+	    } else if (signatureType.equals(SignatureConstants.SIGN_FORMAT_PADES_BASELINE_TS)) {
+		return generatePAdESBaselineTSSignatureWithRubric(dataToSign, signatureAlgorithm, privateKey, includeSignaturePolicy, includeTimestamp, extraParams, idClient);
 	    }
 	    // Si el tipo de firma a generar no está reconocido
 	    else {
@@ -713,7 +804,7 @@ public final class IntegraFacade {
      * @param signatureFormat Parameter that represents the signature format to process.
      * @return a boolean that indicates if the format of a signature is related to CAdES Baseline signature format (true) or not (false).
      */
-    private static boolean isCAdESBaselineSignatureFormat(String signatureFormat) {
+    private static boolean isCAdESBaselineTSSignatureFormat(String signatureFormat) {
 	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_LEVEL)) {
 	    return true;
 	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_T_LEVEL)) {
@@ -731,7 +822,7 @@ public final class IntegraFacade {
      * @param signatureFormat Parameter that represents the signature format to process.
      * @return a boolean that indicates if the format of a signature is related to XAdES Baseline signature format (true) or not (false).
      */
-    private static boolean isXAdESBaselineSignatureFormat(String signatureFormat) {
+    private static boolean isXAdESBaselineTSSignatureFormat(String signatureFormat) {
 	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_LEVEL)) {
 	    return true;
 	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_T_LEVEL)) {
@@ -749,7 +840,7 @@ public final class IntegraFacade {
      * @param signatureFormat Parameter that represents the signature format to process.
      * @return a boolean that indicates if the format of a signature is related to PAdES Baseline signature format (true) or not (false).
      */
-    private static boolean isPAdESBaselineSignatureFormat(String signatureFormat) {
+    private static boolean isPAdESBaselineTSSignatureFormat(String signatureFormat) {
 	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_B_LEVEL)) {
 	    return true;
 	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_T_LEVEL)) {
@@ -767,7 +858,7 @@ public final class IntegraFacade {
      * @param signatureFormat Parameter that represents the signature format to process.
      * @return a boolean that indicates if the format of a signature is related to ASiC-S Baseline signature format (true) or not (false).
      */
-    private static boolean isASiCSBaselineSignatureFormat(String signatureFormat) {
+    private static boolean isASiCSBaselineTSSignatureFormat(String signatureFormat) {
 	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_B_LEVEL)) {
 	    return true;
 	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_T_LEVEL)) {
@@ -775,6 +866,86 @@ public final class IntegraFacade {
 	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_LT_LEVEL)) {
 	    return true;
 	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_LTA_LEVEL)) {
+	    return true;
+	}
+	return false;
+    }
+    
+    /**
+     * Method that indicates if the format of a signature is related to CAdES Baseline European
+     * Standard signature format.
+     * @param signatureFormat Parameter that represents the signature format to process.
+     * @return a boolean that indicates if the format of a signature is related to CAdES Baseline
+     * European Standard signature format (true) or not (false).
+     */
+    private static boolean isCAdESBaselineENSignatureFormat(String signatureFormat) {
+	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_B_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_T_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_LT_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_LTA_LEVEL)) {
+	    return true;
+	}
+	return false;
+    }
+
+    /**
+     * Method that indicates if the format of a signature is related to XAdES Baseline European
+     * Standard signature format.
+     * @param signatureFormat Parameter that represents the signature format to process.
+     * @return a boolean that indicates if the format of a signature is related to XAdES Baseline
+     * European Standar signature format (true) or not (false).
+     */
+    private static boolean isXAdESBaselineENSignatureFormat(String signatureFormat) {
+	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_B_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_T_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_LT_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_LTA_LEVEL)) {
+	    return true;
+	}
+	return false;
+    }
+
+    /**
+     * Method that indicates if the format of a signature is related to PAdES Baseline European
+     * Standard signature format.
+     * @param signatureFormat Parameter that represents the signature format to process.
+     * @return a boolean that indicates if the format of a signature is related to PAdES Baseline
+     * European Standard signature format (true) or not (false).
+     */
+    private static boolean isPAdESBaselineENSignatureFormat(String signatureFormat) {
+	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_B_B_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_B_T_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_B_LT_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_B_LTA_LEVEL)) {
+	    return true;
+	}
+	return false;
+    }
+
+    /**
+     * Method that indicates if the format of a signature is related to ASiC-S Baseline European
+     * Standard signature format.
+     * @param signatureFormat Parameter that represents the signature format to process.
+     * @return a boolean that indicates if the format of a signature is related to ASiC-S Baseline
+     * European Standard signature format (true) or not (false).
+     */
+    private static boolean isASiCSBaselineENSignatureFormat(String signatureFormat) {
+	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_B_B_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_B_T_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_B_LT_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_B_LTA_LEVEL)) {
 	    return true;
 	}
 	return false;
@@ -841,34 +1012,59 @@ public final class IntegraFacade {
 		// Actualizamos los firmantes de la firma PAdES
 		return signer.upgrade(signature, listSigners, idClient);
 	    }
-	    // Si el formato es CAdES B-Level, CAdES T-Level, CAdES LT-Level o
-	    // CAdES LTA-Level
-	    else if (isCAdESBaselineSignatureFormat(signatureFormat)) {
-		signer = new CAdESBaselineSigner();
+	    // Si el formato es CAdES Baseline Technical Specification
+	    else if (isCAdESBaselineTSSignatureFormat(signatureFormat)) {
+		signer = new CAdESBaselineTSSigner();
 
-		// Actualizamos los firmantes de la firma CAdES Baseline
+		// Actualizamos los firmantes de la firma
 		return signer.upgrade(signature, listSigners, idClient);
 	    }
-	    // Si el formato es XAdES B-Level, XAdES T-Level, XAdES LT-Level o
-	    // XAdES LTA-Level
-	    else if (isXAdESBaselineSignatureFormat(signatureFormat)) {
-		signer = new XAdESBaselineSigner();
+	    // Si el formato es XAdES Baseline Technical Specification
+	    else if (isXAdESBaselineTSSignatureFormat(signatureFormat)) {
+		signer = new XAdESBaselineTSSigner();
 
-		// Actualizamos los firmantes de la firma XAdES Baseline
+		// Actualizamos los firmantes de la firma
 		return signer.upgrade(signature, listSigners, idClient);
 	    }
-	    // Si el formato es PAdES B-Level, PAdES T-Level, PAdES LT-Level o
-	    // PAdES LTA-Level
-	    else if (isPAdESBaselineSignatureFormat(signatureFormat)) {
-		signer = new PAdESBaselineSigner();
+	    // Si el formato es PAdES Baseline Technical Specification
+	    else if (isPAdESBaselineTSSignatureFormat(signatureFormat)) {
+		signer = new PAdESBaselineTSSigner();
 
-		// Actualizamos los firmantes de la firma PAdES Baseline
+		// Actualizamos los firmantes de la firma
 		return signer.upgrade(signature, listSigners, idClient);
 	    }
-	    // Si el formato es ASiC-S B-Level, ASiC-S T-Level, ASiC-S LT-Level
-	    // o ASiC-S LTA-Level
-	    else if (isASiCSBaselineSignatureFormat(signatureFormat)) {
-		signer = new ASiCSBaselineSigner();
+	    // Si el formato es ASiC-S Baseline Technical Specification
+	    else if (isASiCSBaselineTSSignatureFormat(signatureFormat)) {
+		signer = new ASiCSBaselineTSSigner();
+
+		// Actualizamos los firmantes de la firma CAdES o XAdES
+		// contenida dentro de la firma ASiC-S
+		return signer.upgrade(signature, listSigners, idClient);
+	    }
+	    // Si es formato CAdES Baseline European Standard
+	    else if (isCAdESBaselineENSignatureFormat(signatureFormat)) {
+		signer = new CAdESBaselineENSigner();
+
+		// Actualizamos los firmantes de la firma
+		return signer.upgrade(signature, listSigners, idClient);
+	    }
+	    // Si es formato XAdES Baseline European Standard
+	    else if (isXAdESBaselineENSignatureFormat(signatureFormat)) {
+		signer = new XAdESBaselineENSigner();
+
+		// Actualizamos los firmantes de la firma
+		return signer.upgrade(signature, listSigners, idClient);
+	    }
+	    // Si es formato PAdES Baseline European Standard
+	    else if (isPAdESBaselineENSignatureFormat(signatureFormat)) {
+		signer = new PAdESBaselineENSigner();
+
+		// Actualizamos los firmantes de la firma
+		return signer.upgrade(signature, listSigners, idClient);
+	    }
+	    // Si el formato es ASiC-S Baseline European Standard
+	    else if (isASiCSBaselineENSignatureFormat(signatureFormat)) {
+		signer = new ASiCSBaselineENSigner();
 
 		// Actualizamos los firmantes de la firma CAdES o XAdES
 		// contenida dentro de la firma ASiC-S
@@ -947,37 +1143,61 @@ public final class IntegraFacade {
 		// Validamos los firmantes de la firma PAdES
 		return ((PadesSigner) signer).verifySignature(signature, idClient);
 	    }
-	    // Si el formato es CAdES B-Level, CAdES T-Level, CAdES LT-Level o
-	    // CAdES LTA-Level
-	    else if (isCAdESBaselineSignatureFormat(signatureFormat)) {
-		signer = new CAdESBaselineSigner();
+	    // Si el formato es CAdES Baseline Techanical Specification
+	    else if (isCAdESBaselineTSSignatureFormat(signatureFormat)) {
+		signer = new CAdESBaselineTSSigner();
 
 		// Validamos los firmantes de la firma CAdES Baseline
-		return ((CAdESBaselineSigner) signer).verifySignature(signature, signedData, idClient);
+		return ((CAdESBaselineTSSigner) signer).verifySignature(signature, signedData, idClient);
 	    }
-	    // Si el formato es XAdES B-Level, XAdES T-Level, XAdES LT-Level o
-	    // XAdES LTA-Level
-	    else if (isXAdESBaselineSignatureFormat(signatureFormat)) {
-		signer = new XAdESBaselineSigner();
+	    // Si el formato es XAdES Baseline Techanical Specification
+	    else if (isXAdESBaselineTSSignatureFormat(signatureFormat)) {
+		signer = new XAdESBaselineTSSigner();
 
 		// Validamos los firmantes de la firma XAdES Baseline
-		return ((XAdESBaselineSigner) signer).verifySignature(signature, idClient);
+		return ((XAdESBaselineTSSigner) signer).verifySignature(signature, idClient);
 	    }
-	    // Si el formato es PAdES B-Level, PAdES T-Level, PAdES LT-Level o
-	    // PAdES LTA-Level
-	    else if (isPAdESBaselineSignatureFormat(signatureFormat)) {
-		signer = new PAdESBaselineSigner();
+	    // Si el formato es PAdES Baseline Techanical Specification
+	    else if (isPAdESBaselineTSSignatureFormat(signatureFormat)) {
+		signer = new PAdESBaselineTSSigner();
 
 		// Validamos los firmantes de la firma PAdES Baseline
-		return ((PAdESBaselineSigner) signer).verifySignature(signature, idClient);
+		return ((PAdESBaselineTSSigner) signer).verifySignature(signature, idClient);
 	    }
-	    // Si el formato es ASiC-S B-Level, ASiC-S T-Level, ASiC-S LT-Level
-	    // o ASiC-S LTA-Level
-	    else if (isASiCSBaselineSignatureFormat(signatureFormat)) {
-		signer = new ASiCSBaselineSigner();
+	    // Si el formato es ASiC-S Baseline Techanical Specification
+	    else if (isASiCSBaselineTSSignatureFormat(signatureFormat)) {
+		signer = new ASiCSBaselineTSSigner();
 
 		// Validamos la firma ASiC-S
-		return ((ASiCSBaselineSigner) signer).verifySignature(signature);
+		return ((ASiCSBaselineTSSigner) signer).verifySignature(signature);
+	    }
+	    // Si el formato es CAdES Baseline European Standard
+	    else if (isCAdESBaselineENSignatureFormat(signatureFormat)) {
+		signer = new CAdESBaselineENSigner();
+
+		// Validamos los firmantes de la firma CAdES Baseline
+		return ((CAdESBaselineENSigner) signer).verifySignature(signature, signedData, idClient);
+	    }
+	    // Si el formato es XAdES Baseline European Standard
+	    else if (isXAdESBaselineENSignatureFormat(signatureFormat)) {
+		signer = new XAdESBaselineENSigner();
+
+		// Validamos los firmantes de la firma XAdES Baseline
+		return ((XAdESBaselineENSigner) signer).verifySignature(signature, idClient);
+	    }
+	    // Si el formato es PAdES Baseline European Standard
+	    else if (isPAdESBaselineENSignatureFormat(signatureFormat)) {
+		signer = new PAdESBaselineENSigner();
+
+		// Validamos los firmantes de la firma PAdES Baseline
+		return ((PAdESBaselineENSigner) signer).verifySignature(signature, idClient);
+	    }
+	    // Si el formato es ASiC-S Baseline European Standard
+	    else if (isASiCSBaselineENSignatureFormat(signatureFormat)) {
+		signer = new ASiCSBaselineENSigner();
+
+		// Validamos la firma ASiC-S Baseline European Standard
+		return ((ASiCSBaselineENSigner) signer).verifySignature(signature);
 	    }
 	    // Si el formato no es ninguno de los anteriores
 	    else {
@@ -1022,7 +1242,7 @@ public final class IntegraFacade {
 
 		// obtenemos los datos firmados
 
-		return ((CadesSigner) signer).getSignedData(signature);
+		return signer.getSignedData(signature);
 
 	    }
 	    // Si es formato XAdES
@@ -1031,7 +1251,7 @@ public final class IntegraFacade {
 
 		// obtenemos los datos firmados
 
-		return ((XadesSigner) signer).getSignedData(signature);
+		return signer.getSignedData(signature);
 	    }
 	    // Si es formato PAdES
 	    else if (isPAdESSignatureFormat(signatureFormat)) {
@@ -1039,39 +1259,71 @@ public final class IntegraFacade {
 
 		// obtenemos los datos firmados
 
-		return ((PadesSigner) signer).getSignedData(signature);
+		return signer.getSignedData(signature);
 	    }
-	    // Si es formato ASiC-S
-	    else if (isASiCSBaselineSignatureFormat(signatureFormat)) {
-		signer = new ASiCSBaselineSigner();
+	    // Si es formato ASiC-S Baseline Technical Specification
+	    else if (isASiCSBaselineTSSignatureFormat(signatureFormat)) {
+		signer = new ASiCSBaselineTSSigner();
 
 		// obtenemos los datos firmados
 
-		return ((ASiCSBaselineSigner) signer).getSignedData(signature);
+		return signer.getSignedData(signature);
 	    }
-	    // Si es formato CAdES Baseline
-	    else if (isCAdESBaselineSignatureFormat(signatureFormat)) {
-		signer = new CAdESBaselineSigner();
+	    // Si es formato CAdES Baseline Technical Specification
+	    else if (isCAdESBaselineTSSignatureFormat(signatureFormat)) {
+		signer = new CAdESBaselineTSSigner();
 
 		// obtenemos los datos firmados
 
-		return ((CAdESBaselineSigner) signer).getSignedData(signature);
+		return signer.getSignedData(signature);
 	    }
-	    // Si es formato XAdES Baseline
-	    else if (isXAdESBaselineSignatureFormat(signatureFormat)) {
-		signer = new XAdESBaselineSigner();
+	    // Si es formato XAdES Baseline Technical Specification
+	    else if (isXAdESBaselineTSSignatureFormat(signatureFormat)) {
+		signer = new XAdESBaselineTSSigner();
 
 		// obtenemos los datos firmados
 
-		return ((XAdESBaselineSigner) signer).getSignedData(signature);
+		return signer.getSignedData(signature);
 	    }
-	    // Si es formato PAdES Baseline
-	    else if (isPAdESBaselineSignatureFormat(signatureFormat)) {
-		signer = new PAdESBaselineSigner();
+	    // Si es formato PAdES Baseline Technical Specification
+	    else if (isPAdESBaselineTSSignatureFormat(signatureFormat)) {
+		signer = new PAdESBaselineTSSigner();
 
 		// obtenemos los datos firmados
 
-		return ((PAdESBaselineSigner) signer).getSignedData(signature);
+		return signer.getSignedData(signature);
+	    }
+	    // Si es formato ASiC-S Baseline European Standard
+	    else if (isASiCSBaselineENSignatureFormat(signatureFormat)) {
+		signer = new ASiCSBaselineENSigner();
+
+		// obtenemos los datos firmados
+
+		return signer.getSignedData(signature);
+	    }
+	    // Si es formato CAdES Baseline European Standard
+	    else if (isCAdESBaselineENSignatureFormat(signatureFormat)) {
+		signer = new CAdESBaselineENSigner();
+
+		// obtenemos los datos firmados
+
+		return signer.getSignedData(signature);
+	    }
+	    // Si es formato XAdES Baseline European Standard
+	    else if (isXAdESBaselineENSignatureFormat(signatureFormat)) {
+		signer = new XAdESBaselineENSigner();
+
+		// obtenemos los datos firmados
+
+		return signer.getSignedData(signature);
+	    }
+	    // Si es formato PAdES Baseline European Standard
+	    else if (isPAdESBaselineENSignatureFormat(signatureFormat)) {
+		signer = new PAdESBaselineENSigner();
+
+		// obtenemos los datos firmados
+
+		return signer.getSignedData(signature);
 	    }
 	    // si el formato no es ninguno de los anteriores
 	    else {
@@ -1117,7 +1369,7 @@ public final class IntegraFacade {
     }
 
     /**
-     * Method that generates a CAdES Baseline signature.
+     * Method that generates a CAdES Baseline Technical Specification signature.
      * @param dataToSign Parameter that represents the data to sign.
      * @param signatureAlgorithm Parameter that represents the signature algorithm.
      * @param privateKey Parameter that represents the private key of the signing certificate.
@@ -1131,10 +1383,10 @@ public final class IntegraFacade {
      * </ul>
      * @throws SigningException If the method fails.
      */
-    private static byte[ ] generateCAdESBaselineSignature(byte[ ] dataToSign, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
+    private static byte[ ] generateCAdESBaselineTSSignature(byte[ ] dataToSign, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
 	// Instanciamos la implementación que generará la firma CAdES
 	// Baseline
-	Signer signer = new CAdESBaselineSigner();
+	Signer signer = new CAdESBaselineTSSigner();
 
 	// Si se ha indicado que la firma debe contener política de
 	// firma
@@ -1163,9 +1415,10 @@ public final class IntegraFacade {
 	// Generamos la firma CAdES Baseline
 	return signer.sign(dataToSign, signatureAlgorithm, SignatureConstants.SIGN_MODE_IMPLICIT, privateKey, null, includeTimestamp, ISignatureFormatDetector.FORMAT_CADES_B_LEVEL, policyID, idClient);
     }
+    
 
     /**
-     * Method that generates a XAdES Baseline signature.
+     * Method that generates a CAdES Baseline European Standard signature.
      * @param dataToSign Parameter that represents the data to sign.
      * @param signatureAlgorithm Parameter that represents the signature algorithm.
      * @param privateKey Parameter that represents the private key of the signing certificate.
@@ -1174,15 +1427,15 @@ public final class IntegraFacade {
      * @param idClient client identifier of ws invocation.
      * @return a signature with one of the next formats:
      * <ul>
-     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_LEVEL}</li>
-     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_T_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_T_LEVEL}</li>
      * </ul>
      * @throws SigningException If the method fails.
      */
-    private static byte[ ] generateXAdESBaselineSignature(byte[ ] dataToSign, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
-	// Instanciamos la implementación que generará la firma XAdES
-	// Baseline
-	Signer signer = new XAdESBaselineSigner();
+    private static byte[ ] generateCAdESBaselineENSignature(byte[ ] dataToSign, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
+	// Instanciamos la implementación que generará la firma CAdES
+	// Baseline European Standard
+	Signer signer = new CAdESBaselineENSigner();
 
 	// Si se ha indicado que la firma debe contener política de
 	// firma
@@ -1196,21 +1449,20 @@ public final class IntegraFacade {
 	    // las
 	    // políticas de firma el identificador de la política de
 	    // firma
-	    // asociada a las firmas XML
-	    policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_XML_POLICY_ID);
+	    // asociada a las firmas ASN.1
+	    policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_ASN1_POLICY_ID);
 
 	    // Comprobamos que el identificador de la política de firma
 	    // no
 	    // sea nulo ni vacío
 	    if (!GenericUtilsCommons.assertStringValue(policyID)) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.IF_LOG007, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.IF_LOG006, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE });
 		LOGGER.warn(errorMsg);
 		policyID = null;
 	    }
 	}
-
-	// Generamos la firma XAdES Baseline
-	return signer.sign(dataToSign, signatureAlgorithm, SignatureConstants.SIGN_FORMAT_XADES_DETACHED, privateKey, null, includeTimestamp, ISignatureFormatDetector.FORMAT_XADES_B_LEVEL, policyID, idClient);
+	// Generamos la firma CAdES Baseline European Standard
+	return signer.sign(dataToSign, signatureAlgorithm, SignatureConstants.SIGN_MODE_IMPLICIT, privateKey, null, includeTimestamp, ISignatureFormatDetector.FORMAT_CADES_B_B_LEVEL, policyID, idClient);
     }
 
     /**
@@ -1242,7 +1494,7 @@ public final class IntegraFacade {
     }
 
     /**
-     * Method that generates a PAdES Baseline signature.
+     * Method that generates a XAdES Baseline Technical Specifications signature.
      * @param dataToSign Parameter that represents the data to sign.
      * @param signatureAlgorithm Parameter that represents the signature algorithm.
      * @param privateKey Parameter that represents the private key of the signing certificate.
@@ -1251,14 +1503,15 @@ public final class IntegraFacade {
      * @param idClient client identifier of ws invocation.
      * @return a signature with one of the next formats:
      * <ul>
-     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_T_LEVEL}</li>
      * </ul>
      * @throws SigningException If the method fails.
      */
-    private static byte[ ] generatePAdESBaselineSignature(byte[ ] dataToSign, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
-	// Instanciamos la implementación que generará la firma PAdES
+    private static byte[ ] generateXAdESBaselineTSSignature(byte[ ] dataToSign, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
+	// Instanciamos la implementación que generará la firma XAdES
 	// Baseline
-	Signer signer = new PAdESBaselineSigner();
+	Signer signer = new XAdESBaselineTSSigner();
 
 	// Si se ha indicado que la firma debe contener política de
 	// firma
@@ -1272,22 +1525,72 @@ public final class IntegraFacade {
 	    // las
 	    // políticas de firma el identificador de la política de
 	    // firma
-	    // asociada a las firmas PDF
-	    policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_PDF_POLICY_ID);
+	    // asociada a las firmas XML
+	    policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_XML_POLICY_ID);
 
 	    // Comprobamos que el identificador de la política de firma
 	    // no
 	    // sea nulo ni vacío
 	    if (!GenericUtilsCommons.assertStringValue(policyID)) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.IF_LOG008, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.IF_LOG007, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE });
 		LOGGER.warn(errorMsg);
 		policyID = null;
 	    }
 	}
-	// Generamos la firma PAdES Baseline
-	return signer.sign(dataToSign, signatureAlgorithm, SignatureConstants.SIGN_MODE_IMPLICIT, privateKey, null, includeTimestamp, ISignatureFormatDetector.FORMAT_PADES_B_LEVEL, policyID, idClient);
+
+	// Generamos la firma XAdES Baseline
+	return signer.sign(dataToSign, signatureAlgorithm, SignatureConstants.SIGN_FORMAT_XADES_DETACHED, privateKey, null, includeTimestamp, ISignatureFormatDetector.FORMAT_XADES_B_LEVEL, policyID, idClient);
     }
 
+    /**
+     * Method that generates a XAdES Baseline European Standard signature.
+     * @param dataToSign Parameter that represents the data to sign.
+     * @param signatureAlgorithm Parameter that represents the signature algorithm.
+     * @param privateKey Parameter that represents the private key of the signing certificate.
+     * @param includeSignaturePolicy Parameter that indicates if to include signature policy into the signature (true) or not (false).
+     * @param includeTimestamp Parameter that indicates if to add a timestamp to the signature (true) or not (false).
+     * @param idClient client identifier of ws invocation.
+     * @return a signature with one of the next formats:
+     * <ul>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_T_LEVEL}</li>
+     * </ul>
+     * @throws SigningException If the method fails.
+     */
+    private static byte[ ] generateXAdESBaselineENSignature(byte[ ] dataToSign, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
+	// Instanciamos la implementación que generará la firma XAdES
+	// Baseline European Standard
+	Signer signer = new XAdESBaselineENSigner();
+
+	// Si se ha indicado que la firma debe contener política de
+	// firma
+	String policyID = null;
+	if (includeSignaturePolicy) {
+	    // Accedemos al archivo con las propiedades asociadas a las
+	    // políticas de firma
+	    Properties policyProperties = new IntegraProperties().getIntegraProperties(idClient);
+
+	    // Rescatamos del archivo con las propiedades asociadas a
+	    // las
+	    // políticas de firma el identificador de la política de
+	    // firma
+	    // asociada a las firmas XML
+	    policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_XML_POLICY_ID);
+
+	    // Comprobamos que el identificador de la política de firma
+	    // no
+	    // sea nulo ni vacío
+	    if (!GenericUtilsCommons.assertStringValue(policyID)) {
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.IF_LOG007, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+		LOGGER.warn(errorMsg);
+		policyID = null;
+	    }
+	}
+
+	// Generamos la firma XAdES Baseline European Standard
+	return signer.sign(dataToSign, signatureAlgorithm, SignatureConstants.SIGN_FORMAT_XADES_DETACHED, privateKey, null, includeTimestamp, ISignatureFormatDetector.FORMAT_XADES_B_B_LEVEL, policyID, idClient);
+    }
+    
     /**
      * Method that generates a PAdES signature.
      * @param dataToSign Parameter that represents the data to sign.
@@ -1320,6 +1623,103 @@ public final class IntegraFacade {
     }
 
     /**
+     * Method that generates a PAdES Baseline Technical Specification signature.
+     * @param dataToSign Parameter that represents the data to sign.
+     * @param signatureAlgorithm Parameter that represents the signature algorithm.
+     * @param privateKey Parameter that represents the private key of the signing certificate.
+     * @param includeSignaturePolicy Parameter that indicates if to include signature policy into the signature (true) or not (false).
+     * @param includeTimestamp Parameter that indicates if to add a timestamp to the signature (true) or not (false).
+     * @param idClient client identifier of ws invocation.
+     * @return a signature with one of the next formats:
+     * <ul>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_T_LEVEL}</li>
+     * </ul>
+     * @throws SigningException If the method fails.
+     */
+    private static byte[ ] generatePAdESBaselineTSSignature(byte[ ] dataToSign, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
+	// Instanciamos la implementación que generará la firma PAdES
+	// Baseline
+	Signer signer = new PAdESBaselineTSSigner();
+
+	// Si se ha indicado que la firma debe contener política de
+	// firma
+	String policyID = null;
+	if (includeSignaturePolicy) {
+	    // Accedemos al archivo con las propiedades asociadas a las
+	    // políticas de firma
+	    Properties policyProperties = new IntegraProperties().getIntegraProperties(idClient);
+
+	    // Rescatamos del archivo con las propiedades asociadas a
+	    // las
+	    // políticas de firma el identificador de la política de
+	    // firma
+	    // asociada a las firmas PDF
+	    policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_PDF_POLICY_ID);
+
+	    // Comprobamos que el identificador de la política de firma
+	    // no
+	    // sea nulo ni vacío
+	    if (!GenericUtilsCommons.assertStringValue(policyID)) {
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.IF_LOG008, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+		LOGGER.warn(errorMsg);
+		policyID = null;
+	    }
+	}
+	// Generamos la firma PAdES Baseline
+	return signer.sign(dataToSign, signatureAlgorithm, SignatureConstants.SIGN_MODE_IMPLICIT, privateKey, null, includeTimestamp, ISignatureFormatDetector.FORMAT_PADES_B_LEVEL, policyID, idClient);
+    }
+    
+
+    /**
+     * Method that generates a PAdES Baseline European Standard signature.
+     * @param dataToSign Parameter that represents the data to sign.
+     * @param signatureAlgorithm Parameter that represents the signature algorithm.
+     * @param privateKey Parameter that represents the private key of the signing certificate.
+     * @param includeSignaturePolicy Parameter that indicates if to include signature policy into the signature (true) or not (false).
+     * @param includeTimestamp Parameter that indicates if to add a timestamp to the signature (true) or not (false).
+     * @param idClient client identifier of ws invocation.
+     * @return a signature with one of the next formats:
+     * <ul>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_T_LEVEL}</li>
+     * </ul>
+     * @throws SigningException If the method fails.
+     */
+    private static byte[ ] generatePAdESBaselineENSignature(byte[ ] dataToSign, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
+	// Instanciamos la implementación que generará la firma PAdES
+	// Baseline European Standard
+	Signer signer = new PAdESBaselineENSigner();
+
+	// Si se ha indicado que la firma debe contener política de
+	// firma
+	String policyID = null;
+	if (includeSignaturePolicy) {
+	    // Accedemos al archivo con las propiedades asociadas a las
+	    // políticas de firma
+	    Properties policyProperties = new IntegraProperties().getIntegraProperties(idClient);
+
+	    // Rescatamos del archivo con las propiedades asociadas a
+	    // las
+	    // políticas de firma el identificador de la política de
+	    // firma
+	    // asociada a las firmas PDF
+	    policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_PDF_POLICY_ID);
+
+	    // Comprobamos que el identificador de la política de firma
+	    // no
+	    // sea nulo ni vacío
+	    if (!GenericUtilsCommons.assertStringValue(policyID)) {
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.IF_LOG008, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+		LOGGER.warn(errorMsg);
+		policyID = null;
+	    }
+	}
+	// Generamos la firma PAdES Baseline European Standard
+	return signer.sign(dataToSign, signatureAlgorithm, SignatureConstants.SIGN_MODE_IMPLICIT, privateKey, null, includeTimestamp, ISignatureFormatDetector.FORMAT_PADES_B_B_LEVEL, policyID, idClient);
+    }
+    
+    /**
      * Method that generates a CAdES co-signature.
      * @param signature Parameter that represents the signature to co-sign.
      * @param signedData Parameter that represents the data to sign.
@@ -1349,7 +1749,7 @@ public final class IntegraFacade {
     }
 
     /**
-     * Method that generates a CAdES Baseline co-signature.
+     * Method that generates a CAdES Baseline Technical Specification co-signature.
      * @param signature Parameter that represents the signature to co-sign.
      * @param signedData Parameter that represents the data to sign.
      * @param signatureAlgorithm Parameter that represents the signature algorithm.
@@ -1364,10 +1764,10 @@ public final class IntegraFacade {
      * </ul>
      * @throws SigningException If the method fails.
      */
-    private static byte[ ] generateCAdESBaselineCoSignature(byte[ ] signature, byte[ ] signedData, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
+    private static byte[ ] generateCAdESBaselineTSCoSignature(byte[ ] signature, byte[ ] signedData, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
 	// Instanciamos la implementación que generará la firma CAdES
 	// Baseline
-	Signer signer = new CAdESBaselineSigner();
+	Signer signer = new CAdESBaselineTSSigner();
 
 	// Si se ha indicado que la firma debe contener política de
 	// firma
@@ -1398,6 +1798,55 @@ public final class IntegraFacade {
     }
 
     /**
+     * Method that generates a CAdES Baseline European Standard co-signature.
+     * @param signature Parameter that represents the signature to co-sign.
+     * @param signedData Parameter that represents the data to sign.
+     * @param signatureAlgorithm Parameter that represents the signature algorithm.
+     * @param privateKey Parameter that represents the private key of the signing certificate.
+     * @param includeSignaturePolicy Parameter that indicates if to include signature policy into the signature (true) or not (false).
+     * @param includeTimestamp Parameter that indicates if to add a timestamp to the signature (true) or not (false).
+     * @param idClient client identifier of ws invocation.
+     * @return a co-signature with one of the next formats:
+     * <ul>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_T_LEVEL}</li>
+     * </ul>
+     * @throws SigningException If the method fails.
+     */
+    private static byte[ ] generateCAdESBaselineENCoSignature(byte[ ] signature, byte[ ] signedData, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
+	// Instanciamos la implementación que generará la firma CAdES
+	// Baseline European Standard
+	Signer signer = new CAdESBaselineENSigner();
+
+	// Si se ha indicado que la firma debe contener política de
+	// firma
+	String policyID = null;
+	if (includeSignaturePolicy) {
+	    // Accedemos al archivo con las propiedades asociadas a las
+	    // políticas de firma
+	    Properties policyProperties = new IntegraProperties().getIntegraProperties(idClient);
+
+	    // Rescatamos del archivo con las propiedades asociadas a
+	    // las
+	    // políticas de firma el identificador de la política de
+	    // firma
+	    // asociada a las firmas ASN.1
+	    policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_ASN1_POLICY_ID);
+
+	    // Comprobamos que el identificador de la política de firma
+	    // no
+	    // sea nulo ni vacío
+	    if (!GenericUtilsCommons.assertStringValue(policyID)) {
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.IF_LOG006, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+		LOGGER.warn(errorMsg);
+		policyID = null;
+	    }
+	}
+	// Generamos la firma CAdES Baseline European Standard
+	return signer.coSign(signature, signedData, signatureAlgorithm, privateKey, null, includeTimestamp, ISignatureFormatDetector.FORMAT_CADES_B_B_LEVEL, policyID, idClient);
+    }
+    
+    /**
      * Method that generates a XAdES co-signature.
      * @param signature Parameter that represents the signature to co-sign.
      * @param signedData Parameter that represents the data to sign.
@@ -1427,7 +1876,7 @@ public final class IntegraFacade {
     }
 
     /**
-     * Method that generates a XAdES Baseline co-signature.
+     * Method that generates a XAdES Baseline Technical Specification co-signature.
      * @param signature Parameter that represents the signature to co-sign.
      * @param signedData Parameter that represents the data to sign.
      * @param signatureAlgorithm Parameter that represents the signature algorithm.
@@ -1442,10 +1891,10 @@ public final class IntegraFacade {
      * </ul>
      * @throws SigningException If the method fails.
      */
-    private static byte[ ] generateXAdESBaselineCoSignature(byte[ ] signature, byte[ ] signedData, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
+    private static byte[ ] generateXAdESBaselineTSCoSignature(byte[ ] signature, byte[ ] signedData, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
 	// Instanciamos la implementación que generará la firma XAdES
-	// Baseline
-	Signer signer = new XAdESBaselineSigner();
+	// Baseline Technical Specification
+	Signer signer = new XAdESBaselineTSSigner();
 
 	// Si se ha indicado que la firma debe contener política de
 	// firma
@@ -1472,8 +1921,58 @@ public final class IntegraFacade {
 	    }
 	}
 
-	// Generamos la co-firma XAdES Baseline
+	// Generamos la co-firma XAdES Baseline Technical Specification
 	return signer.coSign(signature, signedData, signatureAlgorithm, privateKey, null, includeTimestamp, ISignatureFormatDetector.FORMAT_XADES_B_LEVEL, policyID, idClient);
+    }
+    
+    /**
+     * Method that generates a XAdES Baseline European Standard co-signature.
+     * @param signature Parameter that represents the signature to co-sign.
+     * @param signedData Parameter that represents the data to sign.
+     * @param signatureAlgorithm Parameter that represents the signature algorithm.
+     * @param privateKey Parameter that represents the private key of the signing certificate.
+     * @param includeSignaturePolicy Parameter that indicates if to include signature policy into the signature (true) or not (false).
+     * @param includeTimestamp Parameter that indicates if to add a timestamp to the signature (true) or not (false).
+     * @param idClient client identifier of ws invocation.
+     * @return a co-signature with one of the next formats:
+     * <ul>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_T_LEVEL}</li>
+     * </ul>
+     * @throws SigningException If the method fails.
+     */
+    private static byte[ ] generateXAdESBaselineENCoSignature(byte[ ] signature, byte[ ] signedData, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
+	// Instanciamos la implementación que generará la firma XAdES
+	// Baseline European Standard
+	Signer signer = new XAdESBaselineENSigner();
+
+	// Si se ha indicado que la firma debe contener política de
+	// firma
+	String policyID = null;
+	if (includeSignaturePolicy) {
+	    // Accedemos al archivo con las propiedades asociadas a las
+	    // políticas de firma
+	    Properties policyProperties = new IntegraProperties().getIntegraProperties(idClient);
+
+	    // Rescatamos del archivo con las propiedades asociadas a
+	    // las
+	    // políticas de firma el identificador de la política de
+	    // firma
+	    // asociada a las firmas XML
+	    policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_XML_POLICY_ID);
+
+	    // Comprobamos que el identificador de la política de firma
+	    // no
+	    // sea nulo ni vacío
+	    if (!GenericUtilsCommons.assertStringValue(policyID)) {
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.IF_LOG007, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+		LOGGER.warn(errorMsg);
+		policyID = null;
+	    }
+	}
+
+	// Generamos la co-firma XAdES Baseline European Standard
+	return signer.coSign(signature, signedData, signatureAlgorithm, privateKey, null, includeTimestamp, ISignatureFormatDetector.FORMAT_XADES_B_B_LEVEL, policyID, idClient);
     }
 
     /**
@@ -1505,7 +2004,7 @@ public final class IntegraFacade {
     }
 
     /**
-     * Method that generates a PAdES Baseline co-signature.
+     * Method that generates a PAdES Baseline Technical Specification co-signature.
      * @param signature Parameter that represents the signature to co-sign.
      * @param signedData Parameter that represents the data to sign.
      * @param signatureAlgorithm Parameter that represents the signature algorithm.
@@ -1516,13 +2015,14 @@ public final class IntegraFacade {
      * @return a co-signature with one of the next formats:
      * <ul>
      * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_T_LEVEL}</li>
      * </ul>
      * @throws SigningException If the method fails.
      */
-    private static byte[ ] generatePAdESBaselineCoSignature(byte[ ] signature, byte[ ] signedData, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
+    private static byte[ ] generatePAdESBaselineTSCoSignature(byte[ ] signature, byte[ ] signedData, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
 	// Instanciamos la implementación que generará la firma PAdES
-	// Baseline
-	Signer signer = new PAdESBaselineSigner();
+	// Baseline Technical Specification
+	Signer signer = new PAdESBaselineTSSigner();
 
 	// Si se ha indicado que la firma debe contener política de
 	// firma
@@ -1548,10 +2048,59 @@ public final class IntegraFacade {
 		policyID = null;
 	    }
 	}
-	// Generamos la firma PAdES Baseline
+	// Generamos la firma PAdES Baseline Technical Specification
 	return signer.coSign(signature, signedData, signatureAlgorithm, privateKey, null, includeTimestamp, ISignatureFormatDetector.FORMAT_PADES_B_LEVEL, policyID, idClient);
     }
 
+    /**
+     * Method that generates a PAdES Baseline European Standard co-signature.
+     * @param signature Parameter that represents the signature to co-sign.
+     * @param signedData Parameter that represents the data to sign.
+     * @param signatureAlgorithm Parameter that represents the signature algorithm.
+     * @param privateKey Parameter that represents the private key of the signing certificate.
+     * @param includeSignaturePolicy Parameter that indicates if to include signature policy into the signature (true) or not (false).
+     * @param includeTimestamp Parameter that indicates if to add a timestamp to the signature (true) or not (false).
+     * @param idClient client identifier of ws invocation.
+     * @return a co-signature with one of the next formats:
+     * <ul>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_T_LEVEL}</li>
+     * </ul>
+     * @throws SigningException If the method fails.
+     */
+    private static byte[ ] generatePAdESBaselineENCoSignature(byte[ ] signature, byte[ ] signedData, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
+	// Instanciamos la implementación que generará la firma PAdES
+	// Baseline European Standard
+	Signer signer = new PAdESBaselineENSigner();
+
+	// Si se ha indicado que la firma debe contener política de
+	// firma
+	String policyID = null;
+	if (includeSignaturePolicy) {
+	    // Accedemos al archivo con las propiedades asociadas a las
+	    // políticas de firma
+	    Properties policyProperties = new IntegraProperties().getIntegraProperties(idClient);
+
+	    // Rescatamos del archivo con las propiedades asociadas a
+	    // las
+	    // políticas de firma el identificador de la política de
+	    // firma
+	    // asociada a las firmas PDF
+	    policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_PDF_POLICY_ID);
+
+	    // Comprobamos que el identificador de la política de firma
+	    // no
+	    // sea nulo ni vacío
+	    if (!GenericUtilsCommons.assertStringValue(policyID)) {
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.IF_LOG008, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+		LOGGER.warn(errorMsg);
+		policyID = null;
+	    }
+	}
+	// Generamos la firma PAdES Baseline European Standard
+	return signer.coSign(signature, signedData, signatureAlgorithm, privateKey, null, includeTimestamp, ISignatureFormatDetector.FORMAT_PADES_B_B_LEVEL, policyID, idClient);
+    }
+    
     /**
      * Method that generates a CAdES counter-signature over a CAdES signature.
      * @param signature Parameter that represents the signature to counter-sign.
@@ -1581,7 +2130,7 @@ public final class IntegraFacade {
     }
 
     /**
-     * Method that generates a CAdES Baseline counter-signature over a CAdES Baseline signature.
+     * Method that generates a CAdES Baseline Technical Specification counter-signature over a CAdES Baseline signature.
      * @param signature Parameter that represents the signature to counter-sign.
      * @param signatureAlgorithm Parameter that represents the signature algorithm.
      * @param privateKey Parameter that represents the private key of the signing certificate.
@@ -1595,10 +2144,10 @@ public final class IntegraFacade {
      * </ul>
      * @throws SigningException If the method fails.
      */
-    private static byte[ ] generateCAdESBaselineCounterSignature(byte[ ] signature, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
+    private static byte[ ] generateCAdESBaselineTSCounterSignature(byte[ ] signature, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
 	// Instanciamos la implementación que generará la firma CAdES
-	// Baseline
-	Signer signer = new CAdESBaselineSigner();
+	// Baseline Technical Specification
+	Signer signer = new CAdESBaselineTSSigner();
 
 	// Si se ha indicado que la firma debe contener política de
 	// firma
@@ -1624,10 +2173,58 @@ public final class IntegraFacade {
 		policyID = null;
 	    }
 	}
-	// Generamos la firma CAdES Baseline
+	// Generamos la firma CAdES Baseline Technical Specification
 	return signer.counterSign(signature, signatureAlgorithm, privateKey, null, includeTimestamp, ISignatureFormatDetector.FORMAT_CADES_B_LEVEL, policyID, idClient);
     }
 
+    /**
+     * Method that generates a CAdES Baseline European Standard counter-signature over a CAdES Baseline signature.
+     * @param signature Parameter that represents the signature to counter-sign.
+     * @param signatureAlgorithm Parameter that represents the signature algorithm.
+     * @param privateKey Parameter that represents the private key of the signing certificate.
+     * @param includeSignaturePolicy Parameter that indicates if to include signature policy into the signature (true) or not (false).
+     * @param includeTimestamp Parameter that indicates if to add a timestamp to the signature (true) or not (false).
+     * @param idClient client identifier of ws invocation.
+     * @return a CAdES Baseline signature with a counter-signature with one of the next formats:
+     * <ul>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_B_LEVEL}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_T_LEVEL}</li>
+     * </ul>
+     * @throws SigningException If the method fails.
+     */
+    private static byte[ ] generateCAdESBaselineENCounterSignature(byte[ ] signature, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
+	// Instanciamos la implementación que generará la firma CAdES
+	// Baseline European Standard
+	Signer signer = new CAdESBaselineENSigner();
+
+	// Si se ha indicado que la firma debe contener política de
+	// firma
+	String policyID = null;
+	if (includeSignaturePolicy) {
+	    // Accedemos al archivo con las propiedades asociadas a las
+	    // políticas de firma
+	    Properties policyProperties = new IntegraProperties().getIntegraProperties(idClient);
+
+	    // Rescatamos del archivo con las propiedades asociadas a
+	    // las
+	    // políticas de firma el identificador de la política de
+	    // firma
+	    // asociada a las firmas ASN.1
+	    policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_ASN1_POLICY_ID);
+
+	    // Comprobamos que el identificador de la política de firma
+	    // no
+	    // sea nulo ni vacío
+	    if (!GenericUtilsCommons.assertStringValue(policyID)) {
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.IF_LOG006, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+		LOGGER.warn(errorMsg);
+		policyID = null;
+	    }
+	}
+	// Generamos la firma CAdES Baseline European Standard
+	return signer.counterSign(signature, signatureAlgorithm, privateKey, null, includeTimestamp, ISignatureFormatDetector.FORMAT_CADES_B_B_LEVEL, policyID, idClient);
+    }
+    
     /**
      * Method that generates a XAdES counter-signature over a XAdES signature.
      * @param signature Parameter that represents the signature to counter-sign.
@@ -1657,7 +2254,7 @@ public final class IntegraFacade {
     }
 
     /**
-     * Method that generates a XAdES Baseline counter-signature over a XAdES Baseline signature.
+     * Method that generates a XAdES Baseline Technical Specification counter-signature over a XAdES Baseline signature.
      * @param signature Parameter that represents the signature to counter-sign.
      * @param signatureAlgorithm Parameter that represents the signature algorithm.
      * @param privateKey Parameter that represents the private key of the signing certificate.
@@ -1666,16 +2263,15 @@ public final class IntegraFacade {
      * @param idClient client identifier of ws invocation.
      * @return a XAdES Baseline signature with a counter-signature with one of the next formats:
      * <ul>
-     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_BES}</li>
-     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_EPES}</li>
-     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_T}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_Level}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_T_Level}</li>
      * </ul>
      * @throws SigningException If the method fails.
      */
-    private static byte[ ] generateXAdESBaselineCounterSignature(byte[ ] signature, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
+    private static byte[ ] generateXAdESBaselineTSCounterSignature(byte[ ] signature, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
 	// Instanciamos la implementación que generará la firma XAdES
-	// Baseline
-	Signer signer = new XAdESBaselineSigner();
+	// Baseline Technical Specification
+	Signer signer = new XAdESBaselineTSSigner();
 
 	// Si se ha indicado que la firma debe contener política de
 	// firma
@@ -1714,10 +2310,71 @@ public final class IntegraFacade {
 	// librería Tika
 	extraParams.put(SignatureProperties.XADES_DATA_FORMAT_MIME_PROP, UtilsResourcesSignOperations.getMimeType(signature));
 
-	// Generamos la co-firma XAdES Baseline
+	// Generamos la contra-firma XAdES Baseline Technical Specification
 	return signer.counterSign(signature, signatureAlgorithm, privateKey, extraParams, includeTimestamp, ISignatureFormatDetector.FORMAT_XADES_B_LEVEL, policyID, idClient);
     }
 
+    /**
+     * Method that generates a XAdES Baseline European Standard counter-signature over a XAdES Baseline signature.
+     * @param signature Parameter that represents the signature to counter-sign.
+     * @param signatureAlgorithm Parameter that represents the signature algorithm.
+     * @param privateKey Parameter that represents the private key of the signing certificate.
+     * @param includeSignaturePolicy Parameter that indicates if to include signature policy into the signature (true) or not (false).
+     * @param includeTimestamp Parameter that indicates if to add a timestamp to the signature (true) or not (false).
+     * @param idClient client identifier of ws invocation.
+     * @return a XAdES Baseline signature with a counter-signature with one of the next formats:
+     * <ul>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_B_Level}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_T_Level}</li>
+     * </ul>
+     * @throws SigningException If the method fails.
+     */
+    private static byte[ ] generateXAdESBaselineENCounterSignature(byte[ ] signature, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
+	// Instanciamos la implementación que generará la firma XAdES
+	// Baseline European Standard
+	Signer signer = new XAdESBaselineENSigner();
+
+	// Si se ha indicado que la firma debe contener política de
+	// firma
+	String policyID = null;
+	if (includeSignaturePolicy) {
+	    // Accedemos al archivo con las propiedades asociadas a las
+	    // políticas de firma
+	    Properties policyProperties = new IntegraProperties().getIntegraProperties(idClient);
+
+	    // Rescatamos del archivo con las propiedades asociadas a
+	    // las
+	    // políticas de firma el identificador de la política de
+	    // firma
+	    // asociada a las firmas XML
+	    policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_XML_POLICY_ID);
+
+	    // Comprobamos que el identificador de la política de firma
+	    // no
+	    // sea nulo ni vacío
+	    if (!GenericUtilsCommons.assertStringValue(policyID)) {
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.IF_LOG007, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+		LOGGER.warn(errorMsg);
+		policyID = null;
+	    }
+	}
+
+	// Creamos el mapa para propiedades adicionales, en el caso de
+	// XAdES Baseline son obligatorias las asociadas a la generación
+	// del elemento xades:DataObjectFormat
+	Properties extraParams = new Properties();
+
+	// Para la descripción usaremos un texto constante
+	extraParams.put(SignatureProperties.XADES_DATA_FORMAT_DESCRIPTION_PROP, "Data signed by the signer facade of Integr@");
+
+	// Para el Mime-Type de los datos a firmar utilizaremos la
+	// librería Tika
+	extraParams.put(SignatureProperties.XADES_DATA_FORMAT_MIME_PROP, UtilsResourcesSignOperations.getMimeType(signature));
+
+	// Generamos la contra-firma XAdES Baseline European Standard
+	return signer.counterSign(signature, signatureAlgorithm, privateKey, extraParams, includeTimestamp, ISignatureFormatDetector.FORMAT_XADES_B_B_LEVEL, policyID, idClient);
+    }
+    
     /**
      * Method that generates a PAdES counter-signature over a PAdES signature.
      * @param signature Parameter that represents the signature to counter-sign.
@@ -1746,7 +2403,7 @@ public final class IntegraFacade {
     }
 
     /**
-     * Method that generates a PAdES Baseline counter-signature over a PAdES Baseline signature.
+     * Method that generates a PAdES Baseline counter-signature Technical Specification over a PAdES Baseline signature.
      * @param signature Parameter that represents the signature to counter-sign.
      * @param signatureAlgorithm Parameter that represents the signature algorithm.
      * @param privateKey Parameter that represents the private key of the signing certificate.
@@ -1755,15 +2412,15 @@ public final class IntegraFacade {
      * @param idClient client identifier of ws invocation.
      * @return a PAdES Baseline signature with a counter-signature with one of the next formats:
      * <ul>
-     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_BES}</li>
-     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_EPES}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_Level}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_T_Level}</li>
      * </ul>
      * @throws SigningException If the method fails.
      */
-    private static byte[ ] generatePAdESBaselineCounterSignature(byte[ ] signature, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
+    private static byte[ ] generatePAdESBaselineTSCounterSignature(byte[ ] signature, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
 	// Instanciamos la implementación que generará la firma PAdES
-	// Baseline
-	Signer signer = new PAdESBaselineSigner();
+	// Baseline Technical Specification 
+	Signer signer = new PAdESBaselineTSSigner();
 
 	// Si se ha indicado que la firma debe contener política de
 	// firma
@@ -1789,8 +2446,56 @@ public final class IntegraFacade {
 		policyID = null;
 	    }
 	}
-	// Generamos la firma PAdES Baseline
+	// Generamos la firma PAdES Baseline Technical Specification 
 	return signer.counterSign(signature, signatureAlgorithm, privateKey, null, includeTimestamp, ISignatureFormatDetector.FORMAT_PADES_B_LEVEL, policyID, idClient);
+    }
+    
+    /**
+     * Method that generates a PAdES Baseline counter-signature European Standard over a PAdES Baseline counter-signature signature.
+     * @param signature Parameter that represents the signature to counter-sign.
+     * @param signatureAlgorithm Parameter that represents the signature algorithm.
+     * @param privateKey Parameter that represents the private key of the signing certificate.
+     * @param includeSignaturePolicy Parameter that indicates if to include signature policy into the signature (true) or not (false).
+     * @param includeTimestamp Parameter that indicates if to add a timestamp to the signature (true) or not (false).
+     * @param idClient client identifier of ws invocation.
+     * @return a PAdES Baseline signature with a counter-signature with one of the next formats:
+     * <ul>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_B_Level}</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_T_Level}</li>
+     * </ul>
+     * @throws SigningException If the method fails.
+     */
+    private static byte[ ] generatePAdESBaselineENCounterSignature(byte[ ] signature, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
+	// Instanciamos la implementación que generará la firma PAdES
+	// Baseline European Standard
+	Signer signer = new PAdESBaselineENSigner();
+
+	// Si se ha indicado que la firma debe contener política de
+	// firma
+	String policyID = null;
+	if (includeSignaturePolicy) {
+	    // Accedemos al archivo con las propiedades asociadas a las
+	    // políticas de firma
+	    Properties policyProperties = new IntegraProperties().getIntegraProperties(idClient);
+
+	    // Rescatamos del archivo con las propiedades asociadas a
+	    // las
+	    // políticas de firma el identificador de la política de
+	    // firma
+	    // asociada a las firmas PDF
+	    policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_PDF_POLICY_ID);
+
+	    // Comprobamos que el identificador de la política de firma
+	    // no
+	    // sea nulo ni vacío
+	    if (!GenericUtilsCommons.assertStringValue(policyID)) {
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.IF_LOG008, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+		LOGGER.warn(errorMsg);
+		policyID = null;
+	    }
+	}
+	// Generamos la firma PAdES Baseline European Standard
+	return signer.counterSign(signature, signatureAlgorithm, privateKey, null, includeTimestamp, ISignatureFormatDetector.FORMAT_PADES_B_B_LEVEL, policyID, idClient);
     }
 
     /**
@@ -1814,7 +2519,7 @@ public final class IntegraFacade {
      * @throws SigningException If the value isn't PAdES or PAdES Baseline.
      */
     private static void checkIsSignaturePades(String value, String errorMsg) throws SigningException {
-	if (!value.equals(SignatureConstants.SIGN_FORMAT_PADES) && !value.equals(SignatureConstants.SIGN_FORMAT_PADES_BASELINE)) {
+	if (!value.equals(SignatureConstants.SIGN_FORMAT_PADES) && !value.equals(SignatureConstants.SIGN_FORMAT_PADES_BASELINE_TS)) {
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
@@ -1861,7 +2566,7 @@ public final class IntegraFacade {
     }
 
     /**
-     * Method that generates a PAdES Baseline signature.
+     * Method that generates a PAdES Baseline Technical Specification signature.
      * @param dataToSign Parameter that represents the data to sign.
      * @param signatureAlgorithm Parameter that represents the signature algorithm.
      * @param privateKey Parameter that represents the private key of the signing certificate.
@@ -1883,10 +2588,66 @@ public final class IntegraFacade {
      * </ul>
      * @throws SigningException If the method fails.
      */
-    private static byte[ ] generatePAdESBaselineSignatureWithRubric(byte[ ] dataToSign, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, Properties extraParams, String idClient) throws SigningException {
+    private static byte[ ] generatePAdESBaselineTSSignatureWithRubric(byte[ ] dataToSign, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, Properties extraParams, String idClient) throws SigningException {
 	// Instanciamos la implementación que generará la firma PAdES
 	// Baseline
-	Signer signer = new PAdESBaselineSigner();
+	Signer signer = new PAdESBaselineTSSigner();
+
+	// Si se ha indicado que la firma debe contener política de
+	// firma
+	String policyID = null;
+	if (includeSignaturePolicy) {
+	    // Accedemos al archivo con las propiedades asociadas a las
+	    // políticas de firma
+	    Properties policyProperties = new IntegraProperties().getIntegraProperties(idClient);
+
+	    // Rescatamos del archivo con las propiedades asociadas a
+	    // las
+	    // políticas de firma el identificador de la política de
+	    // firma
+	    // asociada a las firmas PDF
+	    policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_PDF_POLICY_ID);
+
+	    // Comprobamos que el identificador de la política de firma
+	    // nojava
+	    // sea nulo ni vacío
+	    if (!GenericUtilsCommons.assertStringValue(policyID)) {
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.IF_LOG008, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+		LOGGER.warn(errorMsg);
+		policyID = null;
+	    }
+	}
+	// Generamos la firma PAdES Baseline
+	return signer.sign(dataToSign, signatureAlgorithm, SignatureConstants.SIGN_MODE_IMPLICIT, privateKey, extraParams, includeTimestamp, ISignatureFormatDetector.FORMAT_PADES_B_LEVEL, policyID, idClient);
+    }
+    
+    /**
+     * Method that generates a PAdES Baseline European Standard signature.
+     * @param dataToSign Parameter that represents the data to sign.
+     * @param signatureAlgorithm Parameter that represents the signature algorithm.
+     * @param privateKey Parameter that represents the private key of the signing certificate.
+     * @param includeSignaturePolicy Parameter that indicates if to include signature policy into the signature (true) or not (false).
+     * @param includeTimestamp Parameter that indicates if to add a timestamp to the signature (true) or not (false).
+     * @param extraParams Set of extra configuration parameters. The allowed parameters are:
+     * <ul>
+     * <li>{@link SignatureProperties#PADES_LOWER_LEFT_X}. This property is only allowed for PAdES (Baseline or not) signatures.</li>
+     * <li>{@link SignatureProperties#PADES_LOWER_LEFT_Y}. This property is only allowed for PAdES (Baseline or not) signatures.</li>
+     * <li>{@link SignatureProperties#PADES_UPPER_RIGHT_X}. This property is only allowed for PAdES (Baseline or not) signatures.</li>
+     * <li>{@link SignatureProperties#PADES_UPPER_RIGHT_Y}. This property is only allowed for PAdES (Baseline or not) signatures.</li>
+     * <li>{@link SignatureProperties#PADES_IMAGE}. This property is only allowed for PAdES (Baseline or not) signatures.</li>
+     * <li>{@link SignatureProperties#PADES_IMAGE_PAGE}. This property is only allowed for PAdES (Baseline or not) signatures.</li>
+     * </ul>
+     * @param idClient client identifier of ws invocation.
+     * @return a signature with one of the next formats:
+     * <ul>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_LEVEL}</li>
+     * </ul>
+     * @throws SigningException If the method fails.
+     */
+    private static byte[ ] generatePAdESBaselineENSignatureWithRubric(byte[ ] dataToSign, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, Properties extraParams, String idClient) throws SigningException {
+	// Instanciamos la implementación que generará la firma PAdES
+	// Baseline
+	Signer signer = new PAdESBaselineENSigner();
 
 	// Si se ha indicado que la firma debe contener política de
 	// firma
@@ -1917,7 +2678,7 @@ public final class IntegraFacade {
     }
 
     /**
-     * Method that generates a ASiC-S Baseline CAdES Baseline.
+     * Method that generates a ASiC-S CAdES Baseline Technical Specification.
      * @param dataToSign Parameter that represents the data to sign.
      * @param signatureAlgorithm Parameter that represents the signature algorithm.
      * @param privateKey Parameter that represents the private key of the signing certificate.
@@ -1927,10 +2688,10 @@ public final class IntegraFacade {
      * @return a signature ASiC-S Baseline CAdES Baseline
      * @throws SigningException If the method fails.
      */
-    private static byte[ ] generateASiCSBaselineCAdESBaseline(byte[ ] dataToSign, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
+    private static byte[ ] generateASiCSCAdESBaselineTS(byte[ ] dataToSign, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
 	// Instanciamos la implementación que generará la firma ASiC-S
-	// Baseline
-	Signer signer = new ASiCSBaselineSigner();
+	// Baseline Technical Specification
+	Signer signer = new ASiCSBaselineTSSigner();
 
 	// Si se ha indicado que la firma debe contener política de
 	// firma
@@ -1956,25 +2717,69 @@ public final class IntegraFacade {
 		policyID = null;
 	    }
 	}
-	// Generamos la firma ASiC-S Baseline CAdES Baseline.
+	// Generamos la firma ASiC-S CAdES Baseline Technical Specification
 	return signer.sign(dataToSign, signatureAlgorithm, SignatureConstants.SIGN_MODE_EXPLICIT, privateKey, null, includeTimestamp, ISignatureFormatDetector.FORMAT_CADES_B_LEVEL, policyID, idClient);
     }
-
+    
     /**
-     * Method that generates a ASiC-S Baseline XAdES Baseline.
+     * Method that generates a ASiC-S CAdES Baseline European Standard.
      * @param dataToSign Parameter that represents the data to sign.
      * @param signatureAlgorithm Parameter that represents the signature algorithm.
      * @param privateKey Parameter that represents the private key of the signing certificate.
      * @param includeSignaturePolicy Parameter that indicates if to include signature policy into the signature (true) or not (false).
      * @param includeTimestamp Parameter that indicates if to add a timestamp to the signature (true) or not (false).
      * @param idClient client identifier of ws invocation.
-     * @return a signature ASiC-S Baseline CAdES Baseline
+     * @return a signature ASiC-S CAdES Baseline European Standard.
      * @throws SigningException If the method fails.
      */
-    private static byte[ ] generateASiCSBaselineXAdESBaseline(byte[ ] dataToSign, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
+    private static byte[ ] generateASiCSCAdESBaselineEN(byte[ ] dataToSign, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
 	// Instanciamos la implementación que generará la firma ASiC-S
-	// Baseline
-	Signer signer = new ASiCSBaselineSigner();
+	// Baseline European Standard
+	Signer signer = new ASiCSBaselineENSigner();
+
+	// Si se ha indicado que la firma debe contener política de
+	// firma
+	String policyID = null;
+	if (includeSignaturePolicy) {
+	    // Accedemos al archivo con las propiedades asociadas a las
+	    // políticas de firma
+	    Properties policyProperties = new IntegraProperties().getIntegraProperties(null);
+
+	    // Rescatamos del archivo con las propiedades asociadas a
+	    // las
+	    // políticas de firma el identificador de la política de
+	    // firma
+	    // asociada a las firmas ASN1
+	    policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_ASN1_POLICY_ID);
+
+	    // Comprobamos que el identificador de la política de firma
+	    // no
+	    // sea nulo ni vacío
+	    if (!GenericUtilsCommons.assertStringValue(policyID)) {
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.IF_LOG006, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+		LOGGER.warn(errorMsg);
+		policyID = null;
+	    }
+	}
+	// Generamos la firma ASiC-S CAdES Baseline European Standard
+	return signer.sign(dataToSign, signatureAlgorithm, SignatureConstants.SIGN_MODE_EXPLICIT, privateKey, null, includeTimestamp, ISignatureFormatDetector.FORMAT_CADES_B_B_LEVEL, policyID, idClient);
+    }
+
+    /**
+     * Method that generates a ASiC-S XAdES Baseline Technical Specification.
+     * @param dataToSign Parameter that represents the data to sign.
+     * @param signatureAlgorithm Parameter that represents the signature algorithm.
+     * @param privateKey Parameter that represents the private key of the signing certificate.
+     * @param includeSignaturePolicy Parameter that indicates if to include signature policy into the signature (true) or not (false).
+     * @param includeTimestamp Parameter that indicates if to add a timestamp to the signature (true) or not (false).
+     * @param idClient client identifier of ws invocation.
+     * @return a signature ASiC-S CAdES Baseline Technical Specification.
+     * @throws SigningException If the method fails.
+     */
+    private static byte[ ] generateASiCSXAdESBaselineTS(byte[ ] dataToSign, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
+	// Instanciamos la implementación que generará la firma ASiC-S
+	// Baseline Technical Specification
+	Signer signer = new ASiCSBaselineTSSigner();
 
 	// Si se ha indicado que la firma debe contener política de
 	// firma
@@ -2000,8 +2805,51 @@ public final class IntegraFacade {
 		policyID = null;
 	    }
 	}
-	// Generamos la firma ASiC-S Baseline XAdES Baseline.
+	// Generamos la firma ASiC-S XAdES Baseline Technical Specification.
 	return signer.sign(dataToSign, signatureAlgorithm, SignatureConstants.SIGN_FORMAT_XADES_DETACHED, privateKey, null, includeTimestamp, ISignatureFormatDetector.FORMAT_XADES_B_LEVEL, policyID, idClient);
     }
 
+    /**
+     * Method that generates a ASiC-S XAdES Baseline European Specification.
+     * @param dataToSign Parameter that represents the data to sign.
+     * @param signatureAlgorithm Parameter that represents the signature algorithm.
+     * @param privateKey Parameter that represents the private key of the signing certificate.
+     * @param includeSignaturePolicy Parameter that indicates if to include signature policy into the signature (true) or not (false).
+     * @param includeTimestamp Parameter that indicates if to add a timestamp to the signature (true) or not (false).
+     * @param idClient client identifier of ws invocation.
+     * @return a signature ASiC-S CAdES Baseline European Specification.
+     * @throws SigningException If the method fails.
+     */
+    private static byte[ ] generateASiCSXAdESBaselineEN(byte[ ] dataToSign, String signatureAlgorithm, PrivateKeyEntry privateKey, boolean includeSignaturePolicy, boolean includeTimestamp, String idClient) throws SigningException {
+	// Instanciamos la implementación que generará la firma ASiC-S
+	// Baseline European Specification
+	Signer signer = new ASiCSBaselineENSigner();
+
+	// Si se ha indicado que la firma debe contener política de
+	// firma
+	String policyID = null;
+	if (includeSignaturePolicy) {
+	    // Accedemos al archivo con las propiedades asociadas a las
+	    // políticas de firma
+	    Properties policyProperties = new IntegraProperties().getIntegraProperties(null);
+
+	    // Rescatamos del archivo con las propiedades asociadas a
+	    // las
+	    // políticas de firma el identificador de la política de
+	    // firma
+	    // asociada a las firmas XML
+	    policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_XML_POLICY_ID);
+
+	    // Comprobamos que el identificador de la política de firma
+	    // no
+	    // sea nulo ni vacío
+	    if (!GenericUtilsCommons.assertStringValue(policyID)) {
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.IF_LOG007, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+		LOGGER.warn(errorMsg);
+		policyID = null;
+	    }
+	}
+	// Generamos la firma ASiC-S XAdES Baseline European Specification.
+	return signer.sign(dataToSign, signatureAlgorithm, SignatureConstants.SIGN_FORMAT_XADES_DETACHED, privateKey, null, includeTimestamp, ISignatureFormatDetector.FORMAT_XADES_B_B_LEVEL, policyID, idClient);
+    }
 }

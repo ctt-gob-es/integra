@@ -621,20 +621,35 @@ public final class DSSConstants {
 	public static final String PADES = "urn:afirma:dss:1.0:profile:XSS:forms:PAdES";
 	
 	/**
-	 *  Attribute that represents identifier for CAdES Baseline.
+	 *  Attribute that represents identifier for CAdES Baseline Technical Specification.
 	 */
-	public static final String CADES_BASELINE_2_2_1 = "http://uri.etsi.org/103173/v2.2.1#";
+	public static final String CADES_BASELINE_TS_2_2_1 = "http://uri.etsi.org/103173/v2.2.1#";
 	    
 	/**
-	 *  Attribute that represents identifier for PAdES Baseline.
+	 *  Attribute that represents identifier for PAdES Baseline Technical Specification.
 	 */
-	public static final String PADES_BASELINE_2_1_1 = "http://uri.etsi.org/103172/v2.1.1#";
+	public static final String PADES_BASELINE_TS_2_1_1 = "http://uri.etsi.org/103172/v2.1.1#";
 	
 	/**
-	 *  Attribute that represents identifier for XAdES Baseline.
+	 *  Attribute that represents identifier for XAdES Baseline Technical Specification.
 	 */
-	public static final String XADES_BASELINE_2_1_1 = "http://uri.etsi.org/103171/v2.1.1#";
+	public static final String XADES_BASELINE_TS_2_1_1 = "http://uri.etsi.org/103171/v2.1.1#";
 
+	/**
+	 *  Attribute that represents identifier for CAdES Baseline Technical Specification.
+	 */
+	public static final String CADES_BASELINE_EN_1_1_1 = "http://uri.etsi.org/319122/v1.1.1#";
+	    
+	/**
+	 *  Attribute that represents identifier for PAdES Baseline Technical Specification.
+	 */
+	public static final String PADES_BASELINE_EN_1_1_1 = "http://uri.etsi.org/319142/v1.1.1#";
+	
+	/**
+	 *  Attribute that represents identifier for XAdES Baseline Technical Specification.
+	 */
+	public static final String XADES_BASELINE_EN_1_1_1 = "http://uri.etsi.org/319132/v1.1.1#";
+	
     }
 
     /**
@@ -769,6 +784,25 @@ public final class DSSConstants {
 	 */
 	public static final String LTA_LEVEL = "urn:afirma:dss:1.0:profile:XSS:AdES:forms:LTA-Level";
 
+	/**
+	 *  Attribute that represents B_B_LEVEL identifier form..
+	 */
+	public static final String B_B_LEVEL = "urn:afirma:dss:1.0:profile:XSS:AdES:forms:B-B-Level";
+	
+	/**
+	 *  Attribute that represents B_T_LEVEL identifier form..
+	 */
+	public static final String B_T_LEVEL = "urn:afirma:dss:1.0:profile:XSS:AdES:forms:B-T-Level";
+	
+	/**
+	 *  Attribute that represents B_LT_LEVEL identifier form..
+	 */
+	public static final String B_LT_LEVEL = "urn:afirma:dss:1.0:profile:XSS:AdES:forms:B-LT-Level";
+	
+	/**
+	 *  Attribute that represents B_LTA_LEVEL identifier form..
+	 */
+	public static final String B_LTA_LEVEL = "urn:afirma:dss:1.0:profile:XSS:AdES:forms:B-LTA-Level";
     }
 
     /**

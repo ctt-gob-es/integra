@@ -85,7 +85,7 @@ public class XMLAdvancedSignature {
     public static final String ELEMENT_SIGNATURE = "Signature";
     public static final String ELEMENT_SIGNATURE_VALUE = "SignatureValue";
 
-    protected BasicXAdESImpl xades;
+    protected BaseXAdESImpl xades;
     protected Element baseElement;
     protected XMLSignatureFactory xmlSignatureFactory;
     protected DigestMethod digestMethod;
@@ -122,7 +122,7 @@ public class XMLAdvancedSignature {
 	});
     }
 
-    protected XMLAdvancedSignature(XAdES_BES xades) {
+    protected XMLAdvancedSignature(XAdESBase xades) {
 	if (xades == null) {
 	    throw new IllegalArgumentException("XAdES parameter can not be NULL.");
 	}
@@ -133,10 +133,10 @@ public class XMLAdvancedSignature {
 	    throw new IllegalArgumentException("Root/Base XML Element can not be NULL.");
 	}
 
-	this.xades = (BasicXAdESImpl) xades;
+	this.xades = (BaseXAdESImpl) xades;
     }
 
-    public static XMLAdvancedSignature newInstance(XAdES_BES xades) throws GeneralSecurityException {
+    public static XMLAdvancedSignature newInstance(XAdESBase xades) throws GeneralSecurityException {
 	XMLAdvancedSignature result = new XMLAdvancedSignature(xades);
 	result.setDigestMethod(xades.getDigestMethod());
 	result.setXadesNamespace(xades.getXadesNamespace());
@@ -144,7 +144,7 @@ public class XMLAdvancedSignature {
 	return result;
     }
 
-    public static XMLAdvancedSignature getInstance(XAdES_BES xades) throws GeneralSecurityException {
+    public static XMLAdvancedSignature getInstance(XAdESBase xades) throws GeneralSecurityException {
 	return newInstance(xades);
     }
 
@@ -160,7 +160,12 @@ public class XMLAdvancedSignature {
 	List referencesIdList = new ArrayList(refsIdList);
 
 	if (WrappedKeyStorePlace.SIGNING_CERTIFICATE_PROPERTY.equals(getWrappedKeyStorePlace())) {
-	    xades.setSigningCertificate(certificate);
+	    if (xades instanceof BasicXAdESImpl) {
+		((BasicXAdESImpl) xades).setSigningCertificate(certificate);
+	    }
+	    else if (xades instanceof BLevelXAdESImpl) {
+		((BLevelXAdESImpl) xades).setSigningCertificateV2(certificate, null);
+	    }
 	} else {
 	    /*
 	     * @ToDo The ds:KeyInfo element also MAY contain other certificates forming a chain that
@@ -421,10 +426,13 @@ public class XMLAdvancedSignature {
     private WrappedKeyStorePlace wrappedKeyStorePlace = WrappedKeyStorePlace.KEY_INFO;
 
     protected QualifyingProperties marshalQualifyingProperties(String xmlNamespace, String signatureIdPrefix, List referencesIdList, String tsaURL) throws GeneralSecurityException, MarshalException {
-	QualifyingProperties qp;
-	qp = new QualifyingProperties(getBaseElement(), signatureIdPrefix, xades.getXadesPrefix(), xmlNamespace, xades.getXmlSignaturePrefix());
+	QualifyingProperties qp = new QualifyingProperties(this.xades.getBaseDocument(), getBaseElement(), signatureIdPrefix, xades.getXadesPrefix(), xmlNamespace, xades.getXmlSignaturePrefix());
 
-	xades.marshalQualifyingProperties(qp, signatureIdPrefix, referencesIdList, tsaURL);
+	try {
+	    xades.marshalQualifyingProperties(qp, signatureIdPrefix, referencesIdList, tsaURL);
+	} catch (javax.xml.crypto.MarshalException e) {
+	    throw new MarshalException(e.getMessage(), e);
+	}
 
 	SignedProperties sp = qp.getSignedProperties();
 

@@ -31,12 +31,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.apache.xml.crypto.dsig.XMLSignature;
-
-import net.java.xades.security.xml.XAdES.SignaturePolicyIdentifier;
-import net.java.xades.security.xml.XAdES.XAdES_EPES;
-
 import org.apache.log4j.Logger;
+import org.apache.xml.crypto.dsig.XMLSignature;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.DERIA5String;
@@ -68,11 +64,18 @@ import es.gob.afirma.i18n.Language;
 import es.gob.afirma.logger.IntegraLogger;
 import es.gob.afirma.properties.IIntegraConstants;
 import es.gob.afirma.properties.IntegraProperties;
+import es.gob.afirma.signature.cades.SPDocSpecification;
+import es.gob.afirma.signature.cades.SignaturePolicyDocument;
+import es.gob.afirma.signature.cades.SignaturePolicyStore;
 import es.gob.afirma.signature.xades.IXMLConstants;
 import es.gob.afirma.utils.CryptoUtilPdfBc;
+import es.gob.afirma.utils.CryptoUtilXML;
 import es.gob.afirma.utils.GenericUtilsCommons;
 import es.gob.afirma.utils.ICryptoUtil;
 import es.gob.afirma.utils.IUtilsSignature;
+import es.gob.afirma.utils.UtilsSignatureOp;
+import net.java.xades.security.xml.XAdES.SignaturePolicyIdentifier;
+import net.java.xades.security.xml.XAdES.XadesWithExplicitPolicy;
 
 /**
  * <p>Class that manages all the operations related to signature policies.</p>
@@ -86,6 +89,22 @@ public final class SignaturePolicyManager {
      */
     private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(SignaturePolicyManager.class);
 
+    /**
+     * Nombre del atributo de política de firma CAdES.
+     */
+    private static final String CADES_ATTR_SIGNATURE_POLICY_IDENTIFIER = "signature-policy-identifier";
+    
+    /**
+     * Nombre del atributo de política almacenada de firma CAdES.
+     */
+    private static final String CADES_ATTR_SIGNATURE_POLICY_STORE = "signature-policy-store";
+
+    /**
+     * Constant that represents the OID of the <code>signature-policy-store</code> attribute. This attribute is used
+     * by ETSI EN 319 122-1 baseline profiles.
+     */
+    private static final DERObjectIdentifier ID_SIGNATURE_POLICY_STORE = new ASN1ObjectIdentifier("0.4.0.19122.1.3");
+    
     /**
      * Constructor method for the class SignaturePolicyManager.java.
      */
@@ -125,7 +144,7 @@ public final class SignaturePolicyManager {
 	    throw new IllegalArgumentException(errorMsg);
 	}
     }
-
+    
     /**
      * Method that adds the <code>SignaturePolicyIdentifier</code> element to an ASN.1 object.
      * @param contexExpecific Parameter that represents the set of values of the signer info.
@@ -240,7 +259,7 @@ public final class SignaturePolicyManager {
      * @param idClient Parameter that represents the client application identifier.
      * @throws SignaturePolicyException If the method fails.
      */
-    public static void addXMLSignPolicy(XAdES_EPES xades, String qualifier, String policyID, Properties properties, String idClient) throws SignaturePolicyException {
+    public static void addXMLSignPolicy(XadesWithExplicitPolicy xades, String qualifier, String policyID, Properties properties, String idClient) throws SignaturePolicyException {
 	LOGGER.info(Language.getResIntegra(ILogConstantKeys.SPM_LOG001));
 	try {
 	    // Comprobamos que se han indicado parámetros de entrada
@@ -306,7 +325,7 @@ public final class SignaturePolicyManager {
      * generation of signatures with signature policies.
      * @throws SignaturePolicyException If the method fails.
      */
-    public static void addXMLSignPolicy(XAdES_EPES xades, String qualifier, String policyID, Properties properties) throws SignaturePolicyException {
+    public static void addXMLSignPolicy(XadesWithExplicitPolicy xades, String qualifier, String policyID, Properties properties) throws SignaturePolicyException {
 	addXMLSignPolicy(xades, qualifier, policyID, properties, null);
     }
 
@@ -1244,10 +1263,11 @@ public final class SignaturePolicyManager {
 		    throw new SignaturePolicyException(Language.getFormatResIntegra(ILogConstantKeys.SPM_LOG022, new Object[ ] { hashOID.getAlgorithm().getId(), policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE }));
 		}
 
-		AlgorithmIdentifier signHashOID = new AlgorithmIdentifier(signerInformation.getEncryptionAlgOID());
+		AlgorithmIdentifier signAlgorithmOID = UtilsSignatureOp.getSignatureAlgorithm(signerInformation);
+		
 		// Comprobamos si el algoritmo de firma es válido
-		if (!isValidASN1SignAlgorithmByPolicy(signHashOID, policyID, policyProperties, idClient)) {
-		    throw new SignaturePolicyException(Language.getFormatResIntegra(ILogConstantKeys.SPM_LOG024, new Object[ ] { signHashOID.getAlgorithm().getId(), policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE }));
+		if (!isValidASN1SignAlgorithmByPolicy(signAlgorithmOID, policyID, policyProperties, idClient)) {
+		    throw new SignaturePolicyException(Language.getFormatResIntegra(ILogConstantKeys.SPM_LOG024, new Object[ ] { signAlgorithmOID.getAlgorithm().getId(), policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE }));
 		}
 
 		// Validamos los elementos firmados
@@ -1303,10 +1323,12 @@ public final class SignaturePolicyManager {
 		    throw new SignaturePolicyException(Language.getFormatResIntegra(ILogConstantKeys.SPM_LOG022, new Object[ ] { hashOID.getAlgorithm().getId(), policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE }));
 		}
 
-		AlgorithmIdentifier signHashOID = new AlgorithmIdentifier(signerInformation.getEncryptionAlgOID());
+		// Obtenemos el algoritmo de firma
+		AlgorithmIdentifier signatureAlgorithmOID = UtilsSignatureOp.getSignatureAlgorithm(signerInformation);
+		
 		// Comprobamos si el algoritmo de firma es válido
-		if (!isValidASN1SignAlgorithmByPolicy(signHashOID, policyID, policyProperties, idClient)) {
-		    throw new SignaturePolicyException(Language.getFormatResIntegra(ILogConstantKeys.SPM_LOG024, new Object[ ] { signHashOID.getAlgorithm().getId(), policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE }));
+		if (!isValidASN1SignAlgorithmByPolicy(signatureAlgorithmOID, policyID, policyProperties, idClient)) {
+		    throw new SignaturePolicyException(Language.getFormatResIntegra(ILogConstantKeys.SPM_LOG024, new Object[ ] { signatureAlgorithmOID.getAlgorithm().getId(), policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE }));
 		}
 
 		// Comprobamos si el modo de firma es válido
@@ -2532,6 +2554,7 @@ public final class SignaturePolicyManager {
 			listOIDAllowedSignAlgorithms.add(oidHashAlgorithm);
 		    }
 		}
+		
 		// Comprobamos si el OID del algoritmo de firma indicado está
 		// permitido o no
 		if (!listOIDAllowedSignAlgorithms.contains(signAlgorithmId.getAlgorithm().getId())) {
@@ -2611,5 +2634,334 @@ public final class SignaturePolicyManager {
 	    LOGGER.info(Language.getResIntegra(ILogConstantKeys.SPM_LOG031));
 	}
 
+    }
+
+    /**
+     * Method that verifies that the Signature PolicyStore attribute of an XAdES signature meets the following requirements:
+     * <ul>
+     * <li>That it doesn't exist if there isn't also the {@code xades:SignaturePolicyIdentifier} attribute.</li>
+     * <li>That the id of the stored policy is the same as that of the declared policy.</li>
+     * <li>That the stored policy contains the document policy or a reference.</li>
+     * <li>If the stored policy contains the document policy, that the calculation of its hash matches the one declared in the policy.</li>
+     * </ul>
+     * @param dsSignature Parameter that represents the <code>ds:Signature</code> element of the XAdES-EPES signature.
+     * @throws SignaturePolicyException
+     */
+    public static void validateXAdESSignaturePolicyStore(Element dsSignature) throws SignaturePolicyException {
+	LOGGER.info(Language.getResIntegra(ILogConstantKeys.SPM_LOG069));
+	try {
+	    // Comprobamos que se han indicado parámetros de entrada
+	    checkInputParameter(dsSignature, Language.getResIntegra(ILogConstantKeys.SPM_LOG002));
+
+	    // Validamos que exista el elemento xades:SignedPolicyIdentifier
+	    Element signaturePolicyIdentifier = validateXAdESPolicyIdentifierExistence(dsSignature);
+	    
+	    // Accedemos al elemento xades141:SignaturePolicyStore
+	    Element signaturePolicyStore = getXMLElementFromXAdESSignature(dsSignature, IXMLConstants.ELEMENT_SIGNATURE_POLICY_STORE, true);
+		
+	    // Validamos que el identificador de la política de firma almacenada sea igual al de la política declarada 
+	    validateXAdESSignaturePolicyStoreId(signaturePolicyStore, signaturePolicyIdentifier);
+
+	    // Validamos que el atributo de la política almacenada contenga el documento de
+	    // la política
+	    // empotrada o una referencia al mismo. Si estaba empotrada, lo obtiene. 
+	    Element policyDocument = validateXAdESSignaturePolicyDocument(signaturePolicyStore, signaturePolicyIdentifier);
+	    
+	    // Si la política estaba empotrada, comprobamos que su hash coincida con el declarado
+	    // junto a la política
+	    if (policyDocument != null) {
+		validateXAdESLocalPolicyDocumentHash(policyDocument, signaturePolicyIdentifier);
+	    }
+	    
+	} finally {
+	    LOGGER.info(Language.getResIntegra(ILogConstantKeys.SPM_LOG070));
+	}
+    }
+    
+    /**
+     * Method that verifies that exists the {@code xades:SignaturePolicyIdentifier} attribute.
+     * @param dsSignature Parameter that represents the <code>ds:Signature</code> element of the XAdES-EPES signature.
+     * @return The {@code xades:SignaturePolicyIdentifier} attribute.
+     * @throws SignaturePolicyException If the {@code xades:SignaturePolicyIdentifier} attribute doesn't exist.
+     */
+    private static Element validateXAdESPolicyIdentifierExistence(Element dsSignature) throws SignaturePolicyException {
+	return getXMLElementFromXAdESSignature(dsSignature, IXMLConstants.ELEMENT_SIGNATURE_POLICY_IDENTIFIER, true);
+    }
+    
+    /**
+     * Method that verifies that the id of the stored policy is the same as that of the declared policy.
+     * @param dsSignaturePolicyStore Parameter that represents the <code>xades141:SignaturePolicyStore</code> element.
+     * @param dsSignaturePolicyIdentifier Parameter that represents the <code>xades:SignaturePolicyIdentifier</code> element.
+     * @throws SignaturePolicyException If the Ids are different.
+     */
+    private static void validateXAdESSignaturePolicyStoreId(Element dsSignaturePolicyStore, Element dsSignaturePolicyIdentifier) throws SignaturePolicyException {
+	
+	// Accedemos al elemento xades:Identifier de la política de firma almacenada
+	Element policyStoredIdentifier = getXMLElementFromXAdESSignature(dsSignaturePolicyStore, IXMLConstants.ELEMENT_IDENTIFIER, true);
+
+	// Obtenemos el valor del elemento xades:Identifier con el identificador
+	// de la política de firma, que puede ser una URN o una URL
+	String policyStoredIdentifierValue = policyStoredIdentifier.getTextContent();
+		
+	// Accedemos al elemento xades:Identifier de la politica de firma declarada
+	Element identifier = getXMLElementFromXAdESSignature(dsSignaturePolicyIdentifier, IXMLConstants.ELEMENT_IDENTIFIER, true);
+
+	// Obtenemos el valor del elemento xades:Identifier con el identificador
+	// de la política de firma, que puede ser una URN o una URL
+	String declaredIdentifierValue = identifier.getTextContent();
+	
+	// Si los identificadores de politica no son el mismo, la firma no es valida
+	if (!policyStoredIdentifierValue.equals(declaredIdentifierValue)) {
+	    throw new SignaturePolicyException(Language.getResIntegra(ILogConstantKeys.SPM_LOG071));
+	}
+    }
+    
+    /**
+     * Method that the stored policy contains the document policy or a reference.
+     * @param dsSignaturePolicyStore Parameter that represents the <code>xades141:SignaturePolicyStore</code> element.
+     * @param dsSignaturePolicyIdentifier Parameter that represents the <code>xades:SignaturePolicyIdentifier</code> element.
+     * @return The xades141:SignaturePolicyDocument element with the policy document.
+     * @throws SignaturePolicyException If the hashs don't match.
+     */
+    private static Element validateXAdESSignaturePolicyDocument(Element dsSignaturePolicyStore, Element dsSignaturePolicyIdentifier) throws SignaturePolicyException {
+
+	// Accedemos al elemento xades141:SigPolDocLocalURI de la política de firma almacenada
+	Element localUri = getXMLElementFromXAdESSignature(dsSignaturePolicyStore, IXMLConstants.ELEMENT_SIG_POL_DOC_LOCAL_URI, false);
+	
+	// Accedemos al elemento xades141:SignaturePolicyDocument de la política de firma almacenada, que sera obligatorio
+	// si no se encontro una referencia al mismo
+	Element policyDocument = getXMLElementFromXAdESSignature(dsSignaturePolicyStore, IXMLConstants.ELEMENT_SIGNATURE_POLICY_DOCUMENT, localUri == null);
+	
+	// Comprobamos que no se hayan establecido ambos parametros
+	if (localUri != null && policyDocument != null) {
+	    throw new SignaturePolicyException(Language.getResIntegra(ILogConstantKeys.SPM_LOG072));
+	}
+	
+	// Si se incluyo una referencia a la política, ignoramos la validación 
+	if (localUri != null) {
+	    LOGGER.warn(Language.getResIntegra(ILogConstantKeys.SPM_LOG073));
+	}
+	
+	return policyDocument;
+    }
+
+    /**
+     * Method that verifies that the policy's hash in the SignaturePolicyIdentifier is the hash of the stored document.
+     * @param policyDocument Stored document.
+     * @param dsSignaturePolicyIdentifier Info of the signature policy.
+     * @throws SignaturePolicyException if the hash of the stored document isn't the policy'hash.
+     */
+    private static void validateXAdESLocalPolicyDocumentHash(Element policyDocument, Element dsSignaturePolicyIdentifier)
+	    throws SignaturePolicyException {
+
+	// Obtenemos el hash declarado por la politica
+	Element policyHash = getXMLElementFromXAdESSignature(dsSignaturePolicyIdentifier, IXMLConstants.ELEMENT_DIGEST_VALUE, true);
+	byte[] policyDigest = Base64.decode(policyHash.getTextContent());
+
+	// Obtenemos el algoritmo de hash declarado por la politica
+	Element policyHashAlgorithm = getXMLElementFromXAdESSignature(dsSignaturePolicyIdentifier, IXMLConstants.ELEMENT_DIGEST_METHOD, true);
+	String hashAlgorithm = CryptoUtilXML.translateXmlDigestAlgorithm(policyHashAlgorithm.getAttribute(IXMLConstants.ATTRIBUTE_ALGORITHM));
+	
+	// Obtenemos el contenido del documento de la politica
+	byte[] policyDocumentContent = Base64.decode(policyDocument.getTextContent());
+	
+	// Calculamos el hash del documento
+	byte[] calculatedDigest;
+	try {
+	    calculatedDigest = MessageDigest.getInstance(hashAlgorithm).digest(policyDocumentContent);
+	} catch (Exception e) {
+	    throw new SignaturePolicyException(Language.getResIntegra(ILogConstantKeys.SPM_LOG074));
+	}
+	
+	// Comprobamos que el hash del documento coincide con el hash declarado en la politica
+	if (!MessageDigest.isEqual(policyDigest, calculatedDigest)) {
+	    throw new SignaturePolicyException(Language.getResIntegra(ILogConstantKeys.SPM_LOG075));
+	}
+    }
+
+    /**
+     * Method that verifies that the Signature PolicyStore attribute of an XAdES signature meets the following requirements:
+     * <ul>
+     * <li>That it doesn't exist if there isn't also the {@code xades:SignaturePolicyIdentifier} attribute.</li>
+     * <li>That the id of the stored policy is the same as that of the declared policy.</li>
+     * <li>That the stored policy contains the document policy or a reference.</li>
+     * <li>If the stored policy contains the document policy, that the calculation of its hash matches the one declared in the policy.</li>
+     * </ul>
+     * @param dsSignature Parameter that represents the <code>ds:Signature</code> element of the XAdES-EPES signature.
+     * @throws SignaturePolicyException
+     */
+    public static void validateCAdESSignaturePolicyStore(SignerInformation signerInformation) throws SignaturePolicyException {
+	LOGGER.info(Language.getResIntegra(ILogConstantKeys.SPM_LOG076));
+	try {
+	    // Comprobamos que se han indicado parámetros de entrada
+	    checkInputParameter(signerInformation, Language.getResIntegra(ILogConstantKeys.SPM_LOG002));
+
+	    // Validamos que exista el elemento signature-policy-identifier
+	    SignaturePolicyId signaturePolicyIdentifier = validateCAdESPolicyIdentifierExistence(signerInformation);
+
+	    // Accedemos al elemento signature-policy-store
+	    SignaturePolicyStore signaturePolicyStore = getCAdESSignaturePolicyStore(signerInformation);
+		
+	    // Validamos que el identificador de la política de firma almacenada sea igual al de la política declarada 
+	    validateCAdESSignaturePolicyStoreId(signaturePolicyStore, signaturePolicyIdentifier);
+
+	    // Validamos que el atributo de la política almacenada contenga el documento de
+	    // la política
+	    // empotrada o una referencia al mismo. Si estaba empotrada, lo obtiene. 
+	    byte[] policyDocument = validateCAdESSignaturePolicyDocument(signaturePolicyStore, signaturePolicyIdentifier);
+	    
+	    // Si la política estaba empotrada, comprobamos que su hash coincida con el declarado
+	    // junto a la política
+	    if (policyDocument != null) {
+		validateCAdESLocalPolicyDocumentHash(policyDocument, signaturePolicyIdentifier);
+	    }
+	    
+	} finally {
+	    LOGGER.info(Language.getResIntegra(ILogConstantKeys.SPM_LOG077));
+	}
+    }
+
+    /**
+     * Comprueba que exista una política de firma.
+     * @param signerInformation Información de los firmantes.
+     * @return Información de la política de firma obtenida.
+     * @throws SignaturePolicyException Cuando no se ha encontrado la política de firma.
+     */
+    private static SignaturePolicyId validateCAdESPolicyIdentifierExistence(SignerInformation signerInformation)
+	    throws SignaturePolicyException {
+
+	// Accedemos al conjunto de atributos firmados
+	AttributeTable signedAttrs = signerInformation.getSignedAttributes();
+
+	// Recuperamos el atributo de la política de firma
+	Attribute signaturePolicy = signedAttrs.get(PKCSObjectIdentifiers.id_aa_ets_sigPolicyId);
+	
+	// Si no está definida la política, lanzamos una excepción
+	if (signaturePolicy == null) {
+	    throw new SignaturePolicyException(Language.getFormatResIntegra(ILogConstantKeys.SPM_LOG019, new Object[] { CADES_ATTR_SIGNATURE_POLICY_IDENTIFIER }));
+	}
+	
+	// Componemos el objeto con la política de firma
+	return SignaturePolicyId.getInstance(signaturePolicy.getAttrValues().getObjectAt(0));
+    }
+    
+    /**
+     * Comprueba que exista una política de firma almacenada.
+     * @param signerInformation Información de los firmantes.
+     * @return Información de la política de firma obtenida.
+     * @throws SignaturePolicyException Cuando no se ha encontrado la política de firma almacenada.
+     */
+    private static SignaturePolicyStore getCAdESSignaturePolicyStore(SignerInformation signerInformation)
+	    throws SignaturePolicyException {
+
+	// Accedemos al conjunto de atributos firmados
+	AttributeTable unsignedAttrs = signerInformation.getUnsignedAttributes();
+
+	// Recuperamos el atributo de la política de firma almacenada
+	Attribute signaturePolicyStore = unsignedAttrs.get(ID_SIGNATURE_POLICY_STORE);
+	
+	// Si no está definida una política almacenada, lanzamos una excepción
+	if (signaturePolicyStore == null) {
+	    throw new SignaturePolicyException(Language.getFormatResIntegra(ILogConstantKeys.SPM_LOG019, new Object[] { CADES_ATTR_SIGNATURE_POLICY_STORE }));
+	}
+	
+	// Componemos el objeto con la política de firma
+	return SignaturePolicyStore.getInstance(signaturePolicyStore.getAttrValues().getObjectAt(0));
+    }
+    
+
+    private static void validateCAdESSignaturePolicyStoreId(SignaturePolicyStore signaturePolicyStore,
+	    SignaturePolicyId signaturePolicyIdentifier)
+		    throws SignaturePolicyException {
+
+	// Comprobamos que la política almacenada tenga definido su identificador
+	SPDocSpecification docSpec = signaturePolicyStore.getSPDocSpec();
+	if (docSpec == null || docSpec.getOid() == null) {
+	    throw new SignaturePolicyException(Language.getResIntegra(ILogConstantKeys.SPM_LOG078));
+	}
+
+	// Obtenemos el identificador de la política almacenada
+	ASN1ObjectIdentifier storedPolicyIdentifier = docSpec.getOid();
+
+	// Comprobamos que la política declarada tenga definido un identificador
+	if (signaturePolicyIdentifier.getSigPolicyId() == null) {
+	    throw new SignaturePolicyException(Language.getResIntegra(ILogConstantKeys.SPM_LOG079));
+	}
+
+	// Obtenemos el identificador de la política declarada
+	ASN1ObjectIdentifier declaredPolicyIdentifier = signaturePolicyIdentifier.getSigPolicyId();
+
+	// Si los identificadores de ambas políticas no son iguales, la firma no es valida
+	if (!storedPolicyIdentifier.equals(declaredPolicyIdentifier)) {
+	    throw new SignaturePolicyException(Language.getResIntegra(ILogConstantKeys.SPM_LOG071));
+	}
+    }
+    
+    /**
+     * Method that verifies the stored policy contains the document policy or a reference.
+     * @param dsSignaturePolicyStore Parameter that represents the stored signature policy.
+     * @param dsSignaturePolicyIdentifier Parameter that represents the declared signature policy.
+     * @return the policy document encoded.
+     * @throws SignaturePolicyException if the document is not included.
+     */
+    private static byte[] validateCAdESSignaturePolicyDocument(SignaturePolicyStore signaturePolicyStore,
+	    SignaturePolicyId signaturePolicyIdentifier) throws SignaturePolicyException { 
+
+	// Accedemos a la informacion del documento almacenado
+	SignaturePolicyDocument spDocument = signaturePolicyStore.getSpDocument();
+	if (spDocument == null) {
+	    throw new SignaturePolicyException(Language.getResIntegra(ILogConstantKeys.SPM_LOG080));
+	}
+	
+	// Accedemos a la URI de la política de firma almacenada
+	String localUri = spDocument.getSigPolicyLocalURI();
+	
+	// Accedemos al documento de la política de firma almacenada
+	byte[] policyDocument = spDocument.getSigPolicyEncoded();
+	
+	// Comprobamos que no se hayan establecido ambos parametros
+	if (localUri != null && policyDocument != null) {
+	    throw new SignaturePolicyException(Language.getResIntegra(ILogConstantKeys.SPM_LOG072));
+	}
+	
+	// Si se incluyo una referencia a la política, ignoramos la validación 
+	if (localUri != null) {
+	    LOGGER.warn(Language.getResIntegra(ILogConstantKeys.SPM_LOG073));
+	}
+	
+	return policyDocument;
+    }
+
+    /**
+     * Method that verifies that the policy's hash in the SignaturePolicyIdentifier is the hash of the stored document.
+     * @param policyDocument Stored document.
+     * @param signaturePolicyIdentifier Info of the signature policy.
+     * @throws SignaturePolicyException if the hash of the stored document isn't the policy'hash.
+     */
+    private static void validateCAdESLocalPolicyDocumentHash(byte[] policyDocument, SignaturePolicyId signaturePolicyIdentifier)
+	    throws SignaturePolicyException {
+
+	// Obtenemos la información del hash de la política
+	OtherHashAlgAndValue hashInfo = signaturePolicyIdentifier.getSigPolicyHash();
+	
+	// Obtenemos el hash declarado por la política
+	byte[] policyDigest = hashInfo.getHashValue().getOctets();
+	
+	// Obtenemos el algoritmo de hash declarado por la politica
+	AlgorithmIdentifier algorithmId = hashInfo.getHashAlgorithm();
+	
+	// Calculamos el hash del documento con el algoritmo declarado
+	byte[] calculatedDigest;
+	try {
+	    String hashAlgorithm = CryptoUtilPdfBc.translateAlgorithmIdentifier(algorithmId);
+	    calculatedDigest = MessageDigest.getInstance(hashAlgorithm).digest(policyDocument);
+	} catch (Exception e) {
+	    throw new SignaturePolicyException(Language.getResIntegra(ILogConstantKeys.SPM_LOG074));
+	}
+	
+	// Comprobamos que el hash del documento coincide con el hash declarado en la politica
+	if (!MessageDigest.isEqual(policyDigest, calculatedDigest)) {
+	    throw new SignaturePolicyException(Language.getResIntegra(ILogConstantKeys.SPM_LOG075));
+	}
     }
 }

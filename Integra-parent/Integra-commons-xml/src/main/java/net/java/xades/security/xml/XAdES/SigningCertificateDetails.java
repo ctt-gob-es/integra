@@ -22,7 +22,7 @@ package net.java.xades.security.xml.XAdES;
 import java.security.GeneralSecurityException;
 
 import org.apache.xml.crypto.dsig.XMLSignature;
-
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -43,8 +43,8 @@ import org.w3c.dom.Node;
 
 public class SigningCertificateDetails extends XAdESStructure {
 
-    public SigningCertificateDetails(SignedSignatureProperties ssp, SigningCertificate signingCertificate, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) throws GeneralSecurityException {
-	super(ssp, "SigningCertificate", xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+    public SigningCertificateDetails(Document document, SignedSignatureProperties ssp, SigningCertificate signingCertificate, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) throws GeneralSecurityException {
+	super(document, ssp, "SigningCertificate", xadesPrefix, xadesNamespace, xmlSignaturePrefix);
 
 	// TODO: Unimplemented URI parameter
 	Element cert = createElement("Cert");

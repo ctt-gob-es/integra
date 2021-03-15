@@ -21,7 +21,7 @@ package net.java.xades.security.xml.XAdES;
 
 import org.apache.xml.crypto.dsig.DigestMethod;
 import org.apache.xml.crypto.dsig.XMLSignature;
-
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
@@ -41,8 +41,8 @@ import org.w3c.dom.Element;
 
 public class SignaturePolicyIdentifierDetails extends XAdESStructure {
 
-    public SignaturePolicyIdentifierDetails(SignedSignatureProperties signedSignatureProperties, SignaturePolicyIdentifier signaturePolicyIdentifier, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
-	super(signedSignatureProperties, "SignaturePolicyIdentifier", xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+    public SignaturePolicyIdentifierDetails(Document document, SignedSignatureProperties signedSignatureProperties, SignaturePolicyIdentifier signaturePolicyIdentifier, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
+	super(document, signedSignatureProperties, "SignaturePolicyIdentifier", xadesPrefix, xadesNamespace, xmlSignaturePrefix);
 
 	// TODO: check if when the policy is implied other attributes are not
 	// mandatory.

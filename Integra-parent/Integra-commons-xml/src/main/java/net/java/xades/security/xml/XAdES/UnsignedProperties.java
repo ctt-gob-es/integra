@@ -19,6 +19,7 @@
  */
 package net.java.xades.security.xml.XAdES;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /*
@@ -31,8 +32,9 @@ import org.w3c.dom.Node;
 public class UnsignedProperties extends XAdESStructure {
 
     private UnsignedSignatureProperties unsignedSignatureProperties;
+    private Document document;
 
-    public UnsignedProperties(QualifyingProperties qp, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
+    public UnsignedProperties(Document document, QualifyingProperties qp, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
 	super(qp, "UnsignedProperties", xadesPrefix, xadesNamespace, xmlSignaturePrefix);
     }
 
@@ -42,7 +44,7 @@ public class UnsignedProperties extends XAdESStructure {
 
     public UnsignedSignatureProperties getUnsignedSignatureProperties() {
 	if (unsignedSignatureProperties == null) {
-	    unsignedSignatureProperties = new UnsignedSignatureProperties(this, xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+	    unsignedSignatureProperties = new UnsignedSignatureProperties(document, this, xadesPrefix, xadesNamespace, xmlSignaturePrefix);
 	}
 
 	return unsignedSignatureProperties;

@@ -68,6 +68,12 @@ public final class IntegraFacadeBind {
 	 * <li>{@link ISignatureFormatDetector#FORMAT_CADES_T_LEVEL}</li>
 	 * <li>{@link ISignatureFormatDetector#FORMAT_XADES_T_LEVEL}</li>
 	 * <li>{@link ISignatureFormatDetector#FORMAT_PADES_T_LEVEL}</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_B_LEVEL}</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_B_LEVEL}</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_B_LEVEL}</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_T_LEVEL}</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_T_LEVEL}</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_T_LEVEL}</li>
 	 * </ul>
 	 * @throws SigningException If the method fails.
 	 */
@@ -100,6 +106,12 @@ public final class IntegraFacadeBind {
 	 * <li>{@link ISignatureFormatDetector#FORMAT_CADES_T_LEVEL}</li>
 	 * <li>{@link ISignatureFormatDetector#FORMAT_XADES_T_LEVEL}</li>
 	 * <li>{@link ISignatureFormatDetector#FORMAT_PADES_T_LEVEL}</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_B_LEVEL}</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_B_LEVEL}</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_B_LEVEL}</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_T_LEVEL}</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_T_LEVEL}</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_T_LEVEL}</li>
 	 * </ul>
 	 * @throws SigningException If the method fails.
 	 */
@@ -131,6 +143,12 @@ public final class IntegraFacadeBind {
 	 * <li>{@link ISignatureFormatDetector#FORMAT_CADES_T_LEVEL}</li>
 	 * <li>{@link ISignatureFormatDetector#FORMAT_XADES_T_LEVEL}</li>
 	 * <li>{@link ISignatureFormatDetector#FORMAT_PADES_T_LEVEL}</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_B_LEVEL}</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_B_LEVEL}</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_B_LEVEL}</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_T_LEVEL}</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_T_LEVEL}</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_T_LEVEL}</li>
 	 * </ul>
 	 * @throws SigningException If the method fails.
 	 */

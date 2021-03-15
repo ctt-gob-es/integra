@@ -45,25 +45,33 @@ public class XAdESStructure extends DOMStructure {
     public String xadesPrefix;
     public String xadesNamespace;
     public String xmlSignaturePrefix;
-
+    
     public XAdESStructure(XAdESStructure parent, String elementName, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
-	this(parent.getElement(), elementName, xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+	this(parent.getDocument(), parent.getElement(), elementName, xadesPrefix, xadesNamespace, xmlSignaturePrefix);
     }
 
     public XAdESStructure(Element parentElement, String elementName, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
-	this(parentElement.getOwnerDocument().createElementNS(xadesNamespace, elementName), xadesPrefix, xadesNamespace, xmlSignaturePrefix);
-
-	this.xadesPrefix = xadesPrefix;
-	this.xadesNamespace = xadesNamespace;
-	this.xmlSignaturePrefix = xmlSignaturePrefix;
-
-	document = parentElement.getOwnerDocument();
-	Element element = getElement();
-	element.setPrefix(xadesPrefix);
-
-	parentElement.appendChild(element);
+	this(parentElement.getOwnerDocument(), parentElement, elementName, xadesPrefix, xadesNamespace, xmlSignaturePrefix);
     }
 
+    public XAdESStructure(Document document, XAdESStructure parent, String elementName, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
+        this(document, parent.getElement(), elementName, xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+    }
+
+    public XAdESStructure(Document document, Element parentElement, String elementName, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
+        this(document.createElementNS(xadesNamespace, elementName), xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+        
+        this.xadesPrefix = xadesPrefix;
+        this.xadesNamespace = xadesNamespace;
+        this.xmlSignaturePrefix = xmlSignaturePrefix;
+
+        this.document = document;
+        Element element = getElement();
+        element.setPrefix(xadesPrefix);
+
+        parentElement.appendChild(element);
+    }
+    
     public XAdESStructure(Node node, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
 	super(node);
 

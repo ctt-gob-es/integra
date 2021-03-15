@@ -21,13 +21,17 @@
  */
 package es.gob.afirma.properties;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -87,6 +91,7 @@ public final class IntegraProperties {
 	}
 	    
 	InputStream in = null;
+	InputStreamReader inReader = null;
 	try {
 	    if (uri == null) {
 		uri = new URI(url.toString());
@@ -94,11 +99,13 @@ public final class IntegraProperties {
 	    integraProperties = new Properties();
 	   
 	    in = new FileInputStream(new File(uri));
-	   
-	    integraProperties.load(in);
+	    inReader = new InputStreamReader(in, StandardCharsets.UTF_8);
+	    
+	    integraProperties.load(inReader);
 	 } catch (Exception e) {
 	     LOGGER.error(Language.getFormatResIntegra(ILogConstantKeys.IFP_LOG002, new Object[ ] { propertiesName }));
 	 } finally {
+	     UtilsResourcesCommons.safeCloseReader(inReader);
 	     UtilsResourcesCommons.safeCloseInputStream(in);
 	 }
 	

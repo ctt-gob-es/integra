@@ -20,11 +20,17 @@
 package net.java.xades.security.xml.XAdES;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import org.w3c.dom.Document;
 
 public class SignedDataObjectProperties extends XAdESStructure {
 
-    public SignedDataObjectProperties(SignedProperties signedProperties, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
+    private final Document document;
+    
+    public SignedDataObjectProperties(Document document, SignedProperties signedProperties, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
 	super(signedProperties, "SignedDataObjectProperties", xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+        this.document = document;
     }
 
     public void setDataObjectFormat(ArrayList<DataObjectFormat> dataObjectFormat) {
@@ -34,7 +40,20 @@ public class SignedDataObjectProperties extends XAdESStructure {
     }
 
     public void setCommitmentTypeIndication(CommitmentTypeIndication commitmentTypeIndication) {
-	new CommitmentTypeIndicationDetails(this, commitmentTypeIndication, xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+	new CommitmentTypeIndicationDetails(this.getDocument(), this, commitmentTypeIndication, xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+    }
+    
+    public void setCommitmentTypeIndications(final List<CommitmentTypeIndication> commitmentTypeIndications) {
+    	for (final CommitmentTypeIndication commitmentTypeIndication : commitmentTypeIndications) {
+	        new CommitmentTypeIndicationDetails(
+	    		this.document,
+	    		this,
+	    		commitmentTypeIndication,
+	    		this.xadesPrefix,
+	            this.xadesNamespace,
+	            this.xmlSignaturePrefix
+	        );
+    	}
     }
 
     public void setAllDataObjectsTimeStamp(ArrayList<AllDataObjectsTimeStamp> allDataObjectsTimeStamp, String tsaURL) {

@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>es.gob.afirma</groupId>
 	<artifactId>Integra-parent</artifactId>
-	<version>2.2.2_000</version>
+	<version>2.3.0_000</version>
 	<packaging>pom</packaging>
 	<name>Integra-parent</name>
 	<description>Kit de integracion para la Suite de @Firma</description>
@@ -22,15 +22,15 @@
 		<module>Integra-signature-report</module>
 	</modules>
 	<properties>
-		<version.Integra.commons>2.2.2_000</version.Integra.commons>
-		<version.Integra.commons.pdf.bc>2.2.2_000</version.Integra.commons.pdf.bc>
-		<version.Integra.commons.xml>2.2.2_000</version.Integra.commons.xml>
-		<version.Integra.ocsp.rfc3161>2.2.2_000</version.Integra.ocsp.rfc3161>
-		<version.Integra.ws>2.2.2_000</version.Integra.ws>
-		<version.Integra.sign.operations>2.2.2_000</version.Integra.sign.operations>
-		<version.Integra.utils>2.2.2_000</version.Integra.utils>
-		<version.Integra.encryption>2.2.2_000</version.Integra.encryption>
-		<version.Integra.signature-report>2.2.2_000</version.Integra.signature-report>
+		<version.Integra.commons>2.3.0_000</version.Integra.commons>
+		<version.Integra.commons.pdf.bc>2.3.0_000</version.Integra.commons.pdf.bc>
+		<version.Integra.commons.xml>2.3.0_000</version.Integra.commons.xml>
+		<version.Integra.ocsp.rfc3161>2.3.0_000</version.Integra.ocsp.rfc3161>
+		<version.Integra.ws>2.3.0_000</version.Integra.ws>
+		<version.Integra.sign.operations>2.3.0_000</version.Integra.sign.operations>
+		<version.Integra.utils>2.3.0_000</version.Integra.utils>
+		<version.Integra.encryption>2.3.0_000</version.Integra.encryption>
+		<version.Integra.signature-report>2.3.0_000</version.Integra.signature-report>
 	</properties>
 
 	<!-- **************************************************************** -->

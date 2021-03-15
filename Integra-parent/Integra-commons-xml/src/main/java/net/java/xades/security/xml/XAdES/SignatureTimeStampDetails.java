@@ -21,12 +21,13 @@ package net.java.xades.security.xml.XAdES;
 
 import net.java.xades.util.Base64;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class SignatureTimeStampDetails extends XAdESStructure {
 
-    public SignatureTimeStampDetails(XAdESStructure parent, SignatureTimeStamp signatureTimeStamp, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix, String tsaURL) {
-	super(parent, "SignatureTimeStamp", xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+    public SignatureTimeStampDetails(Document document, XAdESStructure parent, SignatureTimeStamp signatureTimeStamp, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix, String tsaURL) {
+	super(document, parent, "SignatureTimeStamp", xadesPrefix, xadesNamespace, xmlSignaturePrefix);
 
 	try {
 	    String tsBase64Data = Base64.encodeBytes(signatureTimeStamp.generateEncapsulatedTimeStamp(getDocument(), tsaURL));

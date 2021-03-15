@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.DERObjectIdentifier;
+import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.CMSObjectIdentifiers;
 import org.bouncycastle.asn1.cms.ContentInfo;
@@ -35,6 +36,7 @@ import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
+import org.bouncycastle.tsp.TimeStampToken;
 
 import com.lowagie.text.pdf.AcroFields;
 import com.lowagie.text.pdf.PdfDictionary;
@@ -75,6 +77,24 @@ public final class SignatureFormatDetectorCadesPades implements ISignatureFormat
     private static final DERObjectIdentifier ID_ARCHIVE_TIME_STAMP_V3 = new ASN1ObjectIdentifier("0.4.0.1733.2.4");
 
     /**
+     * Constant that represents the OID of the <code>signer-attributes-v2</code> attribute. This attribute is used
+     * by ETSI EN 319 122-1 baseline profiles.
+     */
+    private static final DERObjectIdentifier ID_SIGNER_ATTRIBUTES_V2 = new ASN1ObjectIdentifier("0.4.0.19122.1.1");
+
+    /**
+     * Constant that represents the OID of the <code>signature-policy-store</code> attribute. This attribute is used
+     * by ETSI EN 319 122-1 baseline profiles.
+     */
+    private static final DERObjectIdentifier ID_SIGNATURE_POLICY_STORE = new ASN1ObjectIdentifier("0.4.0.19122.1.3");
+    
+    /**
+     * Constant that represents the OID of the <code>ats-hash-index-v3</code> attribute. This attribute is used
+     * by ETSI EN 319 122-1 baseline profiles.
+     */
+    private static final DERObjectIdentifier ID_ATS_HASH_INDEX_V3 = new ASN1ObjectIdentifier("0.4.0.19122.1.5");
+    
+    /**
      * Constructor method for the class SignatureFormatDetector.java.
      */
     private SignatureFormatDetectorCadesPades() {
@@ -85,6 +105,10 @@ public final class SignatureFormatDetectorCadesPades implements ISignatureFormat
      * @param signature Parameter that represents the element to evaluate. This element can be an ASN.1 signature or a PDF document.
      * @return the signature format of the element. If the element is an ASN.1 signature, the value to return will be on of these:
      * <ul>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_LTA_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_LT_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_T_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_CADES_LTA_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_CADES_LT_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_CADES_T_LEVEL}.</li>
@@ -102,6 +126,10 @@ public final class SignatureFormatDetectorCadesPades implements ISignatureFormat
      * </ul>
      * If the element is a PDF document, the value to return will be on of these:
      * <ul>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_LTA_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_LT_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_T_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_PADES_LTA_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_PADES_LT_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_PADES_T_LEVEL}.</li>
@@ -224,6 +252,41 @@ public final class SignatureFormatDetectorCadesPades implements ISignatureFormat
 		return false;
 	    }
 	}
+	return false;
+    }
+    
+    /**
+     * Method that indicates if a signature dictionary refers to a PAdES B-B-Level profile (true) or not (false).
+     * @param signatureDictionary Parameter that represents the signature dictionary.
+     * @return a boolean that indicates if a signature dictionary refers to a PAdES B-B-Level profile (true) or not (false).
+     */
+    private static boolean isPAdESBBLevel(PDFSignatureDictionary signatureDictionary) {
+
+	// Consideramos que una firma es indudablemente PAdES B-B-Level cuando cumple con
+	// los siguientes requisitos:
+	// > La firma CAdES empotrada contiene el atributo firmado 'signer-attributes-v2'.
+	try {
+	    // Obtenemos los datos firmados
+	    CMSSignedData signedData = UtilsSignatureOp.getCMSSignature(signatureDictionary);
+
+	    // Obtenemos la informacion del firmante
+	    SignerInformation signerInformation = (SignerInformation) signedData.getSignerInfos().getSigners().iterator().next();
+
+	    // Obtenemos el listado de atributos firmados
+	    AttributeTable signedAttributes = signerInformation.getSignedAttributes();
+
+	    // Obtenemos el atributo 'signer-attributes-v2'
+	    Attribute signerAttrV2 = signedAttributes.get(ID_SIGNER_ATTRIBUTES_V2);
+
+	    // Si existe este atributo, sabemos que la firma solo puede considerarse B-B-level
+	    if (signerAttrV2 != null) {
+		return true;
+	    }
+	    
+	} catch (Exception e) {
+	    return false;
+	}	
+
 	return false;
     }
 
@@ -434,6 +497,10 @@ public final class SignatureFormatDetectorCadesPades implements ISignatureFormat
      * <li>{@link ISignatureFormatDetector#FORMAT_PADES_LT_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_PADES_T_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_LTA_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_LT_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_T_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_PADES_LTV}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_PADES_EPES}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_PADES_BES}.</li>
@@ -449,12 +516,24 @@ public final class SignatureFormatDetectorCadesPades implements ISignatureFormat
 	try {
 	    // Leemos el documento PDF
 	    PdfReader reader = new PdfReader(pdfDocument);
-
+	    
 	    // El formato de firma será determinado por la firma con mayor
 	    // revisión
 	    PDFSignatureDictionary signatureDictionary = UtilsSignatureOp.obtainLatestSignatureFromPDF(reader);
 
-	    if (isPAdESBLevel(signatureDictionary)) {
+	    if (isPAdESBBLevel(signatureDictionary)) {
+		format = FORMAT_PADES_B_B_LEVEL;
+		// Si la firma base B-B-Level cumple los requisitos de la LTA-Level, LT-Level o T-Level,
+		// entonces es B-LTA-Level, B-LTA-Level o B-LTA-Level, respectivamente
+		if (isPAdESLTALevel(signatureDictionary, reader)) {
+		    format = FORMAT_PADES_B_LTA_LEVEL;
+		} else if (isPAdESLTLevel(signatureDictionary, reader)) {
+		    format = FORMAT_PADES_B_LT_LEVEL;
+		} else if (isPAdESTLevel(signatureDictionary, reader)) {
+		    format = FORMAT_PADES_B_T_LEVEL;
+		}
+	    }
+	    else if (isPAdESBLevel(signatureDictionary)) {
 		format = FORMAT_PADES_B_LEVEL;
 		if (isPAdESLTALevel(signatureDictionary, reader)) {
 		    format = FORMAT_PADES_LTA_LEVEL;
@@ -768,6 +847,31 @@ public final class SignatureFormatDetectorCadesPades implements ISignatureFormat
 		    if (isCAdESLTALevel(listSignersSignature)) {
 			format = FORMAT_CADES_LTA_LEVEL;
 		    }
+		} else {
+		    format = resolveCAdESNoBaselineFormat(format, listSignersSignature);
+		}
+	    }
+	}
+	// Comprobamos si la firma es CAdES B-B-Level, esto es, si tiene
+	// alguno de los atributos exclusivos de este formato
+	// (signer-attributes-v2 o signature-policy-store)
+	else if (isCAdESBBLevel(listSignersSignature)) {
+	    // Establecemos el formato a CAdES B-Level
+	    format = FORMAT_CADES_B_B_LEVEL;
+	    // Comprobamos si la firma posee signature-time-stamp en
+	    // cuyo caso será CAdES T-Level
+	    if (isCAdEST(listSignersSignature)) {
+		// Establecemos el formato a CAdES T-Level
+		format = FORMAT_CADES_B_T_LEVEL;
+		// Comprobamos si la firma es LT-Level
+		if (isCAdESLTLevel(listSignersSignature, signedData)) {
+		    format = FORMAT_CADES_B_LT_LEVEL;
+		    // Comprobamos si la firma es LTA-Level
+		    if (isCAdESLTALevel(listSignersSignature)) {
+			format = FORMAT_CADES_B_LTA_LEVEL;
+		    }
+		} else {
+		    format = resolveCAdESNoBaselineFormat(format, listSignersSignature);
 		}
 	    }
 	}
@@ -789,6 +893,10 @@ public final class SignatureFormatDetectorCadesPades implements ISignatureFormat
      * <li>{@link ISignatureFormatDetector#FORMAT_CADES_LT_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_CADES_T_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_LTA_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_LT_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_T_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_B_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_CADES_A}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_CADES_XL2}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_CADES_XL1}.</li>
@@ -830,9 +938,32 @@ public final class SignatureFormatDetectorCadesPades implements ISignatureFormat
 	    else if (isCAdESBES(listSignersSignature)) {
 		// Establecemos el formato a CAdES-EPES
 		format = FORMAT_CADES_BES;
+		// Comprobamos si la firma es CAdES B-B-Level, esto es, si tiene
+		// alguno de los atributos exclusivos de este formato
+		// (signer-attributes-v2 o signature-policy-store)
+		if (isCAdESBBLevel(listSignersSignature)) {
+		    // Establecemos el formato a CAdES B-Level
+		    format = FORMAT_CADES_B_B_LEVEL;
+		    // Comprobamos si la firma posee signature-time-stamp en
+		    // cuyo caso será CAdES T-Level
+		    if (isCAdEST(listSignersSignature)) {
+			// Establecemos el formato a CAdES T-Level
+			format = FORMAT_CADES_B_T_LEVEL;
+			// Comprobamos si la firma es LT-Level
+			if (isCAdESLTLevel(listSignersSignature, signedData)) {
+			    format = FORMAT_CADES_B_LT_LEVEL;
+			    // Comprobamos si la firma es LTA-Level
+			    if (isCAdESLTALevel(listSignersSignature)) {
+				format = FORMAT_CADES_B_LTA_LEVEL;
+			    }
+			} else {
+			    format = resolveCAdESNoBaselineFormat(format, listSignersSignature);
+			}
+		    }
+		}
 		// Comprobamos si la firma es CAdES B-Level, esto es, si tiene
 		// el atributo firmado signing-time
-		if (isCAdESBLevel(listSignersSignature)) {
+		else if (isCAdESBLevel(listSignersSignature)) {
 		    // Establecemos el formato a CAdES B-Level
 		    format = FORMAT_CADES_B_LEVEL;
 		    // Comprobamos si la firma posee signature-time-stamp en
@@ -846,6 +977,9 @@ public final class SignatureFormatDetectorCadesPades implements ISignatureFormat
 			    // Comprobamos si la firma es LTA-Level
 			    if (isCAdESLTALevel(listSignersSignature)) {
 				format = FORMAT_CADES_LTA_LEVEL;
+			    }
+			    else if (isCAdESBLTALevel(listSignersSignature)) {
+				format = FORMAT_CADES_B_LTA_LEVEL;
 			    }
 			} else {
 			    format = resolveCAdESNoBaselineFormat(format, listSignersSignature);
@@ -1196,6 +1330,20 @@ public final class SignatureFormatDetectorCadesPades implements ISignatureFormat
 	}
 	return false;
     }
+    
+    
+    /**
+     * Method that indicates if a ASN.1 signature contains a <code>signature-policy-store</code> unsigned attribute.
+     * @param signerInformation Parameter that represents the information about the signer.
+     * @return a boolean that indicates if the ASN.1 signature contains the <code>signature-policy-store</code> element (true) or not (false).
+     */
+    public static boolean hasSignaturePolicyStore(SignerInformation signerInformation) {
+	AttributeTable unsignedAttrs = signerInformation.getUnsignedAttributes();
+	if (unsignedAttrs != null && unsignedAttrs.get(ID_SIGNATURE_POLICY_STORE) != null) {
+	    return true;
+	}
+	return false;
+    }
 
     /**
      * Method that checks whether a signer has CAdES-EPES format.
@@ -1354,13 +1502,15 @@ public final class SignatureFormatDetectorCadesPades implements ISignatureFormat
 	if (listSignersSignature != null && listSignersSignature.size() > 0) {
 	    // Recorremos la lista de firmantes
 	    for (SignerInformation signerInformation: listSignersSignature) {
-		// Accedemos al conjunto de atributos firmados
-		AttributeTable signedAttrs = signerInformation.getSignedAttributes();
 
-		// Comprobamos si tiene el atributo signing-time
-		if (signedAttrs.get(PKCSObjectIdentifiers.pkcs_9_at_signingTime) != null) {
+		// Comprobamos si la firma es B-Level
+		boolean bLevelChecked = isCAdESBLevel(signerInformation);
+		
+		// Si ya tenemos comprobamo que es B-Level, devolvemos la respuesta
+		if (bLevelChecked) {
 		    return true;
 		}
+		
 		// Si el firmante posee contrafirmas comprobamos si alguna de
 		// ellas es CAdES B-Level
 		SignerInformationStore counterSignatures = signerInformation.getCounterSignatures();
@@ -1374,7 +1524,65 @@ public final class SignatureFormatDetectorCadesPades implements ISignatureFormat
 	    return false;
 	}
     }
+    
+    /**
+     * Method that checks if a signer contains the <code>signerAttrV2</code> attribute.
+     * @param signerInformation Parameter that represents the information about the signer.
+     * @return a boolean that indicates if the signer contains the <code>signerAttrV2</code> attribute (true) or not (false).
+     */
+    private static boolean isCAdESBBLevel(SignerInformation signerInformation) {
+	// Accedemos al conjunto de atributos firmados
+	AttributeTable signedAttrs = signerInformation.getSignedAttributes();
 
+	// Comprobamos si tiene el atributo signer-attributes-v2
+	if (signedAttrs.get(ID_SIGNER_ATTRIBUTES_V2) != null) {
+	    return true;
+	}
+	
+	// Accedemos al conjunto de atributos no firmados
+	AttributeTable unsignedAttrs = signerInformation.getUnsignedAttributes();
+
+	// Comprobamos si tiene el atributo signature-policy-store
+	if (unsignedAttrs != null && unsignedAttrs.get(ID_SIGNATURE_POLICY_STORE) != null) {
+	    return true;
+	}
+	
+	return false;
+    }
+
+    /**
+     * Method that checks if the signature has <code>signing-time</code> attribute.
+     * @param listSignersSignature Parameter that represents the signers list of the signature.
+     * @return a boolean that indicates if the signature has <code>signing-time</code> attribute (true) or not (false).
+     */
+    private static boolean isCAdESBBLevel(List<SignerInformation> listSignersSignature) {
+	// Si la firma posee firmantes
+	if (listSignersSignature != null && listSignersSignature.size() > 0) {
+	    // Recorremos la lista de firmantes
+	    for (SignerInformation signerInformation: listSignersSignature) {
+		
+		// Comprobamos si la firma es B-B-Level
+		boolean bLevelChecked = isCAdESBBLevel(signerInformation);
+		
+		// Si ya tenemos comprobamo que es B-B-Level, devolvemos la respuesta
+		if (bLevelChecked) {
+		    return true;
+		}
+		
+		// Si el firmante posee contrafirmas comprobamos si alguna de
+		// ellas es CAdES B-B-Level
+		SignerInformationStore counterSignatures = signerInformation.getCounterSignatures();
+		if (counterSignatures != null && counterSignatures.size() > 0 && isCAdESBBLevel((List<SignerInformation>) counterSignatures.getSigners())) {
+		    return true;
+		}
+
+	    }
+	    return false;
+	} else {
+	    return false;
+	}
+    }
+    
     /**
      * Method that checks if a signer has CAdES LT-Level format, it contains at least one revocation value into the signed data, and it doesn't contain any of the following unsigned
      * attributes:
@@ -1596,6 +1804,62 @@ public final class SignatureFormatDetectorCadesPades implements ISignatureFormat
     }
 
     /**
+     * Method that checks if the signer's <code>archive-time-stamp-v3</code> attribute contains
+     * 'hash-index-v3' unsigned attribute.
+     * @param signerInformation Parameter that represents the information about the signer.
+     * @return a boolean that indicates if the archive timestamp contains the
+     * <code>hash-index-v3</code> attribute (true) or not (false).
+     */
+    private static boolean isCAdESBLTALevel(SignerInformation signerInformation) {
+	// Accedemos al conjunto de atributos no firmados
+	AttributeTable unsignedAttrs = signerInformation.getUnsignedAttributes();
+
+	// Comprobamos si tiene el atributo archive-time-stamp-v3
+	if (unsignedAttrs != null && unsignedAttrs.get(ID_ARCHIVE_TIME_STAMP_V3) != null) {
+	    Attribute archiveTS = unsignedAttrs.get(ID_ARCHIVE_TIME_STAMP_V3);
+	    try {
+		TimeStampToken tsToken = new TimeStampToken(new CMSSignedData(archiveTS.getAttrValues().getObjectAt(0).getDERObject().getEncoded()));
+		AttributeTable attributes = tsToken.getUnsignedAttributes();
+		if (attributes.get(ID_ATS_HASH_INDEX_V3) != null) {
+		    return true;
+		}
+	    }
+	    catch (Exception e) {
+		return false;
+	    }
+	}
+	return false;
+    }
+    
+    /**
+     * Method that checks if the signature has <code>archive-time-stamp-v3</code> attribute and
+     * that has 'hash-index-v3' unsigned attribute.
+     * @param listSignersSignature Parameter that represents the signers list of the signature.
+     * @return a boolean that indicates if the signature has <code>archive-time-stamp-v3</code> attribute (true) or not (false).
+     */
+    private static boolean isCAdESBLTALevel(List<SignerInformation> listSignersSignature) {
+	// Si la firma posee firmantes
+	if (listSignersSignature != null && listSignersSignature.size() > 0) {
+	    // Recorremos la lista de firmantes
+	    for (SignerInformation signerInformation: listSignersSignature) {
+		if (isCAdESBLTALevel(signerInformation)) {
+		    return true;
+		}
+		// Si el firmante posee contrafirmas comprobamos si alguna de
+		// ellas es CAdES B-LTA-Level
+		SignerInformationStore counterSignatures = signerInformation.getCounterSignatures();
+		if (counterSignatures != null && counterSignatures.size() > 0 && isCAdESBLTALevel((List<SignerInformation>) counterSignatures.getSigners())) {
+		    return true;
+		}
+
+	    }
+	    return false;
+	} else {
+	    return false;
+	}
+    }
+    
+    /**
      * Method that obtains the format associated to a signer of an ASN.1 signature when the signer has, at least, CAdES-C form.
      * @param signerInformation Parameter that represents the information abput the signer to process.
      * @return the signature format. The value to return will be on of these:
@@ -1704,6 +1968,13 @@ public final class SignatureFormatDetectorCadesPades implements ISignatureFormat
 		    // Indicamos que el formato es, al menos, CAdES
 		    // LTA-Level
 		    format = FORMAT_CADES_LTA_LEVEL;
+		    
+		    // Comprobamos si el firmante cumple con el formato
+		    // B-LTA-Level
+		    if (isCAdESBLTALevel(signerInformation)) {
+			// Indicamos que el formato es CAdES B-LTA-Level
+			format = FORMAT_CADES_B_LTA_LEVEL;
+		    }
 		}
 	    }
 	    // Comprobamos si el firmante cumple con el formato
@@ -1716,7 +1987,62 @@ public final class SignatureFormatDetectorCadesPades implements ISignatureFormat
 	}
 	return format;
     }
+    
+    /**
+     * Method that obtains the format associated to a signer of an ASN.1 signature when the signer has, at least, CAdES B-Level form.
+     * @param signedData Parameter that represents the signature message.
+     * @param signerInformation Parameter that represents the information abput the signer to process.
+     * @return the signature format. The value to return will be on of these:
+     * <ul>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_LTA_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_LT_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_T_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_A}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_XL2}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_XL1}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_X2}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_X1}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_T}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_C}.</li>
+     * </ul>
+     */
+    private static String resolverSignerCAdESBBLevelUpperFormat(CMSSignedData signedData, SignerInformation signerInformation) {
+	// Indicamos que el formato es, al menos, CAdES B-Level
+	String format = FORMAT_CADES_B_B_LEVEL;
 
+	// Comprobamos si el firmante cumple con el formato CAdES
+	// T-Level
+	if (isCAdEST(signerInformation)) {
+	    // Indicamos que el formato es, al menos, CAdES T-Level
+	    format = FORMAT_CADES_B_T_LEVEL;
+
+	    // Comprobamos si el firmante cumple con el formato
+	    // CAdES LT-Level
+	    if (isCAdESLTLevel(signerInformation, signedData)) {
+		// Indicamos que el formato es, al menos, CAdES
+		// LT-Level
+		format = FORMAT_CADES_B_LT_LEVEL;
+
+		// Comprobamos si el firmante cumple con el formato
+		// CAdES LTA-Level
+		if (isCAdESLTALevel(signerInformation)) {
+		    // Indicamos que el formato es, al menos, CAdES
+		    // LTA-Level
+		    format = FORMAT_CADES_B_LTA_LEVEL;
+		}
+	    }
+	    // Comprobamos si el firmante cumple con el formato
+	    // CAdES-C
+	    else if (isCAdESC(signerInformation)) {
+		// Comprobamos el formato del firmante a partir del
+		// nivel -C
+		format = resolverSignerCAdESCUpperFormat(signerInformation);
+	    }
+	}
+	return format;
+    }
+    
     /**
      * Method that obtains the format associated to a signer of an ASN.1 signature.
      * @param signedData Parameter that represents the signature message.
@@ -1727,6 +2053,10 @@ public final class SignatureFormatDetectorCadesPades implements ISignatureFormat
      * <li>{@link ISignatureFormatDetector#FORMAT_CADES_LT_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_CADES_T_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_LTA_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_LT_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_T_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_B_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_CADES_A}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_CADES_XL2}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_CADES_XL1}.</li>
@@ -1745,41 +2075,31 @@ public final class SignatureFormatDetectorCadesPades implements ISignatureFormat
 
 	// Si se ha indicado firmante
 	if (signerInformation != null) {
-	    // Comprobamos si el firmante cumple con el formato CAdES-EPES
-	    if (isCAdESEPES(signerInformation)) {
-		// Indicamos que el formato es, al menos, CAdES-EPES
-		format = FORMAT_CADES_EPES;
-
-		// Comprobamos si el firmante cumple con el formato CAdES
-		// B-Level
-		if (isCAdESBLevel(signerInformation)) {
-		    format = resolverSignerCAdESBLevelUpperFormat(signedData, signerInformation);
-		}
-		// Comprobamos si el firmante cumple con el formato CAdES-T
-		else if (isCAdEST(signerInformation)) {
-		    // Indicamos que el formato es, al menos, CAdES-T
-		    format = FORMAT_CADES_T;
-
-		    // Comprobamos si el firmante cumple con el formato
-		    // CAdES-C
-		    if (isCAdESC(signerInformation)) {
-			// Comprobamos el formato del firmante a partir del
-			// nivel -C
-			format = resolverSignerCAdESCUpperFormat(signerInformation);
-		    }
-		}
-	    }
-	    // Comprobamos si el firmante cumple con el formato CAdES-BES
+	    // Comprobamos si el firmante cumple con el formato CAdES-BES.
+	    // Las comprobaciones de cades BES son comunes para todos los perfiles
+	    // de CAdES
 	    if (isCAdESBES(signerInformation)) {
-		// Indicamos que el formato es, al menos, CAdES-EPES
+		
+		// Indicamos que el formato es, al menos, CAdES-BES
 		format = FORMAT_CADES_BES;
+		
+		// Comprobamos si el firmante tiene politica de firma
+		if (isCAdESEPES(signerInformation)) {
+		// Indicamos que el formato es, al menos, CAdES-EPES
+		    format = FORMAT_CADES_EPES;
+		}
 
-		// Comprobamos si el firmante cumple con el formato CAdES
+		// Comprobamos si el firmante cumple con el formato CAdES B-B-Level
+		if (isCAdESBBLevel(signerInformation)) {
+		    format = resolverSignerCAdESBBLevelUpperFormat(signedData, signerInformation);
+		}
+		// Si no era B-B-Level, comprobamos si el firmante cumple con el formato CAdES
 		// B-Level
-		if (isCAdESBLevel(signerInformation)) {
+		else if (isCAdESBLevel(signerInformation)) {
 		    format = resolverSignerCAdESBLevelUpperFormat(signedData, signerInformation);
 		}
-		// Comprobamos si el firmante cumple con el formato CAdES-T
+		// Si no sigue alguno de los perfiles baseline, comprobamos si cumple con el
+		// formato CAdES-T
 		else if (isCAdEST(signerInformation)) {
 		    // Indicamos que el formato es, al menos, CAdES-T
 		    format = FORMAT_CADES_T;
@@ -1804,6 +2124,8 @@ public final class SignatureFormatDetectorCadesPades implements ISignatureFormat
      * <ul>
      * <li>{@link ISignatureFormatDetector#FORMAT_PADES_T_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_T_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_B_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_PDF}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_PADES_BASIC}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_PADES_BES}.</li>
@@ -1815,8 +2137,19 @@ public final class SignatureFormatDetectorCadesPades implements ISignatureFormat
 	// Por defecto establecemos el formato como no reconocido
 	String format = ISignatureFormatDetector.FORMAT_UNRECOGNIZED;
 	// Comprobamos si el diccionario de firma cumple con el formato PAdES
+	// B-B-Level
+	if (isPAdESBBLevel(signatureDictionary)) {
+	    format = FORMAT_PADES_B_B_LEVEL;
+	    // Comprobamos si la firma contenida en el diccionario de firma
+	    // incluye al menos un sello de tiempo en un atributo
+	    // signature-time-stamp
+	    if (containsSignatureTimeStamp(signatureDictionary)) {
+		format = FORMAT_PADES_B_T_LEVEL;
+	    }
+	}
+	// Comprobamos si el diccionario de firma cumple con el formato PAdES
 	// B-Level
-	if (isPAdESBLevel(signatureDictionary)) {
+	else if (isPAdESBLevel(signatureDictionary)) {
 	    format = FORMAT_PADES_B_LEVEL;
 	    // Comprobamos si la firma contenida en el diccionario de firma
 	    // incluye al menos un sello de tiempo en un atributo

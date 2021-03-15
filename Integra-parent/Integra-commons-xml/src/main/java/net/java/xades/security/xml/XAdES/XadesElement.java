@@ -28,7 +28,7 @@ import net.java.xades.util.OccursRequirement;
  */
 public interface XadesElement {
 
-    public XAdES getXAdES();
+    public XAdES[] getXAdES();
 
     public ObjectId getObjectId();
 

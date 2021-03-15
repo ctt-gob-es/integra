@@ -35,7 +35,7 @@ import org.apache.commons.io.FileUtils;
 import es.gob.afirma.integraFacade.pojo.TransformData;
 import es.gob.afirma.signature.validation.ValidationResult;
 import es.gob.afirma.signature.xades.ReferenceData;
-import es.gob.afirma.signature.xades.XAdESBaselineSigner;
+import es.gob.afirma.signature.xades.XAdESBaselineTSSigner;
 import es.gob.afirma.signature.xades.XadesSigner;
 import es.gob.afirma.transformers.TransformersConstants;
 import es.gob.afirma.transformers.TransformersFacade;

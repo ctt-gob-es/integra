@@ -2057,12 +2057,27 @@ public final class XadesSigner implements Signer {
     }
 
     /**
-     * Method that indicates if a signer has Baseline form.
+     * Method that indicates if a signer has Baseline Technical Specification form.
      * @param signerFormat Parameter that represents the format associated to the signer.
-     * @return a boolean that indicates if a signer has Baseline form.
+     * @return a boolean that indicates if a signer has Baseline Technical Specification form.
      */
-    private boolean signerIsBaseline(String signerFormat) {
-	return signerFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_LEVEL) || signerFormat.equals(ISignatureFormatDetector.FORMAT_XADES_T_LEVEL) || signerFormat.equals(ISignatureFormatDetector.FORMAT_XADES_LT_LEVEL) || signerFormat.equals(ISignatureFormatDetector.FORMAT_XADES_LTA_LEVEL);
+    private boolean signerIsBaselineTS(String signerFormat) {
+	return signerFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_LEVEL)
+		|| signerFormat.equals(ISignatureFormatDetector.FORMAT_XADES_T_LEVEL)
+		|| signerFormat.equals(ISignatureFormatDetector.FORMAT_XADES_LT_LEVEL)
+		|| signerFormat.equals(ISignatureFormatDetector.FORMAT_XADES_LTA_LEVEL);
+    }
+    
+    /**
+     * Method that indicates if a signer has Baseline European Standard form.
+     * @param signerFormat Parameter that represents the format associated to the signer.
+     * @return a boolean that indicates if a signer has Baseline European Standard form.
+     */
+    private boolean signerIsBaselineEN(String signerFormat) {
+	return signerFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_B_LEVEL)
+		|| signerFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_T_LEVEL)
+		|| signerFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_LT_LEVEL)
+		|| signerFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_LTA_LEVEL);
     }
 
     /**
@@ -2108,14 +2123,20 @@ public final class XadesSigner implements Signer {
 
 		// Si el firmante tiene formato no Baseline, nos mantenemos en
 		// este clase. En otro caso, derivamos la validación del
-		// firmante a la clase asociada a firmas Baseline
+		// firmante a la clase de firmas Baseline correspondiente
 		SignerValidationResult signerValidationResult = null;
-		if (signerIsBaseline(signerFormat)) {
-		    XAdESBaselineSigner xadesBaselineSigner = new XAdESBaselineSigner();
+		if (signerIsBaselineTS(signerFormat)) {
+		    XAdESBaselineTSSigner xadesBaselineTSSigner = new XAdESBaselineTSSigner();
 
 		    // Obtenemos la información de validación asociada al
 		    // contra-firmante
-		    signerValidationResult = xadesBaselineSigner.validateSigner(signingMode, signerInfo, validationResult, idClient, signerFormat, false, null, null);
+		    signerValidationResult = xadesBaselineTSSigner.validateSigner(signingMode, signerInfo, validationResult, idClient, signerFormat, false, null, null);
+		} else if (signerIsBaselineEN(signerFormat)) {
+		    XAdESBaselineENSigner xadesBaselineENSigner = new XAdESBaselineENSigner();
+
+		    // Obtenemos la información de validación asociada al
+		    // contra-firmante
+		    signerValidationResult = xadesBaselineENSigner.validateSigner(signingMode, signerInfo, validationResult, idClient, signerFormat, false, null, null);
 		} else {
 		    // Obtenemos la información de validación asociada al
 		    // contra-firmante
@@ -2249,6 +2270,8 @@ public final class XadesSigner implements Signer {
 
 	// Determinamos a partir del formato si el firmante es Baseline
 	boolean isBaseline = SignatureFormatDetectorXades.isXAdESBaseline(signerFormat);
+	// Determinamos a partir del formato si el firmante es Baseline acorde al estandar europeo
+	boolean isBaselineEN = SignatureFormatDetectorXades.isXAdESBaselineEN(signerFormat);
 
 	try {
 	    // Recuperamos el elemento obligatorio xades:SignedProperties
@@ -2297,7 +2320,7 @@ public final class XadesSigner implements Signer {
 	     *   referencia que no apunta hacia el elemento xades:SignedProperties.
 	     * > Se comprobará que existe una referencia que apunta al elemento xades:SignedProperties.
 	     */
-	    validateSignatureCore(signerValidationResult, signerInfo, validationResult, signedSignaturePropertiesElement, signedPropertiesElement, isBaseline, isCounterSignature);
+	    validateSignatureCore(signerValidationResult, signerInfo, validationResult, signedSignaturePropertiesElement, signedPropertiesElement, isBaseline, isBaselineEN, isCounterSignature);
 
 	    // Validación del Instante de Firma: Si se incluye el elemento
 	    // firmado xades:SigningTime se comprobará que está correctamente
@@ -3026,10 +3049,11 @@ public final class XadesSigner implements Signer {
      * @param signedSignaturePropertiesElement Parameter that represents <code>xades:SignedSignatureProperties</code> element.
      * @param signedPropertiesElement Parameter that represents <code>xades:SignedProperties</code> element.
      * @param isBaseline Parameter that indicates if the XML signature has Baseline form (true) or not (false).
+     * @param isBaselineEN Parameter that indicates if the XML signature has European Standard Baseline form (true) or not (false).
      * @param isCounterSignature Parameter that indicates if the signature is a countersignature (true) or not (false).
      * @throws SigningException If the validation fails.
      */
-    private void validateSignatureCore(SignerValidationResult signerValidationResult, XAdESSignerInfo signerInfo, es.gob.afirma.signature.validation.ValidationResult validationResult, Element signedSignaturePropertiesElement, Element signedPropertiesElement, boolean isBaseline, boolean isCounterSignature) throws SigningException {
+    private void validateSignatureCore(SignerValidationResult signerValidationResult, XAdESSignerInfo signerInfo, es.gob.afirma.signature.validation.ValidationResult validationResult, Element signedSignaturePropertiesElement, Element signedPropertiesElement, boolean isBaseline, boolean isBaselineEN, boolean isCounterSignature) throws SigningException {
 	// Instanciamos el objeto que ofrece información sobre la validación
 	// llevada a cabo
 	ValidationInfo validationInfo = new ValidationInfo();
@@ -3040,7 +3064,7 @@ public final class XadesSigner implements Signer {
 	signerValidationResult.getListValidations().add(validationInfo);
 	try {
 	    // Comprobamos que el firmante verifica la firma
-	    UtilsSignatureOp.validateXAdESSignatureCore(signerInfo.getQualifyingPropertiesElement(), signerInfo.getId(), signerInfo.getElementSignature(), signerInfo.getSignature(), null, null, signerInfo.getSigningCertificate(), signedSignaturePropertiesElement, signedPropertiesElement, isBaseline, isCounterSignature);
+	    UtilsSignatureOp.validateXAdESSignatureCore(signerInfo.getQualifyingPropertiesElement(), signerInfo.getId(), signerInfo.getElementSignature(), signerInfo.getSignature(), null, null, signerInfo.getSigningCertificate(), signedSignaturePropertiesElement, signedPropertiesElement, isBaseline, isBaselineEN, isCounterSignature);
 
 	    // Indicamos que la validación ha sido correcta
 	    validationInfo.setSucess(true);
@@ -3103,12 +3127,18 @@ public final class XadesSigner implements Signer {
 		// validación del contra-firmante a la clase asociada a firmas
 		// Baseline
 		SignerValidationResult counterSignerValidationResult = null;
-		if (signerIsBaseline(signerFormat)) {
-		    XAdESBaselineSigner xadesBaselineSigner = new XAdESBaselineSigner();
+		if (signerIsBaselineTS(signerFormat)) {
+		    XAdESBaselineTSSigner xadesBaselineTSSigner = new XAdESBaselineTSSigner();
 
 		    // Obtenemos la información de validación asociada al
 		    // contra-firmante
-		    counterSignerValidationResult = xadesBaselineSigner.validateSigner(signingMode, counterSignerInfo, validationResult, idClient, signerFormat, true, null, null);
+		    counterSignerValidationResult = xadesBaselineTSSigner.validateSigner(signingMode, counterSignerInfo, validationResult, idClient, signerFormat, true, null, null);
+		} else if (signerIsBaselineEN(signerFormat)) {
+		    XAdESBaselineENSigner xadesBaselineENSigner = new XAdESBaselineENSigner();
+
+		    // Obtenemos la información de validación asociada al
+		    // contra-firmante
+		    counterSignerValidationResult = xadesBaselineENSigner.validateSigner(signingMode, counterSignerInfo, validationResult, idClient, signerFormat, true, null, null);
 		} else {
 		    // Obtenemos la información de validación asociada al
 		    // contra-firmante

@@ -23,6 +23,7 @@ package es.gob.afirma.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -127,6 +128,7 @@ import com.lowagie.text.pdf.PdfDictionary;
 import com.lowagie.text.pdf.PdfName;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfSignatureAppearance;
+import com.lowagie.text.pdf.PdfString;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
@@ -213,6 +215,52 @@ public final class UtilsSignatureOp implements IUtilsSignature {
     private static final String LOCAL_NAME_ARCHIVE_TIMESTAMP_XML = "XMLTimeStamp";
 
     /**
+     * Constant that represents the OID of the RSA Encryption.
+     */
+    private static final String OID_RSA_ENCRYPTION = "1.2.840.113549.1.1.1";
+    
+    /**
+     * Constant that represents the OID of the SHA-1 algorithm.
+     */
+    private static final String OID_HASH_ALGORITHM_SHA1 = "1.3.14.3.2.26";
+    
+    /**
+     * Constant that represents the OID of the SHA-256 algorithm.
+     */
+    private static final String OID_HASH_ALGORITHM_SHA256 = "2.16.840.1.101.3.4.2.1";
+
+    /**
+     * Constant that represents the OID of the SHA-384 algorithm.
+     */
+    private static final String OID_HASH_ALGORITHM_SHA384 = "2.16.840.1.101.3.4.2.2";
+
+    /**
+     * Constant that represents the OID of the SHA-512 algorithm.
+     */
+    private static final String OID_HASH_ALGORITHM_SHA512 = "2.16.840.1.101.3.4.2.3";
+
+    /**
+     * Constant that represents the OID of the SHA1withRSA algorithm.
+     */
+    private static final String OID_SIGN_ALGORITHM_SHA1WITHRSA = "1.2.840.113549.1.1.5";
+
+    /**
+     * Constant that represents the OID of the SHA256withRSA algorithm.
+     */
+    private static final String OID_SIGN_ALGORITHM_SHA256WITHRSA = "1.2.840.113549.1.1.11";
+
+    /**
+     * Constant that represents the OID of the SHA384withRSA algorithm.
+     */
+    private static final String OID_SIGN_ALGORITHM_SHA384WITHRSA = "1.2.840.113549.1.1.12";
+
+    /**
+     * Constant that represents the OID of the SHA512withRSA algorithm.
+     */
+    private static final String OID_SIGN_ALGORITHM_SHA512WITHRSA = "1.2.840.113549.1.1.13";
+    
+    
+    /**
      * Constructor method for the class SignatureUtils.java.
      */
     private UtilsSignatureOp() {
@@ -275,7 +323,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    }
 
 	    // Comprobamos que el nivel de validación posee un valor correcto
-	    int validationLevel = IUtilsSignature.VALIDATION_LEVEL_SIMPLE;
+	    int validationLevel;
 	    try {
 		validationLevel = Integer.parseInt(validationLevelStr);
 	    } catch (NumberFormatException e) {
@@ -847,7 +895,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 			}
 			datestate = 1;
 			break;
-		    // Verificación 4: El año debe tener 4 cifras (0000-9999)
+			// Verificación 4: El año debe tener 4 cifras (0000-9999)
 		    case 1:
 			yearStr = str.substring(charidx, charidx + NumberConstants.INT_4);
 			year = Integer.parseInt(yearStr);
@@ -857,7 +905,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 			}
 			datestate = 2;
 			break;
-		    // Verificación 5: El mes debe tener 2 cifras (01-12)
+			// Verificación 5: El mes debe tener 2 cifras (01-12)
 		    case 2:
 			monthStr = str.substring(charidx, charidx + 2);
 			if (!monthStr.startsWith("Z") && !monthStr.startsWith("-") && !monthStr.startsWith("+")) {
@@ -871,7 +919,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 			}
 			datestate = NumberConstants.INT_3;
 			break;
-		    // Verificación 6: El día debe tener 2 cifras (01-31)
+			// Verificación 6: El día debe tener 2 cifras (01-31)
 		    case NumberConstants.INT_3:
 			dayStr = str.substring(charidx, charidx + 2);
 			if (!dayStr.startsWith("Z") && !dayStr.startsWith("-") && !dayStr.startsWith("+")) {
@@ -885,7 +933,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 			}
 			datestate = NumberConstants.INT_4;
 			break;
-		    // Verificación 7: La hora debe tener 2 cifras (00-23)
+			// Verificación 7: La hora debe tener 2 cifras (00-23)
 		    case NumberConstants.INT_4:
 			hourStr = str.substring(charidx, charidx + 2);
 			if (!hourStr.startsWith("Z") && !hourStr.startsWith("-") && !hourStr.startsWith("+")) {
@@ -899,7 +947,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 			}
 			datestate = NumberConstants.INT_5;
 			break;
-		    // Verificación 8: El minuto debe tener 2 cifras (00-59)
+			// Verificación 8: El minuto debe tener 2 cifras (00-59)
 		    case NumberConstants.INT_5:
 			minuteStr = str.substring(charidx, charidx + 2);
 			if (!minuteStr.startsWith("Z") && !minuteStr.startsWith("-") && !minuteStr.startsWith("+")) {
@@ -913,7 +961,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 			}
 			datestate = NumberConstants.INT_6;
 			break;
-		    // Verificación 9: El segundo debe tener 2 cifras (00-59)
+			// Verificación 9: El segundo debe tener 2 cifras (00-59)
 		    case NumberConstants.INT_6:
 			secondStr = str.substring(charidx, charidx + 2);
 			if (!secondStr.startsWith("Z") && !secondStr.startsWith("-") && !secondStr.startsWith("+")) {
@@ -927,9 +975,9 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 			}
 			datestate = NumberConstants.INT_7;
 			break;
-		    // Verificación 10: La zona horaria debe tener 1 carácter
-		    // válido
-		    // ('+', '-', o 'Z')
+			// Verificación 10: La zona horaria debe tener 1 carácter
+			// válido
+			// ('+', '-', o 'Z')
 		    case NumberConstants.INT_7:
 			timezonechar = str.charAt(charidx);
 			if (timezonechar != 'Z' && timezonechar != '+' && timezonechar != '-') {
@@ -938,9 +986,9 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 			charidx++;
 			datestate = NumberConstants.INT_8;
 			break;
-		    // Verificación 11: La hora que va tras la zona horaria debe
-		    // tener 2 cifras (00-23) si y sólo si
-		    // la zona horaria no tiene el carácter 'Z'
+			// Verificación 11: La hora que va tras la zona horaria debe
+			// tener 2 cifras (00-23) si y sólo si
+			// la zona horaria no tiene el carácter 'Z'
 		    case NumberConstants.INT_8:
 			if (timezonechar == '+' || timezonechar == '-') {
 			    timezonehour = Integer.parseInt(str.substring(charidx, charidx + 2));
@@ -959,9 +1007,9 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 			}
 			datestate = NumberConstants.INT_9;
 			break;
-		    // Verificación 13: El minuto que va tras la zona horaria
-		    // debe tener 2 cifras (00-59) si y sólo si
-		    // la zona horaria no tiene el carácter 'Z'
+			// Verificación 13: El minuto que va tras la zona horaria
+			// debe tener 2 cifras (00-59) si y sólo si
+			// la zona horaria no tiene el carácter 'Z'
 		    case NumberConstants.INT_9:
 			if (timezonechar == '+' || timezonechar == '-') {
 			    if (str.charAt(charidx) == '\'') {
@@ -981,37 +1029,37 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 			break wloop;
 		}
 	    }
-	    // Verificación 14: El día debe ser válido para el mes obtenido
-	    if (yearStr != null && monthStr != null && dayStr != null) {
+	// Verificación 14: El día debe ser válido para el mes obtenido
+	if (yearStr != null && monthStr != null && dayStr != null) {
 
-		// Mes con 28 o 29 días
-		if (month == 2) {
-		    GregorianCalendar gc = new GregorianCalendar();
-		    // Año bisiesto
-		    if (gc.isLeapYear(year)) {
-			if (day > NumberConstants.INT_29) {
-			    return null;
-			}
-		    }
-		    // Año no bisiesto
-		    else {
-			if (day > NumberConstants.INT_28) {
-			    return null;
-			}
+	    // Mes con 28 o 29 días
+	    if (month == 2) {
+		GregorianCalendar gc = new GregorianCalendar();
+		// Año bisiesto
+		if (gc.isLeapYear(year)) {
+		    if (day > NumberConstants.INT_29) {
+			return null;
 		    }
 		}
-		// Meses con 30 días
-		// CHECKSTYLE:OFF Bolean complexity needed
-		else if ((month == NumberConstants.INT_4 || month == NumberConstants.INT_6 || month == NumberConstants.INT_9 || month == NumberConstants.INT_11) && day > NumberConstants.INT_30) {
-		    // CHECKSTYLE:ON
-		    return null;
+		// Año no bisiesto
+		else {
+		    if (day > NumberConstants.INT_28) {
+			return null;
+		    }
 		}
 	    }
-	    // Verificación 15: El número de campos rescatados debe ser al menos
-	    // 2
-	    if (datestate < 2) {
+	    // Meses con 30 días
+	    // CHECKSTYLE:OFF Bolean complexity needed
+	    else if ((month == NumberConstants.INT_4 || month == NumberConstants.INT_6 || month == NumberConstants.INT_9 || month == NumberConstants.INT_11) && day > NumberConstants.INT_30) {
+		// CHECKSTYLE:ON
 		return null;
 	    }
+	}
+	// Verificación 15: El número de campos rescatados debe ser al menos
+	// 2
+	if (datestate < 2) {
+	    return null;
+	}
 	}
 	// Si se produce alguna excepción durante el proceso de asignación de
 	// fechas entendemos que la fecha no está bien formada
@@ -2922,8 +2970,9 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		// llevar a cabo la validación manual
 		if (!signatureValid) {
 		    ASN1EncodableVector vectorSignedAttributes = signerInformation.getSignedAttributes().toASN1EncodableVector();
-		    Signature signatureValidator = Signature.getInstance(signerInformation.getEncryptionAlgOID(), BouncyCastleProvider.PROVIDER_NAME);
-		    signatureValidator.initVerify(signingCertificate);
+		    AlgorithmIdentifier signAlgorithmOID = getSignatureAlgorithm(signerInformation);
+		    Signature signatureValidator = Signature.getInstance(signAlgorithmOID.getAlgorithm().getId(), BouncyCastleProvider.PROVIDER_NAME);
+		    signatureValidator.initVerify(signingCertificate.getPublicKey());
 		    signatureValidator.update(new DERSet(vectorSignedAttributes).getDEREncoded());
 		    signatureValid = signatureValidator.verify(signerInformation.getSignature());
 		    if (!signatureValid) {
@@ -3190,10 +3239,11 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signedSignaturePropertiesElement Parameter that represents <code>xades:SignedSignatureProperties</code> element.
      * @param signedPropertiesElement Parameter that represents <code>xades:SignedProperties</code> element.
      * @param isBaseline Parameter that indicates if the signature to validate has Baseline form (true) or not (false).
+     * @param isBaselineEN Parameter that indicates if the signature to validate has European Standard Baseline form (true) or not (false).
      * @param isCounterSignature Parameter that indicates if the signature to validate is a countersignature (true) or not (false).
      * @throws SigningException If the validation fails.
      */
-    public static void validateXAdESSignatureCore(Element qualifyingPropertiesElement, String signatureId, Element signatureElement, org.apache.xml.security.signature.XMLSignature xmlSignature, byte[ ] signedFile, String signedFileName, X509Certificate signingCertificate, Element signedSignaturePropertiesElement, Element signedPropertiesElement, boolean isBaseline, boolean isCounterSignature) throws SigningException {
+    public static void validateXAdESSignatureCore(Element qualifyingPropertiesElement, String signatureId, Element signatureElement, org.apache.xml.security.signature.XMLSignature xmlSignature, byte[ ] signedFile, String signedFileName, X509Certificate signingCertificate, Element signedSignaturePropertiesElement, Element signedPropertiesElement, boolean isBaseline, boolean isBaselineEN, boolean isCounterSignature) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG179));
 	/*
 	 * Validación del Núcleo de Firma: Se realizarán las siguientes verificaciones (en el caso de que la firma no sea Baseline):
@@ -3253,9 +3303,15 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    }
 
 	    // Comprobamos que el orden de los elementos hijos del
-	    // elemento xades:SignedSignatureProperties es correcto
-	    // conforme al esquema (xsd) de XAdES
-	    checkSignedSignaturePropertiesElementsOrder(signedSignaturePropertiesElement, signatureId);
+	    // elemento xades:SignedSignatureProperties es correcto.
+	    // Validamos el orden según los requisitos del Estándar Europeo Baseline
+	    if (isBaselineEN) {
+		checkSignedSignaturePropertiesElementsBaselineENOrder(signedSignaturePropertiesElement, signatureId);
+	    }
+	    // Validamos el orden según los requisitos de los perfiles originales y la especificación técnica Baseline
+	    else {
+		checkSignedSignaturePropertiesElementsOrder(signedSignaturePropertiesElement, signatureId);
+	    }
 
 	    // Comprobamos que la firma incluye una referencia al
 	    // elemento xades:SignedProperties
@@ -3708,6 +3764,85 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    i++;
 	}
     }
+    
+    /**
+     * Method that checks if the child elements of <code>xades:SignedSignatureProperties</code> element have a correct structure
+     * according ETSI EN 319 132-1.
+     * @param signedSignaturePropertiesElement Parameter that represents <code>xades:SignedSignatureProperties</code> element.
+     * @param signatureId Parameter that represents the value of <code>Id</code> attribute of <code>ds:Signature</code> element.
+     * @throws SigningException If the validation fails.
+     */
+    private static void checkSignedSignaturePropertiesElementsBaselineENOrder(Element signedSignaturePropertiesElement, String signatureId) throws SigningException {
+	/*
+	 * Comprobamos que la estructura del elemento SignedSignatureProperties es la siguiente:
+	 * <xsd:complexType name="SignedSignaturePropertiesType">
+	 * 		<xsd:sequence>
+	 * 			<xsd:element name="SigningTime" minOccurs="0"/>
+	 * 			<xsd:element name="SigningCertificateV2" minOccurs="0"/>
+	 * 			<xsd:element name="SignaturePolicyIdentifer" minOccurs="0"/>
+	 * 			<xsd:element name="SignatureProductionPlaceV2" minOccurs="0"/>
+	 * 			<xsd:element name="SignerRoleV2" minOccurs="0"/>
+	 * 		</xsd:sequence>
+	 * 		<xsd:attribute name="Id" type="xsd:ID" use="optional"/>
+	 * </xsd:complexType>
+	 */
+	// Definimos para cada elemento una variable
+	// que representa su posición en la lista de
+	// hijos
+	Integer signingTimePos = null;
+	Integer signingCertificatePos = null;
+	Integer signaturePolicyIdentiferPos = null;
+	Integer signatureProductionPlacePos = null;
+	Integer signerRolePos = null;
+
+	// Accedemos a los hijos del elemento xades:SignedSignatureProperties
+	NodeList signedSignaturePropertiesNodeList = signedSignaturePropertiesElement.getChildNodes();
+
+	// Almacenamos la posición de cada uno de
+	// los hijos dentro de la lista de hijos
+	for (int i = 0; i < signedSignaturePropertiesNodeList.getLength(); i++) {
+	    Element element = (Element) signedSignaturePropertiesNodeList.item(i);
+	    String elementName = element.getLocalName();
+	    if (elementName.equals(IXMLConstants.ELEMENT_SIGNING_TIME)) {
+		signingTimePos = i;
+	    } else if (elementName.equals(IXMLConstants.ELEMENT_SIGNING_CERTIFICATE_V2)) {
+		signingCertificatePos = i;
+	    } else if (elementName.equals(IXMLConstants.ELEMENT_SIGNATURE_POLICY_IDENTIFIER)) {
+		signaturePolicyIdentiferPos = i;
+	    } else if (elementName.equals(IXMLConstants.ELEMENT_SIGNATURE_PRODUCTION_PLACE_V2)) {
+		signatureProductionPlacePos = i;
+	    } else if (elementName.equals(IXMLConstants.ELEMENT_SIGNER_ROLE_V2)) {
+		signerRolePos = i;
+	    }
+	}
+	// Metemos en una lista las posiciones de
+	// los elementos en el orden en que deberían
+	// encontrarse, sólo si dicho elemento
+	// no es nulo
+	List<Integer> listPositions = getPositionsList(signingTimePos, signingCertificatePos, signaturePolicyIdentiferPos, signatureProductionPlacePos, signerRolePos);
+	boolean correctOrder = true;
+	int i = 0;
+	Integer previousValue = -1;
+
+	// Recorremos las posiciones de los
+	// elementos de manera que si se encuentra
+	// uno cuyo elemento anterior posee una
+	// posición
+	// mayor, entonces, el orden no es el
+	// correcto.
+	while (correctOrder && i < listPositions.size()) {
+	    Integer currentValue = listPositions.get(i);
+	    if (previousValue > currentValue) {
+		correctOrder = false;
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG183, new Object[ ] { signatureId });
+		LOGGER.error(errorMsg);
+		throw new SigningException(errorMsg);
+	    } else {
+		previousValue = currentValue;
+	    }
+	    i++;
+	}
+    }
 
     /**
      * Method that obtains a list with the positions of each child elements of <code>xades:SignedSignatureProperties</code> element.
@@ -3763,9 +3898,14 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 	    // Recorremos la lista de elementos hijos del elemento
 	    // xades:SignedSignatureProperties buscando el elemento
-	    // xades:SigningCertificate
-	    Element signingCertificateElement = UtilsXML.getChildElement(signedSignaturePropertiesElement, IXMLConstants.ELEMENT_SIGNING_CERTIFICATE, signatureId, true);
-
+	    // xades:SigningCertificateV2 o, en su defecto, xades:SigningCertificate.
+	    // Consideraremos que, si no se encontro SigningCertificateV2, el atributo
+	    // SigningCertificate es obligatorio
+	    Element signingCertificateElement = UtilsXML.getChildElement(signedSignaturePropertiesElement, IXMLConstants.ELEMENT_SIGNING_CERTIFICATE_V2, signatureId, false);
+	    if (signingCertificateElement == null) {
+		signingCertificateElement = UtilsXML.getChildElement(signedSignaturePropertiesElement, IXMLConstants.ELEMENT_SIGNING_CERTIFICATE, signatureId, true);
+	    }
+	    
 	    // Accedemos al elemento xades:Cert
 	    Element certElement = UtilsXML.getChildElement(signingCertificateElement, IXMLConstants.ELEMENT_CERT, signatureId, true);
 
@@ -3836,7 +3976,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		LOGGER.error(errorMsg, e);
 		throw new SigningException(errorMsg, e);
 	    }
-	    // Extraemos del mapa aquél certificado cuyo resumen coincide
+	    // Extraemos del mapa aquel certificado cuyo resumen coincide
 	    // con el
 	    // resumen del certificado firmante
 	    X509Certificate signingCertificate = mapCertificatesIntoKeyInfo.remove(signingCertificateDigest);
@@ -4753,7 +4893,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
     }
 
     /**
-     * Method that checks if a signature dictionary is valid against PAdES Baseline profile.
+     * Method that checks if a signature dictionary is valid against PAdES Baseline Technical Specification profile.
      * @param signatureDictionary Parameter that represents the information about the signature dictionary.
      * @param pdfDocument Parameter that represents the signed PDF document.
      * @param signedData Parameter that represents the signature message of the signature contained inside of the signature dictionary.
@@ -4761,7 +4901,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * attribute (true) or not (false).
      * @throws SigningException If the validation fails.
      */
-    public static boolean validatePAdESBaselineStructurally(PDFSignatureDictionary signatureDictionary, byte[ ] pdfDocument, CMSSignedData signedData) throws SigningException {
+    public static boolean validatePAdESBaselineTSStructurally(PDFSignatureDictionary signatureDictionary, byte[ ] pdfDocument, CMSSignedData signedData) throws SigningException {
 	boolean hasSignaturePolicyId = false;
 	/*
 	 * Validación Estructural PDF: Contemplará las siguientes verificaciones:
@@ -4771,8 +4911,8 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado content-identifier.
 	 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado content-hints.
 	 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado signer-location.
-	 * > Si el primer firmante de la firma CAdES contienida en el diccionario de firma posee el atributo firmado content-type y éste tiene el valor “id-data”.
-	 * > Si el primer firmante de la firma CAdES contenida en el diccionario de firma no posee el atributo firmado signature-policy-id entonces no deberá poseer el
+	 * > Si el primer firmante de la firma CAdES contenida en el diccionario de firma posee el atributo firmado content-type, éste debe tener el valor “id-data”.
+	 * > Si el primer firmante de la firma CAdES contenida en el diccionario de firma no posee el atributo firmado signature-policy-id, entonces no deberá poseer el
 	 * atributo firmado commitment-type-indication.
 	 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo no firmado counter-signature.
 	 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo no firmado content-reference.
@@ -4858,12 +4998,169 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    if (signedAttrs.get(PKCSObjectIdentifiers.id_aa_ets_sigPolicyId) != null) {
 		hasSignaturePolicyId = true;
 	    }
-	    
+
 	    // Si no declara una politica de firma
 	    if (!hasSignaturePolicyId) {
 		// Comprobamos que el firmante no contenga el atributo
 		// commitment-type-indication
 		checkPAdESSignedAttribute(signedAttrs, PKCSObjectIdentifiers.id_aa_ets_commitmentType, signatureDictionary.getName(), "commitment-type-indication");
+	    }
+
+	    // Accedemos al conjunto de atributos no firmados
+	    AttributeTable unsignedAttrs = signerInformation.getUnsignedAttributes();
+
+	    // Si el firmante presenta atributos no firmados
+	    if (unsignedAttrs != null) {
+		// Comprobamos que el firmante no contiene el atributo
+		// counter-signature
+		checkPAdESUnsignedAttribute(unsignedAttrs, PKCSObjectIdentifiers.pkcs_9_at_counterSignature, signatureDictionary.getName(), "counter-signature");
+
+		// Comprobamos que el firmante no contiene el atributo
+		// content-reference
+		checkPAdESUnsignedAttribute(unsignedAttrs, PKCSObjectIdentifiers.id_aa_contentReference, signatureDictionary.getName(), "content-reference");
+	    }
+
+	    // Comprobamos que el diccionario de firma no contiene la clave
+	    // /Cert
+	    if (signatureDictionary.getDictionary().getAsName(PdfName.CERT) != null) {
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG018, new Object[ ] { signatureDictionary.getName() });
+		LOGGER.error(errorMsg);
+		throw new SigningException(errorMsg);
+	    }
+
+	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.US_LOG227, new Object[ ] { signatureDictionary.getName() }));
+
+	    return hasSignaturePolicyId;
+	} finally {
+	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG038));
+	}
+    }
+    
+    /**
+     * Method that checks if a signature dictionary is valid against PAdES Baseline European Standard profile (ETSI EN 319 142-1).
+     * @param signatureDictionary Parameter that represents the information about the signature dictionary.
+     * @param pdfDocument Parameter that represents the signed PDF document.
+     * @param signedData Parameter that represents the signature message of the signature contained inside of the signature dictionary.
+     * @return a boolean that indicates if the first signer of the signature contained inside of the signature dictionary includes <code>signature-policy-id</code>
+     * attribute (true) or not (false).
+     * @throws SigningException If the validation fails.
+     */
+    public static boolean validatePAdESBaselineENStructurally(PDFSignatureDictionary signatureDictionary, byte[ ] pdfDocument, CMSSignedData signedData) throws SigningException {
+	boolean hasSignaturePolicyId = false;
+	/*
+	 * Validación Estructural PDF: Contemplará las siguientes verificaciones:
+	 * > La clave /ByteRange del diccionario de firma deberá estar presente y su contenido corresponderse con el resumen de la firma CAdES.
+	 * > La clave /SubFilter del diccionario de firma deberá estar presente y su valor corresponderse con “ETSI.CAdES.detached”.
+	 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado signing-time.
+	 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado content-identifier.
+	 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado content-hints.
+	 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado signer-location.
+	 * > Si el primer firmante de la firma CAdES contenida en el diccionario de firma posee el atributo firmado content-type, éste debe tener el valor “id-data”.
+	 * > Si el primer firmante de la firma CAdES contenida en el diccionario de firma posee el atributo firmado signature-policy-id, entonces
+	 * la clave /Reason del diccionario de firma no deberá estar presente.
+	 * > Si el primer firmante de la firma CAdES contenida en el diccionario de firma posee el atributo firmado commitment-type-indication,
+	 * entonces la clave /Reason del diccionario de firma no deberá estar presente.
+	 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo no firmado counter-signature.
+	 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo no firmado content-reference.
+	 * > La clave /Cert del diccionario de firma no deberá estar presente.
+	 */
+	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG111));
+	try {
+	    // Comprobamos que se ha indicado el diccionario de firma
+	    GenericUtilsCommons.checkInputParameterIsNotNull(signatureDictionary, Language.getResIntegra(ILogConstantKeys.US_LOG007));
+
+	    // Comprobamos que se ha indicado el documento PDF
+	    GenericUtilsCommons.checkInputParameterIsNotNull(pdfDocument, Language.getResIntegra(ILogConstantKeys.US_LOG008));
+
+	    // Comprobamos que se ha indicado el contenido de la firma
+	    GenericUtilsCommons.checkInputParameterIsNotNull(signedData, Language.getResIntegra(ILogConstantKeys.US_LOG019));
+
+	    // Accedemos a la firma, que debe encontrarse dentro de la clave
+	    // /Contents del diccionario de firma
+	    byte[ ] signature = signatureDictionary.getDictionary().getAsString(PdfName.CONTENTS).getOriginalBytes();
+
+	    // Comprobamos que el contenido de la clave /Contents no es nulo
+	    if (signature == null) {
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG010, new Object[ ] { signatureDictionary.getName() });
+		LOGGER.error(errorMsg);
+		throw new SigningException(errorMsg);
+	    }
+
+	    // Comprobamos que la clave /ByteRange no es nula
+	    PdfArray pdfArrayByteRange = signatureDictionary.getDictionary().getAsArray(PdfName.BYTERANGE);
+	    if (pdfArrayByteRange == null) {
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG011, new Object[ ] { signatureDictionary.getName() });
+		LOGGER.error(errorMsg);
+		throw new SigningException(errorMsg);
+	    }
+
+	    // Verificamos que la firma posee un único firmante
+	    checkPAdESSignersNumber(signedData, signatureDictionary);
+
+	    // Accedemos al valor de la clave /SubFilter
+	    PdfName subFilterValue = (PdfName) signatureDictionary.getDictionary().get(PdfName.SUBFILTER);
+
+	    // Si el valor de la clave /SubFilter no es "ETSI.CAdES.detached"
+	    if (!subFilterValue.equals(CADES_SUBFILTER_VALUE)) {
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG224, new Object[ ] { signatureDictionary.getName(), subFilterValue.toString() });
+		LOGGER.error(errorMsg);
+		throw new SigningException(errorMsg);
+	    }
+
+	    // Accedemos al primer firmante
+	    SignerInformation signerInformation = ((List<SignerInformation>) signedData.getSignerInfos().getSigners()).iterator().next();
+
+	    // Accedemos al conjunto de atributos firmados
+	    AttributeTable signedAttrs = signerInformation.getSignedAttributes();
+
+	    // Comprobamos que el firmante no contiene el atributo signing-time
+	    checkPAdESSignedAttribute(signedAttrs, PKCSObjectIdentifiers.pkcs_9_at_signingTime, signatureDictionary.getName(), "signing-time");
+
+	    // Comprobamos que el firmante no contiene el atributo
+	    // content-identifier
+	    checkPAdESSignedAttribute(signedAttrs, PKCSObjectIdentifiers.id_aa_contentIdentifier, signatureDictionary.getName(), "content-identifier");
+
+	    // Comprobamos que el firmante no contiene el atributo content-hints
+	    checkPAdESSignedAttribute(signedAttrs, PKCSObjectIdentifiers.id_aa_contentHint, signatureDictionary.getName(), "content-hints");
+
+	    // Comprobamos que el firmante no contiene el atributo
+	    // signer-location
+	    checkPAdESSignedAttribute(signedAttrs, PKCSObjectIdentifiers.id_aa_ets_signerLocation, signatureDictionary.getName(), "signer-location");
+
+	    // Comprobamos que el firmante contiene el atributo content-type y
+	    // que éste tiene el valor "id-data"
+	    Attribute contentTypeAttribute = signedAttrs.get(PKCSObjectIdentifiers.pkcs_9_at_contentType);
+	    if (contentTypeAttribute == null) {
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG016, new Object[ ] { signatureDictionary.getName() });
+		LOGGER.error(errorMsg);
+		throw new SigningException(errorMsg);
+	    } else if (!contentTypeAttribute.getAttrValues().getObjectAt(0).getDERObject().equals(PKCSObjectIdentifiers.data)) {
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG017, new Object[ ] { signatureDictionary.getName() });
+		LOGGER.error(errorMsg);
+		throw new SigningException(errorMsg);
+	    }
+
+	    // Recordamos si el firmante contiene el atributo signature-policy-id
+	    if (signedAttrs.get(PKCSObjectIdentifiers.id_aa_ets_sigPolicyId) != null) {
+		hasSignaturePolicyId = true;
+	    }
+
+	    // Recuperamos el valor de la clave /Reason en el diccionario PDF
+	    PdfString reasonValue = (PdfString) signatureDictionary.getDictionary().get(PdfName.REASON);
+	    
+	    // Comprobamos que no se declare simultaneamente una politica de firma y la clave /Reason
+	    if (hasSignaturePolicyId && reasonValue != null) {
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG259, new Object[ ] { signatureDictionary.getName(), reasonValue.toString() });
+		LOGGER.error(errorMsg);
+		throw new SigningException(errorMsg);
+	    }
+	    
+	    // Comprobamos que no se declare simultaneamente el atributo commitment-type-indication de la firma y la clave /Reason
+	    Attribute commitmentTypeAttr = signedAttrs.get(PKCSObjectIdentifiers.id_aa_ets_commitmentType);
+	    if (commitmentTypeAttr != null && reasonValue != null) {
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG260, new Object[ ] { signatureDictionary.getName(), reasonValue.toString() });
+		LOGGER.error(errorMsg);
+		throw new SigningException(errorMsg);
 	    }
 
 	    // Accedemos al conjunto de atributos no firmados
@@ -5166,7 +5463,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		}
 
 		// Si el formato es ASiC-S Baseline.
-		if (isASiCSBaselineSignatureFormat(signatureFormat)) {
+		if (isASiC(signatureFormat)) {
 		    // Procesamos la firma ASiC-S.
 		    return getASiCExpirationDate(signature);
 		}
@@ -5243,7 +5540,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return <i>True</i> if the signature format is PAdES, or <i>False</i> in other cases.
      */
     private static boolean isPAdES(String signatureFormat) {
-	return isPAdESSignatureFormat(signatureFormat) || isPAdESBaselineSignatureFormat(signatureFormat);
+	return isPAdESSignatureFormat(signatureFormat) || isPAdESBaselineTSSignatureFormat(signatureFormat) || isPAdESBaselineENSignatureFormat(signatureFormat);
     }
 
     /**
@@ -5252,7 +5549,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return <i>True</i> if the signature format is XAdES, or <i>False</i> in other cases.
      */
     private static boolean isXAdES(String signatureFormat) {
-	return isXAdESSignatureFormat(signatureFormat) || isXAdESBaselineSignatureFormat(signatureFormat);
+	return isXAdESSignatureFormat(signatureFormat) || isXAdESBaselineTSSignatureFormat(signatureFormat) || isXAdESBaselineENSignatureFormat(signatureFormat);
     }
 
     /**
@@ -5261,7 +5558,16 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return <i>True</i> if the signature format is CAdES, or <i>False</i> in other cases.
      */
     private static boolean isCAdES(String signatureFormat) {
-	return isCAdESSignatureFormat(signatureFormat) || isCAdESBaselineSignatureFormat(signatureFormat);
+	return isCAdESSignatureFormat(signatureFormat) || isCAdESBaselineTSSignatureFormat(signatureFormat) || isCAdESBaselineENSignatureFormat(signatureFormat);
+    }
+    
+    /**
+     * Auxiliary method that check if the signature format detected is ASiC.
+     * @param signatureFormat Signature format detected.
+     * @return <i>True</i> if the signature format is ASiC, or <i>False</i> in other cases.
+     */
+    private static boolean isASiC(String signatureFormat) {
+	return isASiCSBaselineTSSignatureFormat(signatureFormat) || isASiCSBaselineENSignatureFormat(signatureFormat);
     }
 
     /**
@@ -5293,11 +5599,12 @@ public final class UtilsSignatureOp implements IUtilsSignature {
     }
 
     /**
-     * Method that indicates if the format of a signature is related to CAdES Baseline signature format.
+     * Method that indicates if the format of a signature is related to CAdES Baseline Technical Specification signature format.
      * @param signatureFormat Parameter that represents the signature format to process.
-     * @return a boolean that indicates if the format of a signature is related to CAdES Baseline signature format (true) or not (false).
+     * @return a boolean that indicates if the format of a signature is related to CAdES Baseline Tecnical Specification
+     * signature format (true) or not (false).
      */
-    private static boolean isCAdESBaselineSignatureFormat(String signatureFormat) {
+    private static boolean isCAdESBaselineTSSignatureFormat(String signatureFormat) {
 	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_LEVEL)) {
 	    return true;
 	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_T_LEVEL)) {
@@ -5305,6 +5612,26 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_LT_LEVEL)) {
 	    return true;
 	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_LTA_LEVEL)) {
+	    return true;
+	}
+	return false;
+    }
+    
+    /**
+     * Method that indicates if the format of a signature is related to PAdES Baseline European
+     * Standard signature format (ETSI EN 319 122-1).
+     * @param signatureFormat Parameter that represents the signature format to process.
+     * @return a boolean that indicates if the format of a signature is related to CAdES Baseline
+     * European Standard signature format (true) or not (false).
+     */
+    private static boolean isCAdESBaselineENSignatureFormat(String signatureFormat) {
+	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_B_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_T_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_LT_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_LTA_LEVEL)) {
 	    return true;
 	}
 	return false;
@@ -5339,11 +5666,11 @@ public final class UtilsSignatureOp implements IUtilsSignature {
     }
 
     /**
-     * Method that indicates if the format of a signature is related to XAdES Baseline signature format.
+     * Method that indicates if the format of a signature is related to XAdES Baseline Technical Specification signature format.
      * @param signatureFormat Parameter that represents the signature format to process.
-     * @return a boolean that indicates if the format of a signature is related to XAdES Baseline signature format (true) or not (false).
+     * @return a boolean that indicates if the format of a signature is related to XAdES Baseline Technical Specification signature format (true) or not (false).
      */
-    private static boolean isXAdESBaselineSignatureFormat(String signatureFormat) {
+    private static boolean isXAdESBaselineTSSignatureFormat(String signatureFormat) {
 	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_LEVEL)) {
 	    return true;
 	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_T_LEVEL)) {
@@ -5351,6 +5678,26 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_LT_LEVEL)) {
 	    return true;
 	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_LTA_LEVEL)) {
+	    return true;
+	}
+	return false;
+    }
+    
+    /**
+     * Method that indicates if the format of a signature is related to XAdES Baseline European Standard
+     * signature format (ETSI EN 319 132-1).
+     * @param signatureFormat Parameter that represents the signature format to process.
+     * @return a boolean that indicates if the format of a signature is related to XAdES Baseline
+     * European Standard signature format (true) or not (false).
+     */
+    private static boolean isXAdESBaselineENSignatureFormat(String signatureFormat) {
+	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_B_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_T_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_LT_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_LTA_LEVEL)) {
 	    return true;
 	}
 	return false;
@@ -5375,11 +5722,12 @@ public final class UtilsSignatureOp implements IUtilsSignature {
     }
 
     /**
-     * Method that indicates if the format of a signature is related to PAdES Baseline signature format.
+     * Method that indicates if the format of a signature is related to PAdES Baseline Technical Specification signature format.
      * @param signatureFormat Parameter that represents the signature format to process.
-     * @return a boolean that indicates if the format of a signature is related to PAdES Baseline signature format (true) or not (false).
+     * @return a boolean that indicates if the format of a signature is related to PAdES Baseline Technical Specification
+     * signature format (true) or not (false).
      */
-    private static boolean isPAdESBaselineSignatureFormat(String signatureFormat) {
+    private static boolean isPAdESBaselineTSSignatureFormat(String signatureFormat) {
 	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_B_LEVEL)) {
 	    return true;
 	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_T_LEVEL)) {
@@ -5393,11 +5741,29 @@ public final class UtilsSignatureOp implements IUtilsSignature {
     }
 
     /**
-     * Method that indicates if the format of a signature is related to ASiC-S Baseline signature format.
+     * Method that indicates if the format of a signature is related to PAdES Baseline European Standard signature format (ETSI EN 319 142-1).
      * @param signatureFormat Parameter that represents the signature format to process.
-     * @return a boolean that indicates if the format of a signature is related to ASiC-S Baseline signature format (true) or not (false).
+     * @return a boolean that indicates if the format of a signature is related to PAdES Baseline European Standard signature format (true) or not (false).
      */
-    private static boolean isASiCSBaselineSignatureFormat(String signatureFormat) {
+    private static boolean isPAdESBaselineENSignatureFormat(String signatureFormat) {
+	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_B_B_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_B_T_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_B_LT_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_B_LTA_LEVEL)) {
+	    return true;
+	}
+	return false;
+    }
+
+    /**
+     * Method that indicates if the format of a signature is related to ASiC-S Baseline Technical Specification signature format.
+     * @param signatureFormat Parameter that represents the signature format to process.
+     * @return a boolean that indicates if the format of a signature is related to ASiC-S Baseline Technical Specification signature format (true) or not (false).
+     */
+    private static boolean isASiCSBaselineTSSignatureFormat(String signatureFormat) {
 	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_B_LEVEL)) {
 	    return true;
 	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_T_LEVEL)) {
@@ -5405,6 +5771,24 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_LT_LEVEL)) {
 	    return true;
 	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_LTA_LEVEL)) {
+	    return true;
+	}
+	return false;
+    }
+    
+    /**
+     * Method that indicates if the format of a signature is related to ASiC-S Baseline European Standard signature format.
+     * @param signatureFormat Parameter that represents the signature format to process.
+     * @return a boolean that indicates if the format of a signature is related to ASiC-S Baseline European Standard signature format (true) or not (false).
+     */
+    private static boolean isASiCSBaselineENSignatureFormat(String signatureFormat) {
+	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_B_B_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_B_T_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_B_LT_LEVEL)) {
+	    return true;
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_B_LTA_LEVEL)) {
 	    return true;
 	}
 	return false;
@@ -6172,4 +6556,63 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	return res;
     }
 
+
+    /**
+     * Obtiene el OID del algoritmo de firma empleado. Este algoritmo puede haberse declarado
+     * directamente en la firma o puede que deba construirse a partir del algoritmo de
+     * encriptaci&oacute;n y el algoritmo de hash. 
+     * @param signerInformation Informaci&oacute;n de la firma.
+     * @return OID del algoritmo de firma.
+     * @throws SignaturePolicyException Cuando no se puede identificar el algoritmo de firma a
+     * trav&eacute;s del de encriptaci&oacute;n y huella.
+     */
+    public static AlgorithmIdentifier getSignatureAlgorithm(SignerInformation signerInformation)
+	    throws SignaturePolicyException {
+	
+	// Obtenemos el algoritmo declarado, que puede ser el de encriptacion o el de firma
+	String encryptionAlgOid = signerInformation.getEncryptionAlgOID();
+	
+	// Obtenemos el algoritmo de huella
+	String hashAlgOid = signerInformation.getDigestAlgOID();
+		
+	// Componemos el algoritmo de firma
+	return getSignatureAlgorithm(encryptionAlgOid, hashAlgOid);
+    }
+
+    
+    /**
+     * Obtiene el identificador de algoritmo de firma que se corresponde al usar el
+     * algoritmo de encriptaci&oacute;n con el algoritmo de hash indicados. En caso
+     * de no haberse indicado un algoritmo de encriptaci&oacute;n reconocido, se
+     * interpretar&aacute; que este es en realidad el algoritmo de huella. 
+     * @param encryptionAlgOid OID del algoritmo de encriptaci&oacute;n.
+     * @param hashAlgOid OID del algoritmo de huella.
+     * @return Identificador del algorimo de firma.
+     * @throws SignaturePolicyException Cuando no se conozca el OID del algoritmo
+     * correspondiente a utilizar el algoritmo de encriptaci&oacute;n y el algoritmo
+     * de hash indicados.
+     */
+    public static AlgorithmIdentifier getSignatureAlgorithm(String encryptionAlgOid, String hashAlgOid)
+	    throws SignaturePolicyException {
+	
+	String signatureAlgOid;
+	if (OID_RSA_ENCRYPTION.equals(encryptionAlgOid)) {
+	    if (OID_HASH_ALGORITHM_SHA1.equals(hashAlgOid)) {
+		signatureAlgOid = OID_SIGN_ALGORITHM_SHA1WITHRSA; 
+	    } else if (OID_HASH_ALGORITHM_SHA256.equals(hashAlgOid)) {
+		signatureAlgOid = OID_SIGN_ALGORITHM_SHA256WITHRSA; 
+	    } else if (OID_HASH_ALGORITHM_SHA384.equals(hashAlgOid)) {
+		signatureAlgOid = OID_SIGN_ALGORITHM_SHA384WITHRSA; 
+	    } else if (OID_HASH_ALGORITHM_SHA512.equals(hashAlgOid)) {
+		signatureAlgOid = OID_SIGN_ALGORITHM_SHA512WITHRSA; 
+	    } else {
+		throw new SignaturePolicyException(Language.getFormatResIntegra(ILogConstantKeys.SPM_LOG081, new Object[ ] { encryptionAlgOid, hashAlgOid }));
+	    }
+	}
+	else {
+	    signatureAlgOid = encryptionAlgOid;
+	}
+	
+	return new AlgorithmIdentifier(signatureAlgOid);
+    }
 }

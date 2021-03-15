@@ -148,6 +148,10 @@ public final class SignatureFormatDetectorXades implements ISignatureFormatDetec
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_LT_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_T_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_LTA_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_LT_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_T_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_B_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_BES}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_EPES}.</li>
      * </ul>
@@ -185,7 +189,41 @@ public final class SignatureFormatDetectorXades implements ISignatureFormatDetec
 
 		    }
 		} else {
-		    resolveXAdESNoBaselineFormat(format, listSignatureElements);
+		    format = resolveXAdESNoBaselineFormat(format, listSignatureElements);
+		}
+
+	    }
+	}
+	else if (isXAdESBBLevel(listSignatureElements)) {
+	    // Indicamos que el formato por ahora es XAdES B-B-Level
+	    format = ISignatureFormatDetector.FORMAT_XADES_B_B_LEVEL;
+
+	    // Comprobamos si alguna de las firmas del documento XML
+	    // tiene
+	    // el formato XAdES B-T-Level
+	    if (isXAdEST(listSignatureElements)) {
+		// Indicamos que el formato por ahora es XAdES B-T-Level
+		format = ISignatureFormatDetector.FORMAT_XADES_B_T_LEVEL;
+
+		// Comprobamos si alguna de las firmas del documento XML
+		// tiene
+		// el formato XAdES B-LT-Level
+		if (isXAdESBLTLevel(listSignatureElements)) {
+		    // Indicamos que el formato por ahora es XAdES
+		    // B-LT-Level
+		    format = ISignatureFormatDetector.FORMAT_XADES_B_LT_LEVEL;
+
+		    // Comprobamos si alguna de las firmas del documento XML
+		    // tiene
+		    // el formato XAdES B-LTA-Level
+		    if (isXAdESBLTALevel(listSignatureElements)) {
+			// Indicamos que el formato por ahora es XAdES
+			// B-LTA-Level
+			format = ISignatureFormatDetector.FORMAT_XADES_B_LTA_LEVEL;
+
+		    }
+		} else {
+		    format = resolveXAdESNoBaselineFormat(format, listSignatureElements);
 		}
 
 	    }
@@ -302,6 +340,28 @@ public final class SignatureFormatDetectorXades implements ISignatureFormatDetec
 		// elemento SignaturePolicyIdentifier
 		Element signaturePolicyIdentifier = getXMLElement(signedSignatureProperties, IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_SIGNATURE_POLICY_IDENTIFIER);
 		if (signaturePolicyIdentifier != null) {
+		    return true;
+		}
+	    }
+	}
+	return false;
+    }
+    
+    /**
+     * Method that indicates if a XML signature contains the <code>xades141:SignaturePolicyStore</code> element.
+     * @param dsSignature Parameter that represents the <code>ds:Signature</code> element.
+     * @return a boolean that indicates if the XML signature contains the <code>xades141:SignaturePolicyStore</code> element (true) or not (false).
+     */
+    public static boolean hasSignaturePolicyStore(Element dsSignature) {
+	// Accedemos al elemento UnsignedProperties
+	Element unsignedProperties = getXMLElement(dsSignature, IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_UNSIGNED_PROPERTIES);
+	if (unsignedProperties != null) {
+	    // Accedemos al elemento UnsignedSignatureProperties
+	    Element unsignedSignatureProperties = getXMLElement(unsignedProperties, IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_UNSIGNED_SIGNATURE_PROPERTIES);
+	    if (unsignedSignatureProperties != null) {
+		// Comprobamos la existencia del atributo <code>xades141:SignaturePolicyStore</code>.
+		Element signaturePolicyStore = getXMLElement(unsignedSignatureProperties, IXMLConstants.XADES_1_4_1_NAMESPACE, IXMLConstants.ELEMENT_SIGNATURE_POLICY_STORE);
+		if (signaturePolicyStore != null) {
 		    return true;
 		}
 	    }
@@ -480,6 +540,232 @@ public final class SignatureFormatDetectorXades implements ISignatureFormatDetec
 	}
 	return false;
     }
+    
+    /**
+     * Method that indicates if at least one of a list of XML signatures has XAdES B-LT-Level format.
+     * @param listSignatureElements Parameter that represents the list of signatures.
+     * @return a boolean that indicates if al leasr one element meets the requirements of the
+     * XAdES B-LT-Level profile.
+     */
+    private static boolean isXAdESBLTLevel(List<Element> listSignatureElements) {
+	/* Una firma se considerará XAdES LT-Level si posee los elementos:
+	 * > xades:CertificateValues y xades:RevocationValues
+	 * > o xadesv141:TimeStampValidationData
+	 * Y si no posee los elementos:
+	 * > xades:CompleteCertificateRefs
+	 * > xades:CompleteCertificateRefsV2
+	 * > xades:CompleteRevocationRefs
+	 * > xades:AttributeCertificateRefs
+	 * > xades:AttributeCertificateRefsV2
+	 * > xades:AttributeRevocationRefs
+	 * > xades:SigAndRefsTimeStamp
+	 * > xades:SigAndRefsTimeStampV2
+	 * > xades:RefsOnlyTimeStamp
+	 * > xades:RefsOnlyTimeStampV2
+	 */
+	if (!listSignatureElements.isEmpty()) {
+	    // Recorremos la lista de elementos ds:Signature
+	    for (Element signatureElement: listSignatureElements) {
+		if (isXAdESBLTLevel(signatureElement)) {
+		    return true;
+		}
+	    }
+	}
+	return false;
+    }
+
+    /**
+     * Method that indicates if a signature has XAdES B-LT-Level format. The requirements are:
+     * <ul>
+     * <li>Contain one <code>xades:CertificateValues</code> element and one <code>xades:RevocationValues</code> element</li>
+     * or at least one
+     * <li><code>xadesv141:TimeStampValidationData</code> element.</li>
+     * </ul>
+     * And it doesn't contain:
+     * <ul>
+     * <li>Any <code>xades:CompleteCertificateRefs</code> element</li>
+     * and
+     * <li>Any <code>xades:CompleteCertificateRefsV2</code> element</li>
+     * and
+     * <li>Any <code>xades:CompleteRevocationRefs</code> element</li>
+     * and
+     * <li>Any <code>xades:AttributeCertificateRefs</code> element</li>
+     * and
+     * <li>Any <code>xades:AttributeCertificateRefsV2</code> element</li>
+     * and
+     * <li>Any <code>xades:AttributeRevocationRefs</code> element</li>
+     * and
+     * <li>Any <code>xades:SigAndRefsTimeStamp</code> element</li>
+     * and
+     * <li>Any <code>xades:SigAndRefsTimeStampV2</code> element</li>
+     * and
+     * <li>Any <code>xades:RefsOnlyTimeStamp</code> element</li>
+     * and
+     * <li>Any <code>xades:RefsOnlyTimeStampV2</code> element.</li>
+     * </ul>
+     * @param signatureElement Parameter that represents the <code>ds:Signature</code> element.
+     * @return a boolean that indicates if the signer has XAdES LT-Level format.
+     */
+    private static boolean isXAdESBLTLevel(Element signatureElement) {
+	/* Una firma se considerará XAdES B-LT-Level si posee los elementos:
+	 * > xades:CertificateValues y xades:RevocationValues
+	 * > o xadesv141:TimeStampValidationData
+	 * Y si no posee los elementos:
+	 * > xades:CompleteCertificateRefs
+	 * > xades:CompleteCertificateRefsV2
+	 * > xades:CompleteRevocationRefs
+	 * > xades:AttributeCertificateRefs
+	 * > xades:AttributeCertificateRefsV2
+	 * > xades:AttributeRevocationRefs
+	 * > xades:SigAndRefsTimeStamp
+	 * > xades:SigAndRefsTimeStampV2
+	 * > xades:RefsOnlyTimeStamp
+	 * > xades:RefsOnlyTimeStampV2
+	 */
+	boolean hasCertificateValues = false;
+	boolean hasRevocationValues = false;
+	boolean hashTimeStampValidationData = false;
+	boolean hasCompleteCertificateRefs = false;
+	boolean hasCompleteCertificateRefsV2 = false;
+	boolean hasCompleteRevocationRefs = false;
+	boolean hasAttributeCertificateRefs = false;
+	boolean hasAttributeCertificateRefsV2 = false;
+	boolean hasAttributeRevocationRefs = false;
+	boolean hasSigAndRefsTimeStamp = false;
+	boolean hasSigAndRefsTimeStampV2 = false;
+	boolean hasRefsOnlyTimeStamp = false;
+	boolean hasRefsOnlyTimeStampV2 = false;
+
+	// Accedemos al elemento xades:UnsignedProperties
+	Element unsignedProperties = getXMLElement(signatureElement, IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_UNSIGNED_PROPERTIES);
+	if (unsignedProperties != null) {
+	    // Accedemos al elemento xades:UnsignedSignatureProperties
+	    Element unsignedSignatureProperties = getXMLElement(unsignedProperties, IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_UNSIGNED_SIGNATURE_PROPERTIES);
+	    if (unsignedSignatureProperties != null) {
+
+		// Comprobamos si contiene el elemento
+		// xades:CertificateValues
+		hasCertificateValues = getXMLElement(unsignedSignatureProperties, IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_CERTIFICATE_VALUES) != null;
+
+		// Comprobamos si contiene el elemento
+		// xades:RevocationValues
+		hasCertificateValues = getXMLElement(unsignedSignatureProperties, IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_REVOCATION_VALUES) != null;
+
+		// Comprobamos si contiene el elemento
+		// xadesv141:TimeStampValidationData
+		hashTimeStampValidationData = getXMLElement(unsignedSignatureProperties, IXMLConstants.XADES_1_4_1_NAMESPACE, IXMLConstants.ELEMENT_TIME_STAMP_VALIDATION_DATA) != null;
+
+		// Comprobamos si contiene el elemento
+		// xades:CompleteCertificateRefs
+		hasCompleteCertificateRefs = getXMLElement(unsignedSignatureProperties, IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_COMPLETE_CERTIFICATE_REFS) != null;
+		
+		// Comprobamos si contiene el elemento
+		// xades:CompleteCertificateRefsV2
+		hasCompleteCertificateRefsV2 = getXMLElement(unsignedSignatureProperties, IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_COMPLETE_CERTIFICATE_REFS_V2) != null;
+
+		// Comprobamos si contiene el elemento
+		// xades:CompleteRevocationRefs
+		hasCompleteRevocationRefs = getXMLElement(unsignedSignatureProperties, IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_COMPLETE_REVOCATION_REFS) != null;
+
+		// Comprobamos si contiene el elemento
+		// xades:AttributeCertificateRefs
+		hasAttributeCertificateRefs = getXMLElement(unsignedSignatureProperties, IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_ATTRIBUTE_CERTIFICATE_REFS) != null;
+
+		// Comprobamos si contiene el elemento
+		// xades:AttributeCertificateRefsV2
+		hasAttributeCertificateRefsV2 = getXMLElement(unsignedSignatureProperties, IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_ATTRIBUTE_CERTIFICATE_REFS_V2) != null;
+
+		// Comprobamos si contiene el elemento
+		// xades:AttributeRevocationRefs
+		hasAttributeRevocationRefs = getXMLElement(unsignedSignatureProperties, IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_ATTRIBUTE_REVOCATION_REFS) != null;
+
+		// Comprobamos si contiene el elemento
+		// xades:SigAndRefsTimeStamp
+		hasSigAndRefsTimeStamp = getXMLElement(unsignedSignatureProperties, IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_SIG_AND_REFS_TIMESTAMP) != null;
+
+		// Comprobamos si contiene el elemento
+		// xades:SigAndRefsTimeStamp
+		hasSigAndRefsTimeStampV2 = getXMLElement(unsignedSignatureProperties, IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_SIG_AND_REFS_TIMESTAMP_V2) != null;
+		
+		// Comprobamos si contiene el elemento
+		// xades:RefsOnlyTimeStamp
+		hasRefsOnlyTimeStamp = getXMLElement(unsignedSignatureProperties, IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_REFS_ONLY_TIMESTAMP) != null;
+		
+		// Comprobamos si contiene el elemento
+		// xades:RefsOnlyTimeStampV2
+		hasRefsOnlyTimeStampV2 = getXMLElement(unsignedSignatureProperties, IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_REFS_ONLY_TIMESTAMP_V2) != null;
+
+		if (checkBLTLevel(hasCertificateValues, hasRevocationValues, hashTimeStampValidationData, hasCompleteCertificateRefs, hasCompleteCertificateRefsV2, hasCompleteRevocationRefs, hasAttributeCertificateRefs, hasAttributeCertificateRefsV2, hasAttributeRevocationRefs, hasSigAndRefsTimeStamp, hasSigAndRefsTimeStampV2, hasRefsOnlyTimeStamp, hasRefsOnlyTimeStampV2)) {
+		    return true;
+		}
+	    }
+	}
+	return false;
+    }
+    
+    /**
+     * Method that indicates if at least one of a list of XML signatures has XAdES B-LTA-Level format.
+     * @param listSignatureElements Parameter that represents the list of signatures.
+     * @return a boolean that indicates if al leasr one element meets the requirements of the
+     * XAdES B-LTA-Level profile.
+     */
+    private static boolean isXAdESBLTALevel(List<Element> listSignatureElements) {
+	/* Una firma se considerará XAdES B-LTA-Level si posee el elemento:
+	 * > xadesv141:ArchiveTimeStamp
+	 * Y si no posee el elemento:
+	 * > xades:ArchiveTimeStamp
+	 */
+	if (!listSignatureElements.isEmpty()) {
+	    // Recorremos la lista de elementos ds:Signature
+	    for (Element signatureElement: listSignatureElements) {
+		if (isXAdESBLTALevel(signatureElement)) {
+		    return true;
+		}
+	    }
+	}
+	return false;
+    }
+    
+    /**
+     * Method that indicates if a signature has XAdES B-LT-Level format. The requirements are:
+     * <ul>
+     * <li>Contain one <code>xadesv141:ArchiveTimeStamp</code> element.</li>
+     * <li>And it doesn't contain any <code>ArchiveTimeStamp</code> element.</li>
+     * </ul>
+     * @param signatureElement Parameter that represents the <code>ds:Signature</code> element.
+     * @return a boolean that indicates if the signer has XAdES LT-Level format.
+     */
+    private static boolean isXAdESBLTALevel(Element signatureElement) {
+	
+	// Accedemos al elemento xades:UnsignedProperties
+	Element unsignedProperties = getXMLElement(signatureElement, IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_UNSIGNED_PROPERTIES);
+	if (unsignedProperties != null) {
+	    // Accedemos al elemento xades:UnsignedSignatureProperties
+	    Element unsignedSignatureProperties = getXMLElement(unsignedProperties, IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_UNSIGNED_SIGNATURE_PROPERTIES);
+	    if (unsignedSignatureProperties != null) {
+		// Obtenemos el conjunto de hijos del elemento
+		// xades:UnsignedSignatureProperties
+		NodeList nl = unsignedSignatureProperties.getChildNodes();
+
+		// Recorremos el conjunto de elementos hijos comprobando que no haya ningun
+		boolean anyXadES141TimeStamp = false;
+		for (int i = 0; i < nl.getLength(); i++) {
+		    if (nl.item(i).getNodeType() == Node.ELEMENT_NODE && nl.item(i).getLocalName().equals(IXMLConstants.ELEMENT_ARCHIVE_TIMESTAMP)) {
+			// Si encontramos al menos un sello de XAdES 1.3.2, la firma no es B-LTA Level
+			if (IXMLConstants.XADES_1_3_2_NAMESPACE.equals(nl.item(i).getNamespaceURI())) {
+			    return false;
+			}
+			// Si encontramos al menos un sello de XAdES 1.4.1, la firma podria ser B-LTA Level
+			else if (IXMLConstants.XADES_1_4_1_NAMESPACE.equals(nl.item(i).getNamespaceURI())) {
+			    anyXadES141TimeStamp = true;
+			}
+		    }
+		}
+		return anyXadES141TimeStamp;
+	    }
+	}
+	return false;
+    }
 
     /**
      * Method that indicates if the input parameters has the values associated to a XAdES LT-Level signature.
@@ -514,6 +800,57 @@ public final class SignatureFormatDetectorXades implements ISignatureFormatDetec
     private static boolean checkLTLevel(boolean hasCertificateValues, boolean hasRevocationValues, boolean hashTimeStampValidationData, boolean hasCompleteCertificateRefs, boolean hasCompleteRevocationRefs, boolean hasAttributeCertificateRefs, boolean hasAttributeRevocationRefs, boolean hasSigAndRefsTimeStamp, boolean hasRefsOnlyTimeStamp) {
 	// CHECKSTYLE:OFF expresion complexity needed
 	if ((hasCertificateValues && hasRevocationValues || hashTimeStampValidationData) && !hasCompleteCertificateRefs && !hasCompleteRevocationRefs && !hasAttributeCertificateRefs && !hasAttributeRevocationRefs && !hasSigAndRefsTimeStamp && !hasRefsOnlyTimeStamp) {
+	    // CHECKSTYLE:ON
+	    return true;
+	}
+	return false;
+    }
+    
+    /**
+     * Method that indicates if the input parameters has the values associated to a XAdES LT-Level signature.
+     * @param hasCertificateValues Parameter that indicates if a XML signature contains at least one <code>xades:CertificateValues</code> element.
+     * @param hasRevocationValues Parameter that indicates if a XML signature contains at least one <code>xades:RevocationValues</code> element.
+     * @param hashTimeStampValidationData Parameter that indicates if a XML signature contains at least one <code>xades:RevocationValues</code> element.
+     * @param hasCompleteCertificateRefs Parameter that indicates if a XML signature contains at least one <code>xades:CompleteCertificateRefs</code> element.
+     * @param hasCompleteCertificateRefsV2 Parameter that indicates if a XML signature contains at least one <code>xades:CompleteCertificateRefsV2</code> element.
+     * @param hasCompleteRevocationRefs Parameter that indicates if a XML signature contains at least one <code>xades:CompleteRevocationRefs</code> element.
+     * @param hasAttributeCertificateRefs Parameter that indicates if a XML signature contains at least one <code>xades:AttributeCertificateRefs</code> element.
+     * @param hasAttributeCertificateRefsV2 Parameter that indicates if a XML signature contains at least one <code>xades:AttributeCertificateRefsV2</code> element.
+     * @param hasAttributeRevocationRefs Parameter that indicates if a XML signature contains at least one <code>xades:AttributeRevocationRefs</code> element.
+     * @param hasSigAndRefsTimeStamp Parameter that indicates if a XML signature contains at least one <code>xades:SigAndRefsTimeStamp</code> element.
+     * @param hasSigAndRefsTimeStampV2 Parameter that indicates if a XML signature contains at least one <code>xades:SigAndRefsTimeStampV2</code> element.
+     * @param hasRefsOnlyTimeStamp Parameter that indicates if a XML signature contains at least one <code>xades:RefsOnlyTimeStamp</code> element.
+     * @param hasRefsOnlyTimeStampV2 Parameter that indicates if a XML signature contains at least one <code>xades:RefsOnlyTimeStampV2</code> element.
+     * @return a boolean that indicates if a XML signature:
+     * <ul>
+     * <li>Contains the <code>xades:CertificateValues</code> element and the <code>xades:RevocationValues</code> element</li>
+     * or
+     * <li>contains the <code>xadesv141:TimeStampValidationData</code> element</li>
+     * and doesn't contain
+     * <li>Any <code>xades:CompleteCertificateRefs</code> element</li>
+     * and
+     * <li>Any <code>xades:CompleteCertificateRefsV2</code> element</li>
+     * and
+     * <li>Any <code>xades:CompleteRevocationRefs</code> element</li>
+     * and
+     * <li>Any <code>xades:AttributeCertificateRefs</code> element</li>
+     * and
+     * <li>Any <code>xades:AttributeCertificateRefsV2</code> element</li>
+     * and
+     * <li>Any <code>xades:AttributeRevocationRefs</code> element</li>
+     * and
+     * <li>Any <code>xades:SigAndRefsTimeStamp</code> element</li>
+     * and
+     * <li>Any <code>xades:SigAndRefsTimeStampV2</code> element</li>
+     * and
+     * <li>Any <code>xades:RefsOnlyTimeStamp</code> element</li>
+     * and
+     * <li>Any <code>xades:RefsOnlyTimeStampV2</code> element.</li>
+     * </ul>
+     */
+    private static boolean checkBLTLevel(boolean hasCertificateValues, boolean hasRevocationValues, boolean hashTimeStampValidationData, boolean hasCompleteCertificateRefs, boolean hasCompleteCertificateRefsV2, boolean hasCompleteRevocationRefs, boolean hasAttributeCertificateRefs, boolean hasAttributeCertificateRefsV2, boolean hasAttributeRevocationRefs, boolean hasSigAndRefsTimeStamp, boolean hasSigAndRefsTimeStampV2, boolean hasRefsOnlyTimeStamp, boolean hasRefsOnlyTimeStampV2) {
+	// CHECKSTYLE:OFF expresion complexity needed
+	if ((hasCertificateValues && hasRevocationValues || hashTimeStampValidationData) && !hasCompleteCertificateRefs && !hasCompleteCertificateRefsV2 && !hasCompleteRevocationRefs && !hasAttributeCertificateRefs && !hasAttributeCertificateRefsV2 && !hasAttributeRevocationRefs && !hasSigAndRefsTimeStamp && !hasSigAndRefsTimeStampV2 && !hasRefsOnlyTimeStamp && !hasRefsOnlyTimeStampV2) {
 	    // CHECKSTYLE:ON
 	    return true;
 	}
@@ -623,6 +960,131 @@ public final class SignatureFormatDetectorXades implements ISignatureFormatDetec
 		    }
 		}
 		if (hasSigningTime && hasSigningCertificate && hasDataObjectFormat && hasMimeType) {
+		    return true;
+		}
+	    }
+	}
+	return false;
+    }
+    
+    /**
+     * Method that indicates if at least one of a list of XML signatures meets the requirements
+     * of XAdES B-B-Level profile.
+     * @param listSignatureElements Parameter that represents the list of signatures.
+     * @return a boolean that indicates if at least one of the list of XML signatures meets the requirements
+     * of XAdES B-B-Level profile.
+     */
+    private static boolean isXAdESBBLevel(List<Element> listSignatureElements) {
+	/* Una firma se considerará XAdES B-Level si posee los elementos:
+	 * > xades:SigningCertificateV2
+	 * > xades:SigningTime
+	 * > xades:DataObjectFormat (incluyendo el elemento xades:MimeType)
+	 * Y si no posee:
+	 * > xades:QualifyingPropertiesReference
+	 * > xades:SigningCertificate
+	 * > xades:SignerRole
+	 * > xades:SignatureProductionPlace
+	 */
+	if (!listSignatureElements.isEmpty()) {
+	    // Recorremos la lista de elementos ds:Signature
+	    for (Element signatureElement: listSignatureElements) {
+		return isXAdESBBLevel(signatureElement);
+	    }
+	}
+	return false;
+    }
+
+    /**
+     * Method that indicates if a signature contains at least:
+     * <ul>
+     * <li>One <code>xades:SigningCertificateV2</code> element</li>
+     * and
+     * <li>One <code>xades:SigningTime</code> element</li>
+     * and
+     * <li>One <code>xades:DataObjectFormat</code> element</li>
+     * and it doesn't contain any:
+     * <li><code>xades:QualifyingPropertiesReference</code> element</li>
+     * or
+     * <li><code>xades:SigningCertificate</code> element</li>
+     * or
+     * <li><code>xades:SignerRole</code> element</li>
+     * or
+     * <li><code>xades:SignatureProductionPlace</code> element.</li>
+     * </ul>
+     * @param signatureElement Parameter that represents the <code>ds:Signature</code> element.
+     * @return a boolean that indicates if the signer has XAdES B-Level format.
+     */
+    private static boolean isXAdESBBLevel(Element signatureElement) {
+	/* Un firmante se considerará XAdES B-B-Level si posee los elementos:
+	 * > xades:SigningCertificateV2
+	 * > xades:SigningTime
+	 * > xades:DataObjectFormat (incluyendo el elemento xades:MimeType)
+	 * Y si no posee:
+	 * > xades:QualifyingPropertiesReference
+	 * > xades:SigningCertificate
+	 * > xades:SignerRole
+	 * > xades:SignatureProductionPlace
+	 */
+	boolean hasSigningCertificate = false;
+	boolean hasSigningCertificateV2 = false;
+	boolean hasSignerRole = false;
+	boolean hasSignatureProductionPlace = false;
+	boolean hasSigningTime = false;
+	boolean hasDataObjectFormat = false;
+	boolean hasMimeType = false;
+
+	// Comprobamos que la firma no contiene el elemento
+	// xades:QualifyingPropertiesReference
+	if (signatureElement.getElementsByTagNameNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_QUALIFYING_PROPERTIES_REFERENCE).getLength() == 0) {
+	    // Accedemos al elemento xades:SignedProperties
+	    Element signedPropertiesElement = null;
+	    if (signatureElement.getElementsByTagNameNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_SIGNED_PROPERTIES).getLength() > 0) {
+		signedPropertiesElement = (Element) signatureElement.getElementsByTagNameNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_SIGNED_PROPERTIES).item(0);
+
+		// Accedemos al elemento xades:SignedSignatureProperties
+		Element signedSignaturePropertiesElement = null;
+		if (signedPropertiesElement.getElementsByTagNameNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_SIGNED_SIGNATURE_PROPERTIES).getLength() > 0) {
+		    signedSignaturePropertiesElement = (Element) signatureElement.getElementsByTagNameNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_SIGNED_SIGNATURE_PROPERTIES).item(0);
+
+		    // Comprobamos si tiene xades:SigningCertificate como uno de sus hijos
+		    hasSigningCertificate = signedSignaturePropertiesElement.getElementsByTagNameNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_SIGNING_CERTIFICATE).getLength() > 0;
+		    
+		    // Comprobamos si tiene xades:SigningCertificateV2 como uno de sus hijos
+		    hasSigningCertificateV2 = signedSignaturePropertiesElement.getElementsByTagNameNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_SIGNING_CERTIFICATE_V2).getLength() > 0;
+		    
+		    // Comprobamos si tiene xades:SignerRole como uno de sus hijos
+		    hasSignerRole = signedSignaturePropertiesElement.getElementsByTagNameNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_SIGNER_ROLE).getLength() > 0;
+		    
+		    // Comprobamos si tiene xades:SignatureProductionPlace como uno de sus hijos
+		    hasSignatureProductionPlace = signedSignaturePropertiesElement.getElementsByTagNameNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_SIGNATURE_PRODUCTION_PLACE).getLength() > 0;
+
+		    // Comprobamos si el elemento
+		    // xades:SignedSignatureProperties tiene
+		    // xades:SigningTime como uno de sus hijos
+		    hasSigningTime = signedSignaturePropertiesElement.getElementsByTagNameNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_SIGNING_TIME).getLength() > 0;
+		}
+		// Accedemos al elemento
+		// xades:SignedDataObjectProperties
+		Element signedDataObjectPropertiesElement = null;
+		if (signedPropertiesElement.getElementsByTagNameNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_SIGNED_DATA_OBJECT_PROPERTIES).getLength() > 0) {
+		    signedDataObjectPropertiesElement = (Element) signedPropertiesElement.getElementsByTagNameNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_SIGNED_DATA_OBJECT_PROPERTIES).item(0);
+
+		    // Comprobamos si el elemento
+		    // xades:SignedDataObjectProperties tiene
+		    // xades:DataObjectFormat como uno de sus hijos
+		    Element dataObjectFormatElement = getXMLElement(signedDataObjectPropertiesElement, IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_DATA_OBJECT_FORMAT);
+
+		    hasDataObjectFormat = dataObjectFormatElement != null;
+		    if (dataObjectFormatElement != null) {
+			hasDataObjectFormat = true;
+
+			// Comprobamos si el elemento
+			// xades:DataObjectFormat tiene
+			// xades:MimeType como uno de sus hijos
+			hasMimeType = dataObjectFormatElement.getElementsByTagNameNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_MIME_TYPE).getLength() > 0;
+		    }
+		}
+		if (hasSigningTime && hasSigningCertificateV2 && hasDataObjectFormat && hasMimeType && !hasSigningCertificate && !hasSignerRole && !hasSignatureProductionPlace) {
 		    return true;
 		}
 	    }
@@ -1080,6 +1542,10 @@ public final class SignatureFormatDetectorXades implements ISignatureFormatDetec
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_LT_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_T_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_LTA_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_LT_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_T_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_B_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_A}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_XL2}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_XL1}.</li>
@@ -1162,6 +1628,10 @@ public final class SignatureFormatDetectorXades implements ISignatureFormatDetec
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_LT_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_T_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_LTA_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_LT_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_T_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_B_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_BES}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_EPES}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_XADES_EPES}.</li>
@@ -1204,14 +1674,47 @@ public final class SignatureFormatDetectorXades implements ISignatureFormatDetec
 			// Indicamos que el formato por ahora es XAdES
 			// LTA-Level
 			format = ISignatureFormatDetector.FORMAT_XADES_LTA_LEVEL;
-
 		    }
 		} else {
-		    resolveXAdESNoBaselineFormat(format, signatureElement);
+		    format = resolveXAdESNoBaselineFormat(format, signatureElement);
 		}
-
 	    }
 	}
+	// Comprobamos si la firma tiene
+	// el formato XAdES B-B-Level
+	else if (isXAdESBBLevel(signatureElement)) {
+	    // Indicamos que el formato por ahora es XAdES B-B-Level
+	    format = ISignatureFormatDetector.FORMAT_XADES_B_B_LEVEL;
+
+	    // Comprobamos si el firmante
+	    // tiene
+	    // el formato XAdES T-Level
+	    if (isXAdEST(signatureElement)) {
+		// Indicamos que el formato por ahora es XAdES B-T-Level
+		format = ISignatureFormatDetector.FORMAT_XADES_B_T_LEVEL;
+
+		// Comprobamos si el firmante
+		// tiene
+		// el formato XAdES LT-Level
+		if (isXAdESBLTLevel(signatureElement)) {
+		    // Indicamos que el formato por ahora es XAdES
+		    // B-LT-Level
+		    format = ISignatureFormatDetector.FORMAT_XADES_B_LT_LEVEL;
+
+		    // Comprobamos si el firmante
+		    // tiene
+		    // el formato XAdES LTA-Level
+		    if (isXAdESBLTALevel(signatureElement)) {
+			// Indicamos que el formato por ahora es XAdES
+			// B-LTA-Level
+			format = ISignatureFormatDetector.FORMAT_XADES_B_LTA_LEVEL;
+		    }
+		} else {
+		    format = resolveXAdESNoBaselineFormat(format, signatureElement);
+		}
+	    }
+	}
+	
 	return format;
     }
 
@@ -1297,6 +1800,24 @@ public final class SignatureFormatDetectorXades implements ISignatureFormatDetec
      * @return a boolean that indicates if a signature format is associated to Baseline form.
      */
     public static boolean isXAdESBaseline(String signatureFormat) {
+	return isXAdESBaselineTS(signatureFormat) || isXAdESBaselineEN(signatureFormat);
+    }
+    
+    /**
+     * Method that indicates if a signature format is associated to Baseline Technical Specification form.
+     * @param signatureFormat Parameter that represents the signature format.
+     * @return a boolean that indicates if a signature format is associated to Baseline Technical Specification form.
+     */
+    public static boolean isXAdESBaselineTS(String signatureFormat) {
 	return signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_LEVEL) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_T_LEVEL) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_LT_LEVEL) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_LTA_LEVEL);
+    }
+    
+    /**
+     * Method that indicates if a signature format is associated to Baseline European Standard form.
+     * @param signatureFormat Parameter that represents the signature format.
+     * @return a boolean that indicates if a signature format is associated to Baseline European Standard form.
+     */
+    public static boolean isXAdESBaselineEN(String signatureFormat) {
+	return signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_B_LEVEL) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_T_LEVEL) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_LT_LEVEL) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_LTA_LEVEL);
     }
 }

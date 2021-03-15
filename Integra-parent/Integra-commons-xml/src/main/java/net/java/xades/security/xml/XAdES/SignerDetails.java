@@ -19,6 +19,7 @@
  */
 package net.java.xades.security.xml.XAdES;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /**
@@ -29,8 +30,8 @@ public class SignerDetails extends XAdESStructure {
 
     public static final String USERNAME_ATTRIBUTE = "Username";
 
-    public SignerDetails(SignedSignatureProperties ssp, Signer signer, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
-	super(ssp, "SignerDetails", xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+    public SignerDetails(Document document, SignedSignatureProperties ssp, Signer signer, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
+	super(document, ssp, "SignerDetails", xadesPrefix, xadesNamespace, xmlSignaturePrefix);
 
 	String value = signer.getPersonName();
 	if (value == null)

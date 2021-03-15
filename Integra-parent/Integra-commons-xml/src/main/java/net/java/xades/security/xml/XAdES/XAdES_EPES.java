@@ -51,9 +51,7 @@ form) is illustrated below.
  *
  * @author miro
  */
-public interface XAdES_EPES extends XAdES_BES {
+public interface XAdES_EPES extends XAdES_BES, XadesWithExplicitPolicy {
 
-    public SignaturePolicyIdentifier getSignaturePolicyIdentifier();
-
-    public void setSignaturePolicyIdentifier(SignaturePolicyIdentifier signaturePolicyIdentifier);
+	// It inherits all the necessary methods
 }

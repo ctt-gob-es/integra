@@ -239,6 +239,86 @@ public interface ISignatureFormatDetector {
     String FORMAT_ASIC_S_LTA_LEVEL = "ASiC-S LTA-Level";
 
     /**
+     * Constant attribute that identifies CAdES B-B-Level signature format.
+     */
+    String FORMAT_CADES_B_B_LEVEL = "CAdES B-B-Level";
+
+    /**
+     * Constant attribute that identifies CAdES B-T-Level signature format.
+     */
+    String FORMAT_CADES_B_T_LEVEL = "CAdES B-T-Level";
+
+    /**
+     * Constant attribute that identifies CAdES B-LT-Level signature format.
+     */
+    String FORMAT_CADES_B_LT_LEVEL = "CAdES B-LT-Level";
+
+    /**
+     * Constant attribute that identifies CAdES B-LTA-Level signature format.
+     */
+    String FORMAT_CADES_B_LTA_LEVEL = "CAdES B-LTA-Level";
+
+    /**
+     * Constant attribute that identifies XAdES B-B-Level signature format.
+     */
+    String FORMAT_XADES_B_B_LEVEL = "XAdES B-B-Level";
+
+    /**
+     * Constant attribute that identifies XAdES B-T-Level signature format.
+     */
+    String FORMAT_XADES_B_T_LEVEL = "XAdES B-T-Level";
+
+    /**
+     * Constant attribute that identifies XAdES LT-Level signature format.
+     */
+    String FORMAT_XADES_B_LT_LEVEL = "XAdES B-LT-Level";
+
+    /**
+     * Constant attribute that identifies XAdES B-LTA-Level signature format.
+     */
+    String FORMAT_XADES_B_LTA_LEVEL = "XAdES B-LTA-Level";
+
+    /**
+     * Constant attribute that identifies PAdES B-B-Level signature format.
+     */
+    String FORMAT_PADES_B_B_LEVEL = "PAdES B-B-Level";
+
+    /**
+     * Constant attribute that identifies PAdES B-T-Level signature format.
+     */
+    String FORMAT_PADES_B_T_LEVEL = "PAdES B-T-Level";
+
+    /**
+     * Constant attribute that identifies PAdES B-LT-Level signature format.
+     */
+    String FORMAT_PADES_B_LT_LEVEL = "PAdES B-LT-Level";
+
+    /**
+     * Constant attribute that identifies PAdES B-LTA-Level signature format.
+     */
+    String FORMAT_PADES_B_LTA_LEVEL = "PAdES B-LTA-Level";
+
+    /**
+     * Constant attribute that identifies ASiC-S B-B-Level signature format.
+     */
+    String FORMAT_ASIC_S_B_B_LEVEL = "ASiC-S B-B-Level";
+
+    /**
+     * Constant attribute that identifies ASiC-S B-T-Level signature format.
+     */
+    String FORMAT_ASIC_S_B_T_LEVEL = "ASiC-S B-T-Level";
+
+    /**
+     * Constant attribute that identifies ASiC-S B-LT-Level signature format.
+     */
+    String FORMAT_ASIC_S_B_LT_LEVEL = "ASiC-S B-LT-Level";
+
+    /**
+     * Constant attribute that identifies ASiC-S B-LTA-Level signature format.
+     */
+    String FORMAT_ASIC_S_B_LTA_LEVEL = "ASiC-S B-LTA-Level";
+    
+    /**
      * Constant attribute that represents the string to identify the CAdES basic profile.
      */
     String CADES_BASIC_FORMAT = "CADES";

@@ -489,14 +489,20 @@ public final class CadesSigner implements Signer {
 
 		// Si el firmante tiene formato no Baseline, nos mantenemos en
 		// este clase. En otro caso, derivamos la validación del
-		// firmante a la clase asociada a firmas Baseline
+		// firmante a la clase correspondiente de firmas Baseline
 		SignerValidationResult signerValidationResult = null;
-		if (signerIsBaseline(signerFormat)) {
-		    CAdESBaselineSigner cadesBaselineSigner = new CAdESBaselineSigner();
+		if (signerIsBaselineTS(signerFormat)) {
+		    CAdESBaselineTSSigner cadesBaselineTSSigner = new CAdESBaselineTSSigner();
 
 		    // Obtenemos la información de validación asociada al
-		    // firmante de tipo Baseline
-		    signerValidationResult = cadesBaselineSigner.validateSigner(signedData, signerInfo, validationResult, idClient, false, signerFormat);
+		    // firmante de tipo Baseline Technical Specification
+		    signerValidationResult = cadesBaselineTSSigner.validateSigner(signedData, signerInfo, validationResult, idClient, false, signerFormat);
+		} else if (signerIsBaselineEN(signerFormat)) {
+		    CAdESBaselineENSigner cadesBaselineENSigner = new CAdESBaselineENSigner();
+
+		    // Obtenemos la información de validación asociada al
+		    // firmante de tipo Baseline European Standard
+		    signerValidationResult = cadesBaselineENSigner.validateSigner(signedData, signerInfo, validationResult, idClient, false, signerFormat);
 		} else {
 		    // Obtenemos la información de validación asociada al
 		    // firmante de tipo No Baseline
@@ -555,21 +561,27 @@ public final class CadesSigner implements Signer {
 	    signerValidationResult.setListCounterSignersValidationsResults(listCounterSignersValidationResults);
 
 	    // Recorremos la lista de contra-firmantes
-	    for (CAdESSignerInfo counterSignerInfo: listCounterSignerInfo) {
+	    for (CAdESSignerInfo counterSignerInfo : listCounterSignerInfo) {
 		// Primero, determinamos el formato del contra-firmante
 		String counterSignerFormat = SignatureFormatDetectorCadesPades.resolveSignerCAdESFormat(signedData, counterSignerInfo.getSignerInformation());
 
 		// Si el contra-firmante tiene formato no Baseline, nos
 		// mantenemos en este clase. En otro caso, derivamos la
-		// validación del contra-firmante a la clase asociada a firmas
+		// validación de la contra-firmante a la clase asociada a firmas
 		// Baseline
 		SignerValidationResult counterSignerValidationResult = null;
-		if (signerIsBaseline(counterSignerFormat)) {
-		    CAdESBaselineSigner cadesBaselineSigner = new CAdESBaselineSigner();
+		if (signerIsBaselineTS(counterSignerFormat)) {
+		    CAdESBaselineTSSigner cadesBaselineTSSigner = new CAdESBaselineTSSigner();
 
 		    // Obtenemos la información de validación asociada al
 		    // contra-firmante
-		    counterSignerValidationResult = cadesBaselineSigner.validateSigner(signedData, counterSignerInfo, validationResult, idClient, true, counterSignerFormat);
+		    counterSignerValidationResult = cadesBaselineTSSigner.validateSigner(signedData, counterSignerInfo, validationResult, idClient, true, counterSignerFormat);
+		} else if (signerIsBaselineEN(counterSignerFormat)) {
+		    CAdESBaselineENSigner cadesBaselineENSigner = new CAdESBaselineENSigner();
+
+		    // Obtenemos la información de validación asociada al
+		    // contra-firmante
+		    counterSignerValidationResult = cadesBaselineENSigner.validateSigner(signedData, counterSignerInfo, validationResult, idClient, true, counterSignerFormat);
 		} else {
 		    // Obtenemos la información de validación asociada al
 		    // contra-firmante
@@ -588,12 +600,27 @@ public final class CadesSigner implements Signer {
     }
 
     /**
-     * Method that indicates if a signer has Baseline form.
+     * Method that indicates if a signer has Baseline Technical Specification form.
      * @param signerFormat Parameter that represents the format associated to the signer.
-     * @return a boolean that indicates if a signer has Baseline form.
+     * @return a boolean that indicates if a signer has Baseline Technical Specification form.
      */
-    private boolean signerIsBaseline(String signerFormat) {
-	return signerFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_LEVEL) || signerFormat.equals(ISignatureFormatDetector.FORMAT_CADES_T_LEVEL) || signerFormat.equals(ISignatureFormatDetector.FORMAT_CADES_LT_LEVEL) || signerFormat.equals(ISignatureFormatDetector.FORMAT_CADES_LTA_LEVEL);
+    private boolean signerIsBaselineTS(String signerFormat) {
+	return signerFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_LEVEL)
+		|| signerFormat.equals(ISignatureFormatDetector.FORMAT_CADES_T_LEVEL)
+		|| signerFormat.equals(ISignatureFormatDetector.FORMAT_CADES_LT_LEVEL)
+		|| signerFormat.equals(ISignatureFormatDetector.FORMAT_CADES_LTA_LEVEL);
+    }
+    
+    /**
+     * Method that indicates if a signer has Baseline European Standard form.
+     * @param signerFormat Parameter that represents the format associated to the signer.
+     * @return a boolean that indicates if a signer has Baseline European Standard form.
+     */
+    private boolean signerIsBaselineEN(String signerFormat) {
+	return signerFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_B_LEVEL)
+		|| signerFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_T_LEVEL)
+		|| signerFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_LT_LEVEL)
+		|| signerFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_LTA_LEVEL);
     }
 
     /**

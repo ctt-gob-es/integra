@@ -19,6 +19,7 @@
  */
 package net.java.xades.security.xml.XAdES;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /*
@@ -48,9 +49,11 @@ public class SignedProperties extends XAdESStructure {
 
     private SignedSignatureProperties signedSignatureProperties;
     private SignedDataObjectProperties signedDataObjectProperties;
+    private Document document;
 
-    public SignedProperties(QualifyingProperties qp, String signatureIdPrefix, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
-	super(qp, "SignedProperties", xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+    public SignedProperties(Document document, QualifyingProperties qp, String signatureIdPrefix, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
+	super(document, qp, "SignedProperties", xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+	this.document = document;
 
 	setAttributeNS(xadesNamespace, ID_ATTRIBUTE, signatureIdPrefix + "-SignedProperties");
     }
@@ -61,7 +64,7 @@ public class SignedProperties extends XAdESStructure {
 
     public SignedSignatureProperties getSignedSignatureProperties() {
 	if (signedSignatureProperties == null) {
-	    signedSignatureProperties = new SignedSignatureProperties(this, xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+	    signedSignatureProperties = new SignedSignatureProperties(this.document, this, xadesPrefix, xadesNamespace, xmlSignaturePrefix);
 	}
 
 	return signedSignatureProperties;
@@ -69,7 +72,7 @@ public class SignedProperties extends XAdESStructure {
 
     public SignedDataObjectProperties getSignedDataObjectProperties() {
 	if (signedDataObjectProperties == null) {
-	    signedDataObjectProperties = new SignedDataObjectProperties(this, xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+	    signedDataObjectProperties = new SignedDataObjectProperties(this.document, this, xadesPrefix, xadesNamespace, xmlSignaturePrefix);
 	}
 
 	return signedDataObjectProperties;

@@ -13,7 +13,7 @@
 
 /**
  * <b>File:</b><p>es.gob.afirma.signature.asic.ASiCSBaselineSignerTest.java.</p>
- * <b>Description:</b><p>Class that defines tests for {@link ASiCSBaselineSigner}.</p>
+ * <b>Description:</b><p>Class that defines tests for {@link ASiCSBaselineTSSigner}.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>29/01/2016.</p>
  * @author Gobierno de España.
@@ -24,6 +24,7 @@ package es.gob.afirma.signature.asic;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -41,12 +42,12 @@ import es.gob.afirma.signature.SignatureFormatDetectorASiC;
 import es.gob.afirma.signature.SignatureProperties;
 import es.gob.afirma.signature.SigningException;
 import es.gob.afirma.signature.validation.ValidationResult;
-import es.gob.afirma.signature.cades.CAdESBaselineSigner;
+import es.gob.afirma.signature.cades.CAdESBaselineTSSigner;
 import es.gob.afirma.utils.UtilsFileSystemCommons;
 import es.gob.afirma.utils.UtilsResourcesCommons;
 
 /**
- * <p>Class that defines tests for {@link ASiCSBaselineSigner}.</p>
+ * <p>Class that defines tests for {@link ASiCSBaselineTSSigner}.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * @version 1.0, 29/01/2016.
  */
@@ -122,7 +123,7 @@ public class ASiCSBaselineSignerTest extends TestCase {
     }
 
     /**
-     * Test for methods {@link ASiCSBaselineSigner#upgrade(byte[], java.util.List)} and {@link ASiCSBaselineSigner#verifySignature(byte[])}.
+     * Test for methods {@link ASiCSBaselineTSSigner#upgrade(byte[], java.util.List)} and {@link ASiCSBaselineTSSigner#verifySignature(byte[])}.
      */
     public final void testUpgrade() {
 
@@ -140,7 +141,7 @@ public class ASiCSBaselineSignerTest extends TestCase {
 	 * Generamos una firma CAdES Baseline explícita sin política de firma ni sello de tiempo usando SHA-1
 	 */
 	try {
-	    CAdESBaselineSigner cadesBaselineSigner = new CAdESBaselineSigner();
+	    CAdESBaselineTSSigner cadesBaselineSigner = new CAdESBaselineTSSigner();
 	    cadesBLevelSignature = cadesBaselineSigner.sign(dataToSign, SignatureConstants.SIGN_ALGORITHM_SHA1WITHRSA, SignatureConstants.SIGN_MODE_EXPLICIT, privateKey, null, false, ISignatureFormatDetector.FORMAT_CADES_B_LEVEL, null);
 
 	    // cades explicita
@@ -152,7 +153,7 @@ public class ASiCSBaselineSignerTest extends TestCase {
 	    assertEquals(ISignatureFormatDetector.FORMAT_ASIC_S_B_LEVEL, SignatureFormatDetectorASiC.getSignatureFormat(asicSSignature));
 
 	    // // Actualizamos la firma CAdES contenida
-	    ASiCSBaselineSigner asicSBaselineSignatureManager = new ASiCSBaselineSigner();
+	    ASiCSBaselineTSSigner asicSBaselineSignatureManager = new ASiCSBaselineTSSigner();
 	    upgradedASiCSignature = asicSBaselineSignatureManager.upgrade(asicSSignature, null);
 
 	    // // Comprobamos que ahora la firma ASiC-S contiene una firma CAdES
@@ -169,7 +170,7 @@ public class ASiCSBaselineSignerTest extends TestCase {
     }
 
     /**
-     * Test for methods {@link ASiCSBaselineSigner#getSignedData(byte[])}.
+     * Test for methods {@link ASiCSBaselineTSSigner#getSignedData(byte[])}.
      * 
      */
     public final void testGetSignedData() {
@@ -177,7 +178,7 @@ public class ASiCSBaselineSignerTest extends TestCase {
 	// obtenemos la firma ASiCs (Cades)
 	byte[ ] asicSSignature = UtilsFileSystemCommons.readFile("signatures/ASiC/AsiCsWithASN1.asics", true);
 
-	ASiCSBaselineSigner asicsBaselineSigner = new ASiCSBaselineSigner();
+	ASiCSBaselineTSSigner asicsBaselineSigner = new ASiCSBaselineTSSigner();
 
 	// se obtienen los datos firmados
 	try {
@@ -193,14 +194,14 @@ public class ASiCSBaselineSignerTest extends TestCase {
     }
 
     /**
-     * Test for methods {@link ASiCSBaselineSigner#getSignedData(byte[])}.
+     * Test for methods {@link ASiCSBaselineTSSigner#getSignedData(byte[])}.
      * 
      */
     public final void testGetSignedDataTimeStamp() {
 
 	// obtenemos la firma que contiene un sello de tiempo
 	byte[ ] asicSSignature = UtilsFileSystemCommons.readFile("signatures/ASiC/ASiC_S_Timestamp.asics", true);
-	ASiCSBaselineSigner asicsBaselineSigner = new ASiCSBaselineSigner();
+	ASiCSBaselineTSSigner asicsBaselineSigner = new ASiCSBaselineTSSigner();
 
 	// se obtienen los datos firmados, saltará una excepción
 	try {
@@ -212,14 +213,14 @@ public class ASiCSBaselineSignerTest extends TestCase {
     }
 
     /**
-     * Test for method {@link ASiCSBaselineSigner#sign(byte[], String, String, PrivateKeyEntry, Properties, boolean, String, String)}.
+     * Test for method {@link ASiCSBaselineTSSigner#sign(byte[], String, String, PrivateKeyEntry, Properties, boolean, String, String)}.
      */
     public final void testSignWithoutTimestamp() {
 	byte[ ] dataToSignCades = UtilsFileSystemCommons.readFile("ficheroAfirmar.txt", true);
-	byte[ ] dataToSignXades = UtilsFileSystemCommons.readFile("ficheroAfirmar.xml", true);
+	byte[ ] dataToSignXades = UtilsFileSystemCommons.readFile("rss.xml", true);
 	PrivateKeyEntry privateKey = getCertificatePrivateKey();
 
-	ASiCSBaselineSigner signer = new ASiCSBaselineSigner();
+	ASiCSBaselineTSSigner signer = new ASiCSBaselineTSSigner();
 
 	byte[ ] asicsCadesBaseline = null;
 	byte[ ] asicsXadesBaseline = null;
@@ -332,14 +333,14 @@ public class ASiCSBaselineSignerTest extends TestCase {
     }
 
     /**
-     * Test for method {@link ASiCSBaselineSigner#sign(byte[], String, String, PrivateKeyEntry, Properties, boolean, String, String)}.
+     * Test for method {@link ASiCSBaselineTSSigner#sign(byte[], String, String, PrivateKeyEntry, Properties, boolean, String, String)}.
      */
     public final void testSignWithTimestamp() {
 	byte[ ] dataToSignCades = UtilsFileSystemCommons.readFile("ficheroAfirmar.txt", true);
 	byte[ ] dataToSignXades = UtilsFileSystemCommons.readFile("ficheroAfirmar.xml", true);
 	PrivateKeyEntry privateKey = getCertificatePrivateKey();
 
-	ASiCSBaselineSigner signer = new ASiCSBaselineSigner();
+	ASiCSBaselineTSSigner signer = new ASiCSBaselineTSSigner();
 
 	byte[ ] asicsCadesBaseline = null;
 	byte[ ] asicsXadesBaseline = null;

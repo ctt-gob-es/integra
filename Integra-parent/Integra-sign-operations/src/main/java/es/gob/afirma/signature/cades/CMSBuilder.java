@@ -903,7 +903,13 @@ public final class CMSBuilder {
     private void addPolicy(ASN1EncodableVector contexExpecific, Properties extraParams, boolean isPadesSigner, String signatureForm, String signaturePolicyID, AlgorithmIdentifier signAlgorithmId, AlgorithmIdentifier digestAlgorithmId, boolean includeContent, String idClient) throws SigningException {
 
 	// Comprobamos si la firma a realizar debe ser BES o EPES
-	isEPES = signatureForm.equals(ISignatureFormatDetector.FORMAT_CADES_EPES) || signatureForm.equals(ISignatureFormatDetector.FORMAT_PADES_EPES) || (signatureForm.equals(ISignatureFormatDetector.FORMAT_CADES_B_LEVEL) || signatureForm.equals(ISignatureFormatDetector.FORMAT_PADES_B_LEVEL)) && signaturePolicyID != null;
+	isEPES = signatureForm.equals(ISignatureFormatDetector.FORMAT_CADES_EPES)
+		|| signatureForm.equals(ISignatureFormatDetector.FORMAT_PADES_EPES)
+		|| (signaturePolicyID != null
+			&& (signatureForm.equals(ISignatureFormatDetector.FORMAT_CADES_B_LEVEL)
+			|| signatureForm.equals(ISignatureFormatDetector.FORMAT_PADES_B_LEVEL)
+			|| signatureForm.equals(ISignatureFormatDetector.FORMAT_CADES_B_B_LEVEL)
+			|| signatureForm.equals(ISignatureFormatDetector.FORMAT_PADES_B_B_LEVEL)));
 
 	// Si la firma a realizar es EPES
 	if (isEPES) {

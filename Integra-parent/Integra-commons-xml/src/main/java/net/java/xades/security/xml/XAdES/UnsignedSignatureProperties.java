@@ -24,6 +24,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -38,9 +39,11 @@ public class UnsignedSignatureProperties extends XAdESStructure {
 
     private CompleteCertificateRefs completeCertificateRefs;
     private CompleteRevocationRefs completeRevocationRefs;
+    private Document document;
 
-    public UnsignedSignatureProperties(UnsignedProperties up, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
-	super(up, XAdES.Element.UNSIGNED_SIGNATURE_PROPERTIES.getElementName(), xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+    public UnsignedSignatureProperties(Document document, UnsignedProperties up, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
+	super(document, up, XAdES.Element.UNSIGNED_SIGNATURE_PROPERTIES.getElementName(), xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+        this.document = document;
     }
 
     public UnsignedSignatureProperties(Node node, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
@@ -62,7 +65,7 @@ public class UnsignedSignatureProperties extends XAdESStructure {
 	if (completeCertificateRefs != null)
 	    throw new UnsupportedOperationException("The collection of CA Certificates already exists.");
 
-	completeCertificateRefs = new CompleteCertificateRefsImpl(this, caCertificates, signatureIdPrefix, xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+	completeCertificateRefs = new CompleteCertificateRefsImpl(document, this, caCertificates, signatureIdPrefix, xadesPrefix, xadesNamespace, xmlSignaturePrefix);
     }
 
     public CompleteRevocationRefs getCompleteRevocationRefs() {
@@ -92,7 +95,13 @@ public class UnsignedSignatureProperties extends XAdESStructure {
 
     public void setSignatureTimeStamp(ArrayList<SignatureTimeStamp> signatureTimeStamp, String tsaURL) {
 	for (SignatureTimeStamp sts: signatureTimeStamp) {
-	    new SignatureTimeStampDetails(this, sts, xadesPrefix, xadesNamespace, xmlSignaturePrefix, tsaURL);
+	    new SignatureTimeStampDetails(document, this, sts, xadesPrefix, xadesNamespace, xmlSignaturePrefix, tsaURL);
 	}
+    }
+    
+    public void setSignaturePolicyStore(SignaturePolicyStore signaturePolicyStore)
+    {
+    	new SignaturePolicyStoreDetails(document, this, signaturePolicyStore,
+    			xadesPrefix, xadesNamespace, xmlSignaturePrefix);
     }
 }

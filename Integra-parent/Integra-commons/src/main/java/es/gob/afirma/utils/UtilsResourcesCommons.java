@@ -21,12 +21,14 @@
  */
 package es.gob.afirma.utils;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -72,7 +74,21 @@ public final class UtilsResourcesCommons {
 	    }
 	}
     }
-
+    
+    /**
+     * Method that handles the closing of a {@link Reader} resource.
+     * @param is Parameter that represents a {@link Reader} resource.
+     */
+    public static void safeCloseReader(Reader reader) {
+	if (reader != null) {
+	    try {
+		reader.close();
+	    } catch (IOException e) {
+		LOGGER.error(Language.getFormatResIntegra(ILogConstantKeys.UR_LOG001, new Object[ ] { reader.getClass().getName() }), e);
+	    }
+	}
+    }
+    
     /**
      * Method that handles the closing of a {@link OutputStream} resource.
      * @param os Parameter that represents a {@link OutputStream} resource.

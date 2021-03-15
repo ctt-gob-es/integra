@@ -19,6 +19,7 @@
  */
 package net.java.xades.security.xml.XAdES;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /*
@@ -39,28 +40,42 @@ import org.w3c.dom.Element;
  */
 
 public class CommitmentTypeIndicationDetails extends XAdESStructure {
+    
+    public CommitmentTypeIndicationDetails(final Document document,
+            final SignedDataObjectProperties signedDataObjectProperties,
+            final CommitmentTypeIndication commitmentTypeIndication, final String xadesPrefix,
+            final String xadesNamespace, final String xmlSignaturePrefix)
+    {
+        super(document, signedDataObjectProperties, "CommitmentTypeIndication", xadesPrefix,
+                xadesNamespace, xmlSignaturePrefix);
 
-    public CommitmentTypeIndicationDetails(SignedDataObjectProperties signedDataObjectProperties, CommitmentTypeIndication commitmentTypeIndication, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
-	super(signedDataObjectProperties, "CommitmentTypeIndication", xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+        final CommitmentTypeId commitmentTypeId = commitmentTypeIndication.getCommitmentTypeId();
 
-	CommitmentTypeId commitmentTypeId = commitmentTypeIndication.getCommitmentTypeId();
+        if (commitmentTypeId != null)
+        {
+            new CommitmentTypeIdDetails(document, this, commitmentTypeId, xadesPrefix,
+                    xadesNamespace, xmlSignaturePrefix);
+        }
 
-	if (commitmentTypeId != null) {
-	    new CommitmentTypeIdDetails(this, commitmentTypeId, xadesPrefix, xadesNamespace, xmlSignaturePrefix);
-	}
+        final Element objectReference;
+        if (commitmentTypeIndication.getObjectReference() != null) {
+        	objectReference = createElement("ObjectReference");
+        	objectReference.setTextContent(commitmentTypeIndication.getObjectReference());
+        }
+        else {
+        	objectReference = createElement("AllSignedDataObjects");
+        }
 
-	Element objectReference = createElement("ObjectReference");
-	objectReference.setTextContent(commitmentTypeIndication.getObjectReference());
+        final Element commitmentTypeQualifiers = createElement("CommitmentTypeQualifiers");
 
-	Element commitmentTypeQualifiers = createElement("CommitmentTypeQualifiers");
+        for (final String qualifier : commitmentTypeIndication.getCommitmentTypeQualifiers()) {
+            final Element commitmentTypeQualifier = createElement("CommitmentTypeQualifier");
+            commitmentTypeQualifier.setTextContent(qualifier);
+            commitmentTypeQualifiers.appendChild(commitmentTypeQualifier);
+        }
 
-	for (String qualifier: commitmentTypeIndication.getCommitmentTypeQualifiers()) {
-	    Element commitmentTypeQualifier = createElement("CommitmentTypeQualifier");
-	    commitmentTypeQualifier.setTextContent(qualifier);
-	    commitmentTypeQualifiers.appendChild(commitmentTypeQualifier);
-	}
+    	getNode().appendChild(objectReference);
 
-	getNode().appendChild(objectReference);
-	getNode().appendChild(commitmentTypeQualifiers);
+        getNode().appendChild(commitmentTypeQualifiers);
     }
 }

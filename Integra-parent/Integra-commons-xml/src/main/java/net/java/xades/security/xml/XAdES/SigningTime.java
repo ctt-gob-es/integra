@@ -23,6 +23,8 @@ import net.java.xades.util.SystemUtils;
 
 import java.text.ParseException;
 import java.util.Date;
+
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /**
@@ -31,12 +33,12 @@ import org.w3c.dom.Node;
  */
 public class SigningTime extends XAdESStructure {
 
-    public SigningTime(SignedSignatureProperties ssp, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
-	this(ssp, new Date(), xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+    public SigningTime(Document document, SignedSignatureProperties ssp, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
+	this(document, ssp, new Date(), xadesPrefix, xadesNamespace, xmlSignaturePrefix);
     }
 
-    public SigningTime(SignedSignatureProperties ssp, Date signingTime, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
-	super(ssp, "SigningTime", xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+    public SigningTime(Document document, SignedSignatureProperties ssp, Date signingTime, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
+	super(document, ssp, "SigningTime", xadesPrefix, xadesNamespace, xmlSignaturePrefix);
 	getElement().setTextContent(SystemUtils.formatDate(signingTime));
     }
 

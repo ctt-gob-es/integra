@@ -4037,6 +4037,16 @@ public interface ILogConstantKeys {
      * Constant attribute that represents the name of the property <code>US258</code> belonging to the file integra_xx_YY.properties.
      */
     String US_LOG258 = "US258";
+    
+    /**
+     * Constant attribute that represents the name of the property <code>US259</code> belonging to the file integra_xx_YY.properties.
+     */
+    String US_LOG259 = "US259";
+    
+    /**
+     * Constant attribute that represents the name of the property <code>US260</code> belonging to the file integra_xx_YY.properties.
+     */
+    String US_LOG260 = "US260";
 
     /**
      * Constant attribute that represents the name of the property <code>SFD001</code> belonging to the file integra_xx_YY.properties.
@@ -4947,7 +4957,72 @@ public interface ILogConstantKeys {
      * Constant attribute that represents the name of the property <code>SPM068</code> belonging to the file integra_xx_YY.properties.
      */
     String SPM_LOG068 = "SPM068";
-
+    
+    /**
+     * Constant attribute that represents the name of the property <code>SPM069</code> belonging to the file integra_xx_YY.properties.
+     */
+    String SPM_LOG069 = "SPM069";
+    
+    /**
+     * Constant attribute that represents the name of the property <code>SPM070</code> belonging to the file integra_xx_YY.properties.
+     */
+    String SPM_LOG070 = "SPM070";
+    
+    /**
+     * Constant attribute that represents the name of the property <code>SPM071</code> belonging to the file integra_xx_YY.properties.
+     */
+    String SPM_LOG071 = "SPM071";
+    
+    /**
+     * Constant attribute that represents the name of the property <code>SPM072</code> belonging to the file integra_xx_YY.properties.
+     */
+    String SPM_LOG072 = "SPM072";
+    
+    /**
+     * Constant attribute that represents the name of the property <code>SPM073</code> belonging to the file integra_xx_YY.properties.
+     */
+    String SPM_LOG073 = "SPM073";
+    
+    /**
+     * Constant attribute that represents the name of the property <code>SPM074</code> belonging to the file integra_xx_YY.properties.
+     */
+    String SPM_LOG074 = "SPM074";
+    
+    /**
+     * Constant attribute that represents the name of the property <code>SPM075</code> belonging to the file integra_xx_YY.properties.
+     */
+    String SPM_LOG075 = "SPM075";
+    
+    /**
+     * Constant attribute that represents the name of the property <code>SPM076</code> belonging to the file integra_xx_YY.properties.
+     */
+    String SPM_LOG076 = "SPM076";
+    
+    /**
+     * Constant attribute that represents the name of the property <code>SPM077</code> belonging to the file integra_xx_YY.properties.
+     */
+    String SPM_LOG077 = "SPM077";
+    
+    /**
+     * Constant attribute that represents the name of the property <code>SPM078</code> belonging to the file integra_xx_YY.properties.
+     */
+    String SPM_LOG078 = "SPM078";
+    
+    /**
+     * Constant attribute that represents the name of the property <code>SPM079</code> belonging to the file integra_xx_YY.properties.
+     */
+    String SPM_LOG079 = "SPM079";
+    
+    /**
+     * Constant attribute that represents the name of the property <code>SPM080</code> belonging to the file integra_xx_YY.properties.
+     */
+    String SPM_LOG080 = "SPM080";
+    
+    /**
+     * Constant attribute that represents the name of the property <code>SPM081</code> belonging to the file integra_xx_YY.properties.
+     */
+    String SPM_LOG081 = "SPM081";
+    
     /**
      * Constant attribute that represents the name of the property <code>HSMP001</code> belonging to the file integra_xx_YY.properties.
      */
@@ -5797,6 +5872,281 @@ public interface ILogConstantKeys {
      * Constant attribute that represents the name of the property <code>XBS055</code> belonging to the file integra_xx_YY.properties.
      */
     String XBS_LOG055 = "XBS055";
+    
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2001</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG001 = "XBS2001";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2002</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG002 = "XBS2002";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2003</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG003 = "XBS2003";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2004</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG004 = "XBS2004";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2005</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG005 = "XBS2005";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2006</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG006 = "XBS2006";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2007</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG007 = "XBS2007";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2008</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG008 = "XBS2008";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2009</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG009 = "XBS2009";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2010</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG010 = "XBS2010";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2011</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG011 = "XBS2011";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2012</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG012 = "XBS2012";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2013</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG013 = "XBS2013";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2014</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG014 = "XBS2014";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2015</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG015 = "XBS2015";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2016</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG016 = "XBS2016";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2017</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG017 = "XBS2017";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2018</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG018 = "XBS2018";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2019</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG019 = "XBS2019";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2020</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG020 = "XBS2020";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2021</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG021 = "XBS2021";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2022</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG022 = "XBS2022";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2023</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG023 = "XBS2023";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2024</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG024 = "XBS2024";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2025</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG025 = "XBS2025";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2026</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG026 = "XBS2026";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2027</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG027 = "XBS2027";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2028</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG028 = "XBS2028";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2029</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG029 = "XBS2029";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2030</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG030 = "XBS2030";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2031</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG031 = "XBS2031";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2032</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG032 = "XBS2032";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2033</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG033 = "XBS2033";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2034</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG034 = "XBS2034";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2035</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG035 = "XBS2035";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2036</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG036 = "XBS2036";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2037</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG037 = "XBS2037";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2038</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG038 = "XBS2038";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2039</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG039 = "XBS2039";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2040</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG040 = "XBS2040";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2041</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG041 = "XBS2041";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2042</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG042 = "XBS2042";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2043</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG043 = "XBS2043";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2044</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG044 = "XBS2044";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2045</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG045 = "XBS2045";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2046</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG046 = "XBS2046";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2047</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG047 = "XBS2047";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2048</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG048 = "XBS2048";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2049</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG049 = "XBS2049";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2050</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG050 = "XBS2050";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2051</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG051 = "XBS2051";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2052</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG052 = "XBS2052";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2053</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG053 = "XBS2053";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2054</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG054 = "XBS2054";
+
+    /**
+     * Constant attribute that represents the name of the property <code>XBS2055</code> belonging to the file integra_xx_YY.properties.
+     */
+    String XBS2_LOG055 = "XBS2055";
 
     /**
      * Constant attribute that represents the name of the property <code>ASBS001</code> belonging to the file integra_xx_YY.properties.

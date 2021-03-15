@@ -51,6 +51,11 @@ public final class SignatureFormatDetector implements ISignatureFormatDetector {
 	 * <li>{@link ISignatureFormatDetector#FORMAT_CADES_LT_LEVEL}.</li>
 	 * <li>{@link ISignatureFormatDetector#FORMAT_CADES_T_LEVEL}.</li>
 	 * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_LEVEL}.</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_LEVEL}.</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_LTA_LEVEL}.</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_LT_LEVEL}.</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_T_LEVEL}.</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_CADES_B_B_LEVEL}.</li>
 	 * <li>{@link ISignatureFormatDetector#FORMAT_CADES_A}.</li>
 	 * <li>{@link ISignatureFormatDetector#FORMAT_CADES_XL2}.</li>
 	 * <li>{@link ISignatureFormatDetector#FORMAT_CADES_XL1}.</li>
@@ -68,6 +73,11 @@ public final class SignatureFormatDetector implements ISignatureFormatDetector {
 	 * <li>{@link ISignatureFormatDetector#FORMAT_XADES_LT_LEVEL}.</li>
 	 * <li>{@link ISignatureFormatDetector#FORMAT_XADES_T_LEVEL}.</li>
 	 * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_LEVEL}.</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_LEVEL}.</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_LTA_LEVEL}.</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_LT_LEVEL}.</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_T_LEVEL}.</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_XADES_B_B_LEVEL}.</li>
 	 * <li>{@link ISignatureFormatDetector#FORMAT_XADES_A}.</li>
 	 * <li>{@link ISignatureFormatDetector#FORMAT_XADES_XL2}.</li>
 	 * <li>{@link ISignatureFormatDetector#FORMAT_XADES_XL1}.</li>
@@ -85,6 +95,10 @@ public final class SignatureFormatDetector implements ISignatureFormatDetector {
 	 * <li>{@link ISignatureFormatDetector#FORMAT_PADES_LT_LEVEL}.</li>
 	 * <li>{@link ISignatureFormatDetector#FORMAT_PADES_T_LEVEL}.</li>
 	 * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_LEVEL}.</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_LTA_LEVEL}.</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_LT_LEVEL}.</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_T_LEVEL}.</li>
+	 * <li>{@link ISignatureFormatDetector#FORMAT_PADES_B_B_LEVEL}.</li>
 	 * <li>{@link ISignatureFormatDetector#FORMAT_PADES_LTV}.</li>
 	 * <li>{@link ISignatureFormatDetector#FORMAT_PADES_EPES}.</li>
 	 * <li>{@link ISignatureFormatDetector#FORMAT_PADES_BES}.</li>

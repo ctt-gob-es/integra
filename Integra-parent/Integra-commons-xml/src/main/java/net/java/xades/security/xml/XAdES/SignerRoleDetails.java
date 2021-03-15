@@ -19,6 +19,7 @@
  */
 package net.java.xades.security.xml.XAdES;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -40,8 +41,8 @@ import org.w3c.dom.Node;
 
 public class SignerRoleDetails extends XAdESStructure {
 
-    public SignerRoleDetails(SignedSignatureProperties ssp, SignerRole signerRole, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
-	super(ssp, "SignerRole", xadesPrefix, xadesNamespace, xmlSignaturePrefix);
+    public SignerRoleDetails(Document document, SignedSignatureProperties ssp, SignerRole signerRole, String xadesPrefix, String xadesNamespace, String xmlSignaturePrefix) {
+	super(document, ssp, "SignerRole", xadesPrefix, xadesNamespace, xmlSignaturePrefix);
 
 	Element claimedRoles = createElement("ClaimedRoles");
 	Element certifiedRoles = createElement("ClaimedRoles");

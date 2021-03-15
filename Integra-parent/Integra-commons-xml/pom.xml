@@ -3,7 +3,7 @@
   <parent>
     <groupId>es.gob.afirma</groupId>
     <artifactId>Integra-parent</artifactId>
-    <version>2.2.2_000</version>
+    <version>2.3.0_000</version>
   </parent>
   <artifactId>Integra-commons-xml</artifactId>
   <name>Integra-commons-xml</name>

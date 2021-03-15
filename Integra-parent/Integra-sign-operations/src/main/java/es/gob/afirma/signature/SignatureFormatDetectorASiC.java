@@ -78,6 +78,10 @@ public final class SignatureFormatDetectorASiC implements ISignatureFormatDetect
      * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_LT_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_T_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_B_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_B_LTA_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_B_LT_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_B_T_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_B_B_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_UNRECOGNIZED}.</li>
      * </ul>
      */
@@ -161,6 +165,10 @@ public final class SignatureFormatDetectorASiC implements ISignatureFormatDetect
      * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_LT_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_T_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_B_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_B_LTA_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_B_LT_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_B_T_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_B_B_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_UNRECOGNIZED}.</li>
      * </ul>
      */
@@ -180,6 +188,10 @@ public final class SignatureFormatDetectorASiC implements ISignatureFormatDetect
      * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_LT_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_T_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_B_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_B_LTA_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_B_LT_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_B_T_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_B_B_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_UNRECOGNIZED}.</li>
      * </ul>
      */
@@ -195,6 +207,14 @@ public final class SignatureFormatDetectorASiC implements ISignatureFormatDetect
 	    return ISignatureFormatDetector.FORMAT_ASIC_S_T_LEVEL;
 	} else if (cadesSignatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_LEVEL)) {
 	    return ISignatureFormatDetector.FORMAT_ASIC_S_B_LEVEL;
+	} else if (cadesSignatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_LTA_LEVEL)) {
+	    return ISignatureFormatDetector.FORMAT_ASIC_S_B_LTA_LEVEL;
+	} else if (cadesSignatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_LT_LEVEL)) {
+	    return ISignatureFormatDetector.FORMAT_ASIC_S_B_LT_LEVEL;
+	} else if (cadesSignatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_T_LEVEL)) {
+	    return ISignatureFormatDetector.FORMAT_ASIC_S_B_T_LEVEL;
+	} else if (cadesSignatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_B_LEVEL)) {
+	    return ISignatureFormatDetector.FORMAT_ASIC_S_B_B_LEVEL;
 	} else {
 	    return ISignatureFormatDetector.FORMAT_UNRECOGNIZED;
 	}
@@ -209,6 +229,10 @@ public final class SignatureFormatDetectorASiC implements ISignatureFormatDetect
      * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_LT_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_T_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_B_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_B_LTA_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_B_LT_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_B_T_LEVEL}.</li>
+     * <li>{@link ISignatureFormatDetector#FORMAT_ASIC_S_B_B_LEVEL}.</li>
      * <li>{@link ISignatureFormatDetector#FORMAT_UNRECOGNIZED}.</li>
      * </ul>
      */
@@ -224,6 +248,14 @@ public final class SignatureFormatDetectorASiC implements ISignatureFormatDetect
 	    return ISignatureFormatDetector.FORMAT_ASIC_S_T_LEVEL;
 	} else if (xadesSignatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_LEVEL)) {
 	    return ISignatureFormatDetector.FORMAT_ASIC_S_B_LEVEL;
+	} else if (xadesSignatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_LTA_LEVEL)) {
+	    return ISignatureFormatDetector.FORMAT_ASIC_S_B_LTA_LEVEL;
+	} else if (xadesSignatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_LT_LEVEL)) {
+	    return ISignatureFormatDetector.FORMAT_ASIC_S_B_LT_LEVEL;
+	} else if (xadesSignatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_T_LEVEL)) {
+	    return ISignatureFormatDetector.FORMAT_ASIC_S_B_T_LEVEL;
+	} else if (xadesSignatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_B_LEVEL)) {
+	    return ISignatureFormatDetector.FORMAT_ASIC_S_B_B_LEVEL;
 	} else {
 	    return ISignatureFormatDetector.FORMAT_UNRECOGNIZED;
 	}

@@ -21,7 +21,11 @@
  */
 package es.gob.afirma.signature.xades;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+
 import net.java.xades.security.xml.XAdES.SignaturePolicyIdentifier;
+
 
 /**
  * <p>Class that represents a <code>xades:SignaturePolicyIdentifier</code> element of a XAdES signature.</p>
@@ -54,6 +58,11 @@ public class SignaturePolicyIdentifierImpl implements SignaturePolicyIdentifier 
      * Attribute that represents the hash encoded on Base 64.
      */
     private String hashBase64;
+    
+    /**
+     * Attribute that represents the hash algorithm.
+     */
+    private String hashAlgorithm;
 
     /**
      * Constructor method for the class SignaturePolicyIdentifierImpl.java.
@@ -84,7 +93,7 @@ public class SignaturePolicyIdentifierImpl implements SignaturePolicyIdentifier 
 
     /**
      * {@inheritDoc}
-     * @see net.java.xades.security.xml.XAdES.SignaturePolicyIdentifier#setIdentifier(java.lang.String)
+     * @see es.uji.crypto.xades.jxades.security.xml.XAdES.SignaturePolicyIdentifier#setIdentifier(java.lang.String)
      */
     public final void setIdentifier(String identifierParam) {
 	identifier = identifierParam;
@@ -92,7 +101,7 @@ public class SignaturePolicyIdentifierImpl implements SignaturePolicyIdentifier 
 
     /**
      * {@inheritDoc}
-     * @see net.java.xades.security.xml.XAdES.SignaturePolicyIdentifier#isImplied()
+     * @see es.uji.crypto.xades.jxades.security.xml.XAdES.SignaturePolicyIdentifier#isImplied()
      */
     public final boolean isImplied() {
 	return implied;
@@ -100,7 +109,7 @@ public class SignaturePolicyIdentifierImpl implements SignaturePolicyIdentifier 
 
     /**
      * {@inheritDoc}
-     * @see net.java.xades.security.xml.XAdES.SignaturePolicyIdentifier#setImplied(boolean)
+     * @see es.uji.crypto.xades.jxades.security.xml.XAdES.SignaturePolicyIdentifier#setImplied(boolean)
      */
     public final void setImplied(boolean impliedParam) {
 	implied = impliedParam;
@@ -108,7 +117,7 @@ public class SignaturePolicyIdentifierImpl implements SignaturePolicyIdentifier 
 
     /**
      * {@inheritDoc}
-     * @see net.java.xades.security.xml.XAdES.SignaturePolicyIdentifier#getIdentifier()
+     * @see es.uji.crypto.xades.jxades.security.xml.XAdES.SignaturePolicyIdentifier#getIdentifier()
      */
     public final String getIdentifier() {
 	return identifier;
@@ -116,7 +125,7 @@ public class SignaturePolicyIdentifierImpl implements SignaturePolicyIdentifier 
 
     /**
      * {@inheritDoc}
-     * @see net.java.xades.security.xml.XAdES.SignaturePolicyIdentifier#getHashBase64()
+     * @see es.uji.crypto.xades.jxades.security.xml.XAdES.SignaturePolicyIdentifier#getHashBase64()
      */
     public final String getHashBase64() {
 	return hashBase64;
@@ -124,7 +133,7 @@ public class SignaturePolicyIdentifierImpl implements SignaturePolicyIdentifier 
 
     /**
      * {@inheritDoc}
-     * @see net.java.xades.security.xml.XAdES.SignaturePolicyIdentifier#setHashBase64(java.lang.String)
+     * @see es.uji.crypto.xades.jxades.security.xml.XAdES.SignaturePolicyIdentifier#setHashBase64(java.lang.String)
      */
     public final void setHashBase64(String hashBase64Param) {
 	hashBase64 = hashBase64Param;
@@ -132,7 +141,7 @@ public class SignaturePolicyIdentifierImpl implements SignaturePolicyIdentifier 
 
     /**
      * {@inheritDoc}
-     * @see net.java.xades.security.xml.XAdES.SignaturePolicyIdentifier#getDescription()
+     * @see es.uji.crypto.xades.jxades.security.xml.XAdES.SignaturePolicyIdentifier#getDescription()
      */
     public final String getDescription() {
 	return description;
@@ -140,7 +149,7 @@ public class SignaturePolicyIdentifierImpl implements SignaturePolicyIdentifier 
 
     /**
      * {@inheritDoc}
-     * @see net.java.xades.security.xml.XAdES.SignaturePolicyIdentifier#setDescription(java.lang.String)
+     * @see es.uji.crypto.xades.jxades.security.xml.XAdES.SignaturePolicyIdentifier#setDescription(java.lang.String)
      */
     public final void setDescription(String descrParam) {
 	description = descrParam;
@@ -148,7 +157,7 @@ public class SignaturePolicyIdentifierImpl implements SignaturePolicyIdentifier 
 
     /**
      * {@inheritDoc}
-     * @see net.java.xades.security.xml.XAdES.SignaturePolicyIdentifier#getQualifier()
+     * @see es.uji.crypto.xades.jxades.security.xml.XAdES.SignaturePolicyIdentifier#getQualifier()
      */
     public final String getQualifier() {
 	return qualifier;
@@ -156,9 +165,27 @@ public class SignaturePolicyIdentifierImpl implements SignaturePolicyIdentifier 
 
     /**
      * {@inheritDoc}
-     * @see net.java.xades.security.xml.XAdES.SignaturePolicyIdentifier#setQualifier(java.lang.String)
+     * @see es.uji.crypto.xades.jxades.security.xml.XAdES.SignaturePolicyIdentifier#setQualifier(java.lang.String)
      */
     public final void setQualifier(String qualifierParam) {
 	qualifier = qualifierParam;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see es.uji.crypto.xades.jxades.security.xml.XAdES.SignaturePolicyIdentifier#setQualifier(java.lang.String)
+     */
+    public void setIdentifier(String identifier, String hashBase64, String hashAlgorithm) throws IOException, NoSuchAlgorithmException {
+	this.identifier = identifier;
+	this.hashBase64 = hashBase64;
+	this.hashAlgorithm = hashAlgorithm;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see es.uji.crypto.xades.jxades.security.xml.XAdES.SignaturePolicyIdentifier#getHashAlgorithm()
+     */
+    public String getHashAlgorithm() {
+	return this.hashAlgorithm;
     }
 }

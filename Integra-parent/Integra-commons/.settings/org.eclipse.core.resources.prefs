@@ -1,4 +1,8 @@
 eclipse.preferences.version=1
+encoding//messages/integra_en_US.properties=ISO-8859-1
+encoding//messages/integra_es_ES.properties=ISO-8859-1
+encoding//resources/messages/integra_en_US.properties=ISO-8859-1
+encoding//resources/messages/integra_es_ES.properties=ISO-8859-1
 encoding//src/main/java=UTF-8
 encoding//src/test/resources=UTF-8
 encoding/<project>=UTF-8

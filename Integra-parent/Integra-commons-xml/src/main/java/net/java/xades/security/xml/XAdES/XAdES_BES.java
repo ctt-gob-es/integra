@@ -1,28 +1,4 @@
-// Copyright (C) 2012-13 MINHAP, Gobierno de España
-// This program is licensed and may be used, modified and redistributed under the terms
-// of the European Public License (EUPL), either version 1.1 or (at your
-// option) any later version as soon as they are approved by the European Commission.
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-// or implied. See the License for the specific language governing permissions and
-// more details.
-// You should have received a copy of the EUPL1.1 license
-// along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
-
-/*
- * This file is part of the jXAdES library. 
- * jXAdES is an open implementation for the Java platform of the XAdES standard for advanced XML digital signature. 
- * This library can be consulted and downloaded from http://universitatjaumei.jira.com/browse/JXADES.
- * 
- */
 package net.java.xades.security.xml.XAdES;
-
-import java.security.cert.X509Certificate;
-import java.util.Date;
-import java.util.List;
-import org.w3c.dom.Element;
 
 /**
  * 4.4.1 Basic electronic signature (XAdES-BES)
@@ -144,55 +120,7 @@ import org.w3c.dom.Element;
  *
  * @author miro
  */
-public interface XAdES_BES {
-
-    public Element getBaseElement();
-
-    public Date getSigningTime();
-
-    public void setSigningTime(Date signingTime);
-
-    public X509Certificate getSigningCertificate();
-
-    public void setSigningCertificate(X509Certificate certificate);
-
-    public SignatureProductionPlace getSignatureProductionPlace();
-
-    public void setSignatureProductionPlace(SignatureProductionPlace productionPlace);
-
-    public SignerRole getSignerRole();
-
-    public void setSignerRole(SignerRole signerRole);
-
-    public Signer getSigner();
-
-    public void setSigner(Signer signer);
-
-    public List<DataObjectFormat> getDataObjectFormats();
-
-    public void setDataObjectFormats(List<DataObjectFormat> dataObjectFormats);
-
-    public List<CommitmentTypeIndication> getCommitmentTypeIndications();
-
-    public void setCommitmentTypeIndications(List<CommitmentTypeIndication> commitmentTypeIndications);
-
-    public List<AllDataObjectsTimeStamp> getAllDataObjectsTimeStamps();
-
-    public void setAllDataObjectsTimeStamps(List<AllDataObjectsTimeStamp> allDataObjectsTimeStamps);
-
-    public List<XAdESTimeStamp> getIndividualDataObjectsTimeStamps();
-
-    public void setIndividualDataObjectsTimeStamps(List<IndividualDataObjectsTimeStamp> individualDataObjectsTimeStamps);
-
-    public List<CounterSignature> getCounterSignatures();
-
-    public void setCounterSignatures(List<CounterSignature> counterSignatures);
-
-    public String getXadesPrefix();
-
-    public String getXadesNamespace();
-
-    public String getXmlSignaturePrefix();
-
-    public String getDigestMethod();
+public interface XAdES_BES extends XAdESBase, XadesWithBasicAttributes
+{
+	// It inherits all the necessary methods
 }
