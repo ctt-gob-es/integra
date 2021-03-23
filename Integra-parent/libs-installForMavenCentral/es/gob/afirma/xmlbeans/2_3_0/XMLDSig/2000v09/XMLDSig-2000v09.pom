@@ -1,0 +1,16 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>es.gob.afirma.xmlbeans.2_3_0</groupId>
+    <artifactId>XMLDSig</artifactId>
+    <version>2000v09</version>
+    <name>XML Digital Signature Schema 2000/09</name>
+	<dependencies>
+        <dependency>
+            <groupId>es.gob.afirma.xmlbeans.2_3_0</groupId>
+			<artifactId>xmlSchema</artifactId>
+			<version>2001</version>
+            <type>jar</type>
+        </dependency>
+    </dependencies>
+</project>

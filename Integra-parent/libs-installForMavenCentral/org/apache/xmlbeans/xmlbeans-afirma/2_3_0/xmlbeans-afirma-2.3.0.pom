@@ -1,0 +1,20 @@
+<project>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.xmlbeans</groupId>
+    <artifactId>xmlbeans-afirma</artifactId>
+    <version>2.3.0</version>
+
+    <name>XmlBeans</name>
+    <description>XmlBeans main jar modified for @firma</description>
+    <url>http://xmlbeans.apache.org</url>
+
+     <dependencies>
+        <dependency>
+            <groupId>stax</groupId>
+            <artifactId>stax-api</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+    </dependencies>
+
+</project>

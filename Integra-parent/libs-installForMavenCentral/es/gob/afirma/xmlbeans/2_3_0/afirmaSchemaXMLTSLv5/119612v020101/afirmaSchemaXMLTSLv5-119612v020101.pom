@@ -1,0 +1,28 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>es.gob.afirma.xmlbeans.2_3_0</groupId>
+    <artifactId>afirmaSchemaXMLTSLv5</artifactId>
+    <version>119612v020101</version>
+    <name>XML TSL Schema 119612 2.1.1</name>
+	<dependencies>
+        <dependency>
+            <groupId>es.gob.afirma.xmlbeans.2_3_0</groupId>
+			<artifactId>xmlSchema</artifactId>
+			<version>2001</version>
+            <type>jar</type>
+        </dependency>
+		<dependency>
+            <groupId>es.gob.afirma.xmlbeans.2_3_0</groupId>
+			<artifactId>XMLDSig</artifactId>
+			<version>2000v09</version>
+            <type>jar</type>
+        </dependency>
+		<dependency>
+            <groupId>es.gob.afirma.xmlbeans.2_3_0</groupId>
+			<artifactId>XAdES</artifactId>
+			<version>01903v132</version>
+            <type>jar</type>
+        </dependency>
+    </dependencies>
+</project>
