@@ -4,4 +4,7 @@ mvn install:install-file -Dfile=./com/lowagie/itext/2.2/itext-2.2.jar -DgroupId=
 mvn install:install-file -Dfile=./javax/activation/activation/1.0.2/activation-1.0.2.jar -DgroupId=javax.activation -DartifactId=activation -Dversion=1.0.2 -Dpackaging=jar -DpomFile=./javax/activation/activation/1.0.2/activation-1.0.2.pom
 #Dependencia con Sun JaxWS STAX-EX 2.1.1
 mvn install:install-file -Dfile=./sun-jaxws/stax-ex/2.1.1/stax-ex-2.1.1.jar -DgroupId=sun-jaxws -DartifactId=stax-ex -Dversion=2.1.1 -Dpackaging=jar -DpomFile=./sun-jaxws/stax-ex/2.1.1/stax-ex-2.1.1.pom
+#Barcode4j v 2.1 
+Se incluye la versión 2.1 que soluciona un bug de integración con Apache-FOP
+mvn install:install-file -Dfile=./net/sf/barcode4j/barcode4j-fop-ext-complete/2.1/barcode4j-fop-ext-complete-2.1.jar -DgroupId=net.sf.barcode4j -DartifactId=barcode4j-fop-ext-complete -Dversion=2.1 -Dpackaging=jar -DpomFile=./net/sf/barcode4j/barcode4j-fop-ext-complete/2.1/barcode4j-fop-ext-complete-2.1.pom
 
