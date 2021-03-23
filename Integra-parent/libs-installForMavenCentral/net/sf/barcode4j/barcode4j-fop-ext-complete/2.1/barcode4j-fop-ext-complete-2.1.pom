@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>net.sf.barcode4j</groupId>
+  <artifactId>barcode4j-fop-ext-complete</artifactId>
+  <name>Barcode4J with extensions for Apache FOP 1.0 and later</name>
+  <version>2.1</version>
+  <url>http://barcode4j.sourceforge.net/</url>
+  <description>
+  	Barcode4J is a flexible generator for barcodes written in Java inclusive
+	extensions to support Apache FOP 1.0 and later.
+  </description>
+  <licenses>
+    <license>
+            <name>ASF 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <url>http://barcode4j.cvs.sourceforge.net/barcode4j</url>
+  </scm>
+  <dependencies>
+	<dependency>
+      <groupId>org.apache.xmlgraphics</groupId>
+      <artifactId>fop</artifactId>
+	  <version>1.0</version>
+	</dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.2</version>
+	  <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-cli</groupId>
+      <artifactId>commons-cli</artifactId>
+      <version>1.0</version>
+	  <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>jdom</groupId>
+      <artifactId>jdom</artifactId>
+      <version>1.0</version>
+	  <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>saxon</artifactId>
+      <version>8.5.1</version>
+	  <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>xalan</groupId>
+      <artifactId>xalan</artifactId>
+      <version>2.7.0</version>
+	  <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.9.0</version>
+	  <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
+      <version>1.3.04</version>
+    </dependency>
+  </dependencies>
+</project>
