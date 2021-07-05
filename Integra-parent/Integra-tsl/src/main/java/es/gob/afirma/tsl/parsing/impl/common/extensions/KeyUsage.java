@@ -20,7 +20,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 11/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.0, 11/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 package es.gob.afirma.tsl.parsing.impl.common.extensions;
 
@@ -29,13 +29,13 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.gob.afirma.i18n.Language;
+import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.exceptions.TSLMalformedException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
 import es.gob.afirma.tsl.parsing.ifaces.ITSLElementsAndAttributes;
 import es.gob.afirma.tsl.parsing.ifaces.ITSLObject;
 import es.gob.afirma.tsl.parsing.impl.common.ServiceHistoryInstance;
-import es.gob.afirma.utils.NumberConstants;
+import es.gob.afirma.tsl.utils.NumberConstants;
 
 
 
@@ -45,7 +45,7 @@ import es.gob.afirma.utils.NumberConstants;
  * KeyUsage Extension is present in the certificate and all key usage bits provided are matched with
  * the corresponding bit in the certificate KeyUsage Extension.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 11/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 public class KeyUsage implements Serializable {
 

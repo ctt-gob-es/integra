@@ -17,15 +17,15 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 16/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.0, 16/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 package es.gob.afirma.tsl.certValidation.ifaces;
 
-import java.security.cert.X509CRL;
+import iaik.x509.X509CRL;
+import iaik.x509.ocsp.BasicOCSPResponse;
+
 import java.security.cert.X509Certificate;
 import java.util.Date;
-
-import org.bouncycastle.cert.ocsp.BasicOCSPResp;
 
 import es.gob.afirma.tsl.certValidation.impl.common.ATSLValidator;
 import es.gob.afirma.tsl.certValidation.impl.common.TSLValidatorResult;
@@ -36,7 +36,7 @@ import es.gob.afirma.tsl.parsing.impl.common.TrustServiceProvider;
 /** 
  * <p>Interface that represents a certificate validation using TSL through some specific method.</p> .</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 16/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 public interface ITSLValidatorThroughSomeMethod {
     /**
@@ -61,22 +61,5 @@ public interface ITSLValidatorThroughSomeMethod {
 	 * @param shi TSL - TSP Service History Information from which extract the information to validate the certificate.
 	 * @param validationResult Object where must be stored the validation result data.
 	 */
-	void searchRevocationValueCompatible(X509Certificate cert, BasicOCSPResp basicOcspResponse, X509CRL crl, Date validationDate, ServiceHistoryInstance shi, TSLValidatorResult validationResult);
-
-	/**
-	 * Method that validates the input x509 v3 certificate using the distribution point information on it.
-	 * @param cert Certificate X509v3 to validate its revocation.
-	 * @param isCACert Flag that indicates if the input certificate has the Basic Constraints with the CA flag activated
-	 * (<code>true</code>) or not (<code>false</code>).
-	 * @param isTsaCertificate Flag that indicates if the input certificate has the id-kp-timestamping key purpose
-	 * (<code>true</code>) or not (<code>false</code>).
-	 * @param validationDate Validation date to check the certificate status revocation.
-	 * @param validationResult Object where must be stored the validation result data.
-	 * @param tsp Trust Service Provider to use for checks the issuer of the CRL/OCSP Response.
-	 * @param tslValidator TSL validator to verify if some TSP service is accomplished with the qualified (or not) certificate to check the CRL/OCSP Response.
-	 * @return Flag that indicates if the certificate has been validated (<code>true</code>) or not (<code>false</code>).
-	 */
-	boolean validateCertificateUsingDistributionPoints(X509Certificate cert, boolean isCACert, boolean isTsaCertificate, Date validationDate, TSLValidatorResult validationResult, TrustServiceProvider tsp, ATSLValidator tslValidator);
-
-
+	void searchRevocationValueCompatible(X509Certificate cert, BasicOCSPResponse basicOcspResponse, X509CRL crl, Date validationDate, ServiceHistoryInstance shi, TSLValidatorResult validationResult);
 }

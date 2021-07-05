@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-import es.gob.afirma.utils.NumberConstants;
 
 /** 
  * <p>Class that provides methods for managing dates.</p>

@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 17/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.0, 17/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 package es.gob.afirma.tsl.certValidation.impl;
 
@@ -28,7 +28,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.bouncycastle.asn1.x509.qualified.ETSIQCObjectIdentifiers;
+
 
 import es.gob.afirma.tsl.access.TSLProperties;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorOtherConstants;
@@ -38,12 +38,13 @@ import es.gob.afirma.tsl.exceptions.TSLValidationException;
 import es.gob.afirma.tsl.parsing.ifaces.ITSLOIDs;
 import es.gob.afirma.tsl.parsing.impl.common.TSLCertificateExtensionAnalyzer;
 import es.gob.afirma.tsl.utils.UtilsStringChar;
+import iaik.x509.extensions.qualified.structures.etsi.QcEuSSCD;
 
 /** 
  * <p>This class offers static methods to extract mappings of a certificate
  * validated through a TSL.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 17/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 public final class TSLValidatorMappingCalculator {
 
@@ -240,15 +241,15 @@ public final class TSLValidatorMappingCalculator {
 		if (tslCertExtAnalyzer.isThereSomeQcStatementEuTypeExtension()) {
 
 			// Comprobamos los OID de ESIG, ESEAL y WSA.
-			if (tslCertExtAnalyzer.hasQcStatementEuTypeExtensionOid(ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE_ESIGN.getId())) {
+			if (tslCertExtAnalyzer.hasQcStatementEuTypeExtensionOid(ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE_ESIGN.getID())) {
 
 				result = ITslMappingConstants.MAPPING_VALUE_CLASSIFICATION_ESIG;
 
-			} else if (tslCertExtAnalyzer.hasQcStatementEuTypeExtensionOid(ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE_ESEAL.getId())) {
+			} else if (tslCertExtAnalyzer.hasQcStatementEuTypeExtensionOid(ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE_ESEAL.getID())) {
 
 				result = ITslMappingConstants.MAPPING_VALUE_CLASSIFICATION_ESEAL;
 
-			} else if (tslCertExtAnalyzer.hasQcStatementEuTypeExtensionOid(ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE_WEB.getId())) {
+			} else if (tslCertExtAnalyzer.hasQcStatementEuTypeExtensionOid(ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE_WEB.getID())) {
 
 				result = ITslMappingConstants.MAPPING_VALUE_CLASSIFICATION_WSA;
 
@@ -300,7 +301,7 @@ public final class TSLValidatorMappingCalculator {
 		String result = ITslMappingConstants.MAPPING_VALUE_UNKNOWN;
 
 		// Comprobamos si tiene la extensión QcStatement - QcEuSSCD
-		if (tslCertExtAnalyzer.hasQcStatementExtensionOid(ETSIQCObjectIdentifiers.id_etsi_qcs_QcSSCD.getId())) {
+		if (tslCertExtAnalyzer.hasQcStatementExtensionOid(QcEuSSCD.statementID.getID())) {
 
 			result = ITslMappingConstants.MAPPING_VALUE_YES;
 

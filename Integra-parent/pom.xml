@@ -20,6 +20,7 @@
 		<module>Integra-services</module>
 		<module>Integra-tsl</module>
 		<module>Integra-signature-report</module>
+		<module>Integra-commons-tsl</module>
 	</modules>
 	<properties>
 		<version.Integra.commons>2.2.2_000</version.Integra.commons>
@@ -31,6 +32,7 @@
 		<version.Integra.utils>2.2.2_000</version.Integra.utils>
 		<version.Integra.encryption>2.2.2_000</version.Integra.encryption>
 		<version.Integra.signature-report>2.2.2_000</version.Integra.signature-report>
+		<version.Integra.commons.tsl>2.2.2_000</version.Integra.commons.tsl>
 	</properties>
 
 	<!-- **************************************************************** -->
@@ -53,57 +55,57 @@
 	<!-- **************************************************************** -->
 
 	<!-- **************************************************************** -->
- 	<!-- CONFIGURACIÓN REPOSITORIOS MAVEN: ARTIFACTORY RED SARA -->
- 	<!-- Se debe habilitar en el settings.xml de Maven la configuración de servers con
- 	     usuario y password para los id MINHAP-central y MINHAP-snapshots -->
-<!-- 	<repositories> -->
-<!-- 		<repository> -->
-<!-- 			<snapshots> -->
-<!-- 				<enabled>false</enabled> -->
-<!-- 			</snapshots> -->
-<!-- 			<id>MINHAP-central</id> -->
-<!-- 			<name>libs-release</name> -->
-<!-- 			<url>https://artefactos.scae.redsara.es/artifactory/libs-release</url> -->
-<!-- 		</repository> -->
-<!-- 		<repository> -->
-<!-- 			<snapshots /> -->
-<!-- 			<id>MINHAP-snapshots</id> -->
-<!-- 			<name>libs-snapshot</name> -->
-<!-- 			<url>https://artefactos.scae.redsara.es/artifactory/libs-snapshot</url> -->
-<!-- 		</repository> -->
-<!-- 	</repositories> -->
-<!-- 	<pluginRepositories> -->
-<!-- 		<pluginRepository> -->
-<!-- 			<snapshots> -->
-<!-- 				<enabled>false</enabled> -->
-<!-- 			</snapshots> -->
-<!-- 			<id>MINHAP-central</id> -->
-<!-- 			<name>plugins-release</name> -->
-<!-- 			<url>https://artefactos.scae.redsara.es/artifactory/plugins-release</url> -->
-<!-- 			<releases> -->
-<!-- 				<enabled>true</enabled> -->
-<!-- 				<updatePolicy>always</updatePolicy> -->
-<!-- 			</releases> -->
-<!-- 		</pluginRepository> -->
-<!-- 		<pluginRepository> -->
-<!-- 			<snapshots /> -->
-<!-- 			<id>MINHAP-snapshots</id> -->
-<!-- 			<name>plugins-snapshot</name> -->
-<!-- 			<url>https://artefactos.scae.redsara.es/artifactory/plugins-snapshot</url> -->
-<!-- 		</pluginRepository> -->
-<!-- 	</pluginRepositories> -->
-<!-- 	<distributionManagement> -->
-<!-- 		<repository> -->
-<!-- 			<id>MINHAP-central</id> -->
-<!-- 			<name>artefactos.scae.redsara.es-releases</name> -->
-<!-- 			<url>https://artefactos.scae.redsara.es/artifactory/INTEGRA-release/</url> -->
-<!-- 		</repository> -->
-<!-- 		<snapshotRepository> -->
-<!-- 			<id>MINHAP-snapshots</id> -->
-<!-- 			<name>artefactos.scae.redsara.es-snapshots</name> -->
-<!-- 			<url>https://artefactos.scae.redsara.es/artifactory/INTEGRA-snapshot/</url> -->
-<!-- 		</snapshotRepository> -->
-<!-- 	</distributionManagement> -->
+	<!-- CONFIGURACIÓN REPOSITORIOS MAVEN: ARTIFACTORY RED SARA -->
+	<!-- Se debe habilitar en el settings.xml de Maven la configuración de servers 
+		con usuario y password para los id MINHAP-central y MINHAP-snapshots -->
+	<!-- <repositories> -->
+	<!-- <repository> -->
+	<!-- <snapshots> -->
+	<!-- <enabled>false</enabled> -->
+	<!-- </snapshots> -->
+	<!-- <id>MINHAP-central</id> -->
+	<!-- <name>libs-release</name> -->
+	<!-- <url>https://artefactos.scae.redsara.es/artifactory/libs-release</url> -->
+	<!-- </repository> -->
+	<!-- <repository> -->
+	<!-- <snapshots /> -->
+	<!-- <id>MINHAP-snapshots</id> -->
+	<!-- <name>libs-snapshot</name> -->
+	<!-- <url>https://artefactos.scae.redsara.es/artifactory/libs-snapshot</url> -->
+	<!-- </repository> -->
+	<!-- </repositories> -->
+	<!-- <pluginRepositories> -->
+	<!-- <pluginRepository> -->
+	<!-- <snapshots> -->
+	<!-- <enabled>false</enabled> -->
+	<!-- </snapshots> -->
+	<!-- <id>MINHAP-central</id> -->
+	<!-- <name>plugins-release</name> -->
+	<!-- <url>https://artefactos.scae.redsara.es/artifactory/plugins-release</url> -->
+	<!-- <releases> -->
+	<!-- <enabled>true</enabled> -->
+	<!-- <updatePolicy>always</updatePolicy> -->
+	<!-- </releases> -->
+	<!-- </pluginRepository> -->
+	<!-- <pluginRepository> -->
+	<!-- <snapshots /> -->
+	<!-- <id>MINHAP-snapshots</id> -->
+	<!-- <name>plugins-snapshot</name> -->
+	<!-- <url>https://artefactos.scae.redsara.es/artifactory/plugins-snapshot</url> -->
+	<!-- </pluginRepository> -->
+	<!-- </pluginRepositories> -->
+	<!-- <distributionManagement> -->
+	<!-- <repository> -->
+	<!-- <id>MINHAP-central</id> -->
+	<!-- <name>artefactos.scae.redsara.es-releases</name> -->
+	<!-- <url>https://artefactos.scae.redsara.es/artifactory/INTEGRA-release/</url> -->
+	<!-- </repository> -->
+	<!-- <snapshotRepository> -->
+	<!-- <id>MINHAP-snapshots</id> -->
+	<!-- <name>artefactos.scae.redsara.es-snapshots</name> -->
+	<!-- <url>https://artefactos.scae.redsara.es/artifactory/INTEGRA-snapshot/</url> -->
+	<!-- </snapshotRepository> -->
+	<!-- </distributionManagement> -->
 	<!-- **************************************************************** -->
 
 </project>

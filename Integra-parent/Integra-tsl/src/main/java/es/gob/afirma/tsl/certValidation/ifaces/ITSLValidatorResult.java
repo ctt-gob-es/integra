@@ -17,27 +17,32 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 13/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.0, 13/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 package es.gob.afirma.tsl.certValidation.ifaces;
 
-import java.security.cert.X509CRL;
-import java.security.cert.X509Certificate;
+
+
+import iaik.x509.X509CRL;
+import iaik.x509.X509Certificate;
+import iaik.x509.ocsp.BasicOCSPResponse;
+
 import java.util.Date;
 import java.util.Map;
 
-import org.bouncycastle.cert.ocsp.BasicOCSPResp;
+
 
 import es.gob.afirma.tsl.parsing.impl.common.ServiceHistoryInstance;
 import es.gob.afirma.tsl.parsing.impl.common.TSLCertificateExtensionAnalyzer;
 import es.gob.afirma.tsl.parsing.impl.common.TSPService;
 import es.gob.afirma.tsl.parsing.impl.common.TrustServiceProvider;
-import es.gob.afirma.utils.NumberConstants;
+import es.gob.afirma.tsl.utils.NumberConstants;
+
 
 /** 
  * <p>Interface that represents a validation result using TSL. .</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 13/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 public interface ITSLValidatorResult {
 	/**
@@ -374,13 +379,13 @@ public interface ITSLValidatorResult {
 	 * Gets the Basic OCSP Response selected how revocation value.
 	 * @return Basic OCSP Response selected how revocation value, <code>null</code> if there is not.
 	 */
-	BasicOCSPResp getRevocationValueBasicOCSPResponse();
+	BasicOCSPResponse getRevocationValueBasicOCSPResponse();
 
 	/**
 	 * Sets the selected revocation value of type Basic OCSP Response.
 	 * @param bor Basic OCSP Response to assign how the selected revocation value.
 	 */
-	void setRevocationValueBasicOCSPResponse(BasicOCSPResp bor);
+	void setRevocationValueBasicOCSPResponse(BasicOCSPResponse bor);
 
 	/**
 	 * Gets the CRL selected how revocation value.

@@ -21,16 +21,11 @@
  * <b>Project:</b><p>Platform for detection and validation of certificates recognized in European TSL.</p>
  * <b>Date:</b><p>06/11/2018.</p>
  * @author Gobierno de España.
- * @version 1.4, 21/08/2019.
+ * @version 1.5, 15/06/2021.
  */
 package es.gob.afirma.tsl.parsing.impl.tsl119612.v020101;
 
-import java.io.InputStream;
 import java.net.URI;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -42,40 +37,19 @@ import java.util.TimeZone;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.apache.xmlbeans.SchemaType;
-import org.apache.xmlbeans.SchemaTypeLoader;
-import org.apache.xmlbeans.XmlBeans;
-import org.bouncycastle.asn1.DERBitString;
-import org.bouncycastle.asn1.x509.BasicConstraints;
-import org.bouncycastle.asn1.x509.SubjectKeyIdentifier;
-import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
-import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
-import org.etsi.uri.x01903.v13.CertIDListType;
-import org.etsi.uri.x01903.v13.CertIDType;
-import org.etsi.uri.x01903.v13.QualifyingPropertiesDocument;
-import org.etsi.uri.x01903.v13.QualifyingPropertiesType;
-import org.etsi.uri.x01903.v13.SignedPropertiesType;
-import org.etsi.uri.x01903.v13.SignedSignaturePropertiesType;
 import org.w3.x2000.x09.xmldsig.CanonicalizationMethodType;
-import org.w3.x2000.x09.xmldsig.KeyInfoType;
 import org.w3.x2000.x09.xmldsig.KeyValueType;
-import org.w3.x2000.x09.xmldsig.ObjectType;
 import org.w3.x2000.x09.xmldsig.ReferenceType;
 import org.w3.x2000.x09.xmldsig.SignatureMethodType;
 import org.w3.x2000.x09.xmldsig.SignatureType;
 import org.w3.x2000.x09.xmldsig.SignatureValueType;
 import org.w3.x2000.x09.xmldsig.SignedInfoType;
 import org.w3.x2000.x09.xmldsig.TransformsType;
-import org.w3.x2000.x09.xmldsig.X509IssuerSerialType;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
-import es.gob.afirma.i18n.Language;
 import es.gob.afirma.tsl.access.TSLManager;
-import es.gob.afirma.tsl.exceptions.CommonUtilsException;
 import es.gob.afirma.tsl.exceptions.TSLMalformedException;
-import es.gob.afirma.tsl.exceptions.TSLParsingException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
+import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.parsing.ifaces.IAnyTypeExtension;
 import es.gob.afirma.tsl.parsing.ifaces.ITSLCommonURIs;
 import es.gob.afirma.tsl.parsing.ifaces.ITSLElementsAndAttributes;
@@ -91,21 +65,17 @@ import es.gob.afirma.tsl.parsing.impl.common.ServiceHistoryInstance;
 import es.gob.afirma.tsl.parsing.impl.common.ServiceInformation;
 import es.gob.afirma.tsl.parsing.impl.common.TSLPointer;
 import es.gob.afirma.tsl.parsing.impl.common.TSPInformation;
-import es.gob.afirma.tsl.utils.CryptographicConstants;
-import es.gob.afirma.tsl.utils.UtilsBytesAndBits;
-import es.gob.afirma.tsl.utils.UtilsCertificateTsl;
+import es.gob.afirma.tsl.utils.NumberConstants;
 import es.gob.afirma.tsl.utils.UtilsCountryLanguage;
-import es.gob.afirma.tsl.utils.UtilsCrypto;
-import es.gob.afirma.tsl.utils.UtilsRFC2253;
 import es.gob.afirma.tsl.utils.UtilsStringChar;
-import es.gob.afirma.utils.NumberConstants;
-import es.gob.afirma.utils.UtilsResourcesCommons;
+import iaik.x509.X509Certificate;
+import iaik.x509.extensions.SubjectKeyIdentifier;
 
 /**
  * <p>Class that represents a TSL Data Checker of TSL implementation as the
  * ETSI TS 119612 2.1.1 specification.</p>
  * <b>Project:</b><p>Platform for detection and validation of certificates recognized in European TSL.</p>
- * @version 1.4, 21/08/2019.
+ * @version 1.5, 15/06/2021.
  */
 public class TSLChecker extends ATSLChecker {
 
@@ -753,7 +723,7 @@ public class TSLChecker extends ATSLChecker {
 
 	// Primero comprobamos que no sea nulo.
 	if (!tspInformation.isThereSomeTradeName()) {
-	   
+
 	    // Por decisión de Dirección de Proyecto se decide suavizar esta
 	    // comprobación.
 	    LOGGER.warn(Language.getFormatResIntegraTsl(ILogTslConstant.TC_LOG002, new Object[ ] { ITSLElementsAndAttributes.ELEMENT_TSPINFORMATION_TRADENAME }));
@@ -815,7 +785,7 @@ public class TSLChecker extends ATSLChecker {
 		// ya que se trata de un campo informativo y actualmente
 		// (04/07/2016)
 		// hay múltiples TSL que no lo definen adecuadamente.
-		
+
 		// En su lugar se muestra un warning.
 		LOGGER.warn(Language.getFormatResIntegraTsl(ILogTslConstant.TC_LOG008, new Object[ ] { tspInformation.getTSPNamesForLanguage(Locale.UK.getLanguage()), ITSLElementsAndAttributes.ELEMENT_TSPINFORMATION_TRADENAME }));
 	    }
@@ -1600,440 +1570,5 @@ public class TSLChecker extends ATSLChecker {
 	    }
 
 	}
-
-	// Recuperamos el KeyInfo.
-	KeyInfoType kit = signature.getKeyInfo();
-	if (kit == null) {
-	    throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.TC_LOG028));
-	} else {
-
-	    // Al menos uno de los siguientes debe estar definido: X509Data,
-	    // KeyValue o SPKI.
-	    // Además, de cada tipo como mucho solo debe haber uno.
-	    boolean atLeastOne = false;
-
-	    int x509DataTypeArraySize = kit.sizeOfX509DataArray();
-	    if (x509DataTypeArraySize == 1) {
-		atLeastOne = true;
-	    } else if (x509DataTypeArraySize > 1) {
-		throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.TC_LOG029));
-	    }
-
-	    int kvtArraySize = kit.sizeOfKeyValueArray();
-	    if (kvtArraySize == 1) {
-		atLeastOne = true;
-	    } else if (kvtArraySize > 1) {
-		throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.TC_LOG030));
-	    }
-
-	    int spkiDataTypeArraySize = kit.sizeOfSPKIDataArray();
-	    if (spkiDataTypeArraySize == 1) {
-		atLeastOne = true;
-	    } else if (spkiDataTypeArraySize > 1) {
-		throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.TC_LOG031));
-	    }
-
-	    if (!atLeastOne) {
-		throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.TC_LOG032));
-	    }
-
-	}
-
-	// En caso de no existir QualifyingProperties, la firma no puede ser
-	// XAdES.
-	boolean qualifyingPropertiesFinded = false;
-	QualifyingPropertiesType qProps = null;
-	// Para ello obtenemos la lista de object de la firma.
-	ObjectType[ ] objectTypeArray = signature.getObjectArray();
-	// Si no es nula ni vacía...
-	if (objectTypeArray != null && objectTypeArray.length > 0) {
-
-	    // Recorremos la lista de object...
-	    for (int indexObjectType = 0; !qualifyingPropertiesFinded && indexObjectType < objectTypeArray.length; indexObjectType++) {
-
-		// Obtenemos el object a analizar.
-		ObjectType ot = objectTypeArray[indexObjectType];
-
-		// Si no es nulo...
-		if (ot != null) {
-
-		    // Obtenemos la lista de nodos hijos.
-		    NodeList nodeList = ot.getDomNode().getChildNodes();
-		    // Si la lista no es nula ni vacía, la recorremos...
-		    if (nodeList != null && nodeList.getLength() > 0) {
-			for (int indexNode = 0; !qualifyingPropertiesFinded && indexNode < nodeList.getLength(); indexNode++) {
-
-			    Node node = nodeList.item(indexNode);
-
-			    // Si es de tipo ELEMENT lo intentamos parsear.
-			    if (node != null && node.getNodeType() == Node.ELEMENT_NODE) {
-
-				try {
-				    QualifyingPropertiesDocument qpd = getDocumentBuildingNewSchemeTypeLoader(null, node, QualifyingPropertiesDocument.class);
-				    if (qpd != null) {
-					qProps = getDocumentBuildingNewSchemeTypeLoader(null, node, QualifyingPropertiesDocument.class).getQualifyingProperties();
-					qualifyingPropertiesFinded = true;
-				    }
-				} catch (TSLParsingException e) {
-				    qualifyingPropertiesFinded = false;
-				}
-
-			    }
-
-			}
-
-		    }
-
-		}
-
-	    }
-
-	}
-
-	if (qProps == null) {
-	    throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.TC_LOG033));
-	}
-
-	// Tomamos la Firma ds:Signature sobre la cual se calculó
-	// QualifyingProperties.
-	String target = qProps.getTarget().substring(1);
-
-	// El target del Qualifiying Properties debe estar definido
-	// y debe ser igual al ID de la firma.
-	if (target != null && target.equals(signature.getId())) {
-
-	    // Si no hay SignedProperties, no comprobamos nada más.
-	    SignedPropertiesType signedProps = qProps.getSignedProperties();
-	    if (signedProps != null) {
-
-		// Si no hay SignedSignatureProperties, no comprobamos nada más.
-		SignedSignaturePropertiesType signedSignatureProps = signedProps.getSignedSignatureProperties();
-		if (signedSignatureProps != null) {
-
-		    // Si no hay SigningCertificate, no comprobamos nada más.
-		    CertIDListType qPropsSignCertCertIdList = signedSignatureProps.getSigningCertificate();
-		    if (qPropsSignCertCertIdList != null && qPropsSignCertCertIdList.getCertArray() != null) {
-
-			// Recuperamos el certificado firmante.
-			X509Certificate signingCert = getSigningCertificate(fullTSLxml);
-			if (signingCert == null) {
-			    throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.TC_LOG034));
-			}
-
-			// Comprobamos la correspondencia entre el
-			// SigningCertificate y el KeyInfo.
-			X509Certificate x509Certificate = validateMatchingCertificate(signingCert, qPropsSignCertCertIdList.getCertArray());
-
-			// Comprobamos atributos y extensiones del certificado
-			// según determina
-			// la especificación.
-			checkX509v3SigningCertificateDateDependingOnSpecification(x509Certificate);
-
-			// Comprobamos que el certificado firmante se encuentre
-			// en el almacén de confianza de firmantes de TSL.
-			checkX509v3SigningCertificateIsInTrustStore(x509Certificate);
-
-		    }
-
-		}
-
-	    }
-
-	} else {
-
-	    // Si el atributo target del elemento Qualifying Properties no
-	    // coincide en valor con del ID de la firma...
-	    throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.TC_LOG035));
-
-	}
-
     }
-
-    /**
-     * Checks and validate the certificate information in the SigningCertificate element with the KeyInfo data.
-     * @param signingCert X509 certificate that signs the TSL.
-     * @param qPropsSignCertCertIdArray Array of CertID defined in QualifyingProperties - SigningCertificate.
-     * @throws TSLMalformedException In case of some error checking the singning certificate.
-     * @return X509v3 Signing Certificate.
-     */
-    private X509Certificate validateMatchingCertificate(X509Certificate signingCert, CertIDType[ ] qPropsSignCertCertIdArray) throws TSLMalformedException {
-
-	try {
-
-	    if (qPropsSignCertCertIdArray.length == 0) {
-		throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.TC_LOG036));
-	    }
-
-	    String x509IssuerName = UtilsCertificateTsl.canonicalizarIdCertificado(signingCert.getIssuerDN().getName());
-
-	    for (int index = 0; index < qPropsSignCertCertIdArray.length; index++) {
-		CertIDType certID = qPropsSignCertCertIdArray[index];
-
-		X509IssuerSerialType issuerSerial = certID.getIssuerSerial();
-		String issuerName = UtilsCertificateTsl.canonicalizarIdCertificado(UtilsRFC2253.getInstance().unscape(issuerSerial.getX509IssuerName()));
-
-		if (x509IssuerName.equals(issuerName) && signingCert.getSerialNumber().equals(issuerSerial.getX509SerialNumber()) && Arrays.equals(UtilsCrypto.calculateDigest(UtilsCrypto.translateHashAlgorithmXML(certID.getCertDigest().getDigestMethod().getAlgorithm()), signingCert.getEncoded(), null), certID.getCertDigest().getDigestValue())) {
-		    return signingCert;
-		}
-	    }
-
-	} catch (Exception e) {
-	    throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.TC_LOG037), e);
-	}
-
-	// Si hemos llegado a este punto es que no hemos encontrado
-	// correspondencia entre
-	// el signing certificate del Qualifying Properties y el KeyInfo.
-	throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.TC_LOG037));
-
-    }
-
-    /**
-     * Checks the signing TSL certificate for a concrete attributes and extensions.
-     * @param x509Certificate X509v3 certificate to check.
-     * @throws TSLMalformedException In case of some error checking the singning certificate.
-     */
-    private void checkX509v3SigningCertificateDateDependingOnSpecification(X509Certificate x509Certificate) throws TSLMalformedException {
-
-	// Comprobamos que el "Country Code" y "Organization" del subject del
-	// certificado se corresponden
-	// con "Scheme Territory" y "Scheme Operator Name".
-	checkX509v3CountryCodeAndOrganization(x509Certificate);
-
-	// Comprobamos que la extensión de uso de clave tan solo esté marcada
-	// como "digitalSignature" y/o "nonRepudiation".
-	checkX509v3KeyUsage(x509Certificate);
-
-	// Comprobamos que el certificado firmante contiene la extensión de
-	// uso de clave para la firma de la TSL.
-	checkX509v3ExtendedKeyUsageTSLSigning(x509Certificate);
-
-	// Comprobamos que la extensión SubjectKeyIdentifier se encuentra
-	// presente en alguna de las dos
-	// primeras formas indicadas en el punto 4.2.1.2 de la RFC5280.
-	checkX509v3SubjectKeyIdentifier(x509Certificate);
-
-	// Comprobamos que como restricción básica no esté marcado CA.
-	checkX509v3BasicConstraintsCA(x509Certificate);
-
-    }
-
-    /**
-     * Checks if "Country code" and "Organization" fields in Subject Distinguished Name (of the input certificate)
-     * match respectively the "Scheme Territory" and one of the "Scheme operator name" values. For the latter,
-     * the value in UK English language (preferred) or local language (transliterated to Latin script), as available,
-     * should be used for that.
-     * @param x509Certificate Certificate to check.
-     * @throws TSLMalformedException In case of the condition is not fulfilled.
-     */
-    private void checkX509v3CountryCodeAndOrganization(X509Certificate x509Certificate) throws TSLMalformedException {
-
-	String countryCode = UtilsCertificateTsl.getRDNFirstValueFromX500Principal(x509Certificate.getSubjectX500Principal(), X509ObjectIdentifiers.countryName);
-	String organization = UtilsCertificateTsl.getRDNFirstValueFromX500Principal(x509Certificate.getSubjectX500Principal(), X509ObjectIdentifiers.organization);
-
-	String schemeTerritory = getTSLObject().getSchemeInformation().getSchemeTerritory();
-	if (!schemeTerritory.equals(countryCode)) {
-	    throw new TSLMalformedException(Language.getFormatResIntegraTsl(ILogTslConstant.TC_LOG004, new Object[ ] { countryCode, schemeTerritory }));
-	}
-
-	boolean operatorNameFinded = false;
-	Map<String, List<String>> operatorNames = getTSLObject().getSchemeInformation().getSchemeOperatorNames();
-	Collection<List<String>> operatorNamesValues = operatorNames.values();
-	for (List<String> operatorNameList: operatorNamesValues) {
-	    for (String operatorName: operatorNameList) {
-		if (operatorName.equals(organization)) {
-		    operatorNameFinded = true;
-		    break;
-		}
-	    }
-	    if (operatorNameFinded) {
-		break;
-	    }
-	}
-	if (!operatorNameFinded) {
-	    throw new TSLMalformedException(Language.getFormatResIntegraTsl(ILogTslConstant.TC_LOG038, new Object[ ] { organization }));
-	}
-
-    }
-
-    /**
-     * Checks if the KeyUsage extension (of the input certificate) is set only and exclusively
-     * to digitalSignature and/or nonRepudiation.
-     * 	KeyUsage ::= BIT STRING {
-     *            digitalSignature        (0),
-     *            nonRepudiation          (1),
-     *            keyEncipherment         (2),
-     *            dataEncipherment        (3),
-     *            keyAgreement            (4),
-     *            keyCertSign             (5),
-     *            cRLSign                 (6),
-     *            encipherOnly            (7),
-     *            decipherOnly            (8) }
-     * @param x509Certificate Certificate to check.
-     * @throws TSLMalformedException In case of the key usage of the input certificate are not valid.
-     */
-    private void checkX509v3KeyUsage(X509Certificate x509Certificate) throws TSLMalformedException {
-
-	boolean[ ] x509keyUsage = x509Certificate.getKeyUsage();
-	boolean isValidKeyUsage = x509keyUsage[0] || x509keyUsage[1];
-	if (isValidKeyUsage) {
-	    isValidKeyUsage = !x509keyUsage[2] && !x509keyUsage[NumberConstants.INT_3] && !x509keyUsage[NumberConstants.INT_4];
-	    isValidKeyUsage = isValidKeyUsage && !x509keyUsage[NumberConstants.INT_5] && !x509keyUsage[NumberConstants.INT_6];
-	    isValidKeyUsage = isValidKeyUsage && !x509keyUsage[NumberConstants.INT_7] && !x509keyUsage[NumberConstants.INT_8];
-	}
-	if (!isValidKeyUsage) {
-	    throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.TC_LOG039));
-	}
-
-    }
-
-    /**
-     * Checks if the SubjectKeyIdentifier extension (of the input certificate) is present using
-     * one of the first 2 methods specified in clause 4.2.1.2 of RFC 5280.
-     * @param x509Certificate Certificate to check.
-     * @throws TSLMalformedException In case of the subject key identifier of the input certificate is not valid.
-     */
-    private void checkX509v3SubjectKeyIdentifier(X509Certificate x509Certificate) throws TSLMalformedException {
-
-	SubjectKeyIdentifier ski = null;
-	byte[ ] skiBytes = null;
-	try {
-	    // Obtenemos la extensión.
-	    ski = SubjectKeyIdentifier.fromExtensions(UtilsCertificateTsl.getBouncyCastleCertificate(x509Certificate).getTBSCertificate().getExtensions());
-	    if (ski != null) {
-		// Pasamos a array de bytes el Subject Key Identifier.
-		skiBytes = ski.getKeyIdentifier();
-	    }
-	} catch (Exception e) {
-	    throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.TC_LOG040), e);
-	}
-	if (skiBytes == null) {
-
-	    throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.TC_LOG042));
-
-	} else {
-
-	    // Extraemos el BitString del Subject Public Key Info.
-	    JcaX509CertificateHolder jcaX509cert = null;
-	    try {
-		jcaX509cert = new JcaX509CertificateHolder(x509Certificate);
-	    } catch (CertificateEncodingException e) {
-		throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.TC_LOG041), e);
-	    }
-	    DERBitString subjectPublicKeyBitString = jcaX509cert.getSubjectPublicKeyInfo().getPublicKeyData();
-	    // Le calculamos el SHA-1.
-	    byte[ ] subjectPublicKeyBitStringHashSHA1 = null;
-	    try {
-		subjectPublicKeyBitStringHashSHA1 = UtilsCrypto.calculateDigestReturnB64ByteArray(CryptographicConstants.HASH_ALGORITHM_SHA1, subjectPublicKeyBitString.getBytes(), null);
-	    } catch (CommonUtilsException e) {
-		throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.TC_LOG043), e);
-	    }
-
-	    // Comprobamos si el Subject Key Identifier se corresponde con el
-	    // Subject Public Key
-	    // por alguno de los dos métodos permitidos por la especificación.
-	    if (!checkX509v3SubjectKeyIdentifierMethod1(skiBytes, subjectPublicKeyBitStringHashSHA1) && !checkX509v3SubjectKeyIdentifierMethod2(skiBytes, subjectPublicKeyBitStringHashSHA1)) {
-
-		throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.TC_LOG044));
-
-	    }
-
-	}
-
-    }
-
-    /**
-     * This method checks if the input SubjectKeyIdentifier is composed of the
-     * 160-bit SHA-1 hash of the input value of the BIT STRING subjectPublicKey
-     * (excluding the tag, length, and number of unused bits).
-     * @param skiBytes Subject Key Identifier to compare in a byte array.
-     * @param subjectPublicKeyBitStringHashSHA1 Hash SHA1 of the Subject Public Key to compare,
-     * represented in a byte array.
-     * @return <code>true</code> if both are the same, otherwise <code>false</code>.
-     */
-    private boolean checkX509v3SubjectKeyIdentifierMethod1(byte[ ] skiBytes, byte[ ] subjectPublicKeyBitStringHashSHA1) {
-
-	return Arrays.equals(skiBytes, subjectPublicKeyBitStringHashSHA1);
-
-    }
-
-    /**
-     * This method checks if the input SubjectKeyIdentifier is composed of a
-     * four-bit type field with the value 0100 followed by the least significant 60 bits
-     * of the SHA-1 hash of the input value of the BIT STRING subjectPublicKey (excluding
-     * the tag, length, and number of unused bits).
-     * @param skiBytes Subject Key Identifier to compare in a byte array.
-     * @param subjectPublicKeyBitStringHashSHA1 Hash SHA1 of the Subject Public Key to compare,
-     * represented in a byte array.
-     * @return <code>true</code> if both are the same, otherwise <code>false</code>.
-     */
-    private boolean checkX509v3SubjectKeyIdentifierMethod2(byte[ ] skiBytes, byte[ ] subjectPublicKeyBitStringHashSHA1) {
-
-	// Cogemos los últimos 8 bytes (64 bits) del
-	// subjectPublicKeyBitStringHashSHA1.
-	byte[ ] spkbs8bytes = Arrays.copyOfRange(subjectPublicKeyBitStringHashSHA1, 0, NumberConstants.INT_8);
-	// Obtenemos el BitSet del último byte.
-	BitSet bs = UtilsBytesAndBits.byteToBits(spkbs8bytes[NumberConstants.INT_7]);
-	// Marcamos los primeros 4 bits con 0100.
-	bs.set(NumberConstants.INT_7, false);
-	bs.set(NumberConstants.INT_6, false);
-	bs.set(NumberConstants.INT_5, true);
-	bs.set(NumberConstants.INT_4, false);
-	// Lo transformamos a byte y lo asignamos.
-	spkbs8bytes[NumberConstants.INT_7] = UtilsBytesAndBits.bitToByteArray(bs)[0];
-
-	// Finalmente lo comparamos.
-	return Arrays.equals(skiBytes, spkbs8bytes);
-
-    }
-
-    /**
-     * Checks that BasicConstraints extension (of the input certificate) indicate CA=false.
-     * @param x509Certificate Certificate to check.
-     * @throws TSLMalformedException In case of the basic constraints of the input certificate are not valid.
-     */
-    private void checkX509v3BasicConstraintsCA(X509Certificate x509Certificate) throws TSLMalformedException {
-
-	BasicConstraints localBasicConstraints = null;
-	try {
-	    localBasicConstraints = BasicConstraints.fromExtensions(UtilsCertificateTsl.getBouncyCastleCertificate(x509Certificate).getTBSCertificate().getExtensions());
-	} catch (Exception e) {
-	    throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.TC_LOG045), e);
-	}
-	if (localBasicConstraints == null || localBasicConstraints.isCA()) {
-	    throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.TC_LOG046));
-	}
-
-    }
-
-    /**
-     * Generic method to parse a XML input stream or XML node to the indicated Document Class through
-     * XMLBeans. To avoid problems with class loaders (in case of different Documents with same name and
-     * namespace), the XMLBeans classloaders is built from this DocumentClass.
-     * @param is Input stream of the XML. If it is <code>null</code>, the the node parameter must be defined.
-     * @param node XML node. If it is <code>null</code>, then the input stream parameter must be defined.
-     * @param classDocument Document Class from which build the XMLBeans Class Loader and parse the input (stream or node).
-     * @return Generated document object of type T.
-     * @throws TSLParsingException In case of some error parsing the input (stream or node) to the XML document.
-     */
-    protected <T> T getDocumentBuildingNewSchemeTypeLoader(InputStream is, Node node, Class<T> classDocument) throws TSLParsingException {
-
-	try {
-
-	    SchemaType sts = (SchemaType) classDocument.getDeclaredField(SCHEME_TYPE_FIELD_NAME).get(null);
-	    SchemaTypeLoader stl = XmlBeans.typeLoaderUnion(new SchemaTypeLoader[ ] { sts.getTypeSystem(), XmlBeans.getContextTypeLoader() });
-	    if (is != null) {
-		return classDocument.cast(stl.parse(is, sts, null));
-	    } else {
-		return classDocument.cast(stl.parse(node, sts, null));
-	    }
-
-	} catch (Exception e) {
-	    throw new TSLParsingException(Language.getResIntegraTsl(ILogTslConstant.TC_LOG047), e);
-	} finally {
-	    UtilsResourcesCommons.safeCloseInputStream(is);
-	}
-
-    }
-
 }

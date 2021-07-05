@@ -19,7 +19,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 17/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.0, 17/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 package es.gob.afirma.tsl.utils;
 
@@ -37,7 +37,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.log4j.Logger;
 
-import es.gob.afirma.i18n.Language;
+import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.constants.IOperationModeIdConstants;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
 
@@ -46,7 +46,7 @@ import es.gob.afirma.tsl.i18n.ILogTslConstant;
  * to obtain the data necessary to establish a connection via PROXY. Besides this load will be done in the initialization
  * of the platform, and this class is responsible for setting the data in the virtual machine.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 17/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 public final class UtilsProxy {
 

@@ -24,9 +24,8 @@ package es.gob.afirma.tsl.utils;
 import org.apache.log4j.Logger;
 
 
-import es.gob.afirma.i18n.Language;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
-import es.gob.afirma.utils.NumberConstants;
+import es.gob.afirma.tsl.i18n.Language;
 
 /** 
  * <p>Utilities class relating to general connections properties and operations.</p>

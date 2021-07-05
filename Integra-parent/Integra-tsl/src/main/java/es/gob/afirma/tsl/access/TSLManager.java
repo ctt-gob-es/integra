@@ -34,7 +34,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
-import es.gob.afirma.i18n.Language;
+import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidator;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult;
 import es.gob.afirma.tsl.certValidation.impl.TSLValidatorFactory;
@@ -235,6 +235,8 @@ public final class TSLManager {
 	} catch (TSLArgumentException e) {
 	    throw new TSLManagingException(Language.getFormatResIntegraTsl(ILogTslConstant.TM_LOG007, new Object[ ] { tslObject.getSchemeInformation().getSchemeTerritory(), tslObject.getSchemeInformation().getTslSequenceNumber() }), e);
 	} catch (TSLValidationException e) {
+	    throw new TSLManagingException(Language.getFormatResIntegraTsl(ILogTslConstant.TM_LOG007, new Object[ ] { tslObject.getSchemeInformation().getSchemeTerritory(), tslObject.getSchemeInformation().getTslSequenceNumber() }), e);
+	} catch (Exception e){
 	    throw new TSLManagingException(Language.getFormatResIntegraTsl(ILogTslConstant.TM_LOG007, new Object[ ] { tslObject.getSchemeInformation().getSchemeTerritory(), tslObject.getSchemeInformation().getTslSequenceNumber() }), e);
 	}
 	
