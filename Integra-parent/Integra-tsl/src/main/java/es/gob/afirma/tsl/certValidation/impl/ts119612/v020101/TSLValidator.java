@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 17/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.2, 15/06/2021
+ * @version 1.3, 27/09/2021.
  */
 package es.gob.afirma.tsl.certValidation.impl.ts119612.v020101;
 
@@ -44,12 +44,13 @@ import es.gob.afirma.tsl.parsing.ifaces.ITSLObject;
 import es.gob.afirma.tsl.parsing.impl.common.ServiceHistoryInstance;
 import es.gob.afirma.tsl.parsing.impl.common.TSLCertificateExtensionAnalyzer;
 import es.gob.afirma.tsl.parsing.impl.tsl119612.v020101.AdditionalServiceInformation;
+import es.gob.afirma.tsl.utils.UtilsStringChar;
 
 /** 
  * <p>Class that represents a TSL Validator implementation for the
  * ETSI TS 119612 2.1.1 specification.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 15/06/2021.
+ * @version 1.3, 27/09/2021.
  */
 public class TSLValidator extends ATSLValidator {
 
@@ -173,6 +174,7 @@ public class TSLValidator extends ATSLValidator {
 	if (serviceStatusStartingTime.before(validationDate)) {
 
 	    boolean statusOK = checkIfTSPServiceStatusIsOK(serviceStatus);
+	    LOGGER.debug(Language.getFormatResIntegraTsl(ILogTslConstant.TV_LOG035, new Object[] {serviceStatus}));
 
 	    boolean statusChainNotValid = serviceStatus.equals(ITSLCommonURIs.TSL_SERVICECURRENTSTATUS_SUPERVISIONCEASED) || serviceStatus.equals(ITSLCommonURIs.TSL_SERVICECURRENTSTATUS_ACCREDITATIONCEASED);
 
@@ -186,7 +188,7 @@ public class TSLValidator extends ATSLValidator {
 		// la TSL,
 		// se considera que su estado de revocación es OK.
 		if (isCACert) {
-
+		    LOGGER.debug(Language.getResIntegraTsl(ILogTslConstant.TV_LOG036));
 		    validationResult.setResult(ITSLValidatorResult.RESULT_DETECTED_STATE_VALID);
 
 		}
@@ -197,7 +199,7 @@ public class TSLValidator extends ATSLValidator {
 		else {
 
 		    validationResult.setResult(ITSLValidatorResult.RESULT_DETECTED_STATE_UNKNOWN);
-
+		    LOGGER.debug(Language.getResIntegraTsl(ILogTslConstant.TV_LOG037));
 		}
 
 	    } else if (statusChainNotValid) {
@@ -242,8 +244,9 @@ public class TSLValidator extends ATSLValidator {
 		if (extension.getImplementationExtension() == IAnyTypeExtension.IMPL_ADDITIONAL_SERVICE_INFORMATION) {
 
 		    // La añadimos a la lista final.
+		    AdditionalServiceInformation ext = (AdditionalServiceInformation) extension;
 		    asiList.add((AdditionalServiceInformation) extension);
-
+		    LOGGER.debug(Language.getFormatResIntegraTsl(ILogTslConstant.TV_LOG027, new Object[ ] { ext.getUri().toString() }));
 		}
 
 	    }
@@ -293,12 +296,25 @@ public class TSLValidator extends ATSLValidator {
 	    // los vamos comprobando, y para ello recuperamos el analizador de
 	    // extensiones.
 	    TSLCertificateExtensionAnalyzer tslCertExtAnalyzer = validationResult.getTslCertificateExtensionAnalyzer();
-
+	    // se obtienen la informacion para pintarla en el log
+	    String polInfOidsCert = String.join(",", tslCertExtAnalyzer.getPolicyInformationsOids());
+	    String qcStatementOids = String.join(",", tslCertExtAnalyzer.getQcStatementsOids());
+	    String qcStatementsExtEuTypeOids = String.join(",", tslCertExtAnalyzer.getQcStatementExtEuTypeOids());
+	    LOGGER.debug(Language.getResIntegraTsl(ILogTslConstant.TV_LOG029));
+	    if (!UtilsStringChar.isNullOrEmpty(polInfOidsCert)) {
+		LOGGER.debug(Language.getFormatResIntegraTsl(ILogTslConstant.TV_LOG031, new Object[ ] { polInfOidsCert }));
+	    }
+	    if (!UtilsStringChar.isNullOrEmpty(qcStatementOids)) {
+		LOGGER.debug(Language.getFormatResIntegraTsl(ILogTslConstant.TV_LOG030, new Object[ ] { qcStatementOids }));
+	    }
+	    if (!UtilsStringChar.isNullOrEmpty(qcStatementsExtEuTypeOids)) {
+		LOGGER.debug(Language.getFormatResIntegraTsl(ILogTslConstant.TV_LOG032, new Object[ ] { qcStatementsExtEuTypeOids }));
+	    }
 	    // Vamos comprobando de mayor requirimiento a menos...
 	    // Primero autenticación servidor...
 	    result = asiForWSA && (tslCertExtAnalyzer.hasQcStatementEuTypeExtensionOid(ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE_WEB.getID()) || tslCertExtAnalyzer.hasSomeCertPolPolInfExtensionOid(ITSLValidatorOtherConstants.POLICYIDENTIFIERS_OIDS_FOR_WSA_CERTS_LIST));
 	    if (result) {
-
+		LOGGER.debug(Language.getResIntegraTsl(ILogTslConstant.TV_LOG028));
 		validationResult.setMappingClassification(ITSLValidatorResult.MAPPING_CLASSIFICATION_WSA);
 
 	    } else {
@@ -308,14 +324,14 @@ public class TSLValidator extends ATSLValidator {
 		if (result) {
 
 		    validationResult.setMappingClassification(ITSLValidatorResult.MAPPING_CLASSIFICATION_ESEAL);
-
+		    LOGGER.debug(Language.getResIntegraTsl(ILogTslConstant.TV_LOG033));
 		} else {
 
 		    result = asiForESIG && (tslCertExtAnalyzer.isThereSomeQcStatementExtension() || tslCertExtAnalyzer.hasSomeCertPolPolInfExtensionOid(ITSLValidatorOtherConstants.POLICYIDENTIFIERS_OIDS_FOR_ESIG_CERTS_LIST));
 		    if (result) {
 
 			validationResult.setMappingClassification(ITSLValidatorResult.MAPPING_CLASSIFICATION_ESIG);
-
+			LOGGER.debug(Language.getResIntegraTsl(ILogTslConstant.TV_LOG034));
 		    }
 
 		}
