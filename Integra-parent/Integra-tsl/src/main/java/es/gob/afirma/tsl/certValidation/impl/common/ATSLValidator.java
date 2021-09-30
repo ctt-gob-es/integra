@@ -450,14 +450,14 @@ public abstract class ATSLValidator implements ITSLValidator {
 	if (tspService.getServiceInformation().getServiceStatusStartingTime().before(validationDate)) {
 
 	    if (tspService.getServiceInformation().isServiceValidAndUsable()) {
-		LOGGER.debug(Language.getFormatResIntegraTsl(ILogTslConstant.ATV_LOG033, new Object[] {tspService.getServiceInformation().getServiceStatusStartingTime().toString(), validationDate.toString()}));
+		//LOGGER.debug(Language.getFormatResIntegraTsl(ILogTslConstant.ATV_LOG033, new Object[] {validationDate.toString(), tspService.getServiceInformation().getServiceStatusStartingTime().toString()}));
 		shi = tspService.getServiceInformation();
 	    }
 
 	} else {
 
 	    if (tspService.isThereSomeServiceHistory()) {
-		LOGGER.debug(Language.getFormatResIntegraTsl(ILogTslConstant.ATV_LOG034, new Object[] {tspService.getServiceInformation().getServiceStatusStartingTime().toString(), validationDate.toString()}));
+		//LOGGER.debug(Language.getFormatResIntegraTsl(ILogTslConstant.ATV_LOG034, new Object[] {validationDate.toString(), tspService.getServiceInformation().getServiceStatusStartingTime().toString()}));
 		List<ServiceHistoryInstance> shiList = tspService.getAllServiceHistory();
 		for (ServiceHistoryInstance shiFromList: shiList) {
 		    if (shiFromList.getServiceStatusStartingTime().before(validationDate)) {
