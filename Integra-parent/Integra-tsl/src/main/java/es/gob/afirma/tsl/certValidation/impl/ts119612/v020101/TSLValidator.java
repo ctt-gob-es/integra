@@ -174,7 +174,7 @@ public class TSLValidator extends ATSLValidator {
 	if (serviceStatusStartingTime.before(validationDate)) {
 
 	    boolean statusOK = checkIfTSPServiceStatusIsOK(serviceStatus);
-	    LOGGER.debug(Language.getFormatResIntegraTsl(ILogTslConstant.TV_LOG035, new Object[] {serviceStatus}));
+	    LOGGER.info(Language.getFormatResIntegraTsl(ILogTslConstant.TV_LOG035, new Object[] {serviceStatus}));
 
 	    boolean statusChainNotValid = serviceStatus.equals(ITSLCommonURIs.TSL_SERVICECURRENTSTATUS_SUPERVISIONCEASED) || serviceStatus.equals(ITSLCommonURIs.TSL_SERVICECURRENTSTATUS_ACCREDITATIONCEASED);
 
@@ -188,7 +188,7 @@ public class TSLValidator extends ATSLValidator {
 		// la TSL,
 		// se considera que su estado de revocación es OK.
 		if (isCACert) {
-		    LOGGER.debug(Language.getResIntegraTsl(ILogTslConstant.TV_LOG036));
+		    LOGGER.info(Language.getResIntegraTsl(ILogTslConstant.TV_LOG036));
 		    validationResult.setResult(ITSLValidatorResult.RESULT_DETECTED_STATE_VALID);
 
 		}
@@ -199,16 +199,17 @@ public class TSLValidator extends ATSLValidator {
 		else {
 
 		    validationResult.setResult(ITSLValidatorResult.RESULT_DETECTED_STATE_UNKNOWN);
-		    LOGGER.debug(Language.getResIntegraTsl(ILogTslConstant.TV_LOG037));
+		    //LOGGER.info(Language.getResIntegraTsl(ILogTslConstant.TV_LOG037));
 		}
 
 	    } else if (statusChainNotValid) {
 
 		validationResult.setResult(ITSLValidatorResult.RESULT_DETECTED_STATE_CERTCHAIN_NOTVALID_SERVICESTATUS);
-
+		LOGGER.info(Language.getResIntegraTsl(ILogTslConstant.TV_LOG038));
 	    } else if (statusRevoked) {
 
 		validationResult.setResult(ITSLValidatorResult.RESULT_DETECTED_STATE_REVOKED_SERVICESTATUS);
+		LOGGER.info(Language.getResIntegraTsl(ILogTslConstant.TV_LOG039));
 
 	    }
 
@@ -246,7 +247,7 @@ public class TSLValidator extends ATSLValidator {
 		    // La añadimos a la lista final.
 		    AdditionalServiceInformation ext = (AdditionalServiceInformation) extension;
 		    asiList.add((AdditionalServiceInformation) extension);
-		    LOGGER.debug(Language.getFormatResIntegraTsl(ILogTslConstant.TV_LOG027, new Object[ ] { ext.getUri().toString() }));
+		    LOGGER.info(Language.getFormatResIntegraTsl(ILogTslConstant.TV_LOG027, new Object[ ] { ext.getUri().toString() }));
 		}
 
 	    }
@@ -296,25 +297,15 @@ public class TSLValidator extends ATSLValidator {
 	    // los vamos comprobando, y para ello recuperamos el analizador de
 	    // extensiones.
 	    TSLCertificateExtensionAnalyzer tslCertExtAnalyzer = validationResult.getTslCertificateExtensionAnalyzer();
-	    // se obtienen la informacion para pintarla en el log
-	    String polInfOidsCert = String.join(",", tslCertExtAnalyzer.getPolicyInformationsOids());
-	    String qcStatementOids = String.join(",", tslCertExtAnalyzer.getQcStatementsOids());
-	    String qcStatementsExtEuTypeOids = String.join(",", tslCertExtAnalyzer.getQcStatementExtEuTypeOids());
-	    LOGGER.debug(Language.getResIntegraTsl(ILogTslConstant.TV_LOG029));
-	    if (!UtilsStringChar.isNullOrEmpty(polInfOidsCert)) {
-		LOGGER.debug(Language.getFormatResIntegraTsl(ILogTslConstant.TV_LOG031, new Object[ ] { polInfOidsCert }));
-	    }
-	    if (!UtilsStringChar.isNullOrEmpty(qcStatementOids)) {
-		LOGGER.debug(Language.getFormatResIntegraTsl(ILogTslConstant.TV_LOG030, new Object[ ] { qcStatementOids }));
-	    }
-	    if (!UtilsStringChar.isNullOrEmpty(qcStatementsExtEuTypeOids)) {
-		LOGGER.debug(Language.getFormatResIntegraTsl(ILogTslConstant.TV_LOG032, new Object[ ] { qcStatementsExtEuTypeOids }));
-	    }
+	    
+	  //se pinta en el log información obtenida del certificado.
+	    extractInfoTslCertExtAnalycer(tslCertExtAnalyzer);
+
 	    // Vamos comprobando de mayor requirimiento a menos...
 	    // Primero autenticación servidor...
 	    result = asiForWSA && (tslCertExtAnalyzer.hasQcStatementEuTypeExtensionOid(ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE_WEB.getID()) || tslCertExtAnalyzer.hasSomeCertPolPolInfExtensionOid(ITSLValidatorOtherConstants.POLICYIDENTIFIERS_OIDS_FOR_WSA_CERTS_LIST));
 	    if (result) {
-		LOGGER.debug(Language.getResIntegraTsl(ILogTslConstant.TV_LOG028));
+		LOGGER.info(Language.getResIntegraTsl(ILogTslConstant.TV_LOG028));
 		validationResult.setMappingClassification(ITSLValidatorResult.MAPPING_CLASSIFICATION_WSA);
 
 	    } else {
@@ -324,14 +315,14 @@ public class TSLValidator extends ATSLValidator {
 		if (result) {
 
 		    validationResult.setMappingClassification(ITSLValidatorResult.MAPPING_CLASSIFICATION_ESEAL);
-		    LOGGER.debug(Language.getResIntegraTsl(ILogTslConstant.TV_LOG033));
+		    LOGGER.info(Language.getResIntegraTsl(ILogTslConstant.TV_LOG033));
 		} else {
 
 		    result = asiForESIG && (tslCertExtAnalyzer.isThereSomeQcStatementExtension() || tslCertExtAnalyzer.hasSomeCertPolPolInfExtensionOid(ITSLValidatorOtherConstants.POLICYIDENTIFIERS_OIDS_FOR_ESIG_CERTS_LIST));
 		    if (result) {
 
 			validationResult.setMappingClassification(ITSLValidatorResult.MAPPING_CLASSIFICATION_ESIG);
-			LOGGER.debug(Language.getResIntegraTsl(ILogTslConstant.TV_LOG034));
+			LOGGER.info(Language.getResIntegraTsl(ILogTslConstant.TV_LOG034));
 		    }
 
 		}
@@ -343,6 +334,36 @@ public class TSLValidator extends ATSLValidator {
 	return result;
 
     }
+
+    
+	/**
+	 * Method to extract information from the extension parser and display it in the log.
+	 */
+	private void extractInfoTslCertExtAnalycer(TSLCertificateExtensionAnalyzer tslCertExtAnalyzer) {
+		// se obtienen la informacion para pintarla en el log
+		if (tslCertExtAnalyzer != null) {
+			LOGGER.info(Language.getResIntegraTsl(ILogTslConstant.TV_LOG029));
+			if (tslCertExtAnalyzer.getPolicyInformationsOids() != null && !tslCertExtAnalyzer.getPolicyInformationsOids().isEmpty()) {
+				String polInfOidsCert = String.join(",", tslCertExtAnalyzer.getPolicyInformationsOids());
+				if (!UtilsStringChar.isNullOrEmpty(polInfOidsCert)) {
+					LOGGER.info(Language.getFormatResIntegraTsl(ILogTslConstant.TV_LOG031, new Object[ ] { polInfOidsCert }));
+				}
+			}
+
+			if (tslCertExtAnalyzer.getQcStatementsOids() != null && !tslCertExtAnalyzer.getQcStatementsOids().isEmpty()) {
+				String qcStatementOids = String.join(",", tslCertExtAnalyzer.getQcStatementsOids());
+				if (!UtilsStringChar.isNullOrEmpty(qcStatementOids)) {
+					LOGGER.info(Language.getFormatResIntegraTsl(ILogTslConstant.TV_LOG030, new Object[ ] { qcStatementOids }));
+				}
+			}
+			if (tslCertExtAnalyzer.getQcStatementExtEuTypeOids() != null && !tslCertExtAnalyzer.getQcStatementExtEuTypeOids().isEmpty()) {
+				String qcStatementsExtEuTypeOids = String.join(",", tslCertExtAnalyzer.getQcStatementExtEuTypeOids());
+				if (!UtilsStringChar.isNullOrEmpty(qcStatementsExtEuTypeOids)) {
+					LOGGER.info(Language.getFormatResIntegraTsl(ILogTslConstant.TV_LOG032, new Object[ ] { qcStatementsExtEuTypeOids }));
+				}
+			}
+		}
+	}
 
     /**
      * {@inheritDoc}

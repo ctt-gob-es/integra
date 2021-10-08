@@ -263,9 +263,7 @@ public final class TSLManager {
 	    boolean result = UtilsCertificateTsl.hasCertKeyPurposeTimeStamping(cert);
 	    if (result) {
 		LOGGER.debug(Language.getResIntegraTsl(ILogTslConstant.TM_LOG004));
-	    } else {
-		LOGGER.debug(Language.getResIntegraTsl(ILogTslConstant.TM_LOG005));
-	    }
+	    } 
 	    // Añadimos la traza de auditoría...
 	    // CommonsCertificatesAuditTraces.addCertIsTsaCert(auditTransNumber,
 	    // result);
