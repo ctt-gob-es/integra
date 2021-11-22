@@ -31,18 +31,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.bcel.verifier.VerificationResult;
 import org.junit.Test;
 
 import es.gob.afirma.integraFacade.pojo.TransformData;
-import es.gob.afirma.integraFacade.pojo.VerificationReport;
 import es.gob.afirma.signature.ISignatureFormatDetector;
 import es.gob.afirma.signature.SignatureConstants;
 import es.gob.afirma.signature.SignatureFormatDetectorXades;
 import es.gob.afirma.signature.SignatureProperties;
 import es.gob.afirma.signature.validation.ValidationResult;
 import es.gob.afirma.utils.UtilsFileSystemCommons;
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
 /**

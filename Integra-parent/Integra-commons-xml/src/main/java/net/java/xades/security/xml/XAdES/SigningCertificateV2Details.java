@@ -47,13 +47,13 @@ public class SigningCertificateV2Details extends XAdESStructure
 
         certDigest.appendChild(digestMethod);
         certDigest.appendChild(digestValue);
-
-
-        final Element issuerSerial = createElement("IssuerSerialV2");
-        issuerSerial.setTextContent(signingCertificate.getIssuerSerialV2());
-
         cert.appendChild(certDigest);
-        cert.appendChild(issuerSerial);
+
+        if (signingCertificate.getIssuerSerialV2() != null) {
+            final Element issuerSerial = createElement("IssuerSerialV2");
+            issuerSerial.setTextContent(signingCertificate.getIssuerSerialV2());
+            cert.appendChild(issuerSerial);
+        }
 
         getNode().appendChild(cert);
     }
