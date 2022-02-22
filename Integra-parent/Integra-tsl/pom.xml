@@ -82,8 +82,15 @@
 	<dependencies>
 		<dependency>
 			<groupId>es.gob.afirma</groupId>
-			<artifactId>Integra-commons</artifactId>
-			<version>${version.Integra.commons}</version>
+			<artifactId>Integra-commons-tsl</artifactId>
+			<version>${version.Integra.commons.tsl}</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.5</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>
@@ -112,11 +119,6 @@
 			<groupId>es.gob.afirma.xmlbeans.2_3_0</groupId>
 			<artifactId>afirmaSchemaXMLTSLv5</artifactId>
 			<version>119612v020101</version>
-		</dependency>
-		<dependency>
-			<groupId>org.bouncycastle</groupId>
-			<artifactId>bcprov-jdk15on</artifactId>
-			<version>1.60</version>
 		</dependency>
 		<dependency>
 			<groupId>es.gob.afirma</groupId>
@@ -165,10 +167,45 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
+<!-- 	 <dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcpkix-jdk15on</artifactId>
 			<version>1.60</version>
+			 <exclusions>
+				<exclusion>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcprov-jdk15on</artifactId>
+				</exclusion>
+			</exclusions> 
+	</dependency>
+	 <dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk16</artifactId>
+			<version>1.46</version>
+		</dependency> -->
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcmail-jdk16</artifactId>
+			<version>1.46</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>iaik</groupId>
+			<artifactId>iaik_jce</artifactId>
+			<version>5.60</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>iaik</groupId>
+			<artifactId>iaik_xades</artifactId>
+			<version>2.13</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>iaik</groupId>
+			<artifactId>iaik_xsect</artifactId>
+			<version>2.14</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -176,15 +213,15 @@
 			<version>4.5.6</version>
 		</dependency>
 		<dependency>
-				<groupId>org.samba.jcifs</groupId>
-				<artifactId>jcifs</artifactId>
-				<version>1.3.14-kohsuke-1</version>
-			</dependency>
-			<dependency>
-				<groupId>com.novell.ldap</groupId>
-				<artifactId>jldap</artifactId>
-				<version>2009-10-07</version>
-			</dependency>
+			<groupId>org.samba.jcifs</groupId>
+			<artifactId>jcifs</artifactId>
+			<version>1.3.14-kohsuke-1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.novell.ldap</groupId>
+			<artifactId>jldap</artifactId>
+			<version>2009-10-07</version>
+		</dependency>
 	</dependencies>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

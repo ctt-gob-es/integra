@@ -19,7 +19,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 11/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.0, 11/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 package es.gob.afirma.tsl.parsing.impl.common.extensions;
 
@@ -28,7 +28,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.gob.afirma.i18n.Language;
+import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.exceptions.TSLMalformedException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
 import es.gob.afirma.tsl.parsing.ifaces.ITSLCommonURIs;
@@ -42,7 +42,7 @@ import es.gob.afirma.tsl.parsing.impl.common.ServiceHistoryInstance;
  * a certificate must have (e.g. certain key-usage-bits set) and a list of qualifiers that
  * specify some certificate properties (e.g. it is a qualified certificate).</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 11/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 public class QualificationElement implements Serializable {
 

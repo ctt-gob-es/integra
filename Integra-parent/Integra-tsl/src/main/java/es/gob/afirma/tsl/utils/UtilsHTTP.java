@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 17/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.0, 17/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 package es.gob.afirma.tsl.utils;
 
@@ -66,18 +66,16 @@ import org.apache.http.ssl.TrustStrategy;
 import org.apache.log4j.Logger;
 
 
-import es.gob.afirma.i18n.Language;
+import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.exceptions.CommonUtilsException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
 import es.gob.afirma.tsl.utils.connection.auth.JCIFSNTLMSchemeFactory;
 import es.gob.afirma.tsl.utils.connection.ssh.IntegraSSLSocketFactory;
-import es.gob.afirma.utils.NumberConstants;
-import es.gob.afirma.utils.UtilsResourcesCommons;
 
 /** 
  * <p>Utilities class relating to connections and HTTP/S protocol.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 17/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 public final class UtilsHTTP {
 

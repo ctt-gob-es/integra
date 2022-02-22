@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 10/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.0, 10/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 package es.gob.afirma.tsl.parsing.impl.common;
 
@@ -40,7 +40,7 @@ import es.gob.afirma.core.AOInvalidFormatException;
 import es.gob.afirma.core.signers.AOSimpleSignInfo;
 import es.gob.afirma.core.util.tree.AOTreeModel;
 import es.gob.afirma.core.util.tree.AOTreeNode;
-import es.gob.afirma.i18n.Language;
+import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.signers.xades.AOXAdESSigner;
 import es.gob.afirma.tsl.access.TSLProperties;
 import es.gob.afirma.tsl.exceptions.TSLMalformedException;
@@ -58,7 +58,7 @@ import es.gob.afirma.tsl.utils.UtilsStringChar;
  * <p>Abstract class that represents a TSL data checker with the principal functions
  * regardless it implementation.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 10/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 public abstract class ATSLChecker implements ITSLChecker {
     /**
@@ -1291,7 +1291,7 @@ public abstract class ATSLChecker implements ITSLChecker {
 			// Si así está configurado, comprobamos que la firma cumple los
 			// requisitos de la especificación.
 			if (TSLProperties.isRequiredToCheckTslSignatureByItsSpecification()) {
-				checkSignatureAccordingToSpecification(fullTSLxml);
+			    checkSignatureAccordingToSpecification(fullTSLxml);
 			}
 			// Siempre se comprueba que se confía en los certificados firmantes.
 			checkSignerCertificateIsInTrustedTSLKeystore(fullTSLxml);

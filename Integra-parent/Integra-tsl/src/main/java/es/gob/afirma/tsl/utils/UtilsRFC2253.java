@@ -27,8 +27,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import es.gob.afirma.utils.NumberConstants;
-import es.gob.afirma.utils.UtilsResourcesCommons;
 
 /** 
  * <p>Class that provides functionality related with: <b>RFC 2253</b>: Lightweight Directory Access Protocol (v3).</p>

@@ -23,12 +23,12 @@ package es.gob.afirma.tsl.access;
 
 import org.apache.log4j.Logger;
 
-import es.gob.afirma.i18n.Language;
+import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
+import es.gob.afirma.tsl.utils.NumberConstants;
 import es.gob.afirma.tsl.utils.StaticTslConfig;
 import es.gob.afirma.tsl.utils.UtilsDate;
 import es.gob.afirma.tsl.utils.UtilsStringChar;
-import es.gob.afirma.utils.NumberConstants;
 
 import java.text.ParseException;
 import java.util.Calendar;

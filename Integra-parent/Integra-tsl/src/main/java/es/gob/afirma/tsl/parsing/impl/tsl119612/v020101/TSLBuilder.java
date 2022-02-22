@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 10/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.0, 10/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 package es.gob.afirma.tsl.parsing.impl.tsl119612.v020101;
 
@@ -40,7 +40,7 @@ import org.etsi.uri.x01903.v13.QualifierType;
 import org.w3.x2000.x09.xmldsig.SignatureType;
 import org.w3c.dom.Node;
 
-import es.gob.afirma.i18n.Language;
+import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.exceptions.TSLParsingException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
 import es.gob.afirma.tsl.parsing.ifaces.IAnyTypeExtension;
@@ -116,7 +116,7 @@ import es.gob.afirma.xmlbeans.v230.tsl.r119612v020101.sie.QualifiersType;
  * <p>Class that represents a TSL Builder of TSL implementation as the
  * ETSI TS 119612 2.1.1 specification.</p>
  * <b>Project:</b><p>Platform for detection and validation of certificates recognized in European TSL.</p>
- * @version 1.0, 06/11/2018.
+ * @version 1.1, 15/06/2021.
  */
 public class TSLBuilder extends ATSLBuilder {
 

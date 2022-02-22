@@ -17,16 +17,16 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 19/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.0, 19/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 package es.gob.afirma.tsl.certValidation.ifaces;
 
-import es.gob.afirma.utils.NumberConstants;
+import es.gob.afirma.tsl.utils.NumberConstants;
 
 /** 
  * <p>Interface that defines the constants for the result status of the services.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 19/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 public interface ITslValidationStatusResult {
     /**

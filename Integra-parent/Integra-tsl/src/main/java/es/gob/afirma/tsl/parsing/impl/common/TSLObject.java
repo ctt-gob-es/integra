@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 10/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.0, 10/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 package es.gob.afirma.tsl.parsing.impl.common;
 
@@ -29,7 +29,7 @@ import java.util.List;
 
 import org.w3.x2000.x09.xmldsig.SignatureType;
 
-import es.gob.afirma.i18n.Language;
+import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.exceptions.TSLArgumentException;
 import es.gob.afirma.tsl.exceptions.TSLEncodingException;
 import es.gob.afirma.tsl.exceptions.TSLMalformedException;
@@ -46,7 +46,7 @@ import es.gob.afirma.tsl.parsing.impl.TSLCheckerFactory;
  * <p>Class that represents a TSL object with the principal functions
  * (access information) regardless it implementation.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 10/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 public class TSLObject implements ITSLObject {
 

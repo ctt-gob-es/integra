@@ -17,13 +17,13 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 16/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.0, 16/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 package es.gob.afirma.tsl.certValidation.impl.common;
+
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.PublicKey;
-import java.security.cert.X509Certificate;
 import java.security.spec.DSAPublicKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.ArrayList;
@@ -31,24 +31,24 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.bouncycastle.asn1.ASN1OctetString;
-import org.bouncycastle.asn1.x509.AuthorityKeyIdentifier;
-import org.bouncycastle.asn1.x509.Extension;
-import org.bouncycastle.asn1.x509.SubjectKeyIdentifier;
 import org.w3.x2000.x09.xmldsig.DSAKeyValueType;
 import org.w3.x2000.x09.xmldsig.KeyValueType;
 import org.w3.x2000.x09.xmldsig.RSAKeyValueType;
 
-import es.gob.afirma.i18n.Language;
 import es.gob.afirma.tsl.exceptions.CommonUtilsException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
+import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.parsing.impl.common.DigitalID;
 import es.gob.afirma.tsl.utils.UtilsCertificateTsl;
+import iaik.x509.X509Certificate;
+import iaik.x509.extensions.AuthorityKeyIdentifier;
+import iaik.x509.extensions.SubjectKeyIdentifier;
+
 
 /** 
  * <p>Class that represents a Digital Identities Processor.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 16/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 public class DigitalIdentitiesProcessor {
 
@@ -267,7 +267,7 @@ public class DigitalIdentitiesProcessor {
 
 				case DigitalID.TYPE_X509SKI:
 
-					x509ski.add(digitalId.getSki().getKeyIdentifier());
+					x509ski.add(digitalId.getSki().get());
 					break;
 
 				case DigitalID.TYPE_OTHER:
@@ -289,7 +289,7 @@ public class DigitalIdentitiesProcessor {
 	 * @param validationResult Object where is stored the validation result data.
 	 * @return <code>true</code> if the certificate is issued by some of the input identities, otherwise <code>false</code>.
 	 */
-	public final boolean checkIfCertificateIsIssuedBySomeIdentity(X509Certificate cert, TSLValidatorResult validationResult) {
+	public final boolean checkIfCertificateIsIssuedBySomeIdentity(java.security.cert.X509Certificate cert, TSLValidatorResult validationResult) {
 
 		// Por defecto, indicamos que el certificado no está emitido
 		// por ninguno de los contenidos en las identidades digitales.
@@ -323,8 +323,8 @@ public class DigitalIdentitiesProcessor {
 				}
 				try {
 					if (!UtilsCertificateTsl.isSelfSigned(cert)) {
-						SubjectKeyIdentifier ski = SubjectKeyIdentifier.fromExtensions(UtilsCertificateTsl.getBouncyCastleCertificate(issuerCert).getTBSCertificate().getExtensions());
-						validationResult.setIssuerSKIbytes(ski.getKeyIdentifier());
+					    SubjectKeyIdentifier ski = (SubjectKeyIdentifier) issuerCert.getExtension(SubjectKeyIdentifier.oid);
+					    validationResult.setIssuerSKIbytes(ski.get());
 					}
 				} catch (Exception e) {
 					LOGGER.warn(Language.getResIntegraTsl(ILogTslConstant.DIP_LOG003));
@@ -388,7 +388,7 @@ public class DigitalIdentitiesProcessor {
 
 					// No se considera prueba suficiente para determinar que
 					// este sea el emisor del certificado.
-					// result = true;
+					result = true;
 					validationResult.setIssuerSubjectName(caSubject);
 					break;
 				}
@@ -405,13 +405,13 @@ public class DigitalIdentitiesProcessor {
 				// determinar que
 				// estas identidades digitales representan al emisor del
 				// certificado.
-
 				byte[ ] akiBytes = null;
 				try {
 
 					// Obtenemos el AuthorityKeyIdentifier en array de
 					// bytes.
-					AuthorityKeyIdentifier aki = AuthorityKeyIdentifier.getInstance(ASN1OctetString.getInstance(cert.getExtensionValue(Extension.authorityKeyIdentifier.getId())).getOctets());
+				    X509Certificate certIaik = UtilsCertificateTsl.getIaikCertificate(cert);
+				    AuthorityKeyIdentifier aki = (AuthorityKeyIdentifier) certIaik.getExtension(AuthorityKeyIdentifier.oid);
 					if (aki != null) {
 						akiBytes = aki.getKeyIdentifier();
 					}
@@ -436,7 +436,7 @@ public class DigitalIdentitiesProcessor {
 							// que
 							// este sea
 							// el emisor del certificado.
-							// result = true;
+							result = true;
 							validationResult.setIssuerSKIbytes(issuerSKI);
 							break;
 						}

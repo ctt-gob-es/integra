@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 19/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.0, 19/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 package es.gob.afirma.tsl.utils;
 
@@ -35,7 +35,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
 
-import es.gob.afirma.i18n.Language;
+import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.exceptions.CipherException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
 
@@ -44,7 +44,7 @@ import es.gob.afirma.tsl.i18n.ILogTslConstant;
 /**
  * <p>Class to decode and encode password using AES algorithm.</p>
  * <b>Project:</b><p>Platform for detection and validation of certificates recognized in European TSL.</p>
- * @version 1.0, 17/11/2020
+ * @version 1.1, 15/06/2021.
  */
 public final class UtilsAESCipher {
 

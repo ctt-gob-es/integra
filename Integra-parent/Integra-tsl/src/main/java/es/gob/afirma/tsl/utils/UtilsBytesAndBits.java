@@ -24,7 +24,7 @@ package es.gob.afirma.tsl.utils;
 
 import java.util.BitSet;
 
-import es.gob.afirma.utils.NumberConstants;
+
 
 /** 
  * <p>Class that provides methods to work and transforms bytes to bits

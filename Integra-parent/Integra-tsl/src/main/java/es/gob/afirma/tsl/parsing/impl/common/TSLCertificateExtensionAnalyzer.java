@@ -17,23 +17,25 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 13/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.0, 13/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 package es.gob.afirma.tsl.parsing.impl.common;
 
+import iaik.asn1.ASN1Object;
+import iaik.asn1.CodingException;
+import iaik.asn1.ObjectID;
+import iaik.asn1.SEQUENCE;
+import iaik.asn1.structures.PolicyInformation;
+import iaik.x509.extensions.CertificatePolicies;
+import iaik.x509.extensions.qualified.QCStatements;
+import iaik.x509.extensions.qualified.structures.QCStatement;
+import iaik.x509.extensions.qualified.structures.QCStatementInfo;
+
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bouncycastle.asn1.ASN1Encodable;
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.bouncycastle.asn1.ASN1Sequence;
-import org.bouncycastle.asn1.x509.Certificate;
-import org.bouncycastle.asn1.x509.CertificatePolicies;
-import org.bouncycastle.asn1.x509.Extension;
-import org.bouncycastle.asn1.x509.PolicyInformation;
-import org.bouncycastle.asn1.x509.qualified.QCStatement;
-
-import es.gob.afirma.i18n.Language;
+import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.exceptions.CommonUtilsException;
 import es.gob.afirma.tsl.exceptions.TSLCertificateValidationException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
@@ -43,333 +45,316 @@ import es.gob.afirma.tsl.utils.UtilsCertificateTsl;
 /** 
  * <p>Utilities wrapper for analyze the extensions defined in a specific X509v3 certificate.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 13/11/2020.
+ * @version 1.1, 15/06/2021.
  */
 public class TSLCertificateExtensionAnalyzer {
 
     /**
-	 * Attribute that represents the certificate to analyze.
-	 */
-	private Certificate certBc = null;
+     * Attribute that represents the certificate to analyze.
+     */
+    private iaik.x509.X509Certificate certIaik = null;
+    /**
+     * Attribute that represents the list of QcStatements OIDs extracted from the certificate.
+     */
+    private List<String> qcStatementsOids = null;
 
-	/**
-	 * Attribute that represents the list of QcStatements OIDs extracted from the certificate.
-	 */
-	private List<String> qcStatementsOids = null;
+    /**
+     * Attribute that represents the list of QcStatements Ext EU Types OIDs extracted from the certificate.
+     */
+    private List<String> qcStatementExtEuTypeOids = null;
 
-	/**
-	 * Attribute that represents the list of QcStatements Ext EU Types OIDs extracted from the certificate.
-	 */
-	private List<String> qcStatementExtEuTypeOids = null;
+    /**
+     * Attribute that represents the list of Certification Policies - Policy Information OIDs extracted from the certificate.
+     */
+    private List<String> policyInformationsOids = null;
 
-	/**
-	 * Attribute that represents the list of Certification Policies - Policy Information OIDs extracted from the certificate.
-	 */
-	private List<String> policyInformationsOids = null;
+    /**
+     * Constructor method for the class TSLCertificateExtensionAnalyzer.java.
+     */
+    private TSLCertificateExtensionAnalyzer() {
+	super();
+    }
 
-	/**
-	 * Constructor method for the class TSLCertificateExtensionAnalyzer.java.
-	 */
-	private TSLCertificateExtensionAnalyzer() {
-		super();
+    /**
+     * Constructor method for the class TSLCertificateExtensionAnalyzer.java.
+     * @param cert X509v3 certificate to analyze.
+     * @throws TSLCertificateValidationException If the input certificate is <code>null</code>, or there is
+     * some error extracting its information.
+     */
+    public TSLCertificateExtensionAnalyzer(X509Certificate cert) throws TSLCertificateValidationException {
+
+	this();
+
+	// Si la entrada es nula lanzamos excepción.
+	if (cert == null) {
+	    throw new TSLCertificateValidationException(Language.getResIntegraTsl(ILogTslConstant.TCEA_LOG001));
 	}
 
-	/**
-	 * Constructor method for the class TSLCertificateExtensionAnalyzer.java.
-	 * @param cert X509v3 certificate to analyze.
-	 * @throws TSLCertificateValidationException If the input certificate is <code>null</code>, or there is
-	 * some error extracting its information.
-	 */
-	public TSLCertificateExtensionAnalyzer(java.security.cert.Certificate cert) throws TSLCertificateValidationException {
-
-		this();
-
-		// Si la entrada es nula lanzamos excepción.
-		if (cert == null) {
-			throw new TSLCertificateValidationException(Language.getResIntegraTsl(ILogTslConstant.TCEA_LOG001));
-		}
-
-		// Calculamos ahora la representación del certificado como objeto IAIK.
-		try {
-			certBc = UtilsCertificateTsl.getBouncyCastleCertificate(cert);
-		} catch (CommonUtilsException e) {
-			throw new TSLCertificateValidationException(Language.getResIntegraTsl(ILogTslConstant.TCEA_LOG002), e);
-		}
-
-		// Extraemos y analizamos las extensiones que pueda tener.
-		analyzeCertificateExtensions();
-
+	// Calculamos ahora la representación del certificado como objeto IAIK.
+	try {
+	    certIaik = UtilsCertificateTsl.getIaikCertificate(cert);
+	} catch (CommonUtilsException e) {
+	    throw new TSLCertificateValidationException(Language.getResIntegraTsl(ILogTslConstant.TCEA_LOG002), e);
 	}
 
-	/**
-	 * Constructor method for the class TSLCertificateExtensionAnalyzer.java.
-	 * @param cert X509v3 Certificate (Bouncy Castle Provider implementation) to analyze.
-	 * @throws TSLCertificateValidationException If the input certificate is <code>null</code>, or there is
-	 * some error extracting its information.
-	 */
-	public TSLCertificateExtensionAnalyzer(Certificate cert) throws TSLCertificateValidationException {
+	// Extraemos y analizamos las extensiones que pueda tener.
+	analyzeCertificateExtensions();
 
-		this();
+    }
 
-		// Si la entrada es nula lanzamos excepción.
-		if (cert == null) {
-			throw new TSLCertificateValidationException(Language.getResIntegraTsl(ILogTslConstant.TCEA_LOG001));
-		}
 
-		// Almacenamos el certificado.
-		certBc = cert;
+    /**
+     * Auxiliar method that analyzes and extracts all the certificate
+     * extension information.
+     * @throws TSLCertificateValidationException In case of some error working with the QcStatements
+     * extension or the CertificatePolicies extension.
+     */
+    private void analyzeCertificateExtensions() throws TSLCertificateValidationException {
 
-		// Extraemos y analizamos las extensiones que pueda tener.
-		analyzeCertificateExtensions();
-
+	// Obtenemos la extensión QCStatements - 1.3.6.1.5.5.7.1.3,
+	// la cual es opcional.
+	QCStatements qcStatements = null;
+	try {
+	    qcStatements = (QCStatements) certIaik.getExtension(QCStatements.oid);
+	} catch (Exception e) {
+	    throw new TSLCertificateValidationException(Language.getResIntegraTsl(ILogTslConstant.TCEA_LOG003), e);
 	}
 
-	/**
-	 * Auxiliar method that analyzes and extracts all the certificate
-	 * extension information.
-	 * @throws TSLCertificateValidationException In case of some error working with the QcStatements
-	 * extension or the CertificatePolicies extension.
-	 */
-	private void analyzeCertificateExtensions() throws TSLCertificateValidationException {
+	// Si la hemos obtenido, la analizamos.
+	if (qcStatements != null) {
 
-		// Obtenemos la extensión QCStatements - 1.3.6.1.5.5.7.1.3,
-		// la cual es opcional.
-		ASN1Sequence qcStatements = null;
-		try {
-			qcStatements = (ASN1Sequence) certBc.getTBSCertificate().getExtensions().getExtensionParsedValue(Extension.qCStatements);
-		} catch (Exception e) {
-			throw new TSLCertificateValidationException(Language.getResIntegraTsl(ILogTslConstant.TCEA_LOG003), e);
-		}
-
-		// Si la hemos obtenido, la analizamos.
-		if (qcStatements != null) {
-
-			// Inicializamos la lista donde los almacenaremos.
-			qcStatementsOids = new ArrayList<String>(qcStatements.size());
-
-			// Los recorremos y vamos guardando...
-			for (int index = 0; index < qcStatements.size(); index++) {
-
-				QCStatement qcStatement = QCStatement.getInstance(qcStatements.getObjectAt(index));
-				String qcStatementOid = qcStatement.getStatementId().getId();
-				qcStatementsOids.add(qcStatementOid);
-				// Analizamos si se trata del EuType, en cuyo caso obtenemos
-				// la información que contenga.
-				if (ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE.getId().equals(qcStatementOid)) {
-					extractQcStatementExtEuTypeInformation(qcStatement);
-				}
-
-			}
+	    // Si hay al menos un QCStatement definido...
+	    QCStatement[ ] qcStatementArray = qcStatements.getQCStatements();
+	    if (qcStatementArray != null && qcStatementArray.length > 0) {
+		// Inicializamos la lista donde los almacenaremos.
+		qcStatementsOids = new ArrayList<String>(qcStatementArray.length);
+		// Los recorremos y vamos guardando...
+		for (QCStatement qcStatement: qcStatementArray) {
+		    String qcStatementOid = qcStatement.getStatementID().getID();
+		    qcStatementsOids.add(qcStatementOid);
+		    // Analizamos si se trata del EuType, en cuyo caso obtenemos
+		    // la información que contenga.
+		    if (ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE.getID().equals(qcStatementOid)) {
+			extractQcStatementExtEuTypeInformation(qcStatement);
+		    }
 
 		}
+	    }
+	}
 
-		// Recuperamos el Certification Policies.
-		CertificatePolicies certificatePolicies = null;
-		try {
-			certificatePolicies = CertificatePolicies.fromExtensions(certBc.getTBSCertificate().getExtensions());
-		} catch (Exception e) {
-			throw new TSLCertificateValidationException(Language.getResIntegraTsl(ILogTslConstant.TCEA_LOG004), e);
+	// Recuperamos el Certification Policies.
+	CertificatePolicies certificatePolicies = null;
+	try {
+	    certificatePolicies = (CertificatePolicies) certIaik.getExtension(CertificatePolicies.oid);
+	} catch (Exception e) {
+	    throw new TSLCertificateValidationException(Language.getResIntegraTsl(ILogTslConstant.TCEA_LOG004), e);
+	}
+
+	// Si hemos recuperado las políticas de certificación...
+	if (certificatePolicies != null) {
+
+	    // Recuperamos los PolicyInformation asociados.
+	    PolicyInformation[ ] piArray = certificatePolicies.getPolicyInformation();
+
+	    // Si hay...
+	    if (piArray != null && piArray.length > 0) {
+
+		// Inicializamos la lista donde los almacenaremos...
+		policyInformationsOids = new ArrayList<String>(piArray.length);
+
+		// Los recorremos y vamos almacenando...
+		for (PolicyInformation policyInformation: piArray) {
+		    policyInformationsOids.add(policyInformation.getPolicyIdentifier().getID());
 		}
 
-		// Si hemos recuperado las políticas de certificación...
-		if (certificatePolicies != null) {
-
-			// Recuperamos los PolicyInformation asociados.
-			PolicyInformation[ ] piArray = certificatePolicies.getPolicyInformation();
-
-			// Si hay...
-			if (piArray != null && piArray.length > 0) {
-
-				// Inicializamos la lista donde los almacenaremos...
-				policyInformationsOids = new ArrayList<String>(piArray.length);
-
-				// Los recorremos y vamos almacenando...
-				for (PolicyInformation policyInformation: piArray) {
-					policyInformationsOids.add(policyInformation.getPolicyIdentifier().getId());
-				}
-
-			}
-
-		}
+	    }
 
 	}
 
-	/**
-	 * Auxiliar method that get a QcStatement QcType extension and check it for analyze
-	 * its type.
-	 * @param qcStatementQcType QcType QcStatement Extension to analyze.
-	 * @throws TSLCertificateValidationException In case of some error working with tht QcStatement QcType Extension.
-	 */
-	private void extractQcStatementExtEuTypeInformation(QCStatement qcStatementQcType) throws TSLCertificateValidationException {
+    }
 
-		ASN1Encodable qcStatementInfoAsn1Encodable = qcStatementQcType.getStatementInfo();
+    /**
+     * Auxiliar method that get a QcStatement QcType extension and check it for analyze
+     * its type.
+     * @param qcStatementQcType QcType QcStatement Extension to analyze.
+     * @throws TSLCertificateValidationException In case of some error working with tht QcStatement QcType Extension.
+     */
+    private void extractQcStatementExtEuTypeInformation(QCStatement qcStatementQcType) throws TSLCertificateValidationException {
 
+	try {
+
+		QCStatementInfo qcStatementInfo = qcStatementQcType.getStatementInfo();
 		// Para este caso debe tratarse de una secuencia de
 		// OIDs.
-		ASN1Sequence seqOids = null;
-		try {
-			seqOids = ASN1Sequence.getInstance(qcStatementInfoAsn1Encodable);
-		} catch (IllegalArgumentException e) {
-			seqOids = null;
-		}
+		ASN1Object qcStatementInfoAsn1Object = qcStatementInfo.toASN1Object();
+		if (qcStatementInfoAsn1Object instanceof SEQUENCE) {
 
-		// Si es una secuencia no vacía...
-		if (seqOids != null && seqOids.size() > 0) {
+			SEQUENCE seqOids = (SEQUENCE) qcStatementInfoAsn1Object;
 
-			// Inicializamos la lista que contendrá
-			// los EuType que tenga el certificado.
-			qcStatementExtEuTypeOids = new ArrayList<String>(seqOids.size());
+			// Si no es una secuencia vacía...
+			if (seqOids.countComponents() > 0) {
 
-			// Los recorremos y vamos añadiendo a la lista...
-			for (int index = 0; index < seqOids.size(); index++) {
+				// Inicializamos la lista que contendrá
+				// los EuType que tenga el certificado.
+				qcStatementExtEuTypeOids = new ArrayList<String>(seqOids.countComponents());
 
-				ASN1ObjectIdentifier objectId = ASN1ObjectIdentifier.getInstance(seqOids.getObjectAt(index));
-				qcStatementExtEuTypeOids.add(objectId.getId());
+				// Los recorremos y vamos añadiendo a la lista...
+				for (int index = 0; index < seqOids.countComponents(); index++) {
+
+					ObjectID objectId = (ObjectID) seqOids.getComponentAt(index);
+					qcStatementExtEuTypeOids.add(objectId.getID());
+
+				}
 
 			}
 
 		}
 
+	} catch (CodingException e) {
+		throw new TSLCertificateValidationException(Language.getResIntegraTsl(ILogTslConstant.TCEA_LOG005), e);
 	}
+
+
+    }
 
 	/**
 	 * Gets the certificate associated to this analyzer.
 	 * @return X509v3 certificate used in this analyzer.
 	 */
-	public final Certificate getCertificate() {
-		return certBc;
+	public final X509Certificate getCertificate() {
+		return certIaik;
 	}
 
-	/**
-	 * Gets the value of the attribute {@link #qcStatementsOids}.
-	 * @return the value of the attribute {@link #qcStatementsOids}.
-	 */
-	public final List<String> getQcStatementsOids() {
-		return qcStatementsOids;
-	}
+    /**
+     * Gets the value of the attribute {@link #qcStatementsOids}.
+     * @return the value of the attribute {@link #qcStatementsOids}.
+     */
+    public final List<String> getQcStatementsOids() {
+	return qcStatementsOids;
+    }
 
-	/**
-	 * Checks if the certificate has some QcStatement extension.
-	 * @return <code>true</code> if the certificate has some QcStatement extension,
-	 * otherwise <code>false</code>.
-	 */
-	public final boolean isThereSomeQcStatementExtension() {
-		return qcStatementsOids != null && !qcStatementsOids.isEmpty();
-	}
+    /**
+     * Checks if the certificate has some QcStatement extension.
+     * @return <code>true</code> if the certificate has some QcStatement extension,
+     * otherwise <code>false</code>.
+     */
+    public final boolean isThereSomeQcStatementExtension() {
+	return qcStatementsOids != null && !qcStatementsOids.isEmpty();
+    }
 
-	/**
-	 * Checks if the certificate has the input QcStatement Extension OID.
-	 * @param qcStatementOid QcStatement Extension OID in {@link String} representation.
-	 * @return <code>true</code> if the certificate has the QcStatement Extension OID,
-	 * otherwise <code>false</code>.
-	 */
-	public final boolean hasQcStatementExtensionOid(String qcStatementOid) {
-		return isThereSomeQcStatementExtension() ? qcStatementsOids.contains(qcStatementOid) : false;
-	}
+    /**
+     * Checks if the certificate has the input QcStatement Extension OID.
+     * @param qcStatementOid QcStatement Extension OID in {@link String} representation.
+     * @return <code>true</code> if the certificate has the QcStatement Extension OID,
+     * otherwise <code>false</code>.
+     */
+    public final boolean hasQcStatementExtensionOid(String qcStatementOid) {
+	return isThereSomeQcStatementExtension() ? qcStatementsOids.contains(qcStatementOid) : false;
+    }
 
-	/**
-	 * Checks if the certificate has the input QcStatement Extension OID.
-	 * @param qcStatementOidsList QcStatement Extension OIDs List to check.
-	 * @return <code>true</code> if the certificate has some of the input QcStatement Extension OID,
-	 * otherwise <code>false</code>.
-	 */
-	public final boolean hasSomeQcStatementExtensionOid(List<String> qcStatementOidsList) {
+    /**
+     * Checks if the certificate has the input QcStatement Extension OID.
+     * @param qcStatementOidsList QcStatement Extension OIDs List to check.
+     * @return <code>true</code> if the certificate has some of the input QcStatement Extension OID,
+     * otherwise <code>false</code>.
+     */
+    public final boolean hasSomeQcStatementExtensionOid(List<String> qcStatementOidsList) {
 
-		boolean result = false;
+	boolean result = false;
 
-		if (isThereSomeQcStatementExtension() && qcStatementOidsList != null && !qcStatementOidsList.isEmpty()) {
+	if (isThereSomeQcStatementExtension() && qcStatementOidsList != null && !qcStatementOidsList.isEmpty()) {
 
-			for (String qcStatementOid: qcStatementOidsList) {
-				if (hasQcStatementExtensionOid(qcStatementOid)) {
-					result = true;
-					break;
-				}
-			}
-
+	    for (String qcStatementOid: qcStatementOidsList) {
+		if (hasQcStatementExtensionOid(qcStatementOid)) {
+		    result = true;
+		    break;
 		}
-
-		return result;
+	    }
 
 	}
 
-	/**
-	 * Gets the value of the attribute {@link #qcStatementExtEuTypeOids}.
-	 * @return the value of the attribute {@link #qcStatementExtEuTypeOids}.
-	 */
-	public final List<String> getQcStatementExtEuTypeOids() {
-		return qcStatementExtEuTypeOids;
-	}
+	return result;
 
-	/**
-	 * Checks if the certificate has the QcStatement EuType extension.
-	 * @return <code>true</code> if the certificate has the QcStatement EuType extension,
-	 * otherwise <code>false</code>.
-	 */
-	public final boolean isThereSomeQcStatementEuTypeExtension() {
-		return qcStatementExtEuTypeOids != null && !qcStatementExtEuTypeOids.isEmpty();
-	}
+    }
 
-	/**
-	 * Checks if the certificate has the input QcStatement EuType Extension OID.
-	 * @param qcStatementEuTypeOid QcStatement EuType Extension OID in {@link String} representation.
-	 * @return <code>true</code> if the certificate has the QcStatement EuType Extension OID,
-	 * otherwise <code>false</code>.
-	 */
-	public final boolean hasQcStatementEuTypeExtensionOid(String qcStatementEuTypeOid) {
-		return isThereSomeQcStatementEuTypeExtension() ? qcStatementExtEuTypeOids.contains(qcStatementEuTypeOid) : false;
-	}
+    /**
+     * Gets the value of the attribute {@link #qcStatementExtEuTypeOids}.
+     * @return the value of the attribute {@link #qcStatementExtEuTypeOids}.
+     */
+    public final List<String> getQcStatementExtEuTypeOids() {
+	return qcStatementExtEuTypeOids;
+    }
 
-	/**
-	 * Gets the value of the attribute {@link #policyInformationsOids}.
-	 * @return the value of the attribute {@link #policyInformationsOids}.
-	 */
-	public final List<String> getPolicyInformationsOids() {
-		return policyInformationsOids;
-	}
+    /**
+     * Checks if the certificate has the QcStatement EuType extension.
+     * @return <code>true</code> if the certificate has the QcStatement EuType extension,
+     * otherwise <code>false</code>.
+     */
+    public final boolean isThereSomeQcStatementEuTypeExtension() {
+	return qcStatementExtEuTypeOids != null && !qcStatementExtEuTypeOids.isEmpty();
+    }
 
-	/**
-	 * Checks if the certificate has some Certification Policies - Policy Information extension.
-	 * @return <code>true</code> if the certificate has some Certification Policies - Policy
-	 * Information extension, otherwise <code>false</code>.
-	 */
-	public final boolean isThereSomeCertPolPolInfExtension() {
-		return policyInformationsOids != null && !policyInformationsOids.isEmpty();
-	}
+    /**
+     * Checks if the certificate has the input QcStatement EuType Extension OID.
+     * @param qcStatementEuTypeOid QcStatement EuType Extension OID in {@link String} representation.
+     * @return <code>true</code> if the certificate has the QcStatement EuType Extension OID,
+     * otherwise <code>false</code>.
+     */
+    public final boolean hasQcStatementEuTypeExtensionOid(String qcStatementEuTypeOid) {
+	return isThereSomeQcStatementEuTypeExtension() ? qcStatementExtEuTypeOids.contains(qcStatementEuTypeOid) : false;
+    }
 
-	/**
-	 * Checks if the certificate has the Certification Policies - Policy Information Extension OID.
-	 * @param certPolPolInfOid Certification Policies - Policy Information Extension OID in
-	 * {@link String} representation.
-	 * @return <code>true</code> if the certificate has the Certification Policies - Policy
-	 * Information Extension OID, otherwise <code>false</code>.
-	 */
-	public final boolean hasCertPolPolInfExtensionOid(String certPolPolInfOid) {
-		return isThereSomeCertPolPolInfExtension() ? policyInformationsOids.contains(certPolPolInfOid) : false;
-	}
+    /**
+     * Gets the value of the attribute {@link #policyInformationsOids}.
+     * @return the value of the attribute {@link #policyInformationsOids}.
+     */
+    public final List<String> getPolicyInformationsOids() {
+	return policyInformationsOids;
+    }
 
-	/**
-	 * Checks if the certificate has some of the input Certification Policies - Policy Information Extension OIDs.
-	 * @param certPolPolInfOidsList Certification Policies - Policy Information Extension OIDs List to check.
-	 * @return <code>true</code> if the certificate has some of the input Certification Policies - Policy
-	 * Information Extension OIDs, otherwise <code>false</code>.
-	 */
-	public final boolean hasSomeCertPolPolInfExtensionOid(List<String> certPolPolInfOidsList) {
+    /**
+     * Checks if the certificate has some Certification Policies - Policy Information extension.
+     * @return <code>true</code> if the certificate has some Certification Policies - Policy
+     * Information extension, otherwise <code>false</code>.
+     */
+    public final boolean isThereSomeCertPolPolInfExtension() {
+	return policyInformationsOids != null && !policyInformationsOids.isEmpty();
+    }
 
-		boolean result = false;
+    /**
+     * Checks if the certificate has the Certification Policies - Policy Information Extension OID.
+     * @param certPolPolInfOid Certification Policies - Policy Information Extension OID in
+     * {@link String} representation.
+     * @return <code>true</code> if the certificate has the Certification Policies - Policy
+     * Information Extension OID, otherwise <code>false</code>.
+     */
+    public final boolean hasCertPolPolInfExtensionOid(String certPolPolInfOid) {
+	return isThereSomeCertPolPolInfExtension() ? policyInformationsOids.contains(certPolPolInfOid) : false;
+    }
 
-		if (isThereSomeCertPolPolInfExtension() && certPolPolInfOidsList != null && !certPolPolInfOidsList.isEmpty()) {
+    /**
+     * Checks if the certificate has some of the input Certification Policies - Policy Information Extension OIDs.
+     * @param certPolPolInfOidsList Certification Policies - Policy Information Extension OIDs List to check.
+     * @return <code>true</code> if the certificate has some of the input Certification Policies - Policy
+     * Information Extension OIDs, otherwise <code>false</code>.
+     */
+    public final boolean hasSomeCertPolPolInfExtensionOid(List<String> certPolPolInfOidsList) {
 
-			for (String certPolPolInfOid: certPolPolInfOidsList) {
-				if (hasCertPolPolInfExtensionOid(certPolPolInfOid)) {
-					result = true;
-					break;
-				}
-			}
+	boolean result = false;
 
+	if (isThereSomeCertPolPolInfExtension() && certPolPolInfOidsList != null && !certPolPolInfOidsList.isEmpty()) {
+
+	    for (String certPolPolInfOid: certPolPolInfOidsList) {
+		if (hasCertPolPolInfExtensionOid(certPolPolInfOid)) {
+		    result = true;
+		    break;
 		}
-
-		return result;
+	    }
 
 	}
+
+	return result;
+
+    }
 
 }

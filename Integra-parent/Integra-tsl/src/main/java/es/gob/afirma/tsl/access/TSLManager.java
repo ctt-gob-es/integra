@@ -34,7 +34,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
-import es.gob.afirma.i18n.Language;
+import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidator;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult;
 import es.gob.afirma.tsl.certValidation.impl.TSLValidatorFactory;
@@ -236,6 +236,8 @@ public final class TSLManager {
 	    throw new TSLManagingException(Language.getFormatResIntegraTsl(ILogTslConstant.TM_LOG007, new Object[ ] { tslObject.getSchemeInformation().getSchemeTerritory(), tslObject.getSchemeInformation().getTslSequenceNumber() }), e);
 	} catch (TSLValidationException e) {
 	    throw new TSLManagingException(Language.getFormatResIntegraTsl(ILogTslConstant.TM_LOG007, new Object[ ] { tslObject.getSchemeInformation().getSchemeTerritory(), tslObject.getSchemeInformation().getTslSequenceNumber() }), e);
+	} catch (Exception e){
+	    throw new TSLManagingException(Language.getFormatResIntegraTsl(ILogTslConstant.TM_LOG007, new Object[ ] { tslObject.getSchemeInformation().getSchemeTerritory(), tslObject.getSchemeInformation().getTslSequenceNumber() }), e);
 	}
 	
 	//si no se ha producido excepción, el resutlado no es nulo, y el certificado ha sido detectado, calculamos los mapeos asociados.
@@ -261,9 +263,7 @@ public final class TSLManager {
 	    boolean result = UtilsCertificateTsl.hasCertKeyPurposeTimeStamping(cert);
 	    if (result) {
 		LOGGER.debug(Language.getResIntegraTsl(ILogTslConstant.TM_LOG004));
-	    } else {
-		LOGGER.debug(Language.getResIntegraTsl(ILogTslConstant.TM_LOG005));
-	    }
+	    } 
 	    // Añadimos la traza de auditoría...
 	    // CommonsCertificatesAuditTraces.addCertIsTsaCert(auditTransNumber,
 	    // result);
