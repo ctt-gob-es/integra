@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 16/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.3, 27/09/2021.
+ * @version 1.4, 15/03/2022.
  */
 package es.gob.afirma.tsl.certValidation.impl.common;
 
@@ -57,7 +57,7 @@ import es.gob.afirma.tsl.utils.UtilsStringChar;
  * <p>Abstract class that represents a TSL validator with the principal functions
  * regardless it implementation.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.3, 27/09/2021.
+ * @version 1.4, 15/03/2022.
  */
 public abstract class ATSLValidator implements ITSLValidator {
 
@@ -711,9 +711,10 @@ public abstract class ATSLValidator implements ITSLValidator {
 	    DigitalIdentitiesProcessor dip = new DigitalIdentitiesProcessor(digitalIdentitiesList);
 		// Procesamos el certificado a validar y modificamos el resultado si
 		// fuera necesario.
-		if (isCACert) {
-			result = dip.checkIfDigitalIdentitiesMatchesCertificate(cert);
-		} else {
+	  //Tras consultar Dirección de Proyecto, se decide que se dará como detectado un certificado de sello de tiempo si en la identidad digital aparece el certificado o bien el emisor del  mismo. 
+		result = dip.checkIfDigitalIdentitiesMatchesCertificate(cert);
+		//si no se encuentra el certificado, se comprueba si está el emisor del mismo.
+		if(!result){
 			result = dip.checkIfCertificateIsIssuedBySomeIdentity(cert, validationResult);
 		}
 
