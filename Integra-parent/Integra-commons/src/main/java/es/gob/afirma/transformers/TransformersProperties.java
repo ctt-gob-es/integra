@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>16/03/2011.</p>
  * @author Gobierno de España.
- * @version 1.0, 16/03/2011.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.transformers;
 
@@ -34,18 +34,16 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.utils.UtilsResourcesCommons;
 
 /**
  * <p>Class that allows to access to the properties defined inside of the configuration file with the elements related to
  * the transformation of the request and response messages of @Firma, eVisor and TS@ platforms.</p>
  * <b>Project:</b><p>@Firma and TS@ Web Services Integration Platform.</p>
- * @version 1.0, 16/03/2011.
+ * @version 1.1, 18/04/2022.
  */
 public final class TransformersProperties {
 
@@ -58,7 +56,7 @@ public final class TransformersProperties {
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static Logger logger = IntegraLogger.getInstance().getLogger(TransformersProperties.class);
+    private static Logger logger = Logger.getLogger(TransformersProperties.class);
 
     /**
      * Attribute that represents the time that the file {@link #properties} was last modified.

@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>04/03/2020.</p>
  * @author Gobierno de España.
- * @version 1.3, 17/03/2020.
+ * @version 1.4, 18/04/2022.
  */
 package es.gob.afirma.tsaServiceInvoker.ws;
 
@@ -55,7 +55,6 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.saaj.SOAPHeaderElementImpl;
 import org.apache.axis2.saaj.util.SAAJUtil;
-import org.apache.log4j.Logger;
 import org.apache.ws.security.WSConstants;
 import org.apache.ws.security.WSSecurityException;
 import org.apache.ws.security.components.crypto.Crypto;
@@ -77,7 +76,7 @@ import com.sun.xml.wss.saml.SubjectConfirmation;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.utils.NumberConstants;
 import es.gob.afirma.utils.UtilsAxis;
 import es.gob.afirma.wsServiceInvoker.WSServiceInvokerException;
@@ -92,7 +91,7 @@ class TSAClientHandler extends AbstractTSAHandler {
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(TSAClientHandler.class);
+    private static final Logger LOGGER = Logger.getLogger(TSAClientHandler.class);
 
     /**
      * Constant attribute that represents the handler name. 

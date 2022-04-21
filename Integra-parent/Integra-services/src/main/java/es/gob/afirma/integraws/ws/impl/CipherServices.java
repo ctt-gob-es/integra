@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>12/5/2016.</p>
  * @author Gobierno de España.
- * @version 1.0, 12/5/2016.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.integraws.ws.impl;
 
@@ -26,8 +26,6 @@ import java.io.InputStream;
 import java.security.Key;
 import java.security.KeyStore;
 import java.util.Properties;
-
-import org.apache.log4j.Logger;
 
 import es.gob.afirma.encryption.CipherIntegra;
 import es.gob.afirma.exception.CipherException;
@@ -38,21 +36,21 @@ import es.gob.afirma.integraws.beans.RequestCipher;
 import es.gob.afirma.integraws.beans.ResponseCipher;
 import es.gob.afirma.integraws.ws.ICipherServices;
 import es.gob.afirma.integraws.ws.IWSConstantKeys;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.properties.IntegraProperties;
 
 
 /** 
  * <p>Class that contains cipher service implementations.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 12/5/2016.
+ * @version 1.1, 18/04/2022.
  */
 public class CipherServices implements ICipherServices{
 
     /**
      *  Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(CipherServices.class);
+    private static final Logger LOGGER = Logger.getLogger(CipherServices.class);
     
    
     /**

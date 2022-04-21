@@ -17,11 +17,11 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 17/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.0, 17/11/2020.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.tsl.utils;
 
-import org.apache.log4j.Logger;
+import es.gob.afirma.tsl.logger.Logger;
 
 
 import es.gob.afirma.tsl.i18n.ILogTslConstant;

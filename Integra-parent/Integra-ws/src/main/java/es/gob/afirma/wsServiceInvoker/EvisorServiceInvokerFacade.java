@@ -17,31 +17,28 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>16/03/2011.</p>
  * @author Gobierno de España.
- * @version 1.1, 17/03/2020.
+ * @version 1.2, 18/04/2022.
  */
 package es.gob.afirma.wsServiceInvoker;
 
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.utils.GenericUtilsCommons;
-import es.gob.afirma.wsServiceInvoker.WSServiceInvokerException;
 
 /**
  * <p>Class that represents the facade for the invocation of the web services of eVisor.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 17/03/2020.
+ * @version 1.2, 18/04/2022.
  */
 public final class EvisorServiceInvokerFacade {
 
     /**
      *  Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(EvisorServiceInvokerFacade.class);
+    private static final Logger LOGGER = Logger.getLogger(EvisorServiceInvokerFacade.class);
 
     /**
      * Attribute that represents the instance of the class.

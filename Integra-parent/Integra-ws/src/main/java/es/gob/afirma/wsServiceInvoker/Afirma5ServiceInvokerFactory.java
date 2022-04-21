@@ -16,24 +16,21 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>26/12/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 26/12/2014.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.wsServiceInvoker;
 
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
-import es.gob.afirma.wsServiceInvoker.WSServiceInvokerException;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.wsServiceInvoker.ws.Afirma5WebServiceInvoker;
 
 /**
  * <p>Class that represents a factory to invoke web services published by @Firma and eVisor.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 26/12/2014.
+ * @version 1.1, 18/04/2022.
  */
 public final class Afirma5ServiceInvokerFactory {
 
@@ -46,7 +43,7 @@ public final class Afirma5ServiceInvokerFactory {
     /**
      * Attribute that represents the class logger.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(Afirma5ServiceInvokerFactory.class);
+    private static final Logger LOGGER = Logger.getLogger(Afirma5ServiceInvokerFactory.class);
 
     /**
      * Method that obtains the class used to invoke a @Firma or eVisor web service.

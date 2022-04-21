@@ -17,7 +17,7 @@
  * <b>Project:</b><p@Firma and TS@ Web Services Integration Platform.</p>
  * <b>Date:</b><p>18/03/2011.</p>
  * @author Gobierno de España.
- * @version 1.2, 14/03/2017.
+ * @version 1.3, 18/04/2022.
  */
 package es.gob.afirma.utils;
 
@@ -25,12 +25,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import es.gob.afirma.logger.Logger;
 
 /**
  * <p>Class with generic utilities.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 14/03/2017.
+ * @version 1.3, 18/04/2022.
  */
 public final class GenericUtils {
 

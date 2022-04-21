@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>26/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.3, 04/03/2020.
+ * @version 1.4, 18/04/2022.
  */
 package es.gob.afirma.signature.policy;
 
@@ -32,11 +32,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.xml.crypto.dsig.XMLSignature;
-
-import net.java.xades.security.xml.XAdES.SignaturePolicyIdentifier;
-import net.java.xades.security.xml.XAdES.XAdES_EPES;
-
-import org.apache.log4j.Logger;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.DERIA5String;
@@ -65,7 +60,7 @@ import com.lowagie.text.pdf.PdfObject;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.properties.IIntegraConstants;
 import es.gob.afirma.properties.IntegraProperties;
 import es.gob.afirma.signature.xades.IXMLConstants;
@@ -74,18 +69,20 @@ import es.gob.afirma.utils.GenericUtilsCommons;
 import es.gob.afirma.utils.ICryptoUtil;
 import es.gob.afirma.utils.IUtilsSignature;
 import es.gob.afirma.utils.UtilsSignatureOp;
+import net.java.xades.security.xml.XAdES.SignaturePolicyIdentifier;
+import net.java.xades.security.xml.XAdES.XAdES_EPES;
 
 /**
  * <p>Class that manages all the operations related to signature policies.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.3, 04/03/2020.
+ * @version 1.4, 18/04/2022.
  */
 public final class SignaturePolicyManager {
 
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(SignaturePolicyManager.class);
+    private static final Logger LOGGER = Logger.getLogger(SignaturePolicyManager.class);
 
     /**
      * Constructor method for the class SignaturePolicyManager.java.

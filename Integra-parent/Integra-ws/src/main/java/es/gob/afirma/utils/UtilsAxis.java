@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>04/03/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 10/03/2020.
+ * @version 1.2, 18/04/2022.
  */
 package es.gob.afirma.utils;
 
@@ -41,25 +41,24 @@ import org.apache.axis2.engine.Phase;
 import org.apache.axis2.saaj.SOAPElementImpl;
 import org.apache.axis2.saaj.SOAPHeaderElementImpl;
 import org.apache.axis2.saaj.TextImplEx;
-import org.apache.log4j.Logger;
 import org.w3c.dom.NamedNodeMap;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.tsaServiceInvoker.TSAServiceInvokerConstants;
 
 /** 
  * <p>Utilities class that contains auxiliary method related with axis engine.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 10/03/2020.
+ * @version 1.2, 18/04/2022.
  */
 public final class UtilsAxis {
 
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(UtilsAxis.class);
+    private static final Logger LOGGER = Logger.getLogger(UtilsAxis.class);
 
     /**
      * Attribute that represents the counter of numbered sequences generated at this loop.

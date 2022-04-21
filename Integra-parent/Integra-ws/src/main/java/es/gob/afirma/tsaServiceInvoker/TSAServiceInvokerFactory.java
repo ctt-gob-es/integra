@@ -17,28 +17,26 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>09/01/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 09/01/2014.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.tsaServiceInvoker;
 
-import org.apache.log4j.Logger;
-
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.tsaServiceInvoker.ws.TSA3WebServiceInvoker;
 
 /**
  * <p>Class that represents a factory to invoke web services published by TS@.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 09/01/2014.
+ * @version 1.1, 18/04/2022.
  */
 public final class TSAServiceInvokerFactory {
 
     /**
      * Attribute that represents the class logger.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(TSAServiceInvokerFactory.class);
+    private static final Logger LOGGER = Logger.getLogger(TSAServiceInvokerFactory.class);
 
     /**
      * Constructor method for the class TSAServiceInvokerFactory.java.

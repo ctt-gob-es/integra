@@ -17,30 +17,28 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>28/06/2011.</p>
  * @author Gobierno de España.
- * @version 1.0, 28/06/2011.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.signature;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 
 /**
  * <p>Class that represents a factory used to provide implementations for {@link Signer}.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 28/06/2011.
+ * @version 1.1, 18/04/2022.
  */
 public final class SignersFactory {
 
     /**
      *  Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(SignersFactory.class);
+    private static final Logger LOGGER = Logger.getLogger(SignersFactory.class);
 
     /**
      * Attribute that represents the unique instance of the class.

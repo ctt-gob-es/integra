@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>26/12/2014.</p>
  * @author Gobierno de España.
- * @version 1.5, 22/06/2020.
+ * @version 1.6, 18/04/2022.
  */
 package es.gob.afirma.wsServiceInvoker.ws;
 
@@ -38,11 +38,10 @@ import org.apache.axis2.engine.Handler;
 import org.apache.axis2.engine.Phase;
 import org.apache.axis2.phaseresolver.PhaseException;
 import org.apache.axis2.transport.http.HTTPConstants;
-import org.apache.log4j.Logger;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.utils.GeneralConstants;
 import es.gob.afirma.utils.GenericUtilsCommons;
 import es.gob.afirma.utils.UtilsAxis;
@@ -52,7 +51,7 @@ import es.gob.afirma.wsServiceInvoker.WSServiceInvokerException;
 /**
  * <p>Class that manages the invoke of @Firma and eVisor web services.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.5, 22/06/2020.
+ * @version 1.6, 18/04/2022.
  */
 public class WebServiceInvoker {
 
@@ -69,7 +68,7 @@ public class WebServiceInvoker {
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(WebServiceInvoker.class);
+    private static final Logger LOGGER = Logger.getLogger(WebServiceInvoker.class);
 
     /**
      * Constant attribute that identifier the security Axis2 phase. 
@@ -176,13 +175,14 @@ public class WebServiceInvoker {
 	    options.setProperty(HTTPConstants.CHUNKED, "false");
 
 	    // Creamos el cliente y le añadimos la configuración anterior.
+	    LOGGER.debug("Peticion: " + (String) params[0]);
 	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.WSI_LOG005));
 	    client = new ServiceClient();
 	    client.setOptions(options);
 
 	    // Añadimos los handler generados al flujo de handlers de Axis2.
 	    addHandlers(client, requestHandler, responseHandler);
-
+	    
 	    // Realizamos la llamada.
 	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.WSI_LOG009));
 	    OMElement result = client.sendReceive(operationElem);

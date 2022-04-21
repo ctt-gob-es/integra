@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>19/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 19/11/2014.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.ocsp;
 
@@ -56,7 +56,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
-import org.apache.log4j.Logger;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.ocsp.OCSPObjectIdentifiers;
@@ -77,7 +76,7 @@ import org.bouncycastle.util.encoders.Base64;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.properties.IIntegraConstants;
 import es.gob.afirma.properties.IntegraProperties;
 import es.gob.afirma.signature.SignatureConstants;
@@ -93,14 +92,14 @@ import es.gob.afirma.utils.UtilsResourcesCommons;
  * <p>Class that represents an OCSP client. It is implementing the RFC 2560 also taking care to support the lightweight profile
  * recommendations defined in the RFC 5019.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 19/11/2014.
+ * @version 1.1, 18/04/2022.
  */
 public final class OCSPClient {
 
 	/**
 	 * Attribute that represents the object that manages the log of the class.
 	 */
-	private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(OCSPClient.class);
+	private static final Logger LOGGER = Logger.getLogger(OCSPClient.class);
 
 	/**
 	 * Attribute that represents the US-ASCII charset.

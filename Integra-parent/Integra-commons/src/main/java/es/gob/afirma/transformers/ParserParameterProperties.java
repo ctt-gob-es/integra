@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>16/03/2011.</p>
  * @author Gobierno de España.
- * @version 1.0, 16/03/2011.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.transformers;
 
@@ -33,25 +33,24 @@ import java.net.URL;
 import java.util.Date;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import es.gob.afirma.logger.Logger;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
 import es.gob.afirma.utils.UtilsResourcesCommons;
 
 /**
  * <p>Class that allows to access to the properties defined inside of the configuration file with the shortcuts of the nodes contained
  * inside of the XML responses.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 16/03/2011.
+ * @version 1.1, 18/04/2022.
  */
 public final class ParserParameterProperties {
 
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(ParserParameterProperties.class);
+    private static final Logger LOGGER = Logger.getLogger(ParserParameterProperties.class);
 
     /**
      * Attribute that represents the time that the file {@link #properties} was last modified.

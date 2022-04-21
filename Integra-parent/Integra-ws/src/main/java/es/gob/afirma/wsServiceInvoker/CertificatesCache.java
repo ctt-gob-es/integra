@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>04/02/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 04/02/2014.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.wsServiceInvoker;
 
@@ -27,27 +27,23 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.properties.IIntegraConstants;
 import es.gob.afirma.properties.IntegraProperties;
-import es.gob.afirma.wsServiceInvoker.WSServiceInvokerConstants;
-import es.gob.afirma.wsServiceInvoker.WSServiceInvokerException;
 
 /**
  * <p>Class that represents the certificates validation responses cache for @Firma certificates validation web service.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 04/02/2014.
+ * @version 1.1, 18/04/2022.
  */
 public final class CertificatesCache {
 
     /**
      * Attribute that represents the class logger.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(CertificatesCache.class);
+    private static final Logger LOGGER = Logger.getLogger(CertificatesCache.class);
 
     /**
      * Attribute that represents the instance of the class.

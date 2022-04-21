@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>05/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 09/02/2011.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.utils;
 
@@ -50,7 +50,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
 import org.apache.xml.utils.DefaultErrorHandler;
 import org.w3c.dom.Attr;
@@ -64,7 +63,7 @@ import org.xml.sax.SAXException;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.signature.SigningException;
 import es.gob.afirma.transformers.TransformersConstants;
 import es.gob.afirma.transformers.TransformersException;
@@ -72,14 +71,14 @@ import es.gob.afirma.transformers.TransformersException;
 /**
  * <p>Class that contains methods related to the manage of XML elements.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 09/02/2011.
+ * @version 1.1, 18/04/2022.
  */
 public final class UtilsXML {
 
 	/**
 	 *  Attribute that represents the object that manages the log of the class.
 	 */
-	private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(UtilsXML.class);
+	private static final Logger LOGGER = Logger.getLogger(UtilsXML.class);
 
 	/**
 	 * Attribute that represents a factory API to obtain a parser that produces DOM object trees from XML documents.

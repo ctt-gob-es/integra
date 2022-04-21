@@ -17,13 +17,11 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>12/5/2016.</p>
  * @author Gobierno de España.
- * @version 1.3, 17/03/2020.
+ * @version 1.4, 18/04/2022.
  */
 package es.gob.afirma.integraws.ws.impl;
 
 import java.security.cert.CertificateException;
-
-import org.apache.log4j.Logger;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
@@ -68,7 +66,7 @@ import es.gob.afirma.integraws.beans.ResponseServerVerifySignature;
 import es.gob.afirma.integraws.beans.ResponseValidateOCSP;
 import es.gob.afirma.integraws.ws.IAfirmaServices;
 import es.gob.afirma.integraws.ws.IWSConstantKeys;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.ocsp.OCSPClient;
 import es.gob.afirma.ocsp.OCSPClientException;
 import es.gob.afirma.ocsp.OCSPEnhancedResponse;
@@ -77,14 +75,14 @@ import es.gob.afirma.utils.UtilsCertificate;
 /**
  * <p>Class that contains afirma service implementations.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.3, 17/03/2020.
+ * @version 1.4, 18/04/2022.
  */
 public class AfirmaServices implements IAfirmaServices {
 
     /**
      *  Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(AfirmaServices.class);
+    private static final Logger LOGGER = Logger.getLogger(AfirmaServices.class);
 
     /**
      * {@inheritDoc}

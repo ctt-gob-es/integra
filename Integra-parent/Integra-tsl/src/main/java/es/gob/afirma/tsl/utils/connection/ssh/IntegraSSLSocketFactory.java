@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 17/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 18/04/2022.
  */
 
 package es.gob.afirma.tsl.utils.connection.ssh;
@@ -38,7 +38,7 @@ import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
+import es.gob.afirma.tsl.logger.Logger;
 
 import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
@@ -50,7 +50,7 @@ import es.gob.afirma.tsl.utils.UtilsStringChar;
 /**
  * <p>Class that represents a custom SSL Sockect Factory for HTTP Client.</p>
  * <b>Project:</b><p>Platform for detection and validation of certificates recognized in European TSL.</p>
- * @version  1.1, 15/06/2021.
+ * @version  1.2, 18/04/2022.
  */
 public class IntegraSSLSocketFactory implements LayeredConnectionSocketFactory {
 

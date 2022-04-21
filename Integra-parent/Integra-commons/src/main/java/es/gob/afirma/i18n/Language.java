@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>24/01/2014.</p>
  * @author Gobierno de España.
- * @version 1.1, 22/06/2020.
+ * @version 1.2, 18/04/2022.
  */
 package es.gob.afirma.i18n;
 
@@ -34,14 +34,12 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Logger;
-
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 
 /**
  * <p>Class that manages the access to the properties files used for generating messages in the platform.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 22/06/2020.
+ * @version 1.2, 18/04/2022.
  */
 public final class Language {
 
@@ -103,7 +101,7 @@ public final class Language {
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(Language.class);
+    private static final Logger LOGGER = Logger.getLogger(Language.class);
 
     /**
      * Constructor method for the class Language.java.

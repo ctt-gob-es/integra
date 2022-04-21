@@ -17,33 +17,32 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>05/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 05/11/2014.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.utils;
 
 import java.security.cert.X509Certificate;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.w3c.dom.Element;
 
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.signature.SigningException;
 import es.gob.afirma.tsaServiceInvoker.TSAServiceInvokerException;
 
 /**
  * <p>Class that contains methods related to the manage of timestamps.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 05/11/2014.
+ * @version 1.1, 18/04/2022.
  */
 public final class UtilsTimestamp {
 
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    public static final Logger LOGGER = IntegraLogger.getInstance().getLogger(UtilsTimestamp.class);
+    public static final Logger LOGGER = Logger.getLogger(UtilsTimestamp.class);
 
     /**
      * Constructor method for the class TimestampUtils.java.

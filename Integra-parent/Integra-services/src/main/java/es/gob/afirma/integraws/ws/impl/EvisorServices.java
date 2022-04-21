@@ -17,14 +17,13 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>12/5/2016.</p>
  * @author Gobierno de España.
- * @version 1.0, 12/5/2016.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.integraws.ws.impl;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.opensaml.xml.util.Base64;
 
 import es.gob.afirma.i18n.Language;
@@ -37,27 +36,27 @@ import es.gob.afirma.integraws.beans.ResponseEvisorGenerateReport;
 import es.gob.afirma.integraws.beans.ResponseEvisorValidateReport;
 import es.gob.afirma.integraws.ws.IEvisorServices;
 import es.gob.afirma.integraws.ws.IWSConstantKeys;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.transformers.TransformersConstants;
 import es.gob.afirma.transformers.TransformersException;
 import es.gob.afirma.transformers.TransformersFacade;
 import es.gob.afirma.utils.EVisorConstants;
-import es.gob.afirma.utils.EVisorUtilCommons;
 import es.gob.afirma.utils.EVisorConstants.EVisorTagsRequest;
+import es.gob.afirma.utils.EVisorUtilCommons;
 import es.gob.afirma.wsServiceInvoker.EvisorServiceInvokerFacade;
 import es.gob.afirma.wsServiceInvoker.WSServiceInvokerException;
 
 /** 
  * <p>Class that contains evisor service implementations.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 12/5/2016.
+ * @version 1.1, 18/04/2022.
  */
 public class EvisorServices implements IEvisorServices {
     
     /**
      *  Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(EvisorServices.class);
+    private static final Logger LOGGER = Logger.getLogger(EvisorServices.class);
 
     /**
      * {@inheritDoc}

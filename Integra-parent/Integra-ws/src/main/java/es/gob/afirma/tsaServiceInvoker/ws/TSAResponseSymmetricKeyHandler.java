@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>04/03/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 10/03/2020.
+ * @version 1.2, 18/04/2022.
  */
 package es.gob.afirma.tsaServiceInvoker.ws;
 
@@ -35,14 +35,13 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.saaj.util.SAAJUtil;
 import org.apache.axis2.util.XMLUtils;
-import org.apache.log4j.Logger;
 import org.apache.xml.security.encryption.XMLCipher;
 import org.apache.xml.security.encryption.XMLEncryptionException;
 import org.w3c.dom.Element;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.tsaServiceInvoker.TSAServiceInvokerConstants;
 import es.gob.afirma.tsaServiceInvoker.TSAServiceInvokerException;
 import es.gob.afirma.utils.UtilsAxis;
@@ -50,14 +49,14 @@ import es.gob.afirma.utils.UtilsAxis;
 /**
  * <p>Class that checks and decrypts the SOAP messages of TS@ responses with symmetric key.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 10/03/2020.
+ * @version 1.2, 18/04/2022.
  */
 public class TSAResponseSymmetricKeyHandler extends AbstractTSAHandler {
 
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(TSAResponseSymmetricKeyHandler.class);
+    private static final Logger LOGGER = Logger.getLogger(TSAResponseSymmetricKeyHandler.class);
 
     /**
      * Constant attribute that represents the handler name. 

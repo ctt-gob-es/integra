@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 10/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.2, 27/09/2021.
+ * @version 1.3, 18/04/2022.
  */
 package es.gob.afirma.tsl;
 
@@ -27,7 +27,7 @@ import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import es.gob.afirma.tsl.logger.Logger;
 
 import es.gob.afirma.tsl.access.TSLManager;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult;
@@ -45,7 +45,7 @@ import es.gob.afirma.tsl.utils.UtilsStringChar;
 /** 
  * <p>Class that implements the necessary methods to perform certificate validation using a TSL.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 27/09/2021.
+ * @version 1.3, 18/04/2022.
  */
 public class TslValidation implements ITslValidation {
 

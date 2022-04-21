@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>19/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 19/12/2011.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.transformers.parseTransformers;
 
@@ -27,14 +27,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.transformers.TransformersConstants;
 import es.gob.afirma.transformers.TransformersException;
 import es.gob.afirma.transformers.TransformersProperties;
@@ -43,14 +42,14 @@ import es.gob.afirma.utils.UtilsXML;
 /**
  * <p>Class that processes the responses of certificate validation from the web services of @Firma.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 19/12/2011.
+ * @version 1.1, 18/04/2022.
  */
 public class CertValidationParseTransformer implements IParseTransformer {
 
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static Logger logger = IntegraLogger.getInstance().getLogger(CertValidationParseTransformer.class);
+    private static Logger logger = Logger.getLogger(CertValidationParseTransformer.class);
 
     /**
      * Attribute that represents <code>InfoCertificate</code> element of the response.

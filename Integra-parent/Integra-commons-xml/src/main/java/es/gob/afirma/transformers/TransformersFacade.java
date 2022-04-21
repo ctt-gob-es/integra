@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>16/03/2011.</p>
  * @author Gobierno de España.
- * @version 1.0, 16/03/2011.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.transformers;
 
@@ -29,12 +29,11 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.transformers.parseTransformers.ParseTransformersFactory;
 import es.gob.afirma.transformers.xmlTransformers.XmlTransformersFactory;
 import es.gob.afirma.utils.GeneralConstants;
@@ -45,14 +44,14 @@ import es.gob.afirma.utils.UtilsXML;
 /**
  * <p>Class that provides methods for transform input and output parameters related to @Firma, TS@ and eVisor web services.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 16/03/2011.
+ * @version 1.1, 18/04/2022.
  */
 public final class TransformersFacade {
 
     /**
      *  Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(TransformersFacade.class);
+    private static final Logger LOGGER = Logger.getLogger(TransformersFacade.class);
 
     /**
      * Attribute that represents the unique instance of the class. 

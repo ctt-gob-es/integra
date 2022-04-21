@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 18/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 18/04/2022.
  */
 package es.gob.afirma.tsl.utils;
 
@@ -27,7 +27,7 @@ import java.security.cert.CRLException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 
-import org.apache.log4j.Logger;
+import es.gob.afirma.tsl.logger.Logger;
 
 import es.gob.afirma.tsl.exceptions.CommonUtilsException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
@@ -36,7 +36,7 @@ import iaik.x509.X509CRL;
 /** 
  * <p>Utilities class that provides functionality to manage and work with X.509 CRL.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 18/04/2022.
  */
 public final class UtilsCRL {
 	/**

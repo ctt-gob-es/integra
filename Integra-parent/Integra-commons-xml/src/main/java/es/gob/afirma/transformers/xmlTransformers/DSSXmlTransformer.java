@@ -17,19 +17,18 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>04/02/2011.</p>
  * @author Gobierno de España
- * @version 1.0, 04/02/2011.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.transformers.xmlTransformers;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.transformers.TransformersConstants;
 import es.gob.afirma.transformers.TransformersException;
 import es.gob.afirma.transformers.TransformersFacade;
@@ -65,7 +64,7 @@ public class DSSXmlTransformer implements IXmlTransformer {
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static Logger logger = IntegraLogger.getInstance().getLogger(DSSXmlTransformer.class);
+    private static Logger logger = Logger.getLogger(DSSXmlTransformer.class);
 
     /**
      * Constructor method for the class DSSXmlTransformer.java.

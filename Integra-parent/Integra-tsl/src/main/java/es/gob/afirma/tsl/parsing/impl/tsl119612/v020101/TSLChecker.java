@@ -21,7 +21,7 @@
  * <b>Project:</b><p>Platform for detection and validation of certificates recognized in European TSL.</p>
  * <b>Date:</b><p>06/11/2018.</p>
  * @author Gobierno de España.
- * @version 1.5, 15/06/2021.
+ * @version 1.6, 18/04/2022.
  */
 package es.gob.afirma.tsl.parsing.impl.tsl119612.v020101;
 
@@ -36,7 +36,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
+import es.gob.afirma.tsl.logger.Logger;
 import org.w3.x2000.x09.xmldsig.CanonicalizationMethodType;
 import org.w3.x2000.x09.xmldsig.KeyValueType;
 import org.w3.x2000.x09.xmldsig.ReferenceType;

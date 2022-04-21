@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>12/05/2016.</p>
  * @author Gobierno de España.
- * @version 1.3, 13/04/2020.
+ * @version 1.4, 18/04/2022.
  */
 package es.gob.afirma.integraws.ws.impl;
 
@@ -30,8 +30,6 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
-import org.apache.log4j.Logger;
 
 import es.gob.afirma.hsm.HSMKeystore;
 import es.gob.afirma.i18n.Language;
@@ -55,7 +53,7 @@ import es.gob.afirma.integraws.beans.SignerToUpgrade;
 import es.gob.afirma.integraws.beans.ValidationResultWS;
 import es.gob.afirma.integraws.ws.IIntegraServices;
 import es.gob.afirma.integraws.ws.IWSConstantKeys;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.properties.IntegraProperties;
 import es.gob.afirma.signature.SigningException;
 import es.gob.afirma.signature.validation.PDFValidationResult;
@@ -68,14 +66,14 @@ import es.gob.afirma.utils.UtilsSignatureOp;
 /**
  * <p>Class that contains integra sing service implementations.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.3, 13/04/2020.
+ * @version 1.4, 18/04/2022.
  */
 public class IntegraServices implements IIntegraServices {
 
 	/**
 	 *  Attribute that represents the object that manages the log of the class.
 	 */
-	private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(IntegraServices.class);
+	private static final Logger LOGGER = Logger.getLogger(IntegraServices.class);
 
 	/**
 	 * Attribute that represents the success result.

@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 17/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.3, 27/09/2021.
+ * @version 1.4, 18/04/2022.
  */
 package es.gob.afirma.tsl.certValidation.impl.ts119612.v020101;
 
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import es.gob.afirma.tsl.logger.Logger;
 
 import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorOtherConstants;
@@ -50,7 +50,7 @@ import es.gob.afirma.tsl.utils.UtilsStringChar;
  * <p>Class that represents a TSL Validator implementation for the
  * ETSI TS 119612 2.1.1 specification.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.3, 27/09/2021.
+ * @version 1.4, 18/04/2022.
  */
 public class TSLValidator extends ATSLValidator {
 

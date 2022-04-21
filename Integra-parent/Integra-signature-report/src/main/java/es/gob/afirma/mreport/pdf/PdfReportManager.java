@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>18/08/2020.</p>
  * @author Gobierno de España.
- * @version 1.0, 18/08/2020.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.mreport.pdf;
 
@@ -30,7 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.commons.text.StringEscapeUtils;
-import org.apache.log4j.Logger;
+import es.gob.afirma.mreport.logger.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -61,7 +61,7 @@ import es.gob.afirma.mreport.utils.XMLUtils;
 /**
  * <p>Class for managing PDF reports.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 18/08/2020.
+ * @version 1.1, 18/04/2022.
  */
 public class PdfReportManager implements IReportManager {
 	

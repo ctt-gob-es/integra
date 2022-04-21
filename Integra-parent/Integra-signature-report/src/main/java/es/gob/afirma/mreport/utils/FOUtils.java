@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>27/08/2020</p>
  * @author Spanish Government.
- * @version 1.0, 27/08/2020.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.mreport.utils;
 
@@ -40,7 +40,7 @@ import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.FopFactoryConfig;
 import org.apache.fop.apps.FormattingResults;
 import org.apache.fop.apps.MimeConstants;
-import org.apache.log4j.Logger;
+import es.gob.afirma.mreport.logger.Logger;
 
 import es.gob.afirma.mreport.exceptions.UtilsException;
 import es.gob.afirma.mreport.i18.ILogConstantKeys;
@@ -49,7 +49,7 @@ import es.gob.afirma.mreport.i18.Language;
 /** 
  * <p>Utility class for processing XSL-FO files.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 27/08/2020.
+ * @version 1.1, 18/04/2022.
  */
 public final class FOUtils {
 

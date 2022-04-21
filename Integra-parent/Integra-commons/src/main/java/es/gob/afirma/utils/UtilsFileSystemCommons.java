@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>23/02/2011.</p>
  * @author Gobierno de España.
- * @version 1.2, 14/03/2017.
+ * @version 1.3, 18/04/2022.
  */
 package es.gob.afirma.utils;
 
@@ -29,16 +29,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
-import org.apache.log4j.Logger;
-
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 
 /**
  * <p>Utility class for reading and processing files.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 14/03/2017.
+ * @version 1.3, 18/04/2022.
  */
 public final class UtilsFileSystemCommons {
 
@@ -51,7 +49,7 @@ public final class UtilsFileSystemCommons {
     /**
      *  Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(UtilsFileSystemCommons.class);
+    private static final Logger LOGGER = Logger.getLogger(UtilsFileSystemCommons.class);
 
     /**
      * Retrieves content of a given file.

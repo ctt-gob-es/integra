@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Horizontal platform to generation signature reports in legible format.</p>
  * <b>Date:</b><p>10/02/2011.</p>
  * @author Spanish Government.
- * @version 1.0, 10/02/2011.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.mreport.utils;
 
@@ -39,7 +39,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.log4j.Logger;
+import es.gob.afirma.mreport.logger.Logger;
 import org.apache.xpath.XPathAPI;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;

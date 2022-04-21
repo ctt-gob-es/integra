@@ -17,38 +17,33 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>10/03/2016.</p>
  * @author Gobierno de España.
- * @version 1.0, 10/03/2016.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.properties;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-
-import es.gob.afirma.hsm.IHSMConstants;
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.utils.UtilsResourcesCommons;
 
 /** 
  * <p>Class that allows to access to the properties defined inside of the configuration file <code>integraxxxxxx.properties</code>.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 10/03/2016.
+ * @version 1.1, 18/04/2022.
  */
 public final class IntegraProperties {
 
     /**
     * Attribute that represents the class logger.
     */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(IntegraProperties.class);
+    private static final Logger LOGGER = Logger.getLogger(IntegraProperties.class);
 
     /**
      * Attribute that represents the set of properties defined inside of the configuration file <code>integraxxxxx.properties</code>.

@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 16/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 18/04/2022.
  */
 package es.gob.afirma.tsl.utils;
 
@@ -31,7 +31,7 @@ import java.security.Security;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import es.gob.afirma.tsl.logger.Logger;
 
 import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
@@ -39,7 +39,7 @@ import es.gob.afirma.tsl.i18n.ILogTslConstant;
 /** 
  * <p>Utilities class for manage the cryptographic providers.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 18/04/2022.
  */
 public final class UtilsProviders {
 

@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.log4j.Logger;
 import org.apache.tika.Tika;
 import org.apache.xml.security.c14n.Canonicalizer;
 import org.apache.xml.security.c14n.InvalidCanonicalizerException;
@@ -30,22 +29,22 @@ import es.gob.afirma.i18n.ILogConstantKeys;
 * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
 * <b>Date:</b><p>13/01/2014.</p>
 * @author Gobierno de España.
-* @version 1.2, 04/03/2020.
+* @version 1.3, 18/04/2022.
 */
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 
 /**
  * <p>Class that provides functionality to control the resources for sign-operations module.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 04/03/2020.
+ * @version 1.3, 18/04/2022.
  */
 public class UtilsResourcesSignOperations {
 
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(UtilsResourcesSignOperations.class);
+    private static final Logger LOGGER = Logger.getLogger(UtilsResourcesSignOperations.class);
     
     /**
      * Constant attribute that represents the URI of <code>http://www.w3.org/2006/12/xml-c14n11</code> canonicalization algorithm.

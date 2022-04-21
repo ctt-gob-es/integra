@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>26/12/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 26/12/2014.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.properties;
 
@@ -27,11 +27,9 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.utils.GenericUtilsCommons;
 import es.gob.afirma.utils.UtilsResourcesCommons;
 import es.gob.afirma.wsServiceInvoker.WSServiceInvokerConstants;
@@ -39,7 +37,7 @@ import es.gob.afirma.wsServiceInvoker.WSServiceInvokerConstants;
 /**
  * <p>Class that allows to access to the properties defined inside of the configuration file for invoking the web services of @Firma.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 26/12/2014.
+ * @version 1.1, 18/04/2022.
  */
 public final class Afirma5ServiceInvokerProperties {
 
@@ -52,7 +50,7 @@ public final class Afirma5ServiceInvokerProperties {
     /**
      * Attribute that represents the class logger.
      */
-    private Logger LOGGER = IntegraLogger.getInstance().getLogger(Afirma5ServiceInvokerProperties.class);
+    private Logger LOGGER = Logger.getLogger(Afirma5ServiceInvokerProperties.class);
 
     /**
      * Attribute that represents the time that the file {@link #afirma5ServiceInvokerProperties} was last modified.

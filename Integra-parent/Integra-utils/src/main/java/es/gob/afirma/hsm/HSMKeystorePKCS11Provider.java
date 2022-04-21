@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>10/12/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 10/12/2014.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.hsm;
 
@@ -27,19 +27,17 @@ import java.security.Provider;
 import java.security.Security;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-
-import sun.security.pkcs11.SunPKCS11;
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.properties.HSMProperties;
 import es.gob.afirma.utils.GenericUtilsCommons;
+import sun.security.pkcs11.SunPKCS11;
 
 /**
  * <p>Class to manage the connection to the HSM and create the Keystore representation.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 10/12/2014.
+ * @version 1.1, 18/04/2022.
  */
 @SuppressWarnings("restriction")
 public final class HSMKeystorePKCS11Provider {
@@ -47,7 +45,7 @@ public final class HSMKeystorePKCS11Provider {
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(HSMKeystorePKCS11Provider.class);
+    private static final Logger LOGGER = Logger.getLogger(HSMKeystorePKCS11Provider.class);
 
     /**
      * Constant attribute that represents the token 'PKCS11'.

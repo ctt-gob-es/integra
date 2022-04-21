@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>26/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.4, 04/03/2020.
+ * @version 1.5, 18/04/2022.
  */
 package es.gob.afirma.integraFacade;
 
@@ -35,13 +35,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.xml.crypto.MarshalException;
-import org.apache.xml.crypto.dsig.Reference;
-import org.apache.xml.crypto.dsig.XMLSignature;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.log4j.Logger;
+import org.apache.xml.crypto.MarshalException;
+import org.apache.xml.crypto.dsig.Reference;
+import org.apache.xml.crypto.dsig.XMLSignature;
 import org.apache.xml.security.c14n.CanonicalizationException;
 import org.apache.xml.security.c14n.Canonicalizer;
 import org.apache.xml.security.c14n.InvalidCanonicalizerException;
@@ -66,7 +65,7 @@ import es.gob.afirma.integraFacade.pojo.UpgradeSignatureRequest;
 import es.gob.afirma.integraFacade.pojo.VerificationReport;
 import es.gob.afirma.integraFacade.pojo.VerifyCertificateRequest;
 import es.gob.afirma.integraFacade.pojo.VerifySignatureRequest;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.signature.SignatureConstants;
 import es.gob.afirma.signature.SignatureFormatDetectorCommons;
 import es.gob.afirma.signature.SigningException;
@@ -92,7 +91,7 @@ public final class GenerateMessageRequest {
     /**
      *  Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(GenerateMessageRequest.class);
+    private static final Logger LOGGER = Logger.getLogger(GenerateMessageRequest.class);
 
     /**
      * Attribute that represents signature node name (ds:signature).

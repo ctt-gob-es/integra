@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 17/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.2, 27/09/2021.
+ * @version 1.3, 18/04/2022.
  */
 package es.gob.afirma.tsl.certValidation.impl;
 
@@ -28,7 +28,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import es.gob.afirma.tsl.logger.Logger;
 
 
 import es.gob.afirma.tsl.access.TSLProperties;
@@ -47,7 +47,7 @@ import iaik.x509.extensions.qualified.structures.etsi.QcEuSSCD;
  * <p>This class offers static methods to extract mappings of a certificate
  * validated through a TSL.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 27/09/2021.
+ * @version 1.3, 18/04/2022.
  */
 public final class TSLValidatorMappingCalculator {
     /**

@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>13/01/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 13/01/2014.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.utils;
 
@@ -33,25 +33,23 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.properties.Afirma5ServiceInvokerProperties;
 import es.gob.afirma.properties.IIntegraConstants;
 
 /**
  * <p>Class that provides functionality to control the close of resources.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 13/01/2014.
+ * @version 1.1, 18/04/2022.
  */
 public final class UtilsResourcesCommons {
 
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(UtilsResourcesCommons.class);
+    private static final Logger LOGGER = Logger.getLogger(UtilsResourcesCommons.class);
 
     /**
      * Constructor method for the class UtilsResources.java.

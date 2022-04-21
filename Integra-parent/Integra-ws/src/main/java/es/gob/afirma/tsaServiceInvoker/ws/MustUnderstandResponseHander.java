@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>04/03/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 10/03/2020.
+ * @version 1.2, 18/04/2022.
  */
 package es.gob.afirma.tsaServiceInvoker.ws;
 
@@ -28,23 +28,22 @@ import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axiom.soap.SOAPHeaderBlock;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
-import org.apache.log4j.Logger;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 
 /**
  * <p>Class that represents the handler used to manage the mustUnderstand attribute in responses.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 10/03/2020.
+ * @version 1.2, 18/04/2022.
  */
 public class MustUnderstandResponseHander extends AbstractTSAHandler {
 
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(MustUnderstandResponseHander.class);
+    private static final Logger LOGGER = Logger.getLogger(MustUnderstandResponseHander.class);
     
     /**
      * Constant attribute that represents the handler name. 

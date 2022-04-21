@@ -17,7 +17,7 @@
  * <b>Project:</b><p>@Firma and TS@ Web Services Integration Platform.</p>
  * <b>Date:</b><p>29/12/2014.</p>
  * @author Gobierno de España.
- * @version 1.2, 14/03/2017.
+ * @version 1.3, 18/04/2022.
  */
 package es.gob.afirma.integraFacade;
 
@@ -26,11 +26,9 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.properties.IIntegraConstants;
 import es.gob.afirma.properties.IntegraProperties;
 import es.gob.afirma.signature.ISignatureFormatDetector;
@@ -56,14 +54,14 @@ import es.gob.afirma.utils.UtilsResourcesSignOperations;
 /**
  * <p>Class that represents the facade which manages the generation, validation, and upgrade of signatures.</p>
  * <b>Project:</b><p>@Firma and TS@ Web Services Integration Platform.</p>
- * @version 1.2, 14/03/2017.
+ * @version 1.3, 18/04/2022.
  */
 public final class IntegraFacade {
 
     /**
      *  Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(IntegraFacade.class);
+    private static final Logger LOGGER = Logger.getLogger(IntegraFacade.class);
 
     /**
      * Constructor method for the class IntegraFacade.java.

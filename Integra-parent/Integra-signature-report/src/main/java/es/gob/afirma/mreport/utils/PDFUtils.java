@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>19/08/2020.</p>
  * @author Spanish Government.
- * @version 1.0, 19/08/2020.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.mreport.utils;
 
@@ -25,7 +25,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import es.gob.afirma.mreport.logger.Logger;
 import org.krysalis.barcode4j.tools.UnitConv;
 
 import com.lowagie.text.Document;

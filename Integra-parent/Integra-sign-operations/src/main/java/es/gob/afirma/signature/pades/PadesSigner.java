@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>13/09/2011.</p>
  * @author Gobierno de España.
- * @version 1.3, 13/04/2020.
+ * @version 1.4, 18/04/2022.
  */
 package es.gob.afirma.signature.pades;
 
@@ -41,7 +41,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 
-import org.apache.log4j.Logger;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -64,7 +63,7 @@ import com.lowagie.text.pdf.PdfString;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.signature.ISignatureFormatDetector;
 import es.gob.afirma.signature.OriginalSignedData;
 import es.gob.afirma.signature.SignatureConstants;
@@ -96,14 +95,14 @@ import es.gob.afirma.utils.UtilsTimestampPdfBc;
 /**
  * <p>Class that manages the generation, validation and upgrade of PAdES signatures.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.3, 13/04/2020.
+ * @version 1.4, 18/04/2022.
  */
 public final class PadesSigner implements Signer {
 
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(PadesSigner.class);
+    private static final Logger LOGGER = Logger.getLogger(PadesSigner.class);
 
     /**
      * Attribute that represents space reserved for content data.

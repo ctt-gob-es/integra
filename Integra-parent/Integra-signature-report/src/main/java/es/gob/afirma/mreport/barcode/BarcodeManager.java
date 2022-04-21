@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>28/08/2020.</p>
  * @author Spanish Government.
- * @version 1.0, 28/08/2020.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.mreport.barcode;
 
@@ -26,7 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+import es.gob.afirma.mreport.logger.Logger;
 import org.krysalis.barcode4j.HumanReadablePlacement;
 import org.krysalis.barcode4j.impl.AbstractBarcodeBean;
 import org.krysalis.barcode4j.impl.codabar.CodabarBean;
@@ -62,7 +62,7 @@ import es.gob.afirma.mreport.utils.UtilsBase64;
 /**
  * <p>Class for the management of bar codes.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 28/08/2020.
+ * @version 1.1, 18/04/2022.
  */
 public class BarcodeManager implements BarcodeManagerI {
 

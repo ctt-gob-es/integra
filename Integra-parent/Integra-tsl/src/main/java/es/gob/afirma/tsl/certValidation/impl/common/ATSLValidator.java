@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 16/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.4, 15/03/2022.
+ * @version 1.5, 18/04/2022.
  */
 package es.gob.afirma.tsl.certValidation.impl.common;
 
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import es.gob.afirma.tsl.logger.Logger;
 
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidator;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult;
@@ -57,7 +57,7 @@ import es.gob.afirma.tsl.utils.UtilsStringChar;
  * <p>Abstract class that represents a TSL validator with the principal functions
  * regardless it implementation.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.4, 15/03/2022.
+ * @version 1.5, 18/04/2022.
  */
 public abstract class ATSLValidator implements ITSLValidator {
 

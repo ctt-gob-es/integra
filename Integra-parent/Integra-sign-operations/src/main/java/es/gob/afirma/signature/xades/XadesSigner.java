@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>04/07/2011.</p>
  * @author Gobierno de España.
- * @version 1.9, 16/04/2020.
+ * @version 1.10, 18/04/2022.
  */
 package es.gob.afirma.signature.xades;
 
@@ -46,7 +46,6 @@ import java.util.UUID;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.log4j.Logger;
 import org.apache.xml.crypto.MarshalException;
 import org.apache.xml.crypto.XMLStructure;
 import org.apache.xml.crypto.dom.DOMStructure;
@@ -75,7 +74,7 @@ import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
 import es.gob.afirma.integraFacade.IntegraFacadeConstants;
 import es.gob.afirma.integraFacade.pojo.TransformData;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.properties.IIntegraConstants;
 import es.gob.afirma.properties.IntegraProperties;
 import es.gob.afirma.signature.ISignatureFormatDetector;
@@ -121,7 +120,7 @@ import net.java.xades.security.xml.XAdES.XAdES_EPES;
 /**
  * <p>Class for create XAdES signatures.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.9, 16/04/2020.
+ * @version 1.10, 18/04/2022.
  */
 public final class XadesSigner implements Signer {
 
@@ -133,7 +132,7 @@ public final class XadesSigner implements Signer {
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(XadesSigner.class);
+    private static final Logger LOGGER = Logger.getLogger(XadesSigner.class);
 
     /**
      * Attribute that represents default digest algorithm in the xml references.

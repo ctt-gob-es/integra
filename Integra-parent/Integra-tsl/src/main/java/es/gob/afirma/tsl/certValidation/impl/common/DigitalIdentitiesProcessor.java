@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 16/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 18/04/2022.
  */
 package es.gob.afirma.tsl.certValidation.impl.common;
 
@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import es.gob.afirma.tsl.logger.Logger;
 import org.w3.x2000.x09.xmldsig.DSAKeyValueType;
 import org.w3.x2000.x09.xmldsig.KeyValueType;
 import org.w3.x2000.x09.xmldsig.RSAKeyValueType;
@@ -48,7 +48,7 @@ import iaik.x509.extensions.SubjectKeyIdentifier;
 /** 
  * <p>Class that represents a Digital Identities Processor.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 18/04/2022.
  */
 public class DigitalIdentitiesProcessor {
 

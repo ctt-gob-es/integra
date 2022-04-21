@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>24/01/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 24/01/2014.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.mreport.i18;
 
@@ -34,12 +34,10 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Logger;
-
 /**
  * <p>Class that manages the access to the properties files used for generating messages in the platform.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 24/01/2014.
+ * @version 1.1, 18/04/2022.
  */
 public final class Language {
 

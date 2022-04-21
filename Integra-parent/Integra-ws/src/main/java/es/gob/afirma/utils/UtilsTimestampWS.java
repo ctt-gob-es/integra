@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>05/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.2, 04/03/2020.
+ * @version 1.3, 18/04/2022.
  */
 package es.gob.afirma.utils;
 
@@ -31,14 +31,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.xml.crypto.dsig.XMLSignature;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.log4j.Logger;
+import org.apache.xml.crypto.dsig.XMLSignature;
 import org.apache.xml.security.c14n.Canonicalizer;
 import org.bouncycastle.asn1.tsp.MessageImprint;
 import org.bouncycastle.cms.CMSException;
@@ -54,7 +53,7 @@ import org.xml.sax.SAXException;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.signature.SigningException;
 import es.gob.afirma.signature.xades.IXMLConstants;
 import es.gob.afirma.transformers.TransformersConstants;
@@ -68,14 +67,14 @@ import es.gob.afirma.utils.DSSConstants.ResultProcessIds;
 /**
  * <p>Class that contains methods related to the manage of timestamps.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 04/03/2020.
+ * @version 1.3, 18/04/2022.
  */
 public final class UtilsTimestampWS {
 
 	/**
 	 * Attribute that represents the object that manages the log of the class.
 	 */
-	public static final Logger LOGGER = IntegraLogger.getInstance().getLogger(UtilsTimestampWS.class);
+	public static final Logger LOGGER = Logger.getLogger(UtilsTimestampWS.class);
 
 	/**
 	 * Constructor method for the class TimestampUtils.java.

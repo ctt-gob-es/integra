@@ -17,17 +17,15 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>04/02/2011.</p>
  * @author Gobierno de España
- * @version 1.0, 04/02/2011.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.transformers.xmlTransformers;
 
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.transformers.TransformersConstants;
 import es.gob.afirma.transformers.TransformersException;
 import es.gob.afirma.transformers.TransformersProperties;
@@ -35,7 +33,7 @@ import es.gob.afirma.transformers.TransformersProperties;
 /**
  * <p>Class that represents a factory of generators for input and output parameters for web services of @Firma, eVisor and TS@.</p>
  * <b>Project:</b><p>@Firma and TS@ Web Services Integration Platform.</p>
- * @version 1.0, 04/02/2011.
+ * @version 1.1, 18/04/2022.
  */
 public final class XmlTransformersFactory {
 
@@ -48,7 +46,7 @@ public final class XmlTransformersFactory {
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static Logger logger = IntegraLogger.getInstance().getLogger(XmlTransformersFactory.class);
+    private static Logger logger = Logger.getLogger(XmlTransformersFactory.class);
 
     /**
      * Method that obtains the class used to generate the input or output parameter used for a web service.

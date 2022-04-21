@@ -17,11 +17,11 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 13/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.0, 13/11/2020.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.tsl.access;
 
-import org.apache.log4j.Logger;
+import es.gob.afirma.tsl.logger.Logger;
 
 import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
@@ -39,7 +39,7 @@ import java.util.TreeSet;
 /** 
  * <p>Class that provides access to the differents properties associated to the TSL operations.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 13/11/2020.
+ * @version 1.1, 18/04/2022.
  */
 public final class TSLProperties {
 

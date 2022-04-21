@@ -15,7 +15,7 @@
  * <b>Project:</b><p>Time Stamping Authority.</p>
  * <b>Date:</b><p>22/01/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 22/01/2014.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.rfc3161TSAServiceInvoker;
 
@@ -45,7 +45,6 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
-import org.apache.log4j.Logger;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.crypto.Digest;
@@ -59,7 +58,7 @@ import org.bouncycastle.tsp.TimeStampRequestGenerator;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.properties.IntegraProperties;
 import es.gob.afirma.properties.TSAServiceInvokerProperties;
 import es.gob.afirma.tsaServiceInvoker.TSAServiceInvokerConstants;
@@ -73,7 +72,7 @@ import es.gob.afirma.utils.UtilsResourcesCommons;
 /**
  * <p>Class that manages the generation of timestamps via TS@ RFC 3161 service (TCP, HTTPS and SSL).</p>
  * <b>Project:</b><p>Time Stamping Authority.</p>
- * @version 1.0, 22/01/2014.
+ * @version 1.1, 18/04/2022.
  */
 public class RFC3161TSAServiceInvoker {
 
@@ -85,7 +84,7 @@ public class RFC3161TSAServiceInvoker {
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(RFC3161TSAServiceInvoker.class);
+    private static final Logger LOGGER = Logger.getLogger(RFC3161TSAServiceInvoker.class);
 
     /**
      * Attribute that represents the properties defined on the configuration file.

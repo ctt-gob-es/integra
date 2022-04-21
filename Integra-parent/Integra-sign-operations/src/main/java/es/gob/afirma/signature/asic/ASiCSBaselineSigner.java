@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>27/01/2016.</p>
  * @author Gobierno de España.
- * @version 1.3, 13/04/2020.
+ * @version 1.4, 18/04/2022.
  */
 package es.gob.afirma.signature.asic;
 
@@ -27,8 +27,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.Security;
 import java.security.KeyStore.PrivateKeyEntry;
+import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,22 +40,18 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.tika.mime.MimeType;
+import org.apache.tika.mime.MimeTypeException;
+import org.apache.tika.mime.MimeTypes;
 import org.apache.xml.crypto.MarshalException;
 import org.apache.xml.crypto.dsig.DigestMethod;
 import org.apache.xml.crypto.dsig.Reference;
 import org.apache.xml.crypto.dsig.Transform;
 import org.apache.xml.crypto.dsig.XMLObject;
 import org.apache.xml.crypto.dsig.XMLSignature;
-
-import net.java.xades.security.xml.XMLSignatureElement;
-
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
-import org.apache.tika.mime.MimeType;
-import org.apache.tika.mime.MimeTypeException;
-import org.apache.tika.mime.MimeTypes;
 import org.apache.xml.security.c14n.Canonicalizer;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.cms.Attribute;
@@ -71,7 +67,7 @@ import org.w3c.dom.Node;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.signature.ISignatureFormatDetector;
 import es.gob.afirma.signature.OriginalSignedData;
 import es.gob.afirma.signature.SignatureConstants;
@@ -96,11 +92,12 @@ import es.gob.afirma.utils.UtilsResourcesCommons;
 import es.gob.afirma.utils.UtilsResourcesSignOperations;
 import es.gob.afirma.utils.UtilsSignatureCommons;
 import es.gob.afirma.utils.UtilsSignatureOp;
+import net.java.xades.security.xml.XMLSignatureElement;
 
 /**
  * <p>Class that manages the generation, validation and upgrade of ASiC-S Baseline signatures.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.3, 13/04/2020.
+ * @version 1.4, 18/04/2022.
  */
 public final class ASiCSBaselineSigner implements Signer {
 
@@ -112,7 +109,7 @@ public final class ASiCSBaselineSigner implements Signer {
     /**
      *  Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(ASiCSBaselineSigner.class);
+    private static final Logger LOGGER = Logger.getLogger(ASiCSBaselineSigner.class);
 
     /**
      * Constant attribute that represents the name of the signed file to include into the ZIP file.

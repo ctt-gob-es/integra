@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>07/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.5, 16/04/2020.
+ * @version 1.6, 18/04/2022.
  */
 package es.gob.afirma.utils;
 
@@ -57,7 +57,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
-import org.apache.log4j.Logger;
 import org.apache.xml.crypto.MarshalException;
 import org.apache.xml.crypto.dsig.Reference;
 import org.apache.xml.crypto.dsig.XMLSignature;
@@ -132,7 +131,7 @@ import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
 import es.gob.afirma.integraFacade.IntegraFacadeConstants;
 import es.gob.afirma.integraFacade.pojo.TransformData;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.properties.IIntegraConstants;
 import es.gob.afirma.properties.IntegraProperties;
 import es.gob.afirma.signature.ISignatureFormatDetector;
@@ -166,7 +165,7 @@ import net.java.xades.security.xml.XAdES.ObjectIdentifierImpl;
 /**
  * <p>Class that contains methods related to the manage of signatures.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.5, 16/04/2020.
+ * @version 1.6, 18/04/2022.
  */
 @SuppressWarnings("unchecked")
 public final class UtilsSignatureOp implements IUtilsSignature {
@@ -174,7 +173,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(UtilsSignatureOp.class);
+    private static final Logger LOGGER = Logger.getLogger(UtilsSignatureOp.class);
 
     /**
      *  Constant attribute that represents the value for the key <i>SubFilter</i> of the signature dictionary for a

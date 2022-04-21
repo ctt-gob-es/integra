@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 10/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.0, 10/11/2020.
+ * @version 1.1, 11/04/2022.
  */
 package es.gob.afirma.tsl.access;
 
@@ -32,7 +32,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
+import es.gob.afirma.tsl.logger.Logger;
 
 import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidator;
@@ -56,7 +56,7 @@ import es.gob.afirma.tsl.utils.UtilsStringChar;
 /** 
  * <p>Class that reprensents the TSL Manager for all the differents operations.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 10/10/2020.
+ * @version 1.1, 18/04/2022.
  */
 public final class TSLManager {
 

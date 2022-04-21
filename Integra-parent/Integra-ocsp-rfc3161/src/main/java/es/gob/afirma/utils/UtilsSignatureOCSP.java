@@ -17,19 +17,18 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>07/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 07/11/2014.
+ * @version 1.1, 18/04/2022.
  */
 package es.gob.afirma.utils;
 
 import java.security.cert.X509Certificate;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
 import org.bouncycastle.ocsp.OCSPRespStatus;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.ocsp.OCSPClient;
 import es.gob.afirma.ocsp.OCSPEnhancedResponse;
 import es.gob.afirma.signature.SigningException;
@@ -37,14 +36,14 @@ import es.gob.afirma.signature.SigningException;
 /**
  * <p>Class that contains methods related to the manage of signatures.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 07/11/2014.
+ * @version 1.1, 18/04/2022.
  */
 public final class UtilsSignatureOCSP {
 
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(UtilsSignatureOCSP.class);
+    private static final Logger LOGGER = Logger.getLogger(UtilsSignatureOCSP.class);
 
     /**
      * Constructor method for the class SignatureUtils.java.

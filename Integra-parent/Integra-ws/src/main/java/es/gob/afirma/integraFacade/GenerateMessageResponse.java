@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>26/11/2014.</p>
  * @author Gobierno de España.
- * @version 1.1, 06/10/2017.
+ * @version 1.2, 18/04/2022.
  */
 package es.gob.afirma.integraFacade;
 
@@ -27,8 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.log4j.Logger;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
@@ -50,7 +48,7 @@ import es.gob.afirma.integraFacade.pojo.ServerSignerResponse;
 import es.gob.afirma.integraFacade.pojo.TimestampResponse;
 import es.gob.afirma.integraFacade.pojo.VerifyCertificateResponse;
 import es.gob.afirma.integraFacade.pojo.VerifySignatureResponse;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.transformers.TransformersException;
 import es.gob.afirma.utils.Base64CoderCommons;
 import es.gob.afirma.utils.DSSConstants;
@@ -62,7 +60,7 @@ import es.gob.afirma.wsServiceInvoker.WSServiceInvokerException;
 /**
  * <p>Class that manages the generation of response messages to invoke the DSS web services of @Firma.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 06/10/2017.
+ * @version 1.2, 18/04/2022.
  */
 @SuppressWarnings("unchecked")
 public final class GenerateMessageResponse {
@@ -70,7 +68,7 @@ public final class GenerateMessageResponse {
     /**
      *  Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(GenerateMessageResponse.class);
+    private static final Logger LOGGER = Logger.getLogger(GenerateMessageResponse.class);
 
     /**
      * Constructor method for the class GenerateMessageResponse.java.

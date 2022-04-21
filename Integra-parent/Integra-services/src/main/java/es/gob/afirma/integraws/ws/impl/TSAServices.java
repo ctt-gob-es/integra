@@ -17,11 +17,9 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>12/5/2016.</p>
  * @author Gobierno de España.
- * @version 1.2, 17/03/2020.
+ * @version 1.3, 18/04/2022.
  */
 package es.gob.afirma.integraws.ws.impl;
-
-import org.apache.log4j.Logger;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
@@ -34,19 +32,19 @@ import es.gob.afirma.integraws.beans.RequestTimestamp;
 import es.gob.afirma.integraws.beans.ResponseTimestamp;
 import es.gob.afirma.integraws.ws.ITSAServices;
 import es.gob.afirma.integraws.ws.IWSConstantKeys;
-import es.gob.afirma.logger.IntegraLogger;
+import es.gob.afirma.logger.Logger;
 
 /**
  * <p>Class that contains tsa service implementations.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 17/03/2020.
+ * @version 1.3, 18/04/2022.
  */
 public class TSAServices implements ITSAServices {
 
     /**
      *  Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(TSAServices.class);
+    private static final Logger LOGGER = Logger.getLogger(TSAServices.class);
 
     /**
      * {@inheritDoc}
