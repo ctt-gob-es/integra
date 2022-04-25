@@ -124,7 +124,7 @@ public class XAdESBaselineSignerTest extends TestCase {
 	    assertTrue(false);
 	}
     }
-
+    
     /**
      * Test for methods {@link XAdESBaselineSigner#sign(byte[], String, String, PrivateKeyEntry, java.util.Properties, boolean, String, String)},
      * {@link XAdESBaselineSigner#coSign(byte[], byte[], String, PrivateKeyEntry, java.util.Properties, boolean, String, String)},

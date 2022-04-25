@@ -826,14 +826,29 @@ public final class XAdESBaselineSigner implements Signer {
      * @param transformList Parameter that represents the list with transforms to update.
      * @throws SigningException If the method fails.
      */
-    private void addCanonicalization(List<Transform> transformList) throws SigningException {
-	try {
-	    // Añadimos la transformada para la canonicalización exclusiva
-	    transformList.add(xmlSignatureFactory.newTransform(CanonicalizationMethod.EXCLUSIVE, (TransformParameterSpec) null));
-	} catch (Exception e) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG021, new Object[ ] { CanonicalizationMethod.EXCLUSIVE });
-	    LOGGER.error(errorMsg, e);
-	    throw new SigningException(errorMsg, e);
+    private void addContentTransforms(List<Transform> transformList, Properties extraParams) throws SigningException {
+	
+	// Solo canonicalizo si es XML
+	if (IXMLConstants.DATA_TYPE_XML == dataType) {
+	    
+	    String canonicalizationAlgorithm = defineCanonicalizationMethod(extraParams);
+	    
+	    try {
+		// Añadimos la transformada para la canonicalización exclusiva
+		transformList.add(xmlSignatureFactory.newTransform(canonicalizationAlgorithm, (TransformParameterSpec) null));
+	    } catch (Exception e) {
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG021, new Object[ ] { canonicalizationAlgorithm });
+		LOGGER.error(errorMsg, e);
+		throw new SigningException(errorMsg, e);
+	    }
+	    // Si no era XML y tuve que convertir a Base64 yo mismo declaro la
+	    // transformación
+	} else if (IXMLConstants.DATA_TYPE_BINARY_BASE64 == dataType) {
+	    try {
+		transformList.add(xmlSignatureFactory.newTransform(Transform.BASE64, (TransformParameterSpec) null));
+	    } catch (final GeneralSecurityException e) {
+		LOGGER.error(Language.getResIntegra(ILogConstantKeys.XS_LOG017), e);
+	    }
 	}
     }
 
@@ -905,9 +920,8 @@ public final class XAdESBaselineSigner implements Signer {
 
 	// Si la firma es Enveloping
 	if (signatureFormat.equals(SIGN_FORMAT_XADES_ENVELOPING)) {
-	    // Añadimos el algoritmo de canonicalización a la lista con las
-	    // transformadas
-	    addCanonicalization(transformList);
+	    // Añadimos las transformaciones sobre el contenido
+	    addContentTransforms(transformList, extraParams);
 
 	    // Creamos el nodo para la firma Enveloping
 	    XMLObject envelopingObject = newEnvelopingObject(referenceList, transformList, digestMethod, referenceId);
@@ -919,7 +933,7 @@ public final class XAdESBaselineSigner implements Signer {
 	    // identificador del nodo CONTENT
 	} else if (signatureFormat.equals(SIGN_FORMAT_XADES_DETACHED)) {
 	    try {
-		addCanonicalization(transformList);
+		addContentTransforms(transformList, extraParams);
 		if (signedFileName != null) {
 		    ((DataObjectFormatImpl) dataObjectFormat).setObjectReference("#" + referenceId);
 
@@ -943,6 +957,9 @@ public final class XAdESBaselineSigner implements Signer {
 	    // crea una referencia indicando que se trata de una firma enveloped
 	} else if (signatureFormat.equals(SIGN_FORMAT_XADES_ENVELOPED)) {
 	    try {
+		// Transformacion de canonizacion
+		addContentTransforms(transformList, extraParams);
+		
 		// Transformacion enveloped
 		transformList.add(xmlSignatureFactory.newTransform(Transform.ENVELOPED, (TransformParameterSpec) null));
 

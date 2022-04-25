@@ -315,12 +315,14 @@ public final class XadesSigner implements Signer {
 	// Canonicalización.
 	final List<Transform> transformList = new ArrayList<Transform>();
 
+	
+	
 	final String referenceId = "Reference-" + UUID.randomUUID().toString();
 
 	// crea una referencia al documento insertado en un nodo Object para la
 	// firma enveloping
 	if (signatureFormat.equals(SIGN_FORMAT_XADES_ENVELOPING)) {
-	    addCanonicalization(transformList);
+	    addContentTransforms(transformList, extraParams);
 	    XMLObject envelopingObject = newEnvelopingObject(referenceList, transformList, digestMethod, referenceId);
 	    // incluimos el nuevo objeto en documento a firmar
 	    xmlSignature.addXMLObject(envelopingObject);
@@ -329,7 +331,7 @@ public final class XadesSigner implements Signer {
 	    // identificador del nodo CONTENT
 	} else if (signatureFormat.equals(SIGN_FORMAT_XADES_DETACHED)) {
 	    try {
-		addCanonicalization(transformList);
+		addContentTransforms(transformList, extraParams);
 
 		// incluimos la referencia en el objeto que informa del formato
 		// del documento a firmar
@@ -346,6 +348,9 @@ public final class XadesSigner implements Signer {
 	} else if (signatureFormat.equals(SIGN_FORMAT_XADES_ENVELOPED)) {
 	    try {
 
+		// Agregamos la canonicalizacion XML (si se declara el algoritmo)
+		addXmlCanonicalizationTransform(transformList, extraParams, false);
+		
 		// Transformacion enveloped
 		transformList.add(xmlSignatureFactory.newTransform(Transform.ENVELOPED, (TransformParameterSpec) null));
 
@@ -415,16 +420,15 @@ public final class XadesSigner implements Signer {
     /**
      * Method that adds into the list with transforms the transform associated to the type of the data to sign.
      * @param transformList Parameter that represents the list with transforms to update.
+     * @param extraParams Set with the canonicalization algorithm value.
      */
-    private void addCanonicalization(List<Transform> transformList) {
+    private void addContentTransforms(List<Transform> transformList, Properties extraParams) {
 	// Solo canonicalizo si es XML
 	if (IXMLConstants.DATA_TYPE_XML == dataType) {
-	    try {
-		// Transformada para la canonicalizacion inclusiva
-		transformList.add(xmlSignatureFactory.newTransform(CanonicalizationMethod.INCLUSIVE, (TransformParameterSpec) null));
-	    } catch (final GeneralSecurityException e) {
-		LOGGER.error(Language.getResIntegra(ILogConstantKeys.XS_LOG016), e);
-	    }
+	    
+	    // Agregamos la canonicalizacion XML
+	    addXmlCanonicalizationTransform(transformList, extraParams, true);
+	    
 	    // Si no era XML y tuve que convertir a Base64 yo mismo declaro la
 	    // transformación
 	} else if (IXMLConstants.DATA_TYPE_BINARY_BASE64 == dataType) {
@@ -433,6 +437,30 @@ public final class XadesSigner implements Signer {
 	    } catch (final GeneralSecurityException e) {
 		LOGGER.error(Language.getResIntegra(ILogConstantKeys.XS_LOG017), e);
 	    }
+	}
+    }
+    
+    /**
+     * Method that adds into the list with transforms the canonicalization transform associated to the type of the data to sign.
+     * @param transformList Parameter that represents the list with transforms to update.
+     * @param extraParams Set with the canonicalization algorithm value.
+     */
+    private void addXmlCanonicalizationTransform(List<Transform> transformList, Properties extraParams, boolean required) {
+
+	String canonicalizationAlgorithm = extraParams.getProperty(SignatureProperties.XADES_CANONICALIZATION_METHOD);
+	if (canonicalizationAlgorithm == null || canonicalizationAlgorithm.isEmpty()) {
+	    // Si no se ha establecido y no es obligatorio, no se agrega
+	    if (!required) {
+		return;
+	    }
+	    canonicalizationAlgorithm = CanonicalizationMethod.INCLUSIVE;
+	}
+
+	try {
+	    // Transformada para la canonicalizacion inclusiva
+	    transformList.add(xmlSignatureFactory.newTransform(canonicalizationAlgorithm, (TransformParameterSpec) null));
+	} catch (final GeneralSecurityException e) {
+	    LOGGER.error(Language.getFormatResIntegra(ILogConstantKeys.XS_LOG016, new Object[ ] { canonicalizationAlgorithm }), e);
 	}
     }
 
