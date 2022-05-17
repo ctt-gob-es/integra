@@ -86,8 +86,12 @@ import org.bouncycastle.asn1.ess.SigningCertificate;
 import org.bouncycastle.asn1.ess.SigningCertificateV2;
 import org.bouncycastle.asn1.oiw.OIWObjectIdentifiers;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
+import org.bouncycastle.asn1.x509.GeneralName;
+import org.bouncycastle.asn1.x509.IssuerSerial;
+import org.bouncycastle.asn1.x509.X509Name;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaCertStore;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
@@ -98,6 +102,8 @@ import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
+import org.bouncycastle.jce.PrincipalUtil;
+import org.bouncycastle.jce.X509Principal;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.tsp.TSPException;
@@ -599,7 +605,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    } else if (subFilter.equals(PdfName.ADBE_PKCS7_SHA1.toString())) {
 		// Accedemos al firmante
 		SignerInformation signerInformation = ((List<SignerInformation>) signedData.getSignerInfos().getSigners()).iterator().next();
-		result = signedData.getSignedContentTypeOID().equals(PKCSObjectIdentifiers.data) && signerInformation.getDigestAlgOID().equals(OIWObjectIdentifiers.idSHA1);
+		result = signedData.getSignedContentTypeOID().equals(PKCSObjectIdentifiers.data.toString()) && signerInformation.getDigestAlgOID().equals(OIWObjectIdentifiers.idSHA1.toString());
 	    }
 	    if (!result) {
 		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG035, new Object[ ] { dictionarySignature.getName() });
@@ -3012,109 +3018,95 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // Accedemos al conjunto de atributos firmados
 	    AttributeTable signedAttrs = signerInformation.getSignedAttributes();
 
-	    // Definimos un valor que indica si el certificado firmante se
-	    // incluye en el atributo firmado SigningCertificate (true)
-	    // o en el atributo firmado SigningCertificateV2 (false)
-	    boolean isSigningCertificate = true;
+	    // Conforme a la RFC 5035, el certificado firmante puede encontrarse en el se
+	    // atributo firmado SigningCertificateV2 y/o en el atributo firmado
+	    // SigningCertificate. Se validara, en el que se encuentre o en ambos si
+	    // se diese el caso
 
+	    // Accedemos al atributo SigningCertificateV2
+	    Attribute attSigningCertificateV2 = signedAttrs.get(PKCSObjectIdentifiers.id_aa_signingCertificateV2);
+	    
 	    // Accedemos al atributo SigningCertificate
 	    Attribute attSigningCertificate = signedAttrs.get(PKCSObjectIdentifiers.id_aa_signingCertificate);
 
-	    // Si el atributo SigningCertificate es nulo obtenemos el atributo
-	    // SigningCertificateV2
-	    if (attSigningCertificate == null) {
-		isSigningCertificate = false;
-		attSigningCertificate = signedAttrs.get(PKCSObjectIdentifiers.id_aa_signingCertificateV2);
-	    }
-
 	    // Si el certificado firmante no se ha incluído en los atributos
 	    // firmados, devolvemos error
-	    if (attSigningCertificate == null) {
+	    if (attSigningCertificateV2 == null && attSigningCertificate == null) {
 		String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG159);
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
-	    // Si el certificado firmante se ha incluído en los atributos
-	    // firmados
-	    else {
+	    
+	    // Se valida el atributo SigningCertificateV2 si se ha encontrado
+	    if (attSigningCertificateV2 != null) {
+		LOGGER.info(Language.getFormatResIntegra(ILogConstantKeys.US_LOG164, new Object[ ] { signingCertificate.getSubjectDN().getName() }));
+
+		// Obtenemos el objeto SigningCertificateV2
+		SigningCertificateV2 signingCertificatev2 = SigningCertificateV2.getInstance(attSigningCertificateV2.getAttrValues().getObjectAt(0));
+
+		// Comprobamos que el certificado indicado en el atributo
+		// firmando SigningCertificateV2 coincide con el certificado
+		// firmante
+		ESSCertIDv2 essCertID = signingCertificatev2.getCerts()[0];
+
+		// Obtenemos el hash asociado al certificado incluído en
+		// el atributo firmado SigningCertificateV2
+		byte[ ] signingCertificateV2Hash = essCertID.getCertHash();
+
+		// Obtenemos el algoritmo de hash utilizado en el atributo
+		// firmado SigningCertificateV2
+		AlgorithmIdentifier ai2 = essCertID.getHashAlgorithm();
+		String hashAlgorithm = CryptoUtilPdfBc.translateAlgorithmIdentifier(ai2);
+		
+		final String attrName = "SigningCertificateV2";
+		
+		// Comprobamos que el hash del certificado de firma sea el declarado 
+		validateCertificateHash(signingCertificate, signingCertificateV2Hash, hashAlgorithm, attrName);
+					
+		// Comprobamos que el numero de serie y emisor del certificado de firma sean los declarados
+		validateCertificateIssuerSerial(signingCertificate, essCertID.getIssuerSerial(), attrName);
+
+		// Informamos de que la validación ha sido correcta
+		LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.US_LOG163, new Object[ ] { attrName, signingCertificate.getSubjectDN().getName() }));
+	    }
+	    
+	    // Se valida el atributo SigningCertificate si se ha encontrado
+	    if (attSigningCertificate != null) {
 		LOGGER.info(Language.getFormatResIntegra(ILogConstantKeys.US_LOG160, new Object[ ] { signingCertificate.getSubjectDN().getName() }));
+		
+		// Obtenemos el objeto SigningCertificate
+		SigningCertificate signingCertificatev1 = SigningCertificate.getInstance(attSigningCertificate.getAttrValues().getObjectAt(0));
 
-		// Si el certificado firmante se incluye en el atributo firmado
-		// SigningCertificate
-		if (isSigningCertificate) {
-		    // Obtenemos el objeto SigningCertificate
-		    SigningCertificate signingCertificatev1 = SigningCertificate.getInstance(attSigningCertificate.getAttrValues().getObjectAt(0));
+		// Comprobamos que el algoritmo usado para codificar los
+		// datos haya sido SHA-1
+		if (signingCertificatev1.getCerts()[0].getCertHash().length != NumberConstants.INT_20) {
+		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG161, new Object[ ] { signingCertificate.getSubjectDN().getName() });
+		    LOGGER.error(errorMsg);
+		    throw new SigningException(errorMsg);
+		} else {
+		    // Comprobamos que el certificado indicado en el
+		    // atributo firmando SigningCertificate coincide con el
+		    // certificado firmante
+		    ESSCertID essCertID = signingCertificatev1.getCerts()[0];
 
-		    // Comprobamos que el algoritmo usado para codificar los
-		    // datos haya sido SHA-1
-		    if (signingCertificatev1.getCerts()[0].getCertHash().length != NumberConstants.INT_20) {
-			String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG161, new Object[ ] { signingCertificate.getSubjectDN().getName() });
-			LOGGER.error(errorMsg);
-			throw new SigningException(errorMsg);
-		    } else {
-			// Comprobamos que el certificado indicado en el
-			// atributo firmando SigningCertificate coincide con el
-			// certificado firmante
-			ESSCertID essCertID = signingCertificatev1.getCerts()[0];
+		    // Obtenemos el hash asociado al certificado
+		    // incluído en el atributo firmado
+		    // SigningCertificate
+		    byte[ ] signingCertificateV1Hash = essCertID.getCertHash();
 
-			// Obtenemos el hash asociado al certificado
-			// incluído en el atributo firmado
-			// SigningCertificate
-			byte[ ] signingCertificateV1Hash = essCertID.getCertHash();
-
-			// Obtenemos el hash del certificado firmante
-			MessageDigest md = MessageDigest.getInstance(ICryptoUtil.HASH_ALGORITHM_SHA1, BouncyCastleProvider.PROVIDER_NAME);
-			byte[ ] signingCertificateHash = md.digest(signingCertificate.getEncoded());
-
-			// Comprobamos que los hash coincidan
-			if (!Arrays.equals(signingCertificateV1Hash, signingCertificateHash)) {
-			    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG162, new Object[ ] { signingCertificate.getSubjectDN().getName() });
-			    LOGGER.error(errorMsg);
-			    throw new SigningException(errorMsg);
-			} else {
-			    // Informamos de que la validación ha sido
-			    // correcta
-			    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.US_LOG163, new Object[ ] { signingCertificate.getSubjectDN().getName() }));
-			}
-		    }
-		}
-		// Si el certificado firmante se incluye en el atributo firmado
-		// SigningCertificateV2
-		else {
-		    LOGGER.info(Language.getFormatResIntegra(ILogConstantKeys.US_LOG164, new Object[ ] { signingCertificate.getSubjectDN().getName() }));
-
-		    // Obtenemos el objeto SigningCertificateV2
-		    SigningCertificateV2 signingCertificatev2 = SigningCertificateV2.getInstance(attSigningCertificate.getAttrValues().getObjectAt(0));
-
-		    // Comprobamos que el certificado indicado en el atributo
-		    // firmando SigningCertificateV2 coincide con el certificado
-		    // firmante
-		    ESSCertIDv2 essCertID = signingCertificatev2.getCerts()[0];
-
-		    // Obtenemos el hash asociado al certificado incluído en
-		    // el atributo firmado SigningCertificateV2
-		    byte[ ] signingCertificateV2Hash = essCertID.getCertHash();
-
-		    // Obtenemos el algoritmo de hash utilizado en el atributo
-		    // firmado SigningCertificateV2
-		    AlgorithmIdentifier ai2 = essCertID.getHashAlgorithm();
-		    String hashAlgorithm = CryptoUtilPdfBc.translateAlgorithmIdentifier(ai2);
-
-		    // Obtenemos el hash del certificado firmante
-		    MessageDigest md = MessageDigest.getInstance(hashAlgorithm, new BouncyCastleProvider());
-		    byte[ ] signingCertificateHash = md.digest(signingCertificate.getEncoded());
-
-		    // Comprobamos que los hash coincidan
-		    if (!Arrays.equals(signingCertificateV2Hash, signingCertificateHash)) {
-			String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG165, new Object[ ] { signingCertificate.getSubjectDN().getName() });
-			LOGGER.error(errorMsg);
-			throw new SigningException(errorMsg);
-		    } else {
-			// Informamos de que la validación ha sido correcta
-			LOGGER.info(Language.getFormatResIntegra(ILogConstantKeys.US_LOG166, new Object[ ] { signingCertificate.getSubjectDN().getName() }));
-		    }
+		    final String attrName = "SigningCertificate";
+		    
+		    // Comprobamos que el hash del certificado de firma sea el declarado
+		    validateCertificateHash(signingCertificate, signingCertificateV1Hash, ICryptoUtil.HASH_ALGORITHM_SHA1, attrName);
+		    
+		    // Comprobamos que el numero de serie y emisor del certificado de firma sean los declarados
+		    validateCertificateIssuerSerial(signingCertificate, essCertID.getIssuerSerial(), attrName);
+		    
+		    // Informamos de que la validación ha sido correcta
+		    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.US_LOG163, new Object[ ] { attrName, signingCertificate.getSubjectDN().getName() }));
 		}
 	    }
+
 	} catch (NoSuchAlgorithmException e) {
 	    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG167);
 	    LOGGER.error(errorMsg, e);
@@ -3132,6 +3124,72 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	}
     }
 
+    /**
+     * Method that validates if the issuer and serial number of the certificate.
+     * @param cert Parameter that represents the signing certificate.
+     * @param hash Parameter that represents the hash from the signature.
+     * @param hashAlgorithm Parameter that represents the hash algorithm with the hash was calculated.
+     * @param attrName Attribute name from the IssuerSerial was extracted.
+     * @throws NoSuchAlgorithmException If the hashAlgorithm is not supported.
+     * @throws NoSuchProviderException If the security BC provider is not installed.
+     * @throws CertificateEncodingException If the certificate can not be decoded.
+     * @throws SigningException If the validation fails.
+     */
+    private static void validateCertificateHash(X509Certificate cert, byte[] hash, String hashAlgorithm, String attrName)
+	    throws NoSuchAlgorithmException, NoSuchProviderException, CertificateEncodingException, SigningException {
+
+	// Obtenemos el hash del certificado firmante
+	MessageDigest md = MessageDigest.getInstance(hashAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
+	byte[ ] signingCertificateHash = md.digest(cert.getEncoded());
+
+	// Comprobamos que los hash coincidan
+	if (!Arrays.equals(hash, signingCertificateHash)) {
+	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG162, new Object[ ] { attrName, cert.getSubjectDN().getName() });
+	    LOGGER.error(errorMsg);
+	    throw new SigningException(errorMsg);
+	}
+    }
+
+    /**
+     * Method that validates if the issuer and serial number of the certificate.
+     * @param cert Parameter that represents the signing certificate.
+     * @param signedData Parameter that represents the IssuerSerial from the signature.
+     * @param attrName Attribute name from the IssuerSerial was extracted. 
+     * @throws CertificateEncodingException If the certificate can't decoded.
+     * @throws SigningException If the validation fails.
+     */
+    private static void validateCertificateIssuerSerial(X509Certificate cert, IssuerSerial issuerSerial, String attrName)
+	    throws CertificateEncodingException, SigningException {
+	
+	// Solo realizamos la validacion si se proporciona IssuerSerial
+	if (issuerSerial != null) {
+	    
+	    // El numero de serie debe coincidir con el del certificado
+	    if (!issuerSerial.getSerial().getValue().equals(cert.getSerialNumber())) {
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG165, new Object[ ] { attrName, cert.getSubjectDN().getName() });
+		LOGGER.error(errorMsg);
+		throw new SigningException(errorMsg);
+	    }
+
+	    // El Principal indicado debe ser el del emisot del certificado
+	    GeneralName[]   names = issuerSerial.getIssuer().getNames();
+	    X509Principal   principal = PrincipalUtil.getIssuerX509Principal(cert);
+	    boolean         found = false;
+	    for (int i = 0; i != names.length; i++) {
+		if (names[i].getTagNo() == 4 && new X509Principal(X509Name.getInstance(names[i].getName())).equals(principal)) {
+		    found = true;
+		    break;
+		}
+	    }
+
+	    if (!found) {
+		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG166, new Object[ ] { attrName, cert.getSubjectDN().getName() });
+		LOGGER.error(errorMsg);
+		throw new SigningException(errorMsg);
+	    }
+	}
+    }
+    
     /**
      * Method that validates if the signing time of a signature is previous than certain date.
      * @param signedData Parameter that represents the signed data.
@@ -4187,7 +4245,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 		// Comprobamos que la firma incluye el resumen en SHA-1 de los
 		// datos firmados
-		if (!signedData.getSignedContentTypeOID().equals(PKCSObjectIdentifiers.data) && signerInformation.getDigestAlgOID().equals(OIWObjectIdentifiers.idSHA1)) {
+		if (!signedData.getSignedContentTypeOID().equals(PKCSObjectIdentifiers.data.toString()) && signerInformation.getDigestAlgOID().equals(OIWObjectIdentifiers.idSHA1.toString())) {
 		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG214, new Object[ ] { signatureDictionary.getName(), PdfName.ADBE_PKCS7_SHA1.toString() });
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);

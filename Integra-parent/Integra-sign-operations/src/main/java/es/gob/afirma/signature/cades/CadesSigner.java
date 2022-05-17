@@ -107,7 +107,9 @@ public final class CadesSigner implements Signer {
      */
     public byte[ ] sign(byte[ ] data, String algorithm, String signatureFormat, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID, String idClient) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.CS_LOG004));
-	boolean isExplicitHash = signatureFormat.equals(SignatureConstants.SIGN_MODE_EXPLICIT_HASH);
+	
+	final String mode = signatureFormat == null ? SignatureConstants.DEFAULT_SIGN_MODE : signatureFormat;
+	boolean isExplicitHash = mode.equals(SignatureConstants.SIGN_MODE_EXPLICIT_HASH);
 
 	// Validación de los parámetros de entrada
 	checkInputs(isExplicitHash, algorithm, data, privateKey);
@@ -134,8 +136,6 @@ public final class CadesSigner implements Signer {
 	try {
 	    // oid para elemento EncapsulatedContentInfo
 	    Oid dataType = new Oid(PKCSObjectIdentifiers.data.getId());
-
-	    final String mode = signatureFormat == null ? SignatureConstants.DEFAULT_SIGN_MODE : signatureFormat;
 
 	    // verificación de la inclusión contenido en la firma
 	    boolean includeContent = true;

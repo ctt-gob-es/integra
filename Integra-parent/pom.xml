@@ -33,7 +33,29 @@
 		<version.Integra.encryption>2.2.2_000</version.Integra.encryption>
 		<version.Integra.signature-report>2.2.2_000</version.Integra.signature-report>
 		<version.Integra.commons.tsl>2.2.2_000</version.Integra.commons.tsl>
+		<version.bouncycastle>1.46</version.bouncycastle>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+		
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcprov-jdk16</artifactId>
+				<version>${version.bouncycastle}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcmail-jdk16</artifactId>
+				<version>${version.bouncycastle}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bctsp-jdk16</artifactId>
+				<version>${version.bouncycastle}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<!-- **************************************************************** -->
 	<!-- CONFIGURACIÓN REPOSITORIOS MAVEN: JBOSS Y MAVEN CENTRAL -->

@@ -226,3 +226,4 @@ public final class Language {
 	return new MessageFormat(resIntegraTsl.getString(key), currentLocale).format(values);
     }
 }
+
