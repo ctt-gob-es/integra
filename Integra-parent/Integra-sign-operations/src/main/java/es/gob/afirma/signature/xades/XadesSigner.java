@@ -1040,7 +1040,8 @@ public final class XadesSigner implements Signer {
 	    String idSignValue = signatureValue.getAttribute(IXMLConstants.ATTRIBUTE_ID);
 
 	    // Creamos la referencia
-	    List<Transform> transformList = Collections.singletonList(xmlSignatureFactory.newTransform(CanonicalizationMethod.INCLUSIVE, (TransformParameterSpec) null));
+	    String canonicalizationAlgorithm = defineCanonicalizationMethod(extraParams);
+	    List<Transform> transformList = Collections.singletonList(xmlSignatureFactory.newTransform(canonicalizationAlgorithm, (TransformParameterSpec) null));
 	    String referenceId = "Reference-" + UUID.randomUUID().toString();
 	    Reference reference = xmlSignatureFactory.newReference("#" + idSignValue, getDigestMethod(), transformList, IXMLConstants.COUNTER_SIGN_URI, referenceId);
 

@@ -50,7 +50,7 @@ import junit.framework.TestCase;
  */
 public class XAdESBaselineCanonicalizationTest extends TestCase {
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     
     /**
      * Constant attribute that represents the message which identifies an exception isn't thrown. 

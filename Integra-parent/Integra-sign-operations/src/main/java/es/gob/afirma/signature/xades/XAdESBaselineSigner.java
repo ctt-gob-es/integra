@@ -1841,7 +1841,7 @@ public final class XAdESBaselineSigner implements Signer {
 	    // firma XAdES previa
 	    Document signDocument = UtilsSignatureCommons.getDocumentFromXML(signature);
 
-	    // Obtenemos del modo de firma (Enveloping, Enveloped o Detached) de
+	    // Obtenemos el modo de firma (Enveloping, Enveloped o Detached) de
 	    // la firma XAdES previa
 	    String signType = UtilsSignatureOp.getTypeOfXMLSignature(signDocument);
 
@@ -2029,7 +2029,8 @@ public final class XAdESBaselineSigner implements Signer {
 	    String idSignValue = signatureValue.getAttribute(IXMLConstants.ATTRIBUTE_ID);
 
 	    // Creamos la referencia
-	    List<Transform> transformList = Collections.singletonList(xmlSignatureFactory.newTransform(CanonicalizationMethod.INCLUSIVE, (TransformParameterSpec) null));
+	    String canonicalizationAlgorithm = defineCanonicalizationMethod(extraParams);
+	    List<Transform> transformList = Collections.singletonList(xmlSignatureFactory.newTransform(canonicalizationAlgorithm, (TransformParameterSpec) null));
 	    String referenceId = "Reference-" + UUID.randomUUID().toString();
 	    Reference reference = xmlSignatureFactory.newReference("#" + idSignValue, getDigestMethod(), transformList, IXMLConstants.COUNTER_SIGN_URI, referenceId);
 
