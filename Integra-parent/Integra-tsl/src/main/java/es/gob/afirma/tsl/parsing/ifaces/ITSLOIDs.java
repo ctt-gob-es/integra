@@ -18,16 +18,16 @@
  * <b>Project:</b><p>Platform for detection and validation of certificates recognized in European TSL.</p>
  * <b>Date:</b><p>11/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 15/09/2022.
  */
 package es.gob.afirma.tsl.parsing.ifaces;
 
-import iaik.asn1.ObjectID;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 
 /**
  * <p>Interface that defines all the constants OIDs for the TSL.</p>
  * <b>Project:</b><p>Platform for detection and validation of certificates recognized in European TSL.</p>
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 15/09/2022.
  */
 public interface ITSLOIDs {
 
@@ -46,11 +46,11 @@ public interface ITSLOIDs {
 	 * Constant attribute that represents the OID for the X509v3 extended key usage extension
 	 * for TSL signing.
 	 */
-	ObjectID OID_TSL_SIGNING = new ObjectID(STRING_OID_TSL_SIGNING);
+	ASN1ObjectIdentifier OID_TSL_SIGNING = new ASN1ObjectIdentifier(STRING_OID_TSL_SIGNING);
 	/**
 	 * Constant attribute that represents the OID for the X509v3 extension QCStatement - QcCompliance.
 	 */
-	ObjectID OID_QCSTATEMENT_EXT_COMPLIANCE = new ObjectID("0.4.0.1862.1.1", "QcCompliance");
+	ASN1ObjectIdentifier OID_QCSTATEMENT_EXT_COMPLIANCE = new ASN1ObjectIdentifier("0.4.0.1862.1.1").intern();
 
 	/**
 	 * Constant attribute that represents the token representation for the X509v3 extension QCStatement - QcCompliance.
@@ -60,7 +60,7 @@ public interface ITSLOIDs {
 	/**
 	 * Constant attribute that represents the OID for the X509v3 extension QCStatement - EuType.
 	 */
-	ObjectID OID_QCSTATEMENT_EXT_EUTYPE = new ObjectID("0.4.0.1862.1.6", "QcType");
+	ASN1ObjectIdentifier OID_QCSTATEMENT_EXT_EUTYPE = new ASN1ObjectIdentifier("0.4.0.1862.1.6").intern();
 
 	/**
 	 * Constant attribute that represents the token representation for the X509v3 extension QCStatement - EuType.
@@ -70,8 +70,7 @@ public interface ITSLOIDs {
 	/**
 	 * Constant attribute that represents the OID for the X509v3 extension QCStatement - EuType - ESign.
 	 */
-	ObjectID OID_QCSTATEMENT_EXT_EUTYPE_ESIGN = new ObjectID("0.4.0.1862.1.6.1", "id-etsi-qct-esign");
-
+	ASN1ObjectIdentifier OID_QCSTATEMENT_EXT_EUTYPE_ESIGN = new ASN1ObjectIdentifier("0.4.0.1862.1.6.1").intern();
 	/**
 	 * Constant attribute that represents the token representation for the X509v3 extension QCStatement - EuType - ESign.
 	 */
@@ -80,7 +79,7 @@ public interface ITSLOIDs {
 	/**
 	 * Constant attribute that represents the OID for the X509v3 extension QCStatement - EuType - ESeal.
 	 */
-	ObjectID OID_QCSTATEMENT_EXT_EUTYPE_ESEAL = new ObjectID("0.4.0.1862.1.6.2", "id-etsi-qct-eseal");
+	ASN1ObjectIdentifier OID_QCSTATEMENT_EXT_EUTYPE_ESEAL = new ASN1ObjectIdentifier("0.4.0.1862.1.6.2").intern();
 
 	/**
 	 * Constant attribute that represents the token representation for the X509v3 extension QCStatement - EuType - ESeal.
@@ -90,8 +89,7 @@ public interface ITSLOIDs {
 	/**
 	 * Constant attribute that represents the OID for the X509v3 extension QCStatement - EuType - Web.
 	 */
-	ObjectID OID_QCSTATEMENT_EXT_EUTYPE_WEB = new ObjectID("0.4.0.1862.1.6.3", "id-etsi-qct-web");
-
+	ASN1ObjectIdentifier OID_QCSTATEMENT_EXT_EUTYPE_WEB = new ASN1ObjectIdentifier("0.4.0.1862.1.6.3").intern();
 	/**
 	 * Constant attribute that represents the token representation for the X509v3 extension QCStatement - EuType - Web.
 	 */
@@ -100,8 +98,7 @@ public interface ITSLOIDs {
 	/**
 	 * Constant attribute that represents the OID for the Policy Identifier for qcp-public-with-sscd.
 	 */
-	ObjectID OID_POLICY_IDENTIFIER_QCP_PUBLIC_WITH_SSCD = new ObjectID("0.4.0.1456.1.1", "qcp-public-with-sscd");
-
+	ASN1ObjectIdentifier OID_POLICY_IDENTIFIER_QCP_PUBLIC_WITH_SSCD = new ASN1ObjectIdentifier("0.4.0.1456.1.1").intern();
 	/**
 	 * Constant attribute that represents the token representation for the Policy Identifier for qcp-public-with-sscd.
 	 */
@@ -110,7 +107,7 @@ public interface ITSLOIDs {
 	/**
 	 * Constant attribute that represents the OID for the Policy Identifier for qcp-public.
 	 */
-	ObjectID OID_POLICY_IDENTIFIER_QCP_PUBLIC = new ObjectID("0.4.0.1456.1.2", "qcp-public");
+	ASN1ObjectIdentifier OID_POLICY_IDENTIFIER_QCP_PUBLIC = new ASN1ObjectIdentifier("0.4.0.1456.1.2").intern();
 	/**
 	 * Constant attribute that represents the token representation for the Policy Identifier for qcp-public.
 	 */
@@ -119,7 +116,7 @@ public interface ITSLOIDs {
 	/**
 	 * Constant attribute that represents the OID for the Policy Identifier for qcp-natural.
 	 */
-	ObjectID OID_POLICY_IDENTIFIER_QCP_NATURAL = new ObjectID("0.4.0.194112.1.0", "qcp-natural");
+	ASN1ObjectIdentifier OID_POLICY_IDENTIFIER_QCP_NATURAL = new ASN1ObjectIdentifier("0.4.0.194112.1.0").intern();
 	/**
 	 * Constant attribute that represents the token representation for the Policy Identifier for qcp-natural.
 	 */
@@ -128,7 +125,7 @@ public interface ITSLOIDs {
 	/**
 	 * Constant attribute that represents the OID for the Policy Identifier for qcp-legal.
 	 */
-	ObjectID OID_POLICY_IDENTIFIER_QCP_LEGAL = new ObjectID("0.4.0.194112.1.1", "qcp-legal");
+	ASN1ObjectIdentifier OID_POLICY_IDENTIFIER_QCP_LEGAL = new ASN1ObjectIdentifier("0.4.0.194112.1.1").intern();
 
 	/**
 	 * Constant attribute that represents the token representation for the Policy Identifier for qcp-legal.
@@ -138,7 +135,7 @@ public interface ITSLOIDs {
 	/**
 	 * Constant attribute that represents the OID for the Policy Identifier for qcp-natural-qscd.
 	 */
-	ObjectID OID_POLICY_IDENTIFIER_QCP_NATURAL_QSCD = new ObjectID("0.4.0.194112.1.2", "qcp-natural-qscd");
+	ASN1ObjectIdentifier OID_POLICY_IDENTIFIER_QCP_NATURAL_QSCD = new ASN1ObjectIdentifier("0.4.0.194112.1.2").intern();
 
 	/**
 	 * Constant attribute that represents the token representation for the Policy Identifier for qcp-natural-qscd.
@@ -148,8 +145,7 @@ public interface ITSLOIDs {
 	/**
 	 * Constant attribute that represents the OID for the Policy Identifier for qcp-legal-qscd.
 	 */
-	ObjectID OID_POLICY_IDENTIFIER_QCP_LEGAL_QSCD = new ObjectID("0.4.0.194112.1.3", "qcp-legal-qscd");
-
+	ASN1ObjectIdentifier OID_POLICY_IDENTIFIER_QCP_LEGAL_QSCD = new ASN1ObjectIdentifier("0.4.0.194112.1.3").intern();
 	/**
 	 * Constant attribute that represents the token representation for the Policy Identifier for qcp-legal-qscd.
 	 */
@@ -158,7 +154,7 @@ public interface ITSLOIDs {
 	/**
 	 * Constant attribute that represents the OID for the Policy Identifier for qcp-web.
 	 */
-	ObjectID OID_POLICY_IDENTIFIER_QCP_WEB = new ObjectID("0.4.0.194112.1.4", "qcp-web");
+	ASN1ObjectIdentifier OID_POLICY_IDENTIFIER_QCP_WEB = new ASN1ObjectIdentifier("0.4.0.194112.1.4").intern();
 
 	/**
 	 * Constant attribute that represents the token representation for the Policy Identifier for qcp-web.

@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 17/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.4, 18/04/2022.
+ * @version 1.5, 19/09/2022.
  */
 package es.gob.afirma.tsl.certValidation.impl.ts119612.v020101;
 
@@ -50,7 +50,7 @@ import es.gob.afirma.tsl.utils.UtilsStringChar;
  * <p>Class that represents a TSL Validator implementation for the
  * ETSI TS 119612 2.1.1 specification.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.4, 18/04/2022.
+ * @version 1.5, 19/09/2022.
  */
 public class TSLValidator extends ATSLValidator {
 
@@ -303,7 +303,7 @@ public class TSLValidator extends ATSLValidator {
 
 	    // Vamos comprobando de mayor requirimiento a menos...
 	    // Primero autenticación servidor...
-	    result = asiForWSA && (tslCertExtAnalyzer.hasQcStatementEuTypeExtensionOid(ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE_WEB.getID()) || tslCertExtAnalyzer.hasSomeCertPolPolInfExtensionOid(ITSLValidatorOtherConstants.POLICYIDENTIFIERS_OIDS_FOR_WSA_CERTS_LIST));
+	    result = asiForWSA && (tslCertExtAnalyzer.hasQcStatementEuTypeExtensionOid(ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE_WEB.getId()) || tslCertExtAnalyzer.hasSomeCertPolPolInfExtensionOid(ITSLValidatorOtherConstants.POLICYIDENTIFIERS_OIDS_FOR_WSA_CERTS_LIST));
 	    if (result) {
 		LOGGER.info(Language.getResIntegraTsl(ILogTslConstant.TV_LOG028));
 		validationResult.setMappingClassification(ITSLValidatorResult.MAPPING_CLASSIFICATION_WSA);
@@ -311,7 +311,7 @@ public class TSLValidator extends ATSLValidator {
 	    } else {
 
 		// Sello...
-		result = asiForESeal && (tslCertExtAnalyzer.hasQcStatementEuTypeExtensionOid(ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE_ESEAL.getID()) || tslCertExtAnalyzer.hasSomeCertPolPolInfExtensionOid(ITSLValidatorOtherConstants.POLICYIDENTIFIERS_OIDS_FOR_ESEAL_CERTS_LIST));
+		result = asiForESeal && (tslCertExtAnalyzer.hasQcStatementEuTypeExtensionOid(ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE_ESEAL.getId()) || tslCertExtAnalyzer.hasSomeCertPolPolInfExtensionOid(ITSLValidatorOtherConstants.POLICYIDENTIFIERS_OIDS_FOR_ESEAL_CERTS_LIST));
 		if (result) {
 
 		    validationResult.setMappingClassification(ITSLValidatorResult.MAPPING_CLASSIFICATION_ESEAL);

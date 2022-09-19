@@ -17,19 +17,19 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 16/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 19/09/2022.
  */
 package es.gob.afirma.tsl.certValidation.impl.common;
 
-import iaik.x509.X509CRL;
-import iaik.x509.X509Certificate;
-import iaik.x509.ocsp.BasicOCSPResponse;
+
 
 import java.security.PublicKey;
 import java.util.Date;
 import java.util.Map;
 
-
+import java.security.cert.X509CRL;
+import java.security.cert.X509Certificate;
+import org.bouncycastle.cert.ocsp.BasicOCSPResp;
 
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult;
 import es.gob.afirma.tsl.exceptions.TSLCertificateValidationException;
@@ -44,7 +44,7 @@ import es.gob.afirma.tsl.parsing.impl.common.TrustServiceProvider;
 /** 
  * <p>Class that represents a TSL validation result.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 19/09/2022.
  */
 public class TSLValidatorResult implements ITSLValidatorResult {
 
@@ -208,7 +208,7 @@ public class TSLValidatorResult implements ITSLValidatorResult {
 	/**
 	 * Attribute that represents the Basic OCSP Response selected how revocation value.
 	 */
-	private BasicOCSPResponse basicOcspResponse = null;
+	private BasicOCSPResp basicOcspResponse = null;
 
 	/**
 	 * Attribute that represents the CRL selected how revocation value.
@@ -250,6 +250,7 @@ public class TSLValidatorResult implements ITSLValidatorResult {
 			tslNextUpdate = tslObject.getSchemeInformation().getNextUpdate();
 		}
 	}
+	
 
 	/**
 	 * {@inheritDoc}
@@ -707,7 +708,7 @@ public class TSLValidatorResult implements ITSLValidatorResult {
 	 * @see es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult#getRevocationValueBasicOCSPResponse()
 	 */
 	@Override
-	public BasicOCSPResponse getRevocationValueBasicOCSPResponse() {
+	public BasicOCSPResp getRevocationValueBasicOCSPResp() {
 		return basicOcspResponse;
 	}
 
@@ -716,7 +717,7 @@ public class TSLValidatorResult implements ITSLValidatorResult {
 	 * @see es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult#setRevocationValueBasicOCSPResponse(org.bouncycastle.cert.ocsp.BasicOCSPResp)
 	 */
 	@Override
-	public void setRevocationValueBasicOCSPResponse(BasicOCSPResponse bor) {
+	public void setRevocationValueBasicOCSPResp(BasicOCSPResp bor) {
 		basicOcspResponse = bor;
 	}
 
@@ -815,7 +816,7 @@ public class TSLValidatorResult implements ITSLValidatorResult {
 		setMappingQSCD(ITSLValidatorResult.MAPPING_QSCD_UNKNOWN);
 		clearIssuerData();
 		setMappings(null);
-		setRevocationValueBasicOCSPResponse(null);
+		setRevocationValueBasicOCSPResp(null);
 		setRevocationValueCRL(null);
 		setRevocationValueURL(null);
 

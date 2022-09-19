@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 17/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.3, 18/04/2022.
+ * @version 1.4, 19/09/2022.
  */
 package es.gob.afirma.tsl.certValidation.impl;
 
@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.bouncycastle.asn1.x509.qualified.ETSIQCObjectIdentifiers;
 
 import es.gob.afirma.tsl.logger.Logger;
 
@@ -41,13 +43,12 @@ import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.parsing.ifaces.ITSLOIDs;
 import es.gob.afirma.tsl.parsing.impl.common.TSLCertificateExtensionAnalyzer;
 import es.gob.afirma.tsl.utils.UtilsStringChar;
-import iaik.x509.extensions.qualified.structures.etsi.QcEuSSCD;
 
 /** 
  * <p>This class offers static methods to extract mappings of a certificate
  * validated through a TSL.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.3, 18/04/2022.
+ * @version 1.4, 19/09/2022.
  */
 public final class TSLValidatorMappingCalculator {
     /**
@@ -211,7 +212,7 @@ public final class TSLValidatorMappingCalculator {
 	 *   <li>{@link ITslMappingConstants#MAPPING_VALUE_YES}</li>
 	 *   <li>{@link ITslMappingConstants#MAPPING_VALUE_NO}</li>
 	 * </ul>
-	 * @throws TSLValidationException In case of some error parsing the input certificate with IAIK provider.
+	 * @throws TSLValidationException In case of some error parsing the input certificate with BC provider.
 	 */
 	public static String getMappingTypeQualifiedFromCertificate(TSLCertificateExtensionAnalyzer tslCertExtAnalyzer) throws TSLValidationException {
 	   
@@ -252,7 +253,7 @@ public final class TSLValidatorMappingCalculator {
 	 *   <li>{@link ITslMappingConstants#MAPPING_VALUE_CLASSIFICATION_WSA}</li>
 	 *   <li>{@link ITslMappingConstants#MAPPING_VALUE_CLASSIFICATION_TSA}</li>
 	 * </ul>
-	 * @throws TSLValidationException In case of some error parsing the input certificate with IAIK provider.
+	 * @throws TSLValidationException In case of some error parsing the input certificate with BC provider.
 	 */
 	public static String getMappingClassificationFromCertificate(TSLCertificateExtensionAnalyzer tslCertExtAnalyzer, boolean translateMapping) throws TSLValidationException {
 
@@ -264,15 +265,15 @@ public final class TSLValidatorMappingCalculator {
 		if (tslCertExtAnalyzer.isThereSomeQcStatementEuTypeExtension()) {
 
 			// Comprobamos los OID de ESIG, ESEAL y WSA.
-			if (tslCertExtAnalyzer.hasQcStatementEuTypeExtensionOid(ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE_ESIGN.getID())) {
+			if (tslCertExtAnalyzer.hasQcStatementEuTypeExtensionOid(ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE_ESIGN.getId())) {
 
 				result = ITslMappingConstants.MAPPING_VALUE_CLASSIFICATION_ESIG;
 
-			} else if (tslCertExtAnalyzer.hasQcStatementEuTypeExtensionOid(ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE_ESEAL.getID())) {
+			} else if (tslCertExtAnalyzer.hasQcStatementEuTypeExtensionOid(ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE_ESEAL.getId())) {
 
 				result = ITslMappingConstants.MAPPING_VALUE_CLASSIFICATION_ESEAL;
 
-			} else if (tslCertExtAnalyzer.hasQcStatementEuTypeExtensionOid(ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE_WEB.getID())) {
+			} else if (tslCertExtAnalyzer.hasQcStatementEuTypeExtensionOid(ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE_WEB.getId())) {
 
 				result = ITslMappingConstants.MAPPING_VALUE_CLASSIFICATION_WSA;
 
@@ -316,7 +317,7 @@ public final class TSLValidatorMappingCalculator {
 	 *   <li>{@link ITslMappingConstants#MAPPING_VALUE_ASINCERT}</li>
 	 *   <li>{@link ITslMappingConstants#MAPPING_VALUE_QSCD_YES_MANAGEDONBEHALF}</li>
 	 * </ul>
-	 * @throws TSLValidationException In case of some error parsing the input certificate with IAIK provider.
+	 * @throws TSLValidationException In case of some error parsing the input certificate with BC provider.
 	 */
 	public static String getMappingQSCDFromCertificate(TSLCertificateExtensionAnalyzer tslCertExtAnalyzer) throws TSLValidationException {
 
@@ -324,7 +325,7 @@ public final class TSLValidatorMappingCalculator {
 		String result = ITslMappingConstants.MAPPING_VALUE_UNKNOWN;
 
 		// Comprobamos si tiene la extensión QcStatement - QcEuSSCD
-		if (tslCertExtAnalyzer.hasQcStatementExtensionOid(QcEuSSCD.statementID.getID())) {
+		if (tslCertExtAnalyzer.hasQcStatementExtensionOid(ETSIQCObjectIdentifiers.id_etsi_qcs_QcSSCD.getId())) {
 
 			result = ITslMappingConstants.MAPPING_VALUE_YES;
 

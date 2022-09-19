@@ -17,11 +17,9 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 16/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.2, 18/04/2022.
+ * @version 1.3, 19/09/2022.
  */
 package es.gob.afirma.tsl.utils;
-
-import iaik.security.provider.IAIK;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -31,6 +29,8 @@ import java.security.Security;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 import es.gob.afirma.tsl.logger.Logger;
 
 import es.gob.afirma.tsl.i18n.Language;
@@ -39,7 +39,7 @@ import es.gob.afirma.tsl.i18n.ILogTslConstant;
 /** 
  * <p>Utilities class for manage the cryptographic providers.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 18/04/2022.
+ * @version 1.3, 19/09/2022.
  */
 public final class UtilsProviders {
 
@@ -49,10 +49,6 @@ public final class UtilsProviders {
     private static final Logger LOGGER = Logger.getLogger(UtilsProviders.class);
 
     /**
-     * Constant attribute that represents the IAIK Provider.
-     */
-    public static final Provider IAIK_PROVIDER = IAIK.getInstance();
-    /**
      * Constant attribute that represents the token name-id for the seed algorithm SHA1-PRNG.
      */
     public static final String SEED_ALGORITHM_SHA1PRNG = "SHA1PRNG";
@@ -61,11 +57,15 @@ public final class UtilsProviders {
      * Constant attribute that represents a token for a no provider specified.
      */
     private static final String TOKEN_NO_PROVIDER_SPECIFIED = "NoProviderSpecified";
+    /**
+     * Constant attribute that represents the BC Provider.
+     */
+    public static final Provider BC_PROVIDER = new BouncyCastleProvider();
 
     /**
-     * Constant attribute that represents the string to identify the name of the IAIK provider.
+     * Constant attribute that represents the string to identify the name of the Bouncy Castle Provider.
      */
-    public static final String IAIK_PROVIDER_TOKEN_NAME = IAIK_PROVIDER.getName();
+    public static final String BC_PROVIDER_TOKEN_NAME = BC_PROVIDER.getName();
 
     /**
      * Constructor method for the class UtilsProviders.java.
@@ -78,11 +78,19 @@ public final class UtilsProviders {
      * Method that initializes the providers.
      */
     public static void initializeProviders() {
+	// Eliminamos (por si ya existiera) y añadimos el proveedor BouncyCastle
+	// en la posición 1.
+	Security.removeProvider(BC_PROVIDER_TOKEN_NAME);
+	Security.insertProviderAt(BC_PROVIDER, 1);
 
-	// Eliminamos (por si ya existiera) y añadimos el proveedor IAIK en la
-	// posición 1.
-	Security.removeProvider(IAIK_PROVIDER_TOKEN_NAME);
-	Security.insertProviderAt(IAIK_PROVIDER, 1);
+	// Se eliminan los elementos relativos a PKCS12 que entran en
+	// conflicto con los de SunJCE.
+	BC_PROVIDER.remove("KeyGenerator.PKCS#12-MAC");
+	BC_PROVIDER.remove("KeyGenerator.PKCS#12-IV");
+	BC_PROVIDER.remove("KeyGenerator.PKCS#12");
+	BC_PROVIDER.remove("KeyStore.PKCS12");
+	BC_PROVIDER.remove("Alg.Alias.KeyStore.PKCS#12");
+	BC_PROVIDER.remove("SecretKeyFactory.PKCS#12");
 
     }
 

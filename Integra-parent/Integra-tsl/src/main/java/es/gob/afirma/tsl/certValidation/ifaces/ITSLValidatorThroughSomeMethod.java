@@ -17,26 +17,25 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 16/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 19/09/2022.
  */
 package es.gob.afirma.tsl.certValidation.ifaces;
 
-import iaik.x509.X509CRL;
-import iaik.x509.ocsp.BasicOCSPResponse;
 
+import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 
-import es.gob.afirma.tsl.certValidation.impl.common.ATSLValidator;
+import org.bouncycastle.cert.ocsp.BasicOCSPResp;
+
 import es.gob.afirma.tsl.certValidation.impl.common.TSLValidatorResult;
 import es.gob.afirma.tsl.parsing.impl.common.ServiceHistoryInstance;
 import es.gob.afirma.tsl.parsing.impl.common.TSPService;
-import es.gob.afirma.tsl.parsing.impl.common.TrustServiceProvider;
 
 /** 
  * <p>Interface that represents a certificate validation using TSL through some specific method.</p> .</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 19/09/2022.
  */
 public interface ITSLValidatorThroughSomeMethod {
     /**
@@ -61,5 +60,5 @@ public interface ITSLValidatorThroughSomeMethod {
 	 * @param shi TSL - TSP Service History Information from which extract the information to validate the certificate.
 	 * @param validationResult Object where must be stored the validation result data.
 	 */
-	void searchRevocationValueCompatible(X509Certificate cert, BasicOCSPResponse basicOcspResponse, X509CRL crl, Date validationDate, ServiceHistoryInstance shi, TSLValidatorResult validationResult);
+	void searchRevocationValueCompatible(X509Certificate cert, BasicOCSPResp basicOcspResponse, X509CRL crl, Date validationDate, ServiceHistoryInstance shi, TSLValidatorResult validationResult);
 }

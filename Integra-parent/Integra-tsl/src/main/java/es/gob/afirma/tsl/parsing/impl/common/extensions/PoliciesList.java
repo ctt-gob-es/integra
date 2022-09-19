@@ -17,19 +17,19 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 11/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 19/09/2022.
  */
 package es.gob.afirma.tsl.parsing.impl.common.extensions;
 
-import iaik.asn1.structures.PolicyInformation;
-import iaik.x509.X509Certificate;
-import iaik.x509.extensions.CertificatePolicies;
-
 import java.io.Serializable;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.bouncycastle.asn1.x509.CertificatePolicies;
+import org.bouncycastle.asn1.x509.PolicyInformation;
 
 import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.exceptions.TSLMalformedException;
@@ -38,13 +38,14 @@ import es.gob.afirma.tsl.i18n.ILogTslConstant;
 import es.gob.afirma.tsl.parsing.ifaces.ITSLElementsAndAttributes;
 import es.gob.afirma.tsl.parsing.ifaces.ITSLObject;
 import es.gob.afirma.tsl.parsing.impl.common.ServiceHistoryInstance;
+import es.gob.afirma.tsl.utils.UtilsCertificateTsl;
 import es.gob.afirma.tsl.utils.UtilsStringChar;
 
 
 /** 
  * <p>Class that represents Policy Lists.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 19/09/2022.
  */
 public class PoliciesList implements Serializable {
 
@@ -216,8 +217,7 @@ public class PoliciesList implements Serializable {
 
 				// Obtenemos la extensión que representa los
 				// CertificatePolicies.
-			    CertificatePolicies certPoliciesExtension = (CertificatePolicies) cert.getExtension(CertificatePolicies.oid);
-
+			    CertificatePolicies certPoliciesExtension = CertificatePolicies.fromExtensions(UtilsCertificateTsl.getBouncyCastleCertificate(cert).getTBSCertificate().getExtensions());
 				// Si la extensión no es nula...
 				if (certPoliciesExtension != null && certPoliciesExtension.getPolicyInformation() != null && certPoliciesExtension.getPolicyInformation().length > 0) {
 
@@ -226,7 +226,7 @@ public class PoliciesList implements Serializable {
 					Set<String> certIdentifiers = new HashSet<String>();
 					PolicyInformation[ ] polInformationArray = certPoliciesExtension.getPolicyInformation();
 					for (PolicyInformation policyInformation: polInformationArray) {
-						certIdentifiers.add(policyInformation.getPolicyIdentifier().getID());
+						certIdentifiers.add(policyInformation.getPolicyIdentifier().getId());
 					}
 					// Ahora, si el conjunto obtenido no es nulo ni vacío,
 					// comprobamos que los

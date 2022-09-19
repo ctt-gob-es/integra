@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 10/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 19/09/2022.
  */
 package es.gob.afirma.tsl.parsing.impl.common;
 
@@ -30,15 +30,16 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
-
+import java.security.cert.X509Certificate;
 import org.apache.xmlbeans.XmlException;
 import org.w3.x2000.x09.xmldsig.KeyValueType;
 
+import es.gob.afirma.tsl.exceptions.CommonUtilsException;
 import es.gob.afirma.tsl.exceptions.TSLParsingException;
+import es.gob.afirma.tsl.utils.UtilsCertificateTsl;
 import es.gob.afirma.tsl.utils.UtilsStringChar;
-import iaik.x509.X509Certificate;
-import iaik.x509.extensions.SubjectKeyIdentifier;
 
+import org.bouncycastle.asn1.x509.SubjectKeyIdentifier;
 
 
 /** 
@@ -163,8 +164,8 @@ public class DigitalID implements Serializable {
 	public final void setX509cert(byte[ ] x509certBytesDI) throws TSLParsingException {
 
 		try {
-		    this.x509cert = new X509Certificate(x509certBytesDI);
-		} catch (CertificateException e) {
+		    this.x509cert = UtilsCertificateTsl.getX509Certificate(x509certBytesDI);
+		} catch (CommonUtilsException e) {
 			throw new TSLParsingException("Error parseando un certificado X509 utilizado como identificaci\u00F3n digital.", e);
 		}
 
@@ -281,7 +282,7 @@ public class DigitalID implements Serializable {
 					break;
 
 				case DigitalID.TYPE_X509SKI:
-					byte[ ] skiByteArray = ski.get();
+					byte[ ] skiByteArray = ski.getEncoded();
 					out.write(skiByteArray.length);
 					out.write(skiByteArray);
 					break;
@@ -314,7 +315,7 @@ public class DigitalID implements Serializable {
 					int lengthX509Cert = in.readInt();
 					byte[ ] x509encoded = new byte[lengthX509Cert];
 					in.read(x509encoded);
-					x509cert = new X509Certificate(x509encoded);
+					x509cert = UtilsCertificateTsl.getX509Certificate(x509encoded);
 					break;
 
 				case DigitalID.TYPE_KEYVALUE:
@@ -335,7 +336,7 @@ public class DigitalID implements Serializable {
 				default:
 					break;
 			}
-		} catch (CertificateException e) {
+		} catch (CommonUtilsException e) {
 			throw new IOException(e);
 		} catch (XmlException e) {
 			throw new IOException(e);

@@ -17,19 +17,18 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 13/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 19/09/2022.
  */
 package es.gob.afirma.tsl.parsing.impl.common;
 
-import iaik.asn1.ASN1Object;
-import iaik.asn1.CodingException;
-import iaik.asn1.ObjectID;
-import iaik.asn1.SEQUENCE;
-import iaik.asn1.structures.PolicyInformation;
-import iaik.x509.extensions.CertificatePolicies;
-import iaik.x509.extensions.qualified.QCStatements;
-import iaik.x509.extensions.qualified.structures.QCStatement;
-import iaik.x509.extensions.qualified.structures.QCStatementInfo;
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.x509.Certificate;
+import org.bouncycastle.asn1.x509.CertificatePolicies;
+import org.bouncycastle.asn1.x509.Extension;
+import org.bouncycastle.asn1.x509.PolicyInformation;
+import org.bouncycastle.asn1.x509.qualified.QCStatement;
 
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -45,14 +44,14 @@ import es.gob.afirma.tsl.utils.UtilsCertificateTsl;
 /** 
  * <p>Utilities wrapper for analyze the extensions defined in a specific X509v3 certificate.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 19/09/2022.
  */
 public class TSLCertificateExtensionAnalyzer {
 
     /**
      * Attribute that represents the certificate to analyze.
      */
-    private iaik.x509.X509Certificate certIaik = null;
+    private Certificate certBc = null;
     /**
      * Attribute that represents the list of QcStatements OIDs extracted from the certificate.
      */
@@ -90,9 +89,9 @@ public class TSLCertificateExtensionAnalyzer {
 	    throw new TSLCertificateValidationException(Language.getResIntegraTsl(ILogTslConstant.TCEA_LOG001));
 	}
 
-	// Calculamos ahora la representación del certificado como objeto IAIK.
+	// Calculamos ahora la representación del certificado.
 	try {
-	    certIaik = UtilsCertificateTsl.getIaikCertificate(cert);
+	    certBc = UtilsCertificateTsl.getBouncyCastleCertificate(cert);
 	} catch (CommonUtilsException e) {
 	    throw new TSLCertificateValidationException(Language.getResIntegraTsl(ILogTslConstant.TCEA_LOG002), e);
 	}
@@ -101,7 +100,6 @@ public class TSLCertificateExtensionAnalyzer {
 	analyzeCertificateExtensions();
 
     }
-
 
     /**
      * Auxiliar method that analyzes and extracts all the certificate
@@ -113,9 +111,9 @@ public class TSLCertificateExtensionAnalyzer {
 
 	// Obtenemos la extensión QCStatements - 1.3.6.1.5.5.7.1.3,
 	// la cual es opcional.
-	QCStatements qcStatements = null;
+	ASN1Sequence qcStatements = null;
 	try {
-	    qcStatements = (QCStatements) certIaik.getExtension(QCStatements.oid);
+	    qcStatements = (ASN1Sequence) certBc.getTBSCertificate().getExtensions().getExtensionParsedValue(Extension.qCStatements);
 	} catch (Exception e) {
 	    throw new TSLCertificateValidationException(Language.getResIntegraTsl(ILogTslConstant.TCEA_LOG003), e);
 	}
@@ -123,21 +121,17 @@ public class TSLCertificateExtensionAnalyzer {
 	// Si la hemos obtenido, la analizamos.
 	if (qcStatements != null) {
 
-	    // Si hay al menos un QCStatement definido...
-	    QCStatement[ ] qcStatementArray = qcStatements.getQCStatements();
-	    if (qcStatementArray != null && qcStatementArray.length > 0) {
-		// Inicializamos la lista donde los almacenaremos.
-		qcStatementsOids = new ArrayList<String>(qcStatementArray.length);
-		// Los recorremos y vamos guardando...
-		for (QCStatement qcStatement: qcStatementArray) {
-		    String qcStatementOid = qcStatement.getStatementID().getID();
-		    qcStatementsOids.add(qcStatementOid);
-		    // Analizamos si se trata del EuType, en cuyo caso obtenemos
-		    // la información que contenga.
-		    if (ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE.getID().equals(qcStatementOid)) {
-			extractQcStatementExtEuTypeInformation(qcStatement);
-		    }
-
+	    // Inicializamos la lista donde los almacenaremos.
+	    qcStatementsOids = new ArrayList<String>(qcStatements.size());
+	    // Los recorremos y vamos guardando...
+	    for (int index = 0; index < qcStatements.size(); index++) {
+		QCStatement qcStatement = QCStatement.getInstance(qcStatements.getObjectAt(index));
+		String qcStatementOid = qcStatement.getStatementId().getId();
+		qcStatementsOids.add(qcStatementOid);
+		// Analizamos si se trata del EuType, en cuyo caso obtenemos
+		// la información que contenga.
+		if (ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE.getId().equals(qcStatementOid)) {
+		    extractQcStatementExtEuTypeInformation(qcStatement);
 		}
 	    }
 	}
@@ -145,7 +139,7 @@ public class TSLCertificateExtensionAnalyzer {
 	// Recuperamos el Certification Policies.
 	CertificatePolicies certificatePolicies = null;
 	try {
-	    certificatePolicies = (CertificatePolicies) certIaik.getExtension(CertificatePolicies.oid);
+	    certificatePolicies = CertificatePolicies.fromExtensions(certBc.getTBSCertificate().getExtensions());
 	} catch (Exception e) {
 	    throw new TSLCertificateValidationException(Language.getResIntegraTsl(ILogTslConstant.TCEA_LOG004), e);
 	}
@@ -164,7 +158,7 @@ public class TSLCertificateExtensionAnalyzer {
 
 		// Los recorremos y vamos almacenando...
 		for (PolicyInformation policyInformation: piArray) {
-		    policyInformationsOids.add(policyInformation.getPolicyIdentifier().getID());
+		    policyInformationsOids.add(policyInformation.getPolicyIdentifier().getId());
 		}
 
 	    }
@@ -181,49 +175,43 @@ public class TSLCertificateExtensionAnalyzer {
      */
     private void extractQcStatementExtEuTypeInformation(QCStatement qcStatementQcType) throws TSLCertificateValidationException {
 
+	ASN1Encodable qcStatementInfoAsn1Encodable = qcStatementQcType.getStatementInfo();
+
+	// Para este caso debe tratarse de una secuencia de
+	// OIDs.
+	ASN1Sequence seqOids = null;
 	try {
-
-		QCStatementInfo qcStatementInfo = qcStatementQcType.getStatementInfo();
-		// Para este caso debe tratarse de una secuencia de
-		// OIDs.
-		ASN1Object qcStatementInfoAsn1Object = qcStatementInfo.toASN1Object();
-		if (qcStatementInfoAsn1Object instanceof SEQUENCE) {
-
-			SEQUENCE seqOids = (SEQUENCE) qcStatementInfoAsn1Object;
-
-			// Si no es una secuencia vacía...
-			if (seqOids.countComponents() > 0) {
-
-				// Inicializamos la lista que contendrá
-				// los EuType que tenga el certificado.
-				qcStatementExtEuTypeOids = new ArrayList<String>(seqOids.countComponents());
-
-				// Los recorremos y vamos añadiendo a la lista...
-				for (int index = 0; index < seqOids.countComponents(); index++) {
-
-					ObjectID objectId = (ObjectID) seqOids.getComponentAt(index);
-					qcStatementExtEuTypeOids.add(objectId.getID());
-
-				}
-
-			}
-
-		}
-
-	} catch (CodingException e) {
-		throw new TSLCertificateValidationException(Language.getResIntegraTsl(ILogTslConstant.TCEA_LOG005), e);
+	    seqOids = ASN1Sequence.getInstance(qcStatementInfoAsn1Encodable);
+	} catch (IllegalArgumentException e) {
+	    seqOids = null;
 	}
 
+	// Si es una secuencia no vacía...
+	if (seqOids != null && seqOids.size() > 0) {
+
+	    // Inicializamos la lista que contendrá
+	    // los EuType que tenga el certificado.
+	    qcStatementExtEuTypeOids = new ArrayList<String>(seqOids.size());
+
+	    // Los recorremos y vamos añadiendo a la lista...
+	    for (int index = 0; index < seqOids.size(); index++) {
+
+		ASN1ObjectIdentifier objectId = ASN1ObjectIdentifier.getInstance(seqOids.getObjectAt(index));
+		qcStatementExtEuTypeOids.add(objectId.getId());
+
+	    }
+
+	}
 
     }
 
-	/**
-	 * Gets the certificate associated to this analyzer.
-	 * @return X509v3 certificate used in this analyzer.
-	 */
-	public final X509Certificate getCertificate() {
-		return certIaik;
-	}
+    /**
+     * Gets the certificate associated to this analyzer.
+     * @return X509v3 certificate used in this analyzer.
+     */
+    public final Certificate getCertificate() {
+	return certBc;
+    }
 
     /**
      * Gets the value of the attribute {@link #qcStatementsOids}.

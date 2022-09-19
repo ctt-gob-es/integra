@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 10/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 19/09/2022.
  */
 package es.gob.afirma.tsl.utils;
 
@@ -51,12 +51,11 @@ import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
 import es.gob.afirma.tsl.exceptions.CommonUtilsException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
 import es.gob.afirma.tsl.i18n.Language;
-import iaik.x509.extensions.ExtendedKeyUsage;
 
 /** 
  * <p>Class that provides methods for managing certificates.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 15/06/2021.
+19/09/2022.
  */
 public final class UtilsCertificateTsl {
 
@@ -64,10 +63,7 @@ public final class UtilsCertificateTsl {
      * Constant that represents a "X.509" Certificate type.
      */
     public static final String X509_TYPE = "X.509";
-	/**
-	 * Constant attribute that represents the OID of the ExtendedKeyUsage id-kp-timestamping.
-	 */
-    private static final String ID_KP_TIMESTAMPING_OID = ExtendedKeyUsage.timeStamping.getID();
+
 
     /**
      * Constructor method for the class UtilsCertificate.java. 
@@ -427,42 +423,40 @@ public final class UtilsCertificateTsl {
 	}
 	
 	
-	/**
-	 * Creates a Iaik X509Certificate from a java X509Certificate.
-	 * @param x509cert Certificate to transform.
-	 * @return Iaik X509Certificate.
-	 * @throws CommonUtilsException Exception thrown if there is any problem creating the certificate.
-	 */
-	public static iaik.x509.X509Certificate getIaikCertificate(Certificate x509cert) throws CommonUtilsException {
+	
+	 /**
+	     * Creates a BouncyCastle X509Certificate from a java X509Certificate.
+	     * @param x509cert Certificate to transform.
+	     * @return BouncyCastle X509Certificate.
+	     * @throws CommonUtilsException Exception thrown if there is any problem creating the certificate.
+	     */
+	    public static org.bouncycastle.asn1.x509.Certificate getBouncyCastleCertificate(Certificate x509cert) throws CommonUtilsException {
 
 		if (x509cert == null) {
-			return null;
-		} else if (x509cert instanceof iaik.x509.X509Certificate) {
-			return (iaik.x509.X509Certificate) x509cert;
+		    return null;
 		} else {
-			try {
-				return getIaikCertificate(x509cert.getEncoded());
-			} catch (CertificateEncodingException e) {
-				throw new CommonUtilsException(Language.getResIntegra(ILogTslConstant.UC_LOG000), e);
-			}
+		    try {
+			return getBouncyCastleCertificate(x509cert.getEncoded());
+		    } catch (CertificateEncodingException e) {
+			throw new CommonUtilsException(Language.getResIntegraTsl(ILogTslConstant.UC_LOG000), e);
+		    }
 		}
 
-	}
-	
-
-	/**
-	 * Creates a Iaik X509Certificate given its content.
-	 * 
-	 * @param certificate Certificate content.
-	 * @return Iaik X509Certificate
-	 * @throws CommonUtilsException Exception thrown if there is any problem creating the certificate.
-	 */
-	public static iaik.x509.X509Certificate getIaikCertificate(byte[ ] certificate) throws CommonUtilsException {
+	    }
+	    
+	    /**
+	     * Creates a BouncyCastle X509Certificate given its content.
+	     * @param certificate Certificate content.
+	     * @return BouncyCastle X509Certificate.
+	     * @throws CommonUtilsException Exception thrown if there is any problem creating the certificate.
+	     */
+	    public static org.bouncycastle.asn1.x509.Certificate getBouncyCastleCertificate(byte[ ] certificate) throws CommonUtilsException {
 		try {
-			return new iaik.x509.X509Certificate(certificate);
-		} catch (CertificateException e) {
-		    throw new CommonUtilsException(Language.getResIntegra(ILogTslConstant.UC_LOG000), e);
+		    return org.bouncycastle.asn1.x509.Certificate.getInstance(certificate);
+		} catch (Exception e) {
+		    throw new CommonUtilsException(Language.getResIntegraTsl(ILogTslConstant.UC_LOG000), e);
 		}
-	}
+	    }
+
 
 }

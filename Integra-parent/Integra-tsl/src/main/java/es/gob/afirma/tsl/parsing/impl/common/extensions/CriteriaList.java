@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 11/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 19/09/2022.
  */
 package es.gob.afirma.tsl.parsing.impl.common.extensions;
 
@@ -27,24 +27,22 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.gob.afirma.tsl.i18n.Language;
-import es.gob.afirma.tsl.exceptions.CommonUtilsException;
 import es.gob.afirma.tsl.exceptions.TSLCertificateValidationException;
 import es.gob.afirma.tsl.exceptions.TSLMalformedException;
 import es.gob.afirma.tsl.exceptions.TSLQualificationEvalProcessException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
+import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.parsing.ifaces.IAnyTypeOtherCriteria;
 import es.gob.afirma.tsl.parsing.ifaces.ITSLElementsAndAttributes;
 import es.gob.afirma.tsl.parsing.ifaces.ITSLObject;
 import es.gob.afirma.tsl.parsing.impl.common.ServiceHistoryInstance;
-import es.gob.afirma.tsl.utils.UtilsCertificateTsl;
 import es.gob.afirma.tsl.utils.UtilsStringChar;
 
 /** 
  * <p>Class that represents a list of assertions related to certificate contents
  * (e.g. key usage) and status (e.g. additional assessment) used to filter certificates.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 19/09/2022.
  */
 public class CriteriaList implements Serializable {
 
@@ -346,24 +344,17 @@ public class CriteriaList implements Serializable {
 	// la de las políticas de certificación.
 	if (result && isThereSomePolicySet()) {
 
-	    // Obtenemos el objeto IAIK que representa al certificado.
-	    iaik.x509.X509Certificate certIaik = null;
-	    try {
-
-		certIaik = UtilsCertificateTsl.getIaikCertificate(cert);
-
-		// Los recorremos y comprobamos que todos están en el
-		// certificado.
-		for (int index = 0; result && index < policySetList.size(); index++) {
-		    result = policySetList.get(index).checkCertificate(certIaik);
-		}
-
-	    } catch (CommonUtilsException e) {
-		throw new TSLQualificationEvalProcessException(Language.getResIntegraTsl(ILogTslConstant.CL_LOG004), e);
+	    // Los recorremos y comprobamos que todos están en el
+	    // certificado.
+	    for (int index = 0; result && index < policySetList.size(); index++) {
+		result = policySetList.get(index).checkCertificate(cert);
 	    }
+
 	}
 
-	if (result && otherCriteria != null) {
+	if (result && otherCriteria != null)
+
+	{
 
 	    try {
 		result = otherCriteria.checkCertificateWithThisCriteria(cert);
@@ -405,21 +396,11 @@ public class CriteriaList implements Serializable {
 	// Si NO hemos pasado la comprobación de los KeyUsage, hacemos ahora
 	// la de las políticas de certificación.
 	if (!result && isThereSomePolicySet()) {
-	    // Obtenemos el objeto IAIK que representa al certificado.
-	    iaik.x509.X509Certificate certIaik = null;
 
-	    try {
-
-		certIaik = UtilsCertificateTsl.getIaikCertificate(cert);
-
-		// Los recorremos y comprobamos que al menos uno está en el
-		// certificado.
-		for (int index = 0; !result && index < policySetList.size(); index++) {
-		    result = policySetList.get(index).checkCertificate(certIaik);
-		}
-
-	    } catch (CommonUtilsException e) {
-		throw new TSLQualificationEvalProcessException(Language.getResIntegraTsl(ILogTslConstant.CL_LOG003), e);
+	    // Los recorremos y comprobamos que al menos uno está en el
+	    // certificado.
+	    for (int index = 0; !result && index < policySetList.size(); index++) {
+		result = policySetList.get(index).checkCertificate(cert);
 	    }
 
 	}

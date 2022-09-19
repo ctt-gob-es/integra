@@ -17,14 +17,14 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>23/02/2016.</p>
  * @author Gobierno de España.
- * @version 1.0, 23/02/2016.
+ * @version 1.1, 19/09/2022.
  */
 package es.gob.afirma.utils;
 
 /** 
  * <p>Class .</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 23/02/2016.
+ * @version 1.1, 19/09/2022.
  */
 public interface IEncryptionConstants {
 
@@ -92,7 +92,7 @@ public interface IEncryptionConstants {
     String RSA_PKCS1_PADDING_ALGORITHM = "RSA/ECB/PKCS1Padding";
     
     /**
-     * Attribute that represents the provider IAIK.
+     * Attribute that represents the provider BC.
      */
     String PROVIDER_BC ="BC";
 

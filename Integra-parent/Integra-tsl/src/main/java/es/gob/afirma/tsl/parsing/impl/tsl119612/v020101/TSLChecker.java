@@ -21,11 +21,12 @@
  * <b>Project:</b><p>Platform for detection and validation of certificates recognized in European TSL.</p>
  * <b>Date:</b><p>06/11/2018.</p>
  * @author Gobierno de España.
- * @version 1.6, 18/04/2022.
+ * @version 1.7, 19/09/2022.
  */
 package es.gob.afirma.tsl.parsing.impl.tsl119612.v020101;
 
 import java.net.URI;
+import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -37,6 +38,8 @@ import java.util.TimeZone;
 import java.util.TreeSet;
 
 import es.gob.afirma.tsl.logger.Logger;
+
+import org.bouncycastle.asn1.x509.SubjectKeyIdentifier;
 import org.w3.x2000.x09.xmldsig.CanonicalizationMethodType;
 import org.w3.x2000.x09.xmldsig.KeyValueType;
 import org.w3.x2000.x09.xmldsig.ReferenceType;
@@ -68,14 +71,12 @@ import es.gob.afirma.tsl.parsing.impl.common.TSPInformation;
 import es.gob.afirma.tsl.utils.NumberConstants;
 import es.gob.afirma.tsl.utils.UtilsCountryLanguage;
 import es.gob.afirma.tsl.utils.UtilsStringChar;
-import iaik.x509.X509Certificate;
-import iaik.x509.extensions.SubjectKeyIdentifier;
 
 /**
  * <p>Class that represents a TSL Data Checker of TSL implementation as the
  * ETSI TS 119612 2.1.1 specification.</p>
  * <b>Project:</b><p>Platform for detection and validation of certificates recognized in European TSL.</p>
- * @version 1.5, 15/06/2021.
+ * @version 1.7, 19/09/2022.
  */
 public class TSLChecker extends ATSLChecker {
 

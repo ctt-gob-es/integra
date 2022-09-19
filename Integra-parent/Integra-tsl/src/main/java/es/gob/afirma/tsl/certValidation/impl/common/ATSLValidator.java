@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 16/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.5, 18/04/2022.
+ * @version 1.6, 19/09/2022.
  */
 package es.gob.afirma.tsl.certValidation.impl.common;
 
@@ -57,7 +57,7 @@ import es.gob.afirma.tsl.utils.UtilsStringChar;
  * <p>Abstract class that represents a TSL validator with the principal functions
  * regardless it implementation.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.5, 18/04/2022.
+ * @version 1.6, 19/09/2022.
  */
 public abstract class ATSLValidator implements ITSLValidator {
 
@@ -110,15 +110,8 @@ public abstract class ATSLValidator implements ITSLValidator {
 	    throw new TSLArgumentException(Language.getResIntegraTsl(ILogTslConstant.ATV_LOG002));
 	}
 
-	// Calculamos ahora la representación del certificado como objeto IAIK.
-	iaik.x509.X509Certificate certIaik = null;
-	try {
-	    certIaik = UtilsCertificateTsl.getIaikCertificate(cert);
-	} catch (CommonUtilsException e) {
-	    throw new TSLValidationException(Language.getResIntegraTsl(ILogTslConstant.TV_LOG022), e);
-	}
 	// Inicializamos el resultado a devolver.
-	TSLValidatorResult result = new TSLValidatorResult(certIaik, getTSLObject());
+	TSLValidatorResult result = new TSLValidatorResult(cert, getTSLObject());
 
 	// Establecemos si se trata de una norma Europea o externa.
 	result.setEuropean(checkIfTSLisFromEuropeanMember());
@@ -838,7 +831,7 @@ public abstract class ATSLValidator implements ITSLValidator {
 		// definir
 		// las propiedades de su emisor (él mismo).
 		if (isCACert && UtilsCertificateTsl.isSelfSigned(cert)) {
-		    // TODO como obtener issuerCert iaik
+		    
 		    // validationResult.setIssuerCert(cert);
 		    validationResult.setIssuerPublicKey(cert.getPublicKey());
 		    try {

@@ -17,11 +17,12 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 18/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.2, 18/04/2022.
+ * @version 1.3, 19/09/2022.
  */
 package es.gob.afirma.tsl.utils;
 
-import iaik.x509.X509CRL;
+
+import java.security.cert.X509CRL;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -49,7 +50,7 @@ import es.gob.afirma.tsl.i18n.ILogTslConstant;
 /** 
  * <p>Utilities class relating to connections and LDAP protocol.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 18/04/2022.
+ * @version 1.3, 19/09/2022.
  */
 public final class UtilsLDAP {
     /**

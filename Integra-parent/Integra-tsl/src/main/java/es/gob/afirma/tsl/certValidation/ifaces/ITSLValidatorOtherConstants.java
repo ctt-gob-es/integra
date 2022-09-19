@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 17/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 19/09/2022.
  */
 package es.gob.afirma.tsl.certValidation.ifaces;
 
@@ -25,13 +25,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import iaik.x509.extensions.qualified.structures.etsi.QcEuCompliance;
+import org.bouncycastle.asn1.x509.qualified.ETSIQCObjectIdentifiers;
+
 import es.gob.afirma.tsl.parsing.ifaces.ITSLOIDs;
 
 /** 
  * <p>Interface that defines all the constants needed for validation and mapping process in TSL.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 19/09/2022.
  */
 
 public interface ITSLValidatorOtherConstants {
@@ -39,7 +40,7 @@ public interface ITSLValidatorOtherConstants {
 	 * Constant attribute that represents an array with the OIDs (String) of the QCStatements
 	 * that qualifies a certificate how qualified.
 	 */
-	String[ ] QCSTATEMENTS_OIDS_FOR_QUALIFIED_CERTS_STRING_ARRAY = new String[ ] { QcEuCompliance.statementID.getID() };
+	String[ ] QCSTATEMENTS_OIDS_FOR_QUALIFIED_CERTS_STRING_ARRAY = new String[ ] { ETSIQCObjectIdentifiers.id_etsi_qcs_QcCompliance.getId() };
 
 	/**
 	 * Constant attribute that represents a list with the OIDs (String) of the QCStatements
@@ -51,8 +52,7 @@ public interface ITSLValidatorOtherConstants {
 	 * Constant attribute that represents an array with the OIDs (String) of the Policy Identifiers
 	 * that qualifies a certificate how qualified.
 	 */
-	String[ ] POLICYIDENTIFIERS_OIDS_FOR_QUALIFIED_CERTS_STRING_ARRAY = new String[ ] { ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_PUBLIC_WITH_SSCD.getID(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_PUBLIC.getID(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_NATURAL.getID(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_LEGAL.getID(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_NATURAL_QSCD.getID(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_LEGAL_QSCD.getID(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_WEB.getID() };
-
+	String[ ] POLICYIDENTIFIERS_OIDS_FOR_QUALIFIED_CERTS_STRING_ARRAY = new String[ ] { ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_PUBLIC_WITH_SSCD.getId(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_PUBLIC.getId(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_NATURAL.getId(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_LEGAL.getId(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_NATURAL_QSCD.getId(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_LEGAL_QSCD.getId(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_WEB.getId() };
 	/**
 	 * Constant attribute that represents a list with the OIDs (String) of the Policy Identifiers
 	 * that qualifies a certificate how qualified.
@@ -63,7 +63,7 @@ public interface ITSLValidatorOtherConstants {
 	 * Constant attribute that represents an array with the OIDs (String) of the Policy Identifiers
 	 * that qualifies a certificate for ESig.
 	 */
-	String[ ] POLICYIDENTIFIERS_OIDS_FOR_ESIG_CERTS_STRING_ARRAY = new String[ ] { ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_PUBLIC_WITH_SSCD.getID(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_PUBLIC.getID(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_NATURAL.getID(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_NATURAL_QSCD.getID() };
+	String[ ] POLICYIDENTIFIERS_OIDS_FOR_ESIG_CERTS_STRING_ARRAY = new String[ ] { ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_PUBLIC_WITH_SSCD.getId(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_PUBLIC.getId(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_NATURAL.getId(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_NATURAL_QSCD.getId() };
 
 	/**
 	 * Constant attribute that represents a list with the OIDs (String) of the Policy Identifiers
@@ -75,7 +75,7 @@ public interface ITSLValidatorOtherConstants {
 	 * Constant attribute that represents an array with the OIDs (String) of the Policy Identifiers
 	 * that qualifies a certificate for ESeal.
 	 */
-	String[ ] POLICYIDENTIFIERS_OIDS_FOR_ESEAL_CERTS_STRING_ARRAY = new String[ ] { ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_LEGAL.getID(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_LEGAL_QSCD.getID() };
+	String[ ] POLICYIDENTIFIERS_OIDS_FOR_ESEAL_CERTS_STRING_ARRAY = new String[ ] { ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_LEGAL.getId(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_LEGAL_QSCD.getId() };
 
 	/**
 	 * Constant attribute that represents a list with the OIDs (String) of the Policy Identifiers
@@ -87,7 +87,7 @@ public interface ITSLValidatorOtherConstants {
 	 * Constant attribute that represents an array with the OIDs (String) of the Policy Identifiers
 	 * that qualifies a certificate for WSA.
 	 */
-	String[ ] POLICYIDENTIFIERS_OIDS_FOR_WSA_CERTS_STRING_ARRAY = new String[ ] { ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_WEB.getID() };
+	String[ ] POLICYIDENTIFIERS_OIDS_FOR_WSA_CERTS_STRING_ARRAY = new String[ ] { ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_WEB.getId() };
 
 	/**
 	 * Constant attribute that represents a list with the OIDs (String) of the Policy Identifiers
@@ -99,7 +99,7 @@ public interface ITSLValidatorOtherConstants {
 	 * Constant attribute that represents an array with the OIDs (String) of the Policy Identifiers
 	 * that sets a certificate in a QSCD.
 	 */
-	String[ ] POLICYIDENTIFIERS_OIDS_FOR_CERTS_IN_QSCD_STRING_ARRAY = new String[ ] { ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_PUBLIC_WITH_SSCD.getID(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_LEGAL_QSCD.getID(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_NATURAL_QSCD.getID() };
+	String[ ] POLICYIDENTIFIERS_OIDS_FOR_CERTS_IN_QSCD_STRING_ARRAY = new String[ ] { ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_PUBLIC_WITH_SSCD.getId(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_LEGAL_QSCD.getId(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_NATURAL_QSCD.getId() };
 
 	/**
 	 * Constant attribute that represents a list with the OIDs (String) of the Policy Identifiers
@@ -111,7 +111,7 @@ public interface ITSLValidatorOtherConstants {
 	 * Constant attribute that represents an array with the OIDs (String) of the Policy Identifiers
 	 * that sets a certificate in a QSCD.
 	 */
-	String[ ] POLICYIDENTIFIERS_OIDS_FOR_CERTS_IN_NO_QSCD_STRING_ARRAY = new String[ ] { ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_PUBLIC.getID(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_LEGAL.getID(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_NATURAL.getID(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_WEB.getID() };
+	String[ ] POLICYIDENTIFIERS_OIDS_FOR_CERTS_IN_NO_QSCD_STRING_ARRAY = new String[ ] { ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_PUBLIC.getId(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_LEGAL.getId(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_NATURAL.getId(), ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_WEB.getId() };
 
 	/**
 	 * Constant attribute that represents a list with the OIDs (String) of the Policy Identifiers
