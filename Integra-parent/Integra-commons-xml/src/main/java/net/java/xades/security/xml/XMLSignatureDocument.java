@@ -28,28 +28,27 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 
-import org.apache.xml.crypto.MarshalException;
-import org.apache.xml.crypto.XMLStructure;
-import org.apache.xml.crypto.dom.DOMStructure;
-import org.apache.xml.crypto.dsig.CanonicalizationMethod;
-import org.apache.xml.crypto.dsig.DigestMethod;
-import org.apache.xml.crypto.dsig.Reference;
-import org.apache.xml.crypto.dsig.SignatureMethod;
-import org.apache.xml.crypto.dsig.SignatureProperties;
-import org.apache.xml.crypto.dsig.SignatureProperty;
-import org.apache.xml.crypto.dsig.SignedInfo;
-import org.apache.xml.crypto.dsig.XMLObject;
-import org.apache.xml.crypto.dsig.XMLSignature;
-import org.apache.xml.crypto.dsig.XMLSignatureException;
-import org.apache.xml.crypto.dsig.XMLSignatureFactory;
-import org.apache.xml.crypto.dsig.dom.DOMSignContext;
-import org.apache.xml.crypto.dsig.keyinfo.KeyInfo;
-import org.apache.xml.crypto.dsig.keyinfo.KeyInfoFactory;
-import org.apache.xml.crypto.dsig.keyinfo.KeyValue;
-import org.apache.xml.crypto.dsig.keyinfo.X509Data;
-import org.apache.xml.crypto.dsig.spec.C14NMethodParameterSpec;
+import javax.xml.crypto.MarshalException;
+import javax.xml.crypto.XMLStructure;
+import javax.xml.crypto.dom.DOMStructure;
+import javax.xml.crypto.dsig.CanonicalizationMethod;
+import javax.xml.crypto.dsig.DigestMethod;
+import javax.xml.crypto.dsig.Reference;
+import javax.xml.crypto.dsig.SignatureMethod;
+import javax.xml.crypto.dsig.SignatureProperties;
+import javax.xml.crypto.dsig.SignatureProperty;
+import javax.xml.crypto.dsig.SignedInfo;
+import javax.xml.crypto.dsig.XMLObject;
+import javax.xml.crypto.dsig.XMLSignature;
+import javax.xml.crypto.dsig.XMLSignatureException;
+import javax.xml.crypto.dsig.XMLSignatureFactory;
+import javax.xml.crypto.dsig.dom.DOMSignContext;
+import javax.xml.crypto.dsig.keyinfo.KeyInfo;
+import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
+import javax.xml.crypto.dsig.keyinfo.KeyValue;
+import javax.xml.crypto.dsig.keyinfo.X509Data;
+import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -58,12 +57,12 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import net.java.xades.security.xml.XAdES.XMLAdvancedSignature;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import net.java.xades.security.xml.XAdES.XMLAdvancedSignature;
 
 /**
  *

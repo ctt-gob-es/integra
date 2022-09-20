@@ -24,13 +24,13 @@ import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 
-import org.apache.xml.crypto.dsig.XMLSignature;
-
-import net.java.xades.security.timestamp.TimeStampFactory;
+import javax.xml.crypto.dsig.XMLSignature;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import net.java.xades.security.timestamp.TimeStampFactory;
 
 public class SignatureTimeStampImpl implements SignatureTimeStamp {
 

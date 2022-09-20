@@ -19,30 +19,31 @@
  */
 package net.java.xades.security.xml;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
 import org.apache.xml.security.Init;
 import org.apache.xml.security.c14n.CanonicalizationException;
 import org.apache.xml.security.c14n.Canonicalizer;
 import org.apache.xml.security.c14n.InvalidCanonicalizerException;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 public class DOMCanonicalizationFactory {
 
     public static byte[ ] c14n(String uri, Node node) throws InvalidCanonicalizerException, CanonicalizationException, ParserConfigurationException, IOException, SAXException {
-	byte[ ] result = null;
+	//byte[ ] result = null;
 
 	if (!Init.isInitialized()) {
 	    Init.init();
 	}
 
 	Canonicalizer c14n = Canonicalizer.getInstance(uri);
-	result = c14n.canonicalizeSubtree(node);
-
-	return result;
+	
+	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	c14n.canonicalizeSubtree(node, baos);
+	return baos.toByteArray();
     }
 }

@@ -25,6 +25,7 @@ package es.gob.afirma.signature.xades;
 import org.w3c.dom.Attr;
 
 import org.apache.xml.security.signature.XMLSignatureInput;
+import org.apache.xml.security.utils.resolver.ResourceResolverContext;
 import org.apache.xml.security.utils.resolver.ResourceResolverException;
 import org.apache.xml.security.utils.resolver.ResourceResolverSpi;
 
@@ -62,12 +63,11 @@ public class ExternalFileURIDereferencer extends ResourceResolverSpi {
      * @see org.apache.xml.security.utils.resolver.ResourceResolverSpi#engineResolve(org.w3c.dom.Attr, java.lang.String)
      */
     @Override
-    public final XMLSignatureInput engineResolve(Attr uriAttr, String baseURI) throws ResourceResolverException {
-	String uri = uriAttr.getNodeValue();
+    public XMLSignatureInput engineResolveURI(ResourceResolverContext context) throws ResourceResolverException {
+	String uri = context.attr.getNodeValue();
 	XMLSignatureInput sigInput = new XMLSignatureInput(externalFile);
 	sigInput.setSourceURI(uri);
 	return sigInput;
-
     }
 
     /**
@@ -75,8 +75,8 @@ public class ExternalFileURIDereferencer extends ResourceResolverSpi {
      * @see org.apache.xml.security.utils.resolver.ResourceResolverSpi#engineCanResolve(org.w3c.dom.Attr, java.lang.String)
      */
     @Override
-    public final boolean engineCanResolve(Attr uriAttr, String baseURI) {
-	if (uriAttr.getTextContent().equals(externalFileName)) {
+    public boolean engineCanResolveURI(ResourceResolverContext context) {
+	if (context.attr.getTextContent().equals(externalFileName)) {
 	    return true;
 	}
 	return false;

@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.xml.crypto.dsig.CanonicalizationMethod;
+import javax.xml.crypto.dsig.CanonicalizationMethod;
 
 import es.gob.afirma.integraFacade.pojo.TransformData;
 import es.gob.afirma.signature.ISignatureFormatDetector;

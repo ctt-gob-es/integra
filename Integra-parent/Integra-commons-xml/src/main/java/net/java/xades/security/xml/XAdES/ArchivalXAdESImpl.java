@@ -21,7 +21,7 @@ package net.java.xades.security.xml.XAdES;
 
 import java.util.Date;
 
-import org.apache.xml.crypto.MarshalException;
+import javax.xml.crypto.MarshalException;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;

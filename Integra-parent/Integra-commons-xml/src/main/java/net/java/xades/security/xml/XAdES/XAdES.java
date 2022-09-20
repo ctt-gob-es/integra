@@ -19,8 +19,8 @@
  */
 package net.java.xades.security.xml.XAdES;
 
-import org.apache.xml.crypto.MarshalException;
-import org.apache.xml.crypto.dsig.DigestMethod;
+import javax.xml.crypto.MarshalException;
+import javax.xml.crypto.dsig.DigestMethod;
 
 import net.java.xades.util.ObjectId;
 import net.java.xades.util.OccursRequirement;

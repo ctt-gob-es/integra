@@ -27,6 +27,7 @@ import static es.gob.afirma.signature.SignatureConstants.SIGN_FORMAT_XADES_ENVEL
 import static es.gob.afirma.signature.SignatureConstants.SIGN_FORMAT_XADES_EXTERNALLY_DETACHED;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -35,15 +36,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.crypto.MarshalException;
+import javax.xml.crypto.dsig.Reference;
+import javax.xml.crypto.dsig.XMLSignature;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.xml.crypto.MarshalException;
-import org.apache.xml.crypto.dsig.Reference;
-import org.apache.xml.crypto.dsig.XMLSignature;
 import org.apache.xml.security.c14n.CanonicalizationException;
 import org.apache.xml.security.c14n.Canonicalizer;
 import org.apache.xml.security.c14n.InvalidCanonicalizerException;
+import org.apache.xml.security.parser.XMLParserException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -965,7 +967,9 @@ public final class GenerateMessageRequest {
 		    MessageDigest md = null;
 		    for (String algorithm: timestampReq.getTransformData().getXPath()) {
 			org.apache.xml.security.Init.init();
-			canonicalizedFile = Canonicalizer.getInstance(algorithm).canonicalize(canonicalizedFile);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			Canonicalizer.getInstance(algorithm).canonicalize(canonicalizedFile, baos, true);
+			canonicalizedFile = baos.toByteArray();
 			md = MessageDigest.getInstance(timestampReq.getTransformData().getAlgorithm());
 			md.update(canonicalizedFile);
 			inputParameters.put(DSSTagsRequest.TRANSFORMED_DATA_TRANSFORM_ATR_ALGORITHM, algorithm);
@@ -981,11 +985,9 @@ public final class GenerateMessageRequest {
 		    LOGGER.error(Language.getResIntegra(ILogConstantKeys.IFWS_LOG053), e);
 		} catch (InvalidCanonicalizerException e) {
 		    LOGGER.error(Language.getResIntegra(ILogConstantKeys.IFWS_LOG053), e);
-		} catch (ParserConfigurationException e) {
+		} catch (XMLParserException e) {
 		    LOGGER.error(Language.getResIntegra(ILogConstantKeys.IFWS_LOG053), e);
 		} catch (IOException e) {
-		    LOGGER.error(Language.getResIntegra(ILogConstantKeys.IFWS_LOG053), e);
-		} catch (SAXException e) {
 		    LOGGER.error(Language.getResIntegra(ILogConstantKeys.IFWS_LOG053), e);
 		} catch (NoSuchAlgorithmException e) {
 		    LOGGER.error(Language.getResIntegra(ILogConstantKeys.IFWS_LOG053), e);
@@ -999,7 +1001,9 @@ public final class GenerateMessageRequest {
 		try {
 		    for (String algorithm: timestampReq.getDocumentHash().getTransform().getXPath()) {
 			org.apache.xml.security.Init.init();
-			canonicalizedFile = Canonicalizer.getInstance(algorithm).canonicalize(canonicalizedFile);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			Canonicalizer.getInstance(algorithm).canonicalize(canonicalizedFile, baos, true);
+			canonicalizedFile = baos.toByteArray();
 			md = MessageDigest.getInstance(timestampReq.getDocumentHash().getTransform().getAlgorithm());
 			md.update(canonicalizedFile);
 			inputParameters.put(DSSTagsRequest.DOCUMENT_HASH_TRANSFORM_ATR_ALGORITHM, algorithm);
@@ -1008,11 +1012,9 @@ public final class GenerateMessageRequest {
 		    LOGGER.error(Language.getResIntegra(ILogConstantKeys.IFWS_LOG053), e);
 		} catch (InvalidCanonicalizerException e) {
 		    LOGGER.error(Language.getResIntegra(ILogConstantKeys.IFWS_LOG053), e);
-		} catch (ParserConfigurationException e) {
+		} catch (XMLParserException e) {
 		    LOGGER.error(Language.getResIntegra(ILogConstantKeys.IFWS_LOG053), e);
 		} catch (IOException e) {
-		    LOGGER.error(Language.getResIntegra(ILogConstantKeys.IFWS_LOG053), e);
-		} catch (SAXException e) {
 		    LOGGER.error(Language.getResIntegra(ILogConstantKeys.IFWS_LOG053), e);
 		} catch (NoSuchAlgorithmException e) {
 		    LOGGER.error(Language.getResIntegra(ILogConstantKeys.IFWS_LOG053), e);

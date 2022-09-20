@@ -21,12 +21,10 @@
  */
 package es.gob.afirma.testwebservices;
 
+import java.io.ByteArrayOutputStream;
 import java.security.MessageDigest;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-
-import junit.framework.TestCase;
 
 import org.apache.xml.security.c14n.Canonicalizer;
 
@@ -46,6 +44,7 @@ import es.gob.afirma.utils.DSSConstants.XmlSignatureMode;
 import es.gob.afirma.utils.GeneralConstants;
 import es.gob.afirma.utils.UtilsFileSystemCommons;
 import es.gob.afirma.wsServiceInvoker.Afirma5ServiceInvokerFacade;
+import junit.framework.TestCase;
 
 /**
  * <p>Class that allows to tests the @Firma and TS@ DSS services.</p>
@@ -689,7 +688,9 @@ public class DSSServicesTest extends TestCase {
 	     */
 	    file = UtilsFileSystemCommons.readFile("ficheroAfirmar2.xml", true);
 	    org.apache.xml.security.Init.init();
-	    byte[ ] canonicalizedFile = Canonicalizer.getInstance(Canonicalizer.ALGO_ID_C14N_EXCL_OMIT_COMMENTS).canonicalize(file);
+	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	    Canonicalizer.getInstance(Canonicalizer.ALGO_ID_C14N_EXCL_OMIT_COMMENTS).canonicalize(file, baos, true);
+	    byte[ ] canonicalizedFile = baos.toByteArray();
 	    MessageDigest md = MessageDigest.getInstance("SHA1");
 	    md.update(canonicalizedFile);
 	    String inputDocumentProcessed = new String(Base64CoderCommons.encodeBase64(md.digest()));
@@ -1057,7 +1058,9 @@ public class DSSServicesTest extends TestCase {
 	     */
 	    file = UtilsFileSystemCommons.readFile("ficheroAfirmar2.xml", true);
 	    org.apache.xml.security.Init.init();
-	    byte[ ] canonicalizedFile = Canonicalizer.getInstance(Canonicalizer.ALGO_ID_C14N_EXCL_OMIT_COMMENTS).canonicalize(file);
+	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	    Canonicalizer.getInstance(Canonicalizer.ALGO_ID_C14N_EXCL_OMIT_COMMENTS).canonicalize(file, baos, true);
+	    byte[ ] canonicalizedFile = baos.toByteArray();
 	    String inputDocumentProcessed = new String(Base64CoderCommons.encodeBase64(canonicalizedFile));
 	    Map<String, Object> inParams = new HashMap<String, Object>();
 	    inParams.put(DSSTagsRequest.TRANSFORMED_DATA_TRANSFORM_ATR_ALGORITHM, Canonicalizer.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);

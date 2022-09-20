@@ -21,7 +21,7 @@
  */
 package es.gob.afirma.utils;
 
-import org.apache.xml.crypto.dsig.DigestMethod;
+import javax.xml.crypto.dsig.DigestMethod;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;

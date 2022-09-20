@@ -23,12 +23,13 @@ package es.gob.afirma.wsServiceInvoker.ws;
 
 import java.security.cert.X509Certificate;
 
+import javax.xml.crypto.dsig.XMLSignature;
+
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.saaj.util.SAAJUtil;
 import org.apache.ws.security.components.crypto.CryptoType;
 import org.apache.ws.security.components.crypto.CryptoType.TYPE;
-import org.apache.xml.crypto.dsig.XMLSignature;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;

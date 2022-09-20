@@ -40,18 +40,19 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import javax.xml.crypto.MarshalException;
+import javax.xml.crypto.dsig.DigestMethod;
+import javax.xml.crypto.dsig.Reference;
+import javax.xml.crypto.dsig.Transform;
+import javax.xml.crypto.dsig.XMLObject;
+import javax.xml.crypto.dsig.XMLSignature;
+
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.tika.mime.MimeType;
 import org.apache.tika.mime.MimeTypeException;
 import org.apache.tika.mime.MimeTypes;
-import org.apache.xml.crypto.MarshalException;
-import org.apache.xml.crypto.dsig.DigestMethod;
-import org.apache.xml.crypto.dsig.Reference;
-import org.apache.xml.crypto.dsig.Transform;
-import org.apache.xml.crypto.dsig.XMLObject;
-import org.apache.xml.crypto.dsig.XMLSignature;
 import org.apache.xml.security.c14n.Canonicalizer;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.cms.Attribute;
@@ -637,7 +638,9 @@ public final class ASiCSBaselineSigner implements Signer {
 	    if (listTransforms != null) {
 		for (Transform transform: listTransforms) {
 		    // Canonicalizamos los datos firmados
-		    canonicalizedSignedData = Canonicalizer.getInstance(transform.getAlgorithm()).canonicalize(canonicalizedSignedData);
+		    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		    Canonicalizer.getInstance(transform.getAlgorithm()).canonicalize(canonicalizedSignedData, baos, true);
+		    canonicalizedSignedData = baos.toByteArray();
 		}
 	    }
 	    // Calculamos el resumen de los datos firmados (y canonicalizados)

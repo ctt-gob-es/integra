@@ -21,6 +21,7 @@
  */
 package es.gob.afirma.utils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.security.MessageDigest;
@@ -31,13 +32,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.crypto.dsig.XMLSignature;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.xml.crypto.dsig.XMLSignature;
 import org.apache.xml.security.c14n.Canonicalizer;
 import org.bouncycastle.asn1.tsp.MessageImprint;
 import org.bouncycastle.cms.CMSException;
@@ -543,14 +544,18 @@ public final class UtilsTimestampWS {
 			if (inputDocument != null) {
 				if (listTransforms != null) {
 					for (int i = 0; i < listTransforms.size(); i++) {
-						inputDocumentDigest = Canonicalizer.getInstance(listTransforms.get(i)).canonicalizeSubtree(inputDocument);
+					    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					    Canonicalizer.getInstance(listTransforms.get(i)).canonicalizeSubtree(inputDocument, baos);
+					    inputDocumentDigest = baos.toByteArray();
 					}
 				}
 			} else {
 				inputDocumentDigest = inputDocumentContent;
 				if (listTransforms != null) {
 					for (int i = 0; i < listTransforms.size(); i++) {
-						inputDocumentDigest = Canonicalizer.getInstance(listTransforms.get(i)).canonicalize(inputDocumentDigest);
+    					    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    					    	Canonicalizer.getInstance(listTransforms.get(i)).canonicalize(inputDocumentDigest, baos, true);
+    					    	inputDocumentDigest = baos.toByteArray();
 					}
 				}
 			}
