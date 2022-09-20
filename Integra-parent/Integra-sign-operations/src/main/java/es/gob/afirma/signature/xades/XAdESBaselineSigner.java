@@ -182,7 +182,20 @@ public final class XAdESBaselineSigner implements Signer {
 
 	    public Void run() {
 		try {
-		    //Security.insertProviderAt(new org.apache.xml.dsig.internal.dom.XMLDSigRI(), 1);
+		    // Correccion al problema insertado a partir de Apache Santuario 2.0.7 (Java 8u272 y Java 11)
+		    //
+		    // Establecemos la propiedad de Apache Santuario necesaria para que no se agreguen saltos
+		    // de linea en los Base64 generados, ya que de hacerlo se utiliza "\r\n" y el "\r" aparece como
+		    // "&#13;" al final de cada linea en las firmas XML. Las firmas generadas serian validas pero
+		    // darian problemas al promocionarlas a formatos longevos.
+		    // Referencias:
+		    // - https://bugs.java.com/bugdatabase/view_bug.do?bug_id=JDK-8177334
+		    // - https://issues.apache.org/jira/browse/SANTUARIO-482
+
+		    // A partir de Apache Santuario 2.1.2 se implementa la siguiente propiedad, tambien disponible
+		    // con Java 11.0.5 (que actualiza la version interna de Apache santuario a la 2.1.3).
+		    System.setProperty("org.apache.xml.security.ignoreLineBreaks", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+		    
 		    Security.insertProviderAt(new org.apache.jcp.xml.dsig.internal.dom.XMLDSigRI(), 1);
 		} catch (final SecurityException e) {
 		    LOGGER.error(Language.getResIntegra(ILogConstantKeys.XBS_LOG001), e);
