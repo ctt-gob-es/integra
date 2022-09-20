@@ -39,6 +39,8 @@ import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.crypto.dsig.XMLSignature;
+
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPHeader;
@@ -47,7 +49,6 @@ import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.saaj.util.SAAJUtil;
 import org.apache.ws.security.components.crypto.CryptoType;
 import org.apache.ws.security.components.crypto.CryptoType.TYPE;
-import org.apache.xml.crypto.dsig.XMLSignature;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.x509.SubjectKeyIdentifier;

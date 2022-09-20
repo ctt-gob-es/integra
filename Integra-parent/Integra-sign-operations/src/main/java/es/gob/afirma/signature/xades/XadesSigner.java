@@ -43,23 +43,23 @@ import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
+import javax.xml.crypto.MarshalException;
+import javax.xml.crypto.XMLStructure;
+import javax.xml.crypto.dom.DOMStructure;
+import javax.xml.crypto.dsig.CanonicalizationMethod;
+import javax.xml.crypto.dsig.DigestMethod;
+import javax.xml.crypto.dsig.Manifest;
+import javax.xml.crypto.dsig.Reference;
+import javax.xml.crypto.dsig.Transform;
+import javax.xml.crypto.dsig.XMLObject;
+import javax.xml.crypto.dsig.XMLSignature;
+import javax.xml.crypto.dsig.XMLSignatureException;
+import javax.xml.crypto.dsig.XMLSignatureFactory;
+import javax.xml.crypto.dsig.spec.TransformParameterSpec;
+import javax.xml.crypto.dsig.spec.XPathFilterParameterSpec;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.xml.crypto.MarshalException;
-import org.apache.xml.crypto.XMLStructure;
-import org.apache.xml.crypto.dom.DOMStructure;
-import org.apache.xml.crypto.dsig.CanonicalizationMethod;
-import org.apache.xml.crypto.dsig.DigestMethod;
-import org.apache.xml.crypto.dsig.Manifest;
-import org.apache.xml.crypto.dsig.Reference;
-import org.apache.xml.crypto.dsig.Transform;
-import org.apache.xml.crypto.dsig.XMLObject;
-import org.apache.xml.crypto.dsig.XMLSignature;
-import org.apache.xml.crypto.dsig.XMLSignatureException;
-import org.apache.xml.crypto.dsig.XMLSignatureFactory;
-import org.apache.xml.crypto.dsig.spec.TransformParameterSpec;
-import org.apache.xml.crypto.dsig.spec.XPathFilterParameterSpec;
 import org.apache.xml.security.c14n.InvalidCanonicalizerException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.tsp.TimeStampToken;
@@ -159,7 +159,8 @@ public final class XadesSigner implements Signer {
 
 	    public Void run() {
 		try {
-		    Security.insertProviderAt(new org.apache.xml.dsig.internal.dom.XMLDSigRI(), 1);
+		    //Security.insertProviderAt(new org.apache.xml.dsig.internal.dom.XMLDSigRI(), 1);
+		    Security.insertProviderAt(new org.apache.jcp.xml.dsig.internal.dom.XMLDSigRI(), 1);
 		} catch (final SecurityException e) {
 		    LOGGER.error(Language.getResIntegra(ILogConstantKeys.XS_LOG002), e);
 		}

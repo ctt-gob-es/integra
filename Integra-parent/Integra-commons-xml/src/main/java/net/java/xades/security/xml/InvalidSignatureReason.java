@@ -19,12 +19,11 @@
  */
 package net.java.xades.security.xml;
 
-import org.apache.xml.crypto.MarshalException;
-import org.apache.xml.crypto.dsig.Reference;
-import org.apache.xml.crypto.dsig.XMLSignature;
-import org.apache.xml.crypto.dsig.XMLSignatureException;
+import javax.xml.crypto.MarshalException;
+import javax.xml.crypto.dsig.Reference;
+import javax.xml.crypto.dsig.XMLSignature;
+import javax.xml.crypto.dsig.XMLSignatureException;
 
-import net.java.xades.security.*;
 import net.java.xades.util.ComparableBean;
 import net.java.xades.util.SystemUtils;
 import net.java.xades.util.UniversalIndexKey;

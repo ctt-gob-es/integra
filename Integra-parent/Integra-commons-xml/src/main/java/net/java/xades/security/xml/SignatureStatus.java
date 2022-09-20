@@ -19,11 +19,12 @@
  */
 package net.java.xades.security.xml;
 
-import net.java.xades.util.ComparableBean;
-
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.xml.crypto.MarshalException;
+
+import javax.xml.crypto.MarshalException;
+
+import net.java.xades.util.ComparableBean;
 
 /**
  *

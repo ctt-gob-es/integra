@@ -19,7 +19,7 @@
  */
 package net.java.xades.security.xml;
 
-import org.apache.xml.crypto.dom.DOMStructure;
+import javax.xml.crypto.dom.DOMStructure;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

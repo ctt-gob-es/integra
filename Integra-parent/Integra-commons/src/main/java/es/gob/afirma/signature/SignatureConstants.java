@@ -26,7 +26,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.xml.crypto.dsig.DigestMethod;
+import javax.xml.crypto.dsig.DigestMethod;
 
 import es.gob.afirma.utils.CryptoUtilCommons;
 

@@ -27,19 +27,20 @@ import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import org.apache.xml.crypto.AlgorithmMethod;
-import org.apache.xml.crypto.KeySelector;
-import org.apache.xml.crypto.KeySelectorException;
-import org.apache.xml.crypto.KeySelectorResult;
-import org.apache.xml.crypto.XMLCryptoContext;
-import org.apache.xml.crypto.XMLStructure;
-import org.apache.xml.crypto.dsig.SignatureMethod;
-import org.apache.xml.crypto.dsig.keyinfo.KeyInfo;
-import org.apache.xml.crypto.dsig.keyinfo.X509Data;
+import javax.xml.crypto.AlgorithmMethod;
+import javax.xml.crypto.KeySelector;
+import javax.xml.crypto.KeySelectorException;
+import javax.xml.crypto.KeySelectorResult;
+import javax.xml.crypto.XMLCryptoContext;
+import javax.xml.crypto.XMLStructure;
+import javax.xml.crypto.dsig.SignatureMethod;
+import javax.xml.crypto.dsig.keyinfo.KeyInfo;
+import javax.xml.crypto.dsig.keyinfo.X509Data;
+
+import org.apache.xml.security.signature.XMLSignature;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
-import org.apache.xml.security.signature.XMLSignature;
 
 /**
  * <p>Class that extends KeySelector to retrieve the public key out of the KeyValue element and returns it. NOTE: If the key algorithm doesn't match

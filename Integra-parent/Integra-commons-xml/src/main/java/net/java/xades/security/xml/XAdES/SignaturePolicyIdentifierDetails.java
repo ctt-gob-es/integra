@@ -19,8 +19,8 @@
  */
 package net.java.xades.security.xml.XAdES;
 
-import org.apache.xml.crypto.dsig.DigestMethod;
-import org.apache.xml.crypto.dsig.XMLSignature;
+import javax.xml.crypto.dsig.DigestMethod;
+import javax.xml.crypto.dsig.XMLSignature;
 
 import org.w3c.dom.Element;
 

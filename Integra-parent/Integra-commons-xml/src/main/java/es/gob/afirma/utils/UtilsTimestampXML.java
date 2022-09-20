@@ -21,6 +21,7 @@
  */
 package es.gob.afirma.utils;
 
+import java.io.ByteArrayOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -33,13 +34,14 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 
-import org.apache.xml.crypto.MarshalException;
-import org.apache.xml.crypto.dsig.CanonicalizationMethod;
-import org.apache.xml.crypto.dsig.DigestMethod;
-import org.apache.xml.crypto.dsig.XMLSignature;
-import org.apache.xml.crypto.dsig.XMLSignatureException;
-import org.apache.xml.crypto.dsig.XMLSignatureFactory;
-import org.apache.xml.crypto.dsig.dom.DOMValidateContext;
+import javax.xml.crypto.MarshalException;
+import javax.xml.crypto.dsig.CanonicalizationMethod;
+import javax.xml.crypto.dsig.DigestMethod;
+import javax.xml.crypto.dsig.XMLSignature;
+import javax.xml.crypto.dsig.XMLSignatureException;
+import javax.xml.crypto.dsig.XMLSignatureFactory;
+import javax.xml.crypto.dsig.dom.DOMValidateContext;
+
 import org.apache.xml.security.c14n.CanonicalizationException;
 import org.apache.xml.security.c14n.Canonicalizer;
 import org.apache.xml.security.c14n.InvalidCanonicalizerException;
@@ -393,8 +395,8 @@ public final class UtilsTimestampXML {
 	    // Comprobamos que se ha indicado el elemento ds:Signature
 	    GenericUtilsCommons.checkInputParameterIsNotNull(dsSignature, Language.getResIntegra(ILogConstantKeys.TSU_LOG081));
 
-	    // Instanciamos el array de bytes a devolver
-	    byte[ ] dataToStamp = new byte[0];
+//	    // Instanciamos el array de bytes a devolver
+//	    byte[ ] dataToStamp = new byte[0];
 
 	    // Si no se ha indicado algoritmo de canonicalización, se usará
 	    // "http://www.w3.org/TR/2001/REC-xml-c14n-20010315", definido
@@ -410,10 +412,9 @@ public final class UtilsTimestampXML {
 		throw new SigningException(errorMsg);
 	    }
 	    Node signatureValue = listSignatureValue.item(0);
-
-	    // Canonicalizamos el elemento ds:SignatureValue
-	    dataToStamp = canonicalizer.canonicalizeSubtree(signatureValue);
-	    return dataToStamp;
+	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	    canonicalizer.canonicalizeSubtree(signatureValue, baos);
+	    return baos.toByteArray();
 
 	} catch (CanonicalizationException e) {
 	    String errorMsg = Language.getResIntegra(ILogConstantKeys.TSU_LOG083);
@@ -569,7 +570,9 @@ public final class UtilsTimestampXML {
 		Element transform = (Element) transformsList.item(j);
 		String canonicalizationAlgorithm = transform.getAttribute(IXMLConstants.ATTRIBUTE_ALGORITHM);
 		try {
-		    stampedDataProcessed = Canonicalizer.getInstance(canonicalizationAlgorithm).canonicalizeSubtree(tstInfo);
+		    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		    Canonicalizer.getInstance(canonicalizationAlgorithm).canonicalizeSubtree(tstInfo, baos);
+		    stampedDataProcessed = baos.toByteArray();
 		} catch (Exception e) {
 		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.TSU_LOG114, new Object[ ] { signatureTimeStampId, referenceId });
 		    LOGGER.error(errorMsg, e);
@@ -641,7 +644,9 @@ public final class UtilsTimestampXML {
 		Element transform = (Element) transformsList.item(j);
 		String canonicalizationAlgorithm = transform.getAttribute(IXMLConstants.ATTRIBUTE_ALGORITHM);
 		try {
-		    tstInfoProcessed = Canonicalizer.getInstance(canonicalizationAlgorithm).canonicalizeSubtree(tstInfo);
+		    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		    Canonicalizer.getInstance(canonicalizationAlgorithm).canonicalizeSubtree(tstInfo, baos);
+		    tstInfoProcessed = baos.toByteArray();
 		} catch (Exception e) {
 		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.TSU_LOG114, new Object[ ] { signatureTimeStampId, referenceId });
 		    LOGGER.error(errorMsg, e);

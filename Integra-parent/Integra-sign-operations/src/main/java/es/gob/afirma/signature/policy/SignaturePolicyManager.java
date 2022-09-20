@@ -31,7 +31,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.apache.xml.crypto.dsig.XMLSignature;
+import javax.xml.crypto.dsig.XMLSignature;
+
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.DERIA5String;

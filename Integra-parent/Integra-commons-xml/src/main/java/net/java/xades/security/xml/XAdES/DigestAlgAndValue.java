@@ -24,7 +24,7 @@ import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.cert.X509CRL;
 
-import org.apache.xml.crypto.dsig.DigestMethod;
+import javax.xml.crypto.dsig.DigestMethod;
 
 import net.java.xades.util.Base64;
 

@@ -53,17 +53,18 @@ import java.util.TimeZone;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.xml.crypto.MarshalException;
+import javax.xml.crypto.dsig.Reference;
+import javax.xml.crypto.dsig.XMLSignature;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
-import org.apache.xml.crypto.MarshalException;
-import org.apache.xml.crypto.dsig.Reference;
-import org.apache.xml.crypto.dsig.XMLSignature;
-import org.apache.xml.dsig.internal.dom.DOMReference;
+import org.apache.jcp.xml.dsig.internal.dom.DOMReference;
 import org.apache.xml.security.keys.KeyInfo;
 import org.apache.xml.security.signature.XMLSignatureInput;
 import org.apache.xml.security.utils.resolver.ResourceResolver;
+import org.apache.xml.security.utils.resolver.ResourceResolverContext;
 import org.apache.xml.security.utils.resolver.ResourceResolverException;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1GeneralizedTime;
@@ -86,7 +87,6 @@ import org.bouncycastle.asn1.ess.SigningCertificate;
 import org.bouncycastle.asn1.ess.SigningCertificateV2;
 import org.bouncycastle.asn1.oiw.OIWObjectIdentifiers;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
-import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.GeneralName;
@@ -2307,12 +2307,16 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    List<?> references = xmlSign.getSignedInfo().getReferences();
 	    XMLSignatureInput xmlObjectInput = null;
 	    for (Object tmp: references) {
-		Reference ref = (Reference) tmp;
+//		Reference ref = (Reference) tmp;
+//		Attr uriAttr = (Attr) ((DOMReference) ref).getHere();
+		javax.xml.crypto.dsig.Reference ref = (javax.xml.crypto.dsig.Reference) tmp;
 		Attr uriAttr = (Attr) ((DOMReference) ref).getHere();
-		ResourceResolver res;
+		
+//		ResourceResolver res;
 		try {
-		    res = ResourceResolver.getInstance(uriAttr, null);
-		    xmlObjectInput = res.resolve(uriAttr, null);
+//		    res = ResourceResolver.getInstance(uriAttr, null);
+//		    xmlObjectInput = res.resolve(uriAttr, null);
+		    xmlObjectInput = ResourceResolver.resolve(new ResourceResolverContext(uriAttr, null, true));
 		} catch (ResourceResolverException e) {
 		    continue;
 		}

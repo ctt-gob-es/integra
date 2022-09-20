@@ -21,12 +21,12 @@ package net.java.xades.security.xml;
 
 import java.util.Date;
 
-import org.apache.xml.crypto.dom.DOMStructure;
-
-import net.java.xades.util.SystemUtils;
+import javax.xml.crypto.dom.DOMStructure;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
+import net.java.xades.util.SystemUtils;
 
 /**
  *

@@ -28,23 +28,23 @@ import java.security.cert.X509Certificate;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.xml.crypto.AlgorithmMethod;
-import org.apache.xml.crypto.KeySelector;
-import org.apache.xml.crypto.KeySelectorException;
-import org.apache.xml.crypto.KeySelectorResult;
-import org.apache.xml.crypto.MarshalException;
-import org.apache.xml.crypto.XMLCryptoContext;
-import org.apache.xml.crypto.XMLStructure;
-import org.apache.xml.crypto.dsig.Reference;
-import org.apache.xml.crypto.dsig.SignatureMethod;
-import org.apache.xml.crypto.dsig.XMLSignature;
-import org.apache.xml.crypto.dsig.XMLSignature.SignatureValue;
-import org.apache.xml.crypto.dsig.XMLSignatureException;
-import org.apache.xml.crypto.dsig.XMLSignatureFactory;
-import org.apache.xml.crypto.dsig.dom.DOMValidateContext;
-import org.apache.xml.crypto.dsig.keyinfo.KeyInfo;
-import org.apache.xml.crypto.dsig.keyinfo.KeyValue;
-import org.apache.xml.crypto.dsig.keyinfo.X509Data;
+import javax.xml.crypto.AlgorithmMethod;
+import javax.xml.crypto.KeySelector;
+import javax.xml.crypto.KeySelectorException;
+import javax.xml.crypto.KeySelectorResult;
+import javax.xml.crypto.MarshalException;
+import javax.xml.crypto.XMLCryptoContext;
+import javax.xml.crypto.XMLStructure;
+import javax.xml.crypto.dsig.Reference;
+import javax.xml.crypto.dsig.SignatureMethod;
+import javax.xml.crypto.dsig.XMLSignature;
+import javax.xml.crypto.dsig.XMLSignature.SignatureValue;
+import javax.xml.crypto.dsig.XMLSignatureException;
+import javax.xml.crypto.dsig.XMLSignatureFactory;
+import javax.xml.crypto.dsig.dom.DOMValidateContext;
+import javax.xml.crypto.dsig.keyinfo.KeyInfo;
+import javax.xml.crypto.dsig.keyinfo.KeyValue;
+import javax.xml.crypto.dsig.keyinfo.X509Data;
 
 import org.w3c.dom.Element;
 
@@ -68,7 +68,8 @@ public class XMLSignatureElement {
 		// {
 		// try
 		// {
-		Security.insertProviderAt(new org.apache.xml.dsig.internal.dom.XMLDSigRI(), 1);
+		//Security.insertProviderAt(new org.apache.xml.dsig.internal.dom.XMLDSigRI(), 1);
+		Security.insertProviderAt(new org.apache.jcp.xml.dsig.internal.dom.XMLDSigRI(), 1);
 		// }
 		// catch (Throwable e)
 		// {

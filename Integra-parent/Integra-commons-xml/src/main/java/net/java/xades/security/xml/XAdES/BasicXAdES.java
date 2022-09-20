@@ -24,17 +24,18 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.xml.crypto.MarshalException;
-import org.apache.xml.crypto.XMLStructure;
-import org.apache.xml.crypto.dsig.Reference;
-import org.apache.xml.crypto.dsig.XMLObject;
-import org.apache.xml.crypto.dsig.XMLSignatureException;
+
+import javax.xml.crypto.MarshalException;
+import javax.xml.crypto.XMLStructure;
+import javax.xml.crypto.dsig.Reference;
+import javax.xml.crypto.dsig.XMLObject;
+import javax.xml.crypto.dsig.XMLSignatureException;
+
+import org.w3c.dom.Element;
 
 import net.java.xades.security.xml.WrappedKeyStorePlace;
 import net.java.xades.security.xml.XMLSignatureDocument;
 import net.java.xades.security.xml.XmlWrappedKeyInfo;
-
-import org.w3c.dom.Element;
 
 /*
  <?xml version="1.0"?>
