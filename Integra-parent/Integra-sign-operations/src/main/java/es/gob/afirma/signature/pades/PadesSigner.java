@@ -1171,9 +1171,9 @@ public final class PadesSigner implements Signer {
 			 * > La firma CMS que constituye el núcleo de firma sólo contiene un firmante.
 			 * > La clave /Contents del diccionario de firma deberá estar presente y su contenido corresponderse con una firma CMS.
 			 * > La clave /ByteRange del diccionario de firma deberá estar presente y su contenido corresponderse con el resumen de la firma CMS.
-			 * > La clave /SubFilter del diccionario de firma deberá estar presente y su contenido corresponderse con el valor “adbe.pkcs7.detached” o “adbe.pkcs7.sha1”.
-			 * 		En el caso de que el valor sea “adbe.pkcs7.detached” se comprobará que la firma CMS contenida es explícita.
-			 * 		En el caso de que el valor sea “adbe.pkcs7.sha1” se comprobará que el algoritmo de firma utilizado es SHA-1.
+			 * > La clave /SubFilter del diccionario de firma deberá estar presente y su contenido corresponderse con el valor "adbe.pkcs7.detached" o "adbe.pkcs7.sha1".
+			 * 		En el caso de que el valor sea "adbe.pkcs7.detached" se comprobará que la firma CMS contenida es explícita.
+			 * 		En el caso de que el valor sea "adbe.pkcs7.sha1" se comprobará que el algoritmo de firma utilizado es SHA-1.
 			 */
 			validatePAdESBasicStructurally(pdfSignatureDictionaryValidationResult, pdfSignatureDictionary, pdfDocument, signedData, validationResult);
 
@@ -1227,12 +1227,12 @@ public final class PadesSigner implements Signer {
 			/*
 			 * Validación Estructural PDF: Contemplará las siguientes verificaciones:
 			 * > La clave /ByteRange del diccionario de firma deberá estar presente y su contenido corresponderse con el resumen de la firma CAdES.
-			 * > La clave /SubFilter del diccionario de firma deberá estar presente y su valor corresponderse con “ETSI.CAdES.detached”.
+			 * > La clave /SubFilter del diccionario de firma deberá estar presente y su valor corresponderse con "ETSI.CAdES.detached".
 			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado signing-time.
 			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado content-identifier.
 			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado content-hints.
 			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado signer-location.
-			 * > Si el primer firmante de la firma CAdES contienida en el diccionario de firma posee el atributo firmado content-type y éste tiene el valor “id-data”.
+			 * > Si el primer firmante de la firma CAdES contenida en el diccionario de firma posee el atributo firmado content-type y éste tiene el valor "id-data".
 			 * > Si el primer firmante de la firma CAdES contenida en el diccionario de firma no posee el atributo firmado signature-policy-id entonces no deberá poseer el
 			 * atributo firmado commitment-type-indication.
 			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo no firmado counter-signature.
@@ -1292,12 +1292,12 @@ public final class PadesSigner implements Signer {
 			/*
 			 * Validación Estructural PDF: Contemplará las siguientes verificaciones:
 			 * > La clave /ByteRange del diccionario de firma deberá estar presente y su contenido corresponderse con el resumen de la firma CAdES.
-			 * > La clave /SubFilter del diccionario de firma deberá estar presente y su valor corresponderse con “ETSI.CAdES.detached”.
+			 * > La clave /SubFilter del diccionario de firma deberá estar presente y su valor corresponderse con "ETSI.CAdES.detached".
 			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado signing-time.
 			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado content-identifier.
 			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado content-hints.
 			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo firmado signer-location.
-			 * > Si el primer firmante de la firma CAdES contienida en el diccionario de firma posee el atributo firmado content-type y éste tiene el valor “id-data”.
+			 * > Si el primer firmante de la firma CAdES contenida en el diccionario de firma posee el atributo firmado content-type y éste tiene el valor "id-data".
 			 * > Si el primer firmante de la firma CAdES contenida en el diccionario de firma no posee el atributo firmado signature-policy-id entonces no deberá poseer el
 			 * atributo firmado commitment-type-indication.
 			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo no firmado counter-signature.
@@ -1372,7 +1372,7 @@ public final class PadesSigner implements Signer {
 			 * Validación Estructural PDF: Contemplará las siguientes verificaciones:
 			 * > La clave /Contents del diccionario de firma deberá estar presente y su contenido corresponderse con una firma CAdES.
 			 * > La clave /ByteRange del diccionario de firma deberá estar presente y su contenido corresponderse con el resumen de la firma CAdES.
-			 * > La clave /SubFilter del diccionario de firma deberá estar presente y su contenido corresponderse con el valor “ETSI.CAdES.detached”.
+			 * > La clave /SubFilter del diccionario de firma deberá estar presente y su contenido corresponderse con el valor "ETSI.CAdES.detached".
 			 * > El primer firmante de la firma CAdES que contiene el diccionario de firma deberá tener el atributo firmado content-type con valor "id-data".
 			 * > El primer firmante de la firma CAdES que contiene el diccionario de firma deberá no tener el atributo no firmado counter-signature.
 			 * > El primer firmante de la firma CAdES que contiene el diccionario de firma deberá no tener el atributo no firmado content-reference.
@@ -1439,7 +1439,7 @@ public final class PadesSigner implements Signer {
 			 * Validación Estructural PAdES-EPES: Contemplará las siguientes verificaciones:
 			 * > La clave /Contents del diccionario de firma deberá estar presente y su contenido corresponderse con una firma CAdES.
 			 * > La clave /ByteRange del diccionario de firma deberá estar presente y su valor corresponderse con el resumen de la firma CAdES.
-			 * > La clave /SubFilter del diccionario de firma deberá estar presente y su valor corresponderse con “ETSI.CAdES.detached”.
+			 * > La clave /SubFilter del diccionario de firma deberá estar presente y su valor corresponderse con "ETSI.CAdES.detached".
 			 * > El primer firmante de la firma CAdES que contiene el diccionario de firma deberá tener el atributo firmado content-type con valor "id-data".
 			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo no firmado counter-signature.
 			 * > El primer firmante de la firma CAdES contenida en el diccionario de firma no deberá contener el atributo no firmado content-reference.

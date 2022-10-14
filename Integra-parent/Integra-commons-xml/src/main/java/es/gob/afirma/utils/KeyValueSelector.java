@@ -52,7 +52,6 @@ public class KeyValueSelector extends KeySelector {
 
     /**
      * {@inheritDoc}
-     * @see org.apache.xml.crypto.KeySelector#select(org.apache.xml.crypto.dsig.keyinfo.KeyInfo, org.apache.xml.crypto.KeySelector.Purpose, org.apache.xml.crypto.AlgorithmMethod, org.apache.xml.crypto.XMLCryptoContext)
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -122,7 +121,6 @@ public class KeyValueSelector extends KeySelector {
 
 	/**
 	 * {@inheritDoc}
-	 * @see org.apache.xml.crypto.KeySelectorResult#getKey()
 	 */
 	@Override
 	public Key getKey() {

@@ -1028,7 +1028,7 @@ public final class ASiCSBaselineSigner implements Signer {
 	     * 
 	     * > Los 4 primeros octetos del fichero ZIP deberán tener el valor '504B0304' en hexadecimal.
 	     * > El fichero ZIP deberá contener al menos dos elementos: El fichero que se corresponde con los datos firmados, y una firma (ASN.1 o XML).
-	     * > Si dentro del fichero ZIP se incluye un fichero “mimetype” se comprobará que el valor indicado en dicho fichero es el asociado a firmas ASiC-S,
+	     * > Si dentro del fichero ZIP se incluye un fichero "mimetype" se comprobará que el valor indicado en dicho fichero es el asociado a firmas ASiC-S,
 	     *   esto es, 'application/vnd.etsi.asic-s+zip'. Si no posee dicho valor, deberá tener el mimetype asociado al fichero firmado.
 	     */
 	    checkSignatureIntegrity(validationResult, asicSSignature);

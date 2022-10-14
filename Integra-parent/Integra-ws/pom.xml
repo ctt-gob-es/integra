@@ -3,7 +3,7 @@
   <parent>
     <groupId>es.gob.afirma</groupId>
     <artifactId>Integra-parent</artifactId>
-    <version>2.2.3_000</version>
+    <version>2.2.3_001</version>
   </parent>
   <artifactId>Integra-ws</artifactId>
   <name>Integra-ws</name>
@@ -77,14 +77,11 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.13.1</version>
-			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>es.gob.afirma</groupId>
 			<artifactId>Integra-commons-xml</artifactId>
-			<version>${version.Integra.commons.xml}</version>
-			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<artifactId>commons-logging</artifactId>
@@ -99,8 +96,6 @@
 		<dependency>
 			<groupId>es.gob.afirma</groupId>
 			<artifactId>Integra-commons</artifactId>
-			<version>${version.Integra.commons}</version>
-			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<artifactId>xmltooling</artifactId>
@@ -122,17 +117,11 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.axis</groupId>
-			<artifactId>axis-jaxrpc</artifactId>
-			<version>1.4</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.axis2</groupId>
 			<artifactId>axis2-adb</artifactId>
 			<version>1.7.9</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.axis2</groupId>
 			<artifactId>axis2-saaj</artifactId>
@@ -152,8 +141,6 @@
 			<groupId>com.sun.xml.wss</groupId>
 			<artifactId>xws-security</artifactId>
 			<version>3.0</version>
-			<type>jar</type>
-			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
 					<artifactId>xmldsig</artifactId>
@@ -165,29 +152,6 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.3.2</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-discovery</groupId>
-			<artifactId>commons-discovery</artifactId>
-			<version>0.4</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>sun-jaxws</groupId>
-			<artifactId>stax-ex</artifactId>
-			<version>2.1.1</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
-			<version>2.2.4</version>
-			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 	<properties>

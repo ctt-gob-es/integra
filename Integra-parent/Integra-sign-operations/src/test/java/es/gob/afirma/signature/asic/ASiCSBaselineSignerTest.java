@@ -239,7 +239,7 @@ public class ASiCSBaselineSignerTest extends TestCase {
 
 	/*
 	* Generación y Validación de firma ASiC-S Baseline con firma CAdES
-	Baseline IMPLÍCITA, sin política de firma y algoritmo SHA-512
+	Baseline IMPLICITA, sin política de firma y algoritmo SHA-512
 	*/
 	try {
 	    asicsCadesBaseline = signer.sign(dataToSignCades, SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, SignatureConstants.SIGN_MODE_IMPLICIT, privateKey, null, false, ISignatureFormatDetector.FORMAT_CADES_B_LEVEL, null);
@@ -359,7 +359,7 @@ public class ASiCSBaselineSignerTest extends TestCase {
 
 	/*
 	* Generación y Validación de firma ASiC-S Baseline con firma CAdES
-	Baseline IMPLÍCITA, sin política de firma y algoritmo SHA-512
+	Baseline IMPLICITA, sin política de firma y algoritmo SHA-512
 	*/
 	try {
 	    asicsCadesBaseline = signer.sign(dataToSignCades, SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, SignatureConstants.SIGN_MODE_IMPLICIT, privateKey, null, true, ISignatureFormatDetector.FORMAT_CADES_B_LEVEL, null);

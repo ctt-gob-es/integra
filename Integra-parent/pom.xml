@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>es.gob.afirma</groupId>
 	<artifactId>Integra-parent</artifactId>
-	<version>2.2.3_000</version>
+	<version>2.2.3_001</version>
 	<packaging>pom</packaging>
 	<name>Integra-parent</name>
 	<description>Kit de integracion para la Suite de @Firma</description>
@@ -23,22 +23,80 @@
 		<module>Integra-commons-tsl</module>
 	</modules>
 	<properties>
-		<version.Integra.commons>2.2.3_000</version.Integra.commons>
-		<version.Integra.commons.pdf.bc>2.2.3_000</version.Integra.commons.pdf.bc>
-		<version.Integra.commons.xml>2.2.3_000</version.Integra.commons.xml>
-		<version.Integra.ocsp.rfc3161>2.2.3_000</version.Integra.ocsp.rfc3161>
-		<version.Integra.ws>2.2.3_000</version.Integra.ws>
-		<version.Integra.sign.operations>2.2.3_000</version.Integra.sign.operations>
-		<version.Integra.utils>2.2.3_000</version.Integra.utils>
-		<version.Integra.encryption>2.2.3_000</version.Integra.encryption>
-		<version.Integra.signature-report>2.2.3_000</version.Integra.signature-report>
-		<version.Integra.commons.tsl>2.2.3_000</version.Integra.commons.tsl>
+		<version.Integra.commons>2.2.3_001</version.Integra.commons>
+		<version.Integra.commons.pdf.bc>2.2.3_001</version.Integra.commons.pdf.bc>
+		<version.Integra.commons.tsl>2.2.3_001</version.Integra.commons.tsl>
+		<version.Integra.commons.xml>2.2.3_001</version.Integra.commons.xml>
+		<version.Integra.encryption>2.2.3_001</version.Integra.encryption>
+		<version.Integra.ocsp.rfc3161>2.2.3_001</version.Integra.ocsp.rfc3161>
+		<version.Integra.services>2.2.3_001</version.Integra.services>
+		<version.Integra.sign.operations>2.2.3_001</version.Integra.sign.operations>
+		<version.Integra.signature-report>2.2.3_001</version.Integra.signature-report>
+		<version.Integra.tsl>2.2.3_001</version.Integra.tsl>
+		<version.Integra.utils>2.2.3_001</version.Integra.utils>
+		<version.Integra.ws>2.2.3_001</version.Integra.ws>
 		<version.bouncycastle>1.46</version.bouncycastle>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
 		
+			<dependency>
+				<groupId>es.gob.afirma</groupId>
+				<artifactId>Integra-commons</artifactId>
+				<version>${version.Integra.commons}</version>
+			</dependency>
+			<dependency>
+				<groupId>es.gob.afirma</groupId>
+				<artifactId>Integra-commons-pdf-bc</artifactId>
+				<version>${version.Integra.commons.pdf.bc}</version>
+			</dependency>
+			<dependency>
+				<groupId>es.gob.afirma</groupId>
+				<artifactId>Integra-commons-tsl</artifactId>
+				<version>${version.Integra.commons.tsl}</version>
+			</dependency>
+			<dependency>
+				<groupId>es.gob.afirma</groupId>
+				<artifactId>Integra-commons-xml</artifactId>
+				<version>${version.Integra.commons.xml}</version>
+			</dependency>
+			<dependency>
+				<groupId>es.gob.afirma</groupId>
+				<artifactId>Integra-encryption</artifactId>
+				<version>${version.Integra.encryption}</version>
+			</dependency>
+			<dependency>
+				<groupId>es.gob.afirma</groupId>
+				<artifactId>Integra-ocsp-rfc3161</artifactId>
+				<version>${version.Integra.ocsp.rfc3161}</version>
+			</dependency>
+			<dependency>
+				<groupId>es.gob.afirma</groupId>
+				<artifactId>Integra-sign-operations</artifactId>
+				<version>${version.Integra.sign.operations}</version>
+			</dependency>
+			<dependency>
+				<groupId>es.gob.afirma</groupId>
+				<artifactId>Integra-signature-report</artifactId>
+				<version>${version.Integra.signature-report}</version>
+			</dependency>
+			<dependency>
+				<groupId>es.gob.afirma</groupId>
+				<artifactId>Integra-tsl</artifactId>
+				<version>${version.Integra.tsl}</version>
+			</dependency>
+			<dependency>
+				<groupId>es.gob.afirma</groupId>
+				<artifactId>Integra-utils</artifactId>
+				<version>${version.Integra.utils}</version>
+			</dependency>
+			<dependency>
+				<groupId>es.gob.afirma</groupId>
+				<artifactId>Integra-ws</artifactId>
+				<version>${version.Integra.ws}</version>
+			</dependency>
+			
 			<dependency>
 				<groupId>org.bouncycastle</groupId>
 				<artifactId>bcprov-jdk16</artifactId>

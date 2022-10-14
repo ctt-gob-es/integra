@@ -23,7 +23,9 @@ package es.gob.afirma.wsServiceInvoker.ws;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.security.Provider;
 import java.security.Security;
 import java.util.Iterator;
@@ -327,6 +329,7 @@ class ClientHandler extends AbstractCommonHandler {
 		Security.insertProviderAt(apacheXMLDSigProvider, 1);
 	    }
 	}
+	
 	return res;
     }
 

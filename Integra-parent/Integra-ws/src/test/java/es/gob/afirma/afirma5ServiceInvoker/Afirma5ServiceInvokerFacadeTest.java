@@ -67,7 +67,7 @@ public class Afirma5ServiceInvokerFacadeTest extends TestCase {
 	    fail(MSG_ERROR_EMPTY_PARAM);
 	} catch (WSServiceInvokerException e) {}
 
-	// VALORES NO VÁLIDOS:::..
+	// VALORES NO VALIDOS:::..
 
 	// xml no válido
 	try {
