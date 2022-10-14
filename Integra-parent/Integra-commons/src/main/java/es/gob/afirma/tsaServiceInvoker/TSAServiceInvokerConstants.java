@@ -50,11 +50,6 @@ public interface TSAServiceInvokerConstants {
      */
     String TRUSTEDSTORE_PASSWORD = "com.trustedstorePassword";
 
-    /**
-     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with the path to
-     *  the descriptor file of TS@ web services (wsdl file).
-     */
-    String WS_WSDL_PATH = "com.serviceWSDLPath";
 
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with the connection
