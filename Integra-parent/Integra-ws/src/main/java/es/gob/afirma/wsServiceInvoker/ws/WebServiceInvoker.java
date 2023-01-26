@@ -30,6 +30,7 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
@@ -195,6 +196,13 @@ public class WebServiceInvoker {
 	} catch (Exception e) {
 	    throw new WSServiceInvokerException(e);
 	} finally {
+		if (client != null) {
+			try {
+				client.cleanupTransport();
+			} catch (AxisFault e) {
+				LOGGER.warn(Language.getResIntegra(ILogConstantKeys.WSI_LOG024), e);
+			}
+		}
 	    removeHandlers(client);
 	}
 

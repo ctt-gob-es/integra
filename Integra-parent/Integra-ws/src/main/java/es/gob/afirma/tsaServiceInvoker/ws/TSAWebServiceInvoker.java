@@ -165,132 +165,139 @@ public class TSAWebServiceInvoker {
      * @throws TSAServiceInvokerException If the method fails.
      */
     public final Object performCall(String serviceName, Object[ ] params, String idClient) throws TSAServiceInvokerException {
-	String endPointURL, securityOption, secureMode, tsaService, protocol,
-		endPoint, servicePath, timeout;
-	Object res = null;
-	ServiceClient client = null;
-	try {
-	    // Recuperamos el nombre del servicio al que atacar.
-	    tsaService = this.properties.getProperty(WSServiceInvokerConstants.TSA_SERVICE);
+    	String endPointURL, securityOption, secureMode, tsaService, protocol,
+    	endPoint, servicePath, timeout;
+    	Object res = null;
+    	ServiceClient client = null;
+    	try {
+    		// Recuperamos el nombre del servicio al que atacar.
+    		tsaService = this.properties.getProperty(WSServiceInvokerConstants.TSA_SERVICE);
 
-	    // Recuperamos el protocolo de conexión (http o https).
-	    secureMode = this.properties.getProperty(WSServiceInvokerConstants.SECURE_MODE_PROPERTY);
-	    protocol = NO_SECURE_PROTOCOL;
-	    if (secureMode != null && secureMode.equals("true")) {
-		protocol = SECURE_PROTOCOL;
-	    }
+    		// Recuperamos el protocolo de conexión (http o https).
+    		secureMode = this.properties.getProperty(WSServiceInvokerConstants.SECURE_MODE_PROPERTY);
+    		protocol = NO_SECURE_PROTOCOL;
+    		if (secureMode != null && secureMode.equals("true")) {
+    			protocol = SECURE_PROTOCOL;
+    		}
 
-	    // Recuperamos el socket de conexión al que atacar.
-	    endPoint = this.properties.getProperty(WSServiceInvokerConstants.WS_ENDPOINT_PROPERTY);
+    		// Recuperamos el socket de conexión al que atacar.
+    		endPoint = this.properties.getProperty(WSServiceInvokerConstants.WS_ENDPOINT_PROPERTY);
 
-	    checkSvcInvokerParams(WSServiceInvokerConstants.WS_ENDPOINT_PROPERTY, endPoint);
-	    servicePath = this.properties.getProperty(WSServiceInvokerConstants.WS_SRV_PATH_PROPERTY);
-	    checkSvcInvokerParams(WSServiceInvokerConstants.WS_SRV_PATH_PROPERTY, servicePath);
+    		checkSvcInvokerParams(WSServiceInvokerConstants.WS_ENDPOINT_PROPERTY, endPoint);
+    		servicePath = this.properties.getProperty(WSServiceInvokerConstants.WS_SRV_PATH_PROPERTY);
+    		checkSvcInvokerParams(WSServiceInvokerConstants.WS_SRV_PATH_PROPERTY, servicePath);
 
-	    // Obtenemos la URL completa.
-	    endPointURL = protocol + "://" + endPoint + "/" + servicePath + "/" + tsaService;
+    		// Obtenemos la URL completa.
+    		endPointURL = protocol + "://" + endPoint + "/" + servicePath + "/" + tsaService;
 
-	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.WSI_LOG001, new Object[ ] { tsaService }));
-	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.WSI_LOG002, new Object[ ] { endPointURL }));
+    		LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.WSI_LOG001, new Object[ ] { tsaService }));
+    		LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.WSI_LOG002, new Object[ ] { endPointURL }));
 
-	    // Recuperamos el modo de autenticación de la comunicación con la
-	    // plataforma: UserNameToken, X509CertificateToken o SAMLToken.
-	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.WSI_LOG003));
-	    securityOption = this.properties.getProperty(WSServiceInvokerConstants.WS_AUTHORIZATION_METHOD_PROP);
-	    checkSvcInvokerParams(WSServiceInvokerConstants.WS_AUTHORIZATION_METHOD_PROP, securityOption);
-	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.WSI_LOG004, new Object[ ] { securityOption }));
+    		// Recuperamos el modo de autenticación de la comunicación con la
+    		// plataforma: UserNameToken, X509CertificateToken o SAMLToken.
+    		LOGGER.debug(Language.getResIntegra(ILogConstantKeys.WSI_LOG003));
+    		securityOption = this.properties.getProperty(WSServiceInvokerConstants.WS_AUTHORIZATION_METHOD_PROP);
+    		checkSvcInvokerParams(WSServiceInvokerConstants.WS_AUTHORIZATION_METHOD_PROP, securityOption);
+    		LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.WSI_LOG004, new Object[ ] { securityOption }));
 
-	    // Establecemos los datos relativos al almacén de claves para
-	    // conexiones seguras.
-	    configureSSLTrustStore();
+    		// Establecemos los datos relativos al almacén de claves para
+    		// conexiones seguras.
+    		configureSSLTrustStore();
 
-	    // Comprobamos si el servicio solicitado es el de renovación de
-	    // sello de tiempo, en cuyo caso, llevamos a cabo la validación del
-	    // sello de tiempo previo en función del parámetro indicado en el
-	    // archivo de propiedades
-	    int validationMode = processValidationRenewTimestampService(serviceName);
+    		// Comprobamos si el servicio solicitado es el de renovación de
+    		// sello de tiempo, en cuyo caso, llevamos a cabo la validación del
+    		// sello de tiempo previo en función del parámetro indicado en el
+    		// archivo de propiedades
+    		int validationMode = processValidationRenewTimestampService(serviceName);
 
-	    // Creamos los handlers de petición y respuesta.
-	    TSAClientHandler clientHandler = newRequestHandler(securityOption);
-	    TSAResponseHandler responseHandler = newResponseHandler();
-	    MustUnderstandResponseHander mustUnderstandResponseHandler = new MustUnderstandResponseHander();
-	    TSAClientSymmetricKeyHandler clientSymmetricKeyHandler = newTSAClientSymmetricKeyHandler();
-	    TSAResponseSymmetricKeyHandler responseSymmetricKeyHandler = newTSAResponseSymmetricKeyHandler();
+    		// Creamos los handlers de petición y respuesta.
+    		TSAClientHandler clientHandler = newRequestHandler(securityOption);
+    		TSAResponseHandler responseHandler = newResponseHandler();
+    		MustUnderstandResponseHander mustUnderstandResponseHandler = new MustUnderstandResponseHander();
+    		TSAClientSymmetricKeyHandler clientSymmetricKeyHandler = newTSAClientSymmetricKeyHandler();
+    		TSAResponseSymmetricKeyHandler responseSymmetricKeyHandler = newTSAResponseSymmetricKeyHandler();
 
-	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.WSI_LOG007, new Object[ ] { serviceName }));
+    		LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.WSI_LOG007, new Object[ ] { serviceName }));
 
-	    // recuperamos el timeout de la conexión.
-	    timeout = this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_TIMEOUT_PROP);
-	    checkSvcInvokerParams(WSServiceInvokerConstants.WS_CALL_TIMEOUT_PROP, timeout);
-	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.WSI_LOG008, new Object[ ] { timeout }));
+    		// recuperamos el timeout de la conexión.
+    		timeout = this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_TIMEOUT_PROP);
+    		checkSvcInvokerParams(WSServiceInvokerConstants.WS_CALL_TIMEOUT_PROP, timeout);
+    		LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.WSI_LOG008, new Object[ ] { timeout }));
 
-	    // Creamos la factoria de objetos XML de AXIS2.
-	    OMFactory fac = OMAbstractFactory.getOMFactory();
+    		// Creamos la factoria de objetos XML de AXIS2.
+    		OMFactory fac = OMAbstractFactory.getOMFactory();
 
-	    // Creamos el namespace de la petición.
-	    OMNamespace ns = fac.createOMNamespace("http://soapinterop.org/", "ns1");
-	    // // Creamos el elemento XML raíz del SOAP body que indica la
-	    // // operación a realizar.
-	    // OMElement operationElem = fac.createOMElement(serviceName, ns);
-	    // Creamos el elemento XML que contendrá la petición SOAP completa.
-	    OMElement inputParamElem = fac.createOMElement("arg0", ns);
-	    // Añadimos la petición al parámetro de entrada principal.
+    		// Creamos el namespace de la petición.
+    		OMNamespace ns = fac.createOMNamespace("http://soapinterop.org/", "ns1");
+    		// // Creamos el elemento XML raíz del SOAP body que indica la
+    		// // operación a realizar.
+    		// OMElement operationElem = fac.createOMElement(serviceName, ns);
+    		// Creamos el elemento XML que contendrá la petición SOAP completa.
+    		OMElement inputParamElem = fac.createOMElement("arg0", ns);
+    		// Añadimos la petición al parámetro de entrada principal.
 
-	    // Obtenemos los parámetros obtenidos procesando la plantilla XML
-	    String templateXML = params[0].toString();
-	    // Eliminamos de la plantilla XML la cabecera XML
-	    templateXML = templateXML.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "");
-	    // Definimos el mensaje SOAP
-	    String msgString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-	    msgString = msgString + templateXML;
-	    // Eliminamos los saltos de línea, retornos de carro y sangrado
-	    msgString = msgString.replaceAll("[\n\r\t]", "");
+    		// Obtenemos los parámetros obtenidos procesando la plantilla XML
+    		String templateXML = params[0].toString();
+    		// Eliminamos de la plantilla XML la cabecera XML
+    		templateXML = templateXML.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "");
+    		// Definimos el mensaje SOAP
+    		String msgString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+    		msgString = msgString + templateXML;
+    		// Eliminamos los saltos de línea, retornos de carro y sangrado
+    		msgString = msgString.replaceAll("[\n\r\t]", "");
 
-	    // Convertimos la petición en un objeto OM de Axis2.
-	    inputParamElem = AXIOMUtil.stringToOM(msgString);
+    		// Convertimos la petición en un objeto OM de Axis2.
+    		inputParamElem = AXIOMUtil.stringToOM(msgString);
 
-	    // Comprobamos si es necesario realizar alguna validación previa.
-	    checkPreviousValidation(validationMode, inputParamElem, idClient);
+    		// Comprobamos si es necesario realizar alguna validación previa.
+    		checkPreviousValidation(validationMode, inputParamElem, idClient);
 
-	    // Creamos un objeto Option que albergará la configuración de
-	    // conexión al servicio.
-	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.WSI_LOG006));
-	    Options options = new Options();
-	    options.setTimeOutInMilliSeconds(Integer.valueOf(timeout));
-	    options.setTo(new EndpointReference(endPointURL));
+    		// Creamos un objeto Option que albergará la configuración de
+    		// conexión al servicio.
+    		LOGGER.debug(Language.getResIntegra(ILogConstantKeys.WSI_LOG006));
+    		Options options = new Options();
+    		options.setTimeOutInMilliSeconds(Integer.valueOf(timeout));
+    		options.setTo(new EndpointReference(endPointURL));
 
-	    // Desactivamos el chunked.
-	    options.setProperty(HTTPConstants.CHUNKED, "false");
+    		// Desactivamos el chunked.
+    		options.setProperty(HTTPConstants.CHUNKED, "false");
 
-	    // Generamos el cliente.
-	    client = new ServiceClient();
-	    client.setOptions(options);
+    		// Generamos el cliente.
+    		client = new ServiceClient();
+    		client.setOptions(options);
 
-	    // Añadimos los handler generados a las distintas 'phases' de Axis2.
-	    addHandlers(client, clientHandler, clientSymmetricKeyHandler, responseHandler, responseSymmetricKeyHandler, mustUnderstandResponseHandler);
+    		// Añadimos los handler generados a las distintas 'phases' de Axis2.
+    		addHandlers(client, clientHandler, clientSymmetricKeyHandler, responseHandler, responseSymmetricKeyHandler, mustUnderstandResponseHandler);
 
-	    // Realizamos la llamada.
-	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.WSI_LOG009));
-	    OMElement result = client.sendReceive(inputParamElem);
+    		// Realizamos la llamada.
+    		LOGGER.debug(Language.getResIntegra(ILogConstantKeys.WSI_LOG009));
+    		OMElement result = client.sendReceive(inputParamElem);
 
-	    if (result != null && result.getFirstElement() != null && !result.getFirstElement().toString().isEmpty()) {
-		res = result.toString();
-	    } else {
-		LOGGER.error(Language.getResIntegra(ILogConstantKeys.WSI_LOG018));
-	    }
+    		if (result != null && result.getFirstElement() != null && !result.getFirstElement().toString().isEmpty()) {
+    			res = result.toString();
+    		} else {
+    			LOGGER.error(Language.getResIntegra(ILogConstantKeys.WSI_LOG018));
+    		}
 
-	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.WSI_LOG011, new Object[ ] { res }));
+    		LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.WSI_LOG011, new Object[ ] { res }));
 
-	} catch (AxisFault e) {
-	    throw new TSAServiceInvokerException(e);
-	} catch (XMLStreamException e) {
-	    throw new TSAServiceInvokerException(Language.getResIntegra(ILogConstantKeys.WSI_LOG019));
-	} catch (WSServiceInvokerException e) {
-	    throw new TSAServiceInvokerException(Language.getResIntegra(ILogConstantKeys.WSI_LOG020));
-	} finally {
-	    removeHandlers(client);
-	}
-	return res;
+    	} catch (AxisFault e) {
+    		throw new TSAServiceInvokerException(e);
+    	} catch (XMLStreamException e) {
+    		throw new TSAServiceInvokerException(Language.getResIntegra(ILogConstantKeys.WSI_LOG019));
+    	} catch (WSServiceInvokerException e) {
+    		throw new TSAServiceInvokerException(Language.getResIntegra(ILogConstantKeys.WSI_LOG020));
+    	} finally {
+    		if (client != null) {
+    			try {
+    				client.cleanupTransport();
+    			} catch (AxisFault e) {
+    				LOGGER.warn(Language.getResIntegra(ILogConstantKeys.WSI_LOG024), e);
+    			}
+    		}
+    		removeHandlers(client);
+    	}
+    	return res;
     }
 
     /**

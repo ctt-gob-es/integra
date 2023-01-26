@@ -242,7 +242,12 @@ public interface ILogConstantKeys {
      * Constant attribute that represents the name of the property <code>WSI023</code> belonging to the file integra_xx_YY.properties.
      */
     String WSI_LOG023 = "WSI023";
-
+    
+    /**
+     * Constant attribute that represents the name of the property <code>WSI023</code> belonging to the file integra_xx_YY.properties.
+     */
+    String WSI_LOG024 = "WSI024";
+    
     /**
      * Constant attribute that represents the name of the property <code>RTSI001</code> belonging to the file integra_xx_YY.properties.
      */
