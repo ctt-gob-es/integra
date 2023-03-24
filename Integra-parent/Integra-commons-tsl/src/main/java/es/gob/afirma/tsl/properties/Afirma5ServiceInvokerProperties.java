@@ -27,9 +27,12 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 import es.gob.afirma.tsl.i18n.ILogConstantKeys;
 import es.gob.afirma.tsl.i18n.Language;
-import es.gob.afirma.tsl.logger.Logger;
+import es.gob.afirma.tsl.logger.IntegraLogger;
+
 import es.gob.afirma.tsl.utils.GenericUtilsCommons;
 import es.gob.afirma.tsl.utils.UtilsResourcesCommons;
 import es.gob.afirma.tsl.wsServiceInvoker.WSServiceInvokerConstants;
@@ -52,7 +55,7 @@ public final class Afirma5ServiceInvokerProperties {
     /**
      * Attribute that represents the class logger.
      */
-    private Logger LOGGER = Logger.getLogger(Afirma5ServiceInvokerProperties.class);
+    private Logger LOGGER = IntegraLogger.getInstance().getLogger(Afirma5ServiceInvokerProperties.class);
 
     /**
      * Attribute that represents the time that the file {@link #afirma5ServiceInvokerProperties} was last modified.

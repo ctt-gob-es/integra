@@ -21,7 +21,7 @@
  */
 package es.gob.afirma.tsl.access;
 
-import es.gob.afirma.tsl.logger.Logger;
+import org.apache.log4j.Logger; import es.gob.afirma.tsl.logger.IntegraLogger;
 
 import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
@@ -46,7 +46,7 @@ public final class TSLProperties {
 	/**
 	 * Constant attribute that represents the log manager of the class.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(TSLProperties.class);
+	private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(TSLProperties.class);
 
 	/**
 	 * Constant attribute that represents the initial date 01/07/2016 from which allow the use of TSL.

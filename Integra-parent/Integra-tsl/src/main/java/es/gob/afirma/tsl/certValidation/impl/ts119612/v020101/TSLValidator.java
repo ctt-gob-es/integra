@@ -27,7 +27,8 @@ import java.util.Date;
 import java.util.List;
 
 
-import es.gob.afirma.tsl.logger.Logger;
+import org.apache.log4j.Logger; 
+import es.gob.afirma.tsl.logger.IntegraLogger;
 
 import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorOtherConstants;
@@ -62,7 +63,7 @@ public class TSLValidator extends ATSLValidator {
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = Logger.getLogger(TSLValidator.class);
+    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(TSLValidator.class);
 
     /**
      * Constructor method for the class TSLValidator.java. 

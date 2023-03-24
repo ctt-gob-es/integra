@@ -34,7 +34,9 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-import es.gob.afirma.tsl.logger.Logger;
+import org.apache.log4j.Logger;
+
+import es.gob.afirma.tsl.logger.IntegraLogger;
 
 
 
@@ -103,7 +105,7 @@ public final class Language {
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = Logger.getLogger(Language.class);
+    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(Language.class);
 
     /**
      * Constructor method for the class Language.java.

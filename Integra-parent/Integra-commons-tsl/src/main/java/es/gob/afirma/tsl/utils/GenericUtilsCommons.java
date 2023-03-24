@@ -27,7 +27,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
-import es.gob.afirma.tsl.logger.Logger;
+import org.apache.log4j.Logger;
 
 import es.gob.afirma.tsl.i18n.ILogConstantKeys;
 import es.gob.afirma.tsl.i18n.Language;

@@ -32,7 +32,8 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import es.gob.afirma.tsl.logger.Logger;
+import org.apache.log4j.Logger; 
+import es.gob.afirma.tsl.logger.IntegraLogger;
 
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
@@ -55,7 +56,7 @@ public final class UtilsLDAP {
     /**
 	 * Attribute that represents the object that manages the log of the class.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(UtilsLDAP.class);
+	private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(UtilsLDAP.class);
 
 	/**
 	 * Constant attribute that represents the representation string of the LDAP scheme.

@@ -33,7 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import es.gob.afirma.tsl.logger.Logger;
+import org.apache.log4j.Logger; 
+import es.gob.afirma.tsl.logger.IntegraLogger;
 import org.etsi.uri.x01903.v13.IdentifierType;
 import org.etsi.uri.x01903.v13.ObjectIdentifierType;
 import org.etsi.uri.x01903.v13.QualifierType;
@@ -123,7 +124,7 @@ public class TSLBuilder extends ATSLBuilder {
 	/**
 	 * Attribute that represents the object that manages the log of the class.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(TSLBuilder.class);
+	private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(TSLBuilder.class);
 
 	/**
 	 * Attribute that represents the content of the parsed TSL.

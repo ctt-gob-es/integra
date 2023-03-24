@@ -32,7 +32,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import es.gob.afirma.tsl.logger.Logger;
+import org.apache.log4j.Logger; 
+import es.gob.afirma.tsl.logger.IntegraLogger;
 
 import es.gob.afirma.cert.signvalidation.SignValidity;
 import es.gob.afirma.cert.signvalidation.ValidateXMLSignature;
@@ -64,7 +65,7 @@ public abstract class ATSLChecker implements ITSLChecker {
     /**
 	 * Attribute that represents the object that manages the log of the class.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(ATSLChecker.class);
+	private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(ATSLChecker.class);
 	
 
 	/**

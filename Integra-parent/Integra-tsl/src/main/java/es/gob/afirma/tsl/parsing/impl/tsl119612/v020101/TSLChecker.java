@@ -36,7 +36,8 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
-import es.gob.afirma.tsl.logger.Logger;
+import org.apache.log4j.Logger; 
+import es.gob.afirma.tsl.logger.IntegraLogger;
 import org.w3.x2000.x09.xmldsig.CanonicalizationMethodType;
 import org.w3.x2000.x09.xmldsig.KeyValueType;
 import org.w3.x2000.x09.xmldsig.ReferenceType;
@@ -82,7 +83,7 @@ public class TSLChecker extends ATSLChecker {
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = Logger.getLogger(TSLChecker.class);
+    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(TSLChecker.class);
 
     /**
      * Constant attribute that represents the start date form which applies this specification.

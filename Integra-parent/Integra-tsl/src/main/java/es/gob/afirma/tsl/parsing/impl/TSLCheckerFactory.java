@@ -53,15 +53,7 @@ public final class TSLCheckerFactory {
 		ITSLChecker result = null;
 
 		if (tslObject != null) {
-
-//			if (ITSLSpecificationsVersions.SPECIFICATION_119612.equals(tslObject.getSpecification())) {
-//
-//				if (ITSLSpecificationsVersions.VERSION_020101.equals(tslObject.getSpecificationVersion())) {
 					result = new TSLChecker(tslObject);
-//				}
-//
-//			}
-
 		}
 
 		return result;

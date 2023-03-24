@@ -29,7 +29,7 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import es.gob.afirma.general.SorterRunner;
+
 import es.gob.afirma.integraFacade.IntegraFacadeWSDSS;
 import es.gob.afirma.integraFacade.pojo.ArchiveRequest;
 import es.gob.afirma.integraFacade.pojo.ArchiveResponse;
@@ -56,18 +56,19 @@ import es.gob.afirma.utils.UtilsFileSystemCommons;
  * <b>Project:</b><p>@Firma and TS@ Web Services Integration Platform.</p>
  * @version 1.0, 10/04/2015.
  */
-@RunWith(SorterRunner.class)
+
 public class IntegraFacadeWSDSSTest extends TestCase {
 
     /**
      * Constant attribute that represents application name.
      */
-    private static final String APPLICATION_NAME = "afirmaTest";
+    private static final String APPLICATION_NAME = "map.nivel2soporte.monitorizacion";
 
     /**
      * Constant attribute that represents the certificate file name.
      */
-    private static final String CERTIFICATE_NAME = "confianzaocsp.crt";
+    //private static final String CERTIFICATE_NAME = "confianzaocsp.crt";
+    private static final String CERTIFICATE_NAME = "smpOriginal.crt";
 
     /**
      * Constant attribute that represents the certificate name.
@@ -78,6 +79,8 @@ public class IntegraFacadeWSDSSTest extends TestCase {
      * Constant attribute that represents the XAdES signatures for test.
      */
     private static final String SIGNATURE_XADES = "signatures/XML/XAdES-BES.xml";
+    
+    private static final String SIGNATURE_PADES = "7_PALMAS_signed.pdf";
 
     /**
      * Test for {@link IntegraFacadeWSDSS#sign(ServerSignerRequest)}.
@@ -173,7 +176,7 @@ public class IntegraFacadeWSDSSTest extends TestCase {
 	VerifySignatureRequest verSigReq = new VerifySignatureRequest();
 	verSigReq.setApplicationId(APPLICATION_NAME);
 
-	byte[ ] signB64 = UtilsFileSystemCommons.readFile(SIGNATURE_XADES, true);
+	byte[ ] signB64 = UtilsFileSystemCommons.readFile("Convenio_firmado_por_Comision_Europea.pdf", true);
 	verSigReq.setSignature(signB64);
 
 	OptionalParameters optParam = new OptionalParameters();
@@ -204,11 +207,11 @@ public class IntegraFacadeWSDSSTest extends TestCase {
     public void testUpgradeSignature() throws Exception {
 	UpgradeSignatureRequest upgSigReq = new UpgradeSignatureRequest();
 	// firma sin codificar
-	byte[ ] signature = UtilsFileSystemCommons.readFile(SIGNATURE_XADES, true);
+	byte[ ] signature = UtilsFileSystemCommons.readFile("pruebaFUN12Firmado.pdf", true);
 
 	upgSigReq.setSignature(signature);
 	upgSigReq.setApplicationId(APPLICATION_NAME);
-	upgSigReq.setSignatureFormat(SignatureFormatEnum.XAdES_T);
+	upgSigReq.setSignatureFormat(SignatureFormatEnum.PAdES_LTV);
 
 	ServerSignerResponse serSigRes = IntegraFacadeWSDSS.getInstance().upgradeSignature(upgSigReq);
 

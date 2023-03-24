@@ -26,7 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import es.gob.afirma.tsl.logger.Logger;
+import org.apache.log4j.Logger; 
+import es.gob.afirma.tsl.logger.IntegraLogger;
 
 
 
@@ -44,7 +45,7 @@ public final class StaticTslConfig {
 	/**
 	 * Constant attribute that represents the log manager of the class.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(StaticTslConfig.class);
+	private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(StaticTslConfig.class);
 	
 	/**
 	 * Constant attribute that represents the name of properties file.

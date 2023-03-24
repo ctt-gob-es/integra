@@ -31,7 +31,8 @@ import java.security.Security;
 import java.util.HashMap;
 import java.util.Map;
 
-import es.gob.afirma.tsl.logger.Logger;
+import org.apache.log4j.Logger; 
+import es.gob.afirma.tsl.logger.IntegraLogger;
 
 import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
@@ -46,7 +47,7 @@ public final class UtilsProviders {
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = Logger.getLogger(UtilsProviders.class);
+    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(UtilsProviders.class);
 
     /**
      * Constant attribute that represents the IAIK Provider.

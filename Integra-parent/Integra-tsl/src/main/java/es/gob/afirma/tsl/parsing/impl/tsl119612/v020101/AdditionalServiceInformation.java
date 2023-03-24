@@ -25,7 +25,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Locale;
 
-import es.gob.afirma.tsl.logger.Logger;
+import org.apache.log4j.Logger; 
+import es.gob.afirma.tsl.logger.IntegraLogger;
 
 import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.exceptions.TSLMalformedException;
@@ -55,7 +56,7 @@ public class AdditionalServiceInformation extends Extension {
 	/**
 	 * Attribute that represents the object that manages the log of the class.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(AdditionalServiceInformation.class);
+	private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(AdditionalServiceInformation.class);
 
 	/**
 	 * Attribute that represents an URI identifying the additional information.

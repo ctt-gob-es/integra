@@ -29,9 +29,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
+import org.apache.log4j.Logger;
+
 import es.gob.afirma.tsl.i18n.ILogConstantKeys;
 import es.gob.afirma.tsl.i18n.Language;
-import es.gob.afirma.tsl.logger.Logger;
+import es.gob.afirma.tsl.logger.IntegraLogger;
 
 
 /**
@@ -50,7 +52,7 @@ public final class UtilsFileSystemCommons {
     /**
      *  Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = Logger.getLogger(UtilsFileSystemCommons.class);
+    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(UtilsFileSystemCommons.class);
 
     /**
      * Retrieves content of a given file.

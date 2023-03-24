@@ -27,7 +27,8 @@ import java.security.cert.CRLException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 
-import es.gob.afirma.tsl.logger.Logger;
+import org.apache.log4j.Logger; 
+import es.gob.afirma.tsl.logger.IntegraLogger;
 
 import es.gob.afirma.tsl.exceptions.CommonUtilsException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
@@ -42,7 +43,7 @@ public final class UtilsCRL {
 	/**
 	 * Attribute that represents the object that manages the log of the class.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(UtilsCRL.class);
+	private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(UtilsCRL.class);
 
 	/**
 	 * Constructor method for the class UtilsCRL.java.

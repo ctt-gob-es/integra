@@ -37,7 +37,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
-import es.gob.afirma.tsl.logger.Logger;
+import org.apache.log4j.Logger; 
+import es.gob.afirma.tsl.logger.IntegraLogger;
 import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.SchemaTypeLoader;
 import org.apache.xmlbeans.XmlBeans;
@@ -69,7 +70,7 @@ public abstract class ATSLBuilder implements ITSLBuilder {
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = Logger.getLogger(ATSLBuilder.class);
+    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(ATSLBuilder.class);
 
     /**
      * Constant attribute that represents the token name for the Scheme Type Field.

@@ -30,7 +30,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import es.gob.afirma.tsl.logger.Logger;
+import org.apache.log4j.Logger; 
+import es.gob.afirma.tsl.logger.IntegraLogger;
 import org.w3.x2000.x09.xmldsig.DSAKeyValueType;
 import org.w3.x2000.x09.xmldsig.KeyValueType;
 import org.w3.x2000.x09.xmldsig.RSAKeyValueType;
@@ -56,7 +57,7 @@ public class DigitalIdentitiesProcessor {
     /**
 	 * Attribute that represents the object that manages the log of the class.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(DigitalIdentitiesProcessor.class);
+	private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(DigitalIdentitiesProcessor.class);
 
 	/**
 	 * Constant attribute that represents the string 'DSA'.

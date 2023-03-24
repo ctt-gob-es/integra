@@ -27,7 +27,9 @@ import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Map;
 
-import es.gob.afirma.tsl.logger.Logger;
+import org.apache.log4j.Logger;
+
+import es.gob.afirma.tsl.logger.IntegraLogger;
 
 import es.gob.afirma.tsl.access.TSLManager;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult;
@@ -52,7 +54,7 @@ public class TslValidation implements ITslValidation {
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = Logger.getLogger(TslValidation.class);
+    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(TslValidation.class);
 
     /**
      * Constructor method for the class TslValidation.java. 

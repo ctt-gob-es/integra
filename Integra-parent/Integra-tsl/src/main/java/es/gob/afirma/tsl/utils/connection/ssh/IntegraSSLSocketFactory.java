@@ -38,7 +38,8 @@ import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.protocol.HttpContext;
-import es.gob.afirma.tsl.logger.Logger;
+import org.apache.log4j.Logger; 
+import es.gob.afirma.tsl.logger.IntegraLogger;
 
 import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
@@ -57,7 +58,7 @@ public class IntegraSSLSocketFactory implements LayeredConnectionSocketFactory {
 	/**
 	 * Attribute that represents the object that manages the log of the class.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(IntegraSSLSocketFactory.class);
+	private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(IntegraSSLSocketFactory.class);
 
 	/**
 	 * Attribute that represents the SSL Context.

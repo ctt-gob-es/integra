@@ -35,7 +35,8 @@ import java.util.Map;
 
 import org.apache.http.client.methods.HttpGet;
 
-import es.gob.afirma.tsl.logger.Logger;
+import org.apache.log4j.Logger; 
+import es.gob.afirma.tsl.logger.IntegraLogger;
 
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidator;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult;
@@ -86,7 +87,7 @@ public abstract class ATSLValidator implements ITSLValidator {
 	/**
 	 * Attribute that represents the object that manages the log of the class.
 	 */
-	private static final Logger LOGGER = Logger.getLogger(ATSLValidator.class);
+	private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(ATSLValidator.class);
 
 	/**
 	 * Constant attribute that represents a token for a TSP Service Name when the validation has been executed

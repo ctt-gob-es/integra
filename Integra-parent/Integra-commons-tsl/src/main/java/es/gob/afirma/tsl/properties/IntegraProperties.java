@@ -30,7 +30,9 @@ import java.util.Properties;
 
 import es.gob.afirma.tsl.i18n.ILogConstantKeys;
 import es.gob.afirma.tsl.i18n.Language;
-import es.gob.afirma.tsl.logger.Logger;
+import es.gob.afirma.tsl.logger.IntegraLogger;
+
+import org.apache.log4j.Logger;
 import es.gob.afirma.tsl.utils.UtilsResourcesCommons;
 
 
@@ -45,7 +47,7 @@ public final class IntegraProperties {
     /**
     * Attribute that represents the class logger.
     */
-    private static final Logger LOGGER = Logger.getLogger(IntegraProperties.class);
+    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(IntegraProperties.class);
 
     /**
      * Attribute that represents the set of properties defined inside of the configuration file <code>integraxxxxx.properties</code>.

@@ -35,7 +35,8 @@ import java.util.StringTokenizer;
 import org.apache.http.HttpHost;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpRequestBase;
-import es.gob.afirma.tsl.logger.Logger;
+import org.apache.log4j.Logger; 
+import es.gob.afirma.tsl.logger.IntegraLogger;
 
 import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.constants.IOperationModeIdConstants;
@@ -53,7 +54,7 @@ public final class UtilsProxy {
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = Logger.getLogger(UtilsProxy.class);
+    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(UtilsProxy.class);
 
     /**
      * Constant attribute that represents the system property key 'proxySet'.

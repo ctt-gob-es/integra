@@ -63,7 +63,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.TrustStrategy;
-import es.gob.afirma.tsl.logger.Logger;
+import org.apache.log4j.Logger; 
+import es.gob.afirma.tsl.logger.IntegraLogger;
 
 
 import es.gob.afirma.tsl.i18n.Language;
@@ -82,7 +83,7 @@ public final class UtilsHTTP {
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = Logger.getLogger(UtilsHTTP.class);
+    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(UtilsHTTP.class);
 
     /**
      * Constant attribute that represents the representation string of the scheme http.

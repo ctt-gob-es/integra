@@ -32,7 +32,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
-import es.gob.afirma.tsl.logger.Logger;
+import org.apache.log4j.Logger; 
+import es.gob.afirma.tsl.logger.IntegraLogger;
 
 import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidator;
@@ -63,7 +64,7 @@ public final class TSLManager {
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = Logger.getLogger(TSLManager.class);
+    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(TSLManager.class);
 
     /**
      * Attribute that represents the unique instance of this class (singleton).

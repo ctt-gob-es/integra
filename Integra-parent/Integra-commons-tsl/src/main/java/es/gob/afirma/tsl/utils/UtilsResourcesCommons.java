@@ -33,10 +33,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Properties;
 
-import es.gob.afirma.tsl.logger.Logger;
+import org.apache.log4j.Logger;
 
 import es.gob.afirma.tsl.i18n.ILogConstantKeys;
 import es.gob.afirma.tsl.i18n.Language;
+import es.gob.afirma.tsl.logger.IntegraLogger;
 import es.gob.afirma.tsl.properties.Afirma5ServiceInvokerProperties;
 import es.gob.afirma.tsl.properties.IIntegraConstants;
 
@@ -52,7 +53,7 @@ public final class UtilsResourcesCommons {
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = Logger.getLogger(UtilsResourcesCommons.class);
+    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(UtilsResourcesCommons.class);
 
     /**
      * Constructor method for the class UtilsResources.java.
