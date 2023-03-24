@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>10/10/2020.</p>
  * @author Gobierno de España.
- * @version 1.0, 10/10/2020.
+ * @version 1.1, 22/03/2023.
  */
 package es.gob.afirma.tsl.utils;
 
@@ -33,7 +33,7 @@ import java.util.TimeZone;
 /** 
  * <p>Class that provides methods for managing dates.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 10/10/2020.
+ * @version 1.1, 22/03/2023.
  */
 public class UtilsDate {
 	/**
@@ -160,6 +160,11 @@ public class UtilsDate {
 	 * Constant attribute that represents the date format <code>"yyyy-MM-dd'T'HH:mm:ss.SSSXXX"</code>.
 	 */
 	public static final String FORMAT_DATE_TIME_JSON = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
+
+	/**
+	 * Constant attribute that represents the date format <code>"yyyy-MM-dd'T'HH:mm:ss'Z"</code>.
+	 */
+	public static final String FORMAT_DATE_TIME_TSL = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
 	/**
 	 * Attribute that represents the value of the date.

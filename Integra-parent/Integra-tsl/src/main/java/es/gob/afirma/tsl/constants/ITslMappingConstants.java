@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 17/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.0, 17/11/2020.
+ * @version 1.1, 22/03/2023.
  */
 package es.gob.afirma.tsl.constants;
 
@@ -25,10 +25,9 @@ package es.gob.afirma.tsl.constants;
 /** 
  * <p>Interface that defines all the commons constants related with the mappings.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 17/11/2020.
+ * @version 1.1, 22/03/2023.
  */
 public interface ITslMappingConstants {
-
 	/**
 	 * Constant attribute that represents the mapping key 'clasificacion'.
 	 */
@@ -43,6 +42,11 @@ public interface ITslMappingConstants {
 	 * Constant attribute that represents the mapping key 'certClassification'.
 	 */
 	String MAPPING_KEY_CERT_CLASSIFICATION = "certClassification";
+
+	/**
+	 * Constant attribute that represents the mapping key 'ETSI_Result'.
+	 */
+	String MAPPING_KEY_ETSI_RESULT = "ETSI_Result";
 
 	/**
 	 * Constant attribute that represents the mapping key 'qscd'.
@@ -103,4 +107,67 @@ public interface ITslMappingConstants {
 	 * Constant attribute that represents the mapping value 'YES_MANAGED_ON_BEHALF'.
 	 */
 	String MAPPING_VALUE_QSCD_YES_MANAGEDONBEHALF = "YES_MANAGED_ON_BEHALF";
+
+	/**
+	 * Constant attribute that represents the mapping value 'Not_Qualified_For_eSig'.
+	 */
+	String MAPPING_VALUE_ETSI_RESULT_NQ_ESIG = "Not_Qualified_For_eSig";
+
+	/**
+	 * Constant attribute that represents the mapping value 'Not_Qualified_For_eSeal'.
+	 */
+	String MAPPING_VALUE_ETSI_RESULT_NQ_ESEAL = "Not_Qualified_For_eSeal";
+
+	/**
+	 * Constant attribute that represents the mapping value 'Not_QWAC'.
+	 */
+	String MAPPING_VALUE_ETSI_RESULT_NQ_WSA = "Not_QWAC";
+	/**
+	 * Constant attribute that represents the mapping value 'QC_For_eSig'.
+	 */
+	String MAPPING_VALUE_ETSI_RESULT_Q_ESIG = "QC_For_eSig";
+
+	/**
+	 * Constant attribute that represents the mapping value 'QC_For_eSeal'.
+	 */
+	String MAPPING_VALUE_ETSI_RESULT_Q_ESEAL = "QC_For_eSeal";
+
+	/**
+	 * Constant attribute that represents the mapping value 'QWAC'.
+	 */
+	String MAPPING_VALUE_ETSI_RESULT_Q_WSA = "QWAC";
+	/**
+	 * Constant attribute that represents the mapping value 'INDET_QC_For_eSig'.
+	 */
+	String MAPPING_VALUE_ETSI_RESULT_INDET_ESIG = "INDET_QC_For_eSig";
+
+	/**
+	 * Constant attribute that represents the mapping value 'INDET_QC_For_eSeal'.
+	 */
+	String MAPPING_VALUE_ETSI_RESULT_INDET_ESEAL = "INDET_QC_For_eSeal";
+
+	/**
+	 * Constant attribute that represents the mapping value 'INDET_QWAC'.
+	 */
+	String MAPPING_VALUE_ETSI_RESULT_INDET_WSA = "INDET_QWAC";
+	/**
+	 * Constant attribute that represents the mapping value 'INDETERMINATE'.
+	 */
+	String MAPPING_VALUE_ETSI_RESULT_INDET = "INDETERMINATE";
+	/**
+	 * Constant attribute that represents the symbol '-'.
+	 */
+	String HYPHEN_SYMBOL = " - ";
+	
+	/**
+	 * Constant attribute that represents the mapping value 'INDET_QC_For_eSig - INDET_QC_For_eSeal - INDET_QWAC '.
+	 */
+	String MAPPING_VALUE_ETSI_RESULT_ALL_INDET = MAPPING_VALUE_ETSI_RESULT_INDET_ESIG+HYPHEN_SYMBOL+MAPPING_VALUE_ETSI_RESULT_INDET_ESIG+HYPHEN_SYMBOL+MAPPING_VALUE_ETSI_RESULT_NQ_WSA;
+	
+	/**
+	 * Constant attribute that represents the mapping value 'Not_Qualified_For_eSig - Not_Qualified_For_eSeal - Not_QWAC '.
+	 */
+	String MAPPING_VALUE_ETSI_RESULT_ALL_NQ = MAPPING_VALUE_ETSI_RESULT_NQ_ESIG+HYPHEN_SYMBOL+MAPPING_VALUE_ETSI_RESULT_NQ_ESEAL+HYPHEN_SYMBOL+MAPPING_VALUE_ETSI_RESULT_INDET_WSA;
+
+			
 }

@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 13/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 22/03/2023.
  */
 package es.gob.afirma.tsl.certValidation.ifaces;
 
@@ -42,7 +42,7 @@ import es.gob.afirma.tsl.utils.NumberConstants;
 /** 
  * <p>Interface that represents a validation result using TSL. .</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 22/03/2023.
  */
 public interface ITSLValidatorResult {
 	/**
@@ -86,6 +86,12 @@ public interface ITSLValidatorResult {
 	 * The certificate has been detected by the TSL and the service status is not valid.
 	 */
 	int RESULT_DETECTED_STATE_CERTCHAIN_NOTVALID_SERVICESTATUS = NumberConstants.INT_6;
+
+	
+	/**
+	 * Gets the mapping  that indicates additional information returned by ETSI TS 119 615 v.1.1.1. 
+	 */
+	String getMappingETSIResult();
 
 	/**
 	 * Gets the TSL Country/Region Code.

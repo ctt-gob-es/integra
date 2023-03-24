@@ -18,13 +18,14 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 17/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.4, 18/04/2022.
+ * @version 1.5, 22/03/2023.
  */
 package es.gob.afirma.tsl.certValidation.impl.ts119612.v020101;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 
 import es.gob.afirma.tsl.logger.Logger;
 
@@ -35,6 +36,9 @@ import es.gob.afirma.tsl.certValidation.impl.TSLValidatorMappingCalculator;
 import es.gob.afirma.tsl.certValidation.impl.common.ATSLValidator;
 import es.gob.afirma.tsl.certValidation.impl.common.TSLValidatorResult;
 import es.gob.afirma.tsl.constants.ITslMappingConstants;
+import es.gob.afirma.tsl.elements.CertificateExtension;
+import es.gob.afirma.tsl.elements.SIResult;
+import es.gob.afirma.tsl.elements.TspServiceQualifier;
 import es.gob.afirma.tsl.exceptions.TSLValidationException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
 import es.gob.afirma.tsl.parsing.ifaces.IAnyTypeExtension;
@@ -45,12 +49,13 @@ import es.gob.afirma.tsl.parsing.impl.common.ServiceHistoryInstance;
 import es.gob.afirma.tsl.parsing.impl.common.TSLCertificateExtensionAnalyzer;
 import es.gob.afirma.tsl.parsing.impl.tsl119612.v020101.AdditionalServiceInformation;
 import es.gob.afirma.tsl.utils.UtilsStringChar;
+import iaik.x509.extensions.qualified.structures.etsi.QcEuSSCD;
 
 /** 
  * <p>Class that represents a TSL Validator implementation for the
  * ETSI TS 119612 2.1.1 specification.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.4, 18/04/2022.
+ * @version 1.5, 22/03/2023.
  */
 public class TSLValidator extends ATSLValidator {
 
@@ -531,4 +536,181 @@ public class TSLValidator extends ATSLValidator {
 
     }
 
-}
+	/**
+	 * {@inheritDoc}
+	 * @see es.gob.afirma.tsl.certValidation.impl.common.ATSLValidator#analyzeQuelifier(es.gob.afirma.tsl.elements.TspServiceQualifier, java.lang.String)
+	 */
+	@Override
+	protected void analyzeQuelifier(TspServiceQualifier tspServiceQualifier, String qualifierUriString) {
+		switch (qualifierUriString) {
+
+			case ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_QCWITHSSCD:
+				tspServiceQualifier.setQcWithSSCD(Boolean.TRUE);
+				break;
+
+			case ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_QCNOSSCD:
+				tspServiceQualifier.setQcNoSSCD(Boolean.TRUE);
+				break;
+
+			case ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_QCSTATUSASINCERT:
+				tspServiceQualifier.setQcSSCDStatusAsInCert(Boolean.TRUE);
+				break;
+
+			case ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_QCWITHQSCD:
+				tspServiceQualifier.setQcWithQSCD(Boolean.TRUE);
+				break;
+
+			case ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_QCNOQSCD:
+				tspServiceQualifier.setQcNoQSCD(Boolean.TRUE);
+				break;
+
+			case ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_QCQSCDSTATUSASINCERT:
+				tspServiceQualifier.setQcQSCDStatusAsInCert(Boolean.TRUE);
+				break;
+
+			case ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_QCQSCDMANAGEDONBEHALF:
+				tspServiceQualifier.setQcQSCDManagedOnBehalf(Boolean.TRUE);
+				break;
+
+			case ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_QCFORLEGALPERSON:
+				tspServiceQualifier.setQcForLegalPerson(Boolean.TRUE);
+				break;
+
+			case ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_QCFORESIG:
+				tspServiceQualifier.setQcForESig(Boolean.TRUE);
+				break;
+
+			case ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_QCFORESEAL:
+				tspServiceQualifier.setQcForESeal(Boolean.TRUE);
+				break;
+
+			case ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_QCFORWSA:
+				tspServiceQualifier.setQcForWSA(Boolean.TRUE);
+				break;
+
+			case ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_NOTQUALIFIED:
+				tspServiceQualifier.setNotQualified(Boolean.TRUE);
+				break;
+
+			case ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_QCSTATEMENT:
+				tspServiceQualifier.setQcStatement(Boolean.TRUE);
+				break;
+
+			default:
+				break;
+
+		}
+		
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see es.gob.afirma.tsl.certValidation.impl.common.ATSLValidator#checkAndAnalyzerExtensionCert(es.gob.afirma.tsl.parsing.impl.common.TSLCertificateExtensionAnalyzer)
+	 */
+	@Override
+	protected CertificateExtension checkAndAnalyzerExtensionCert(TSLCertificateExtensionAnalyzer tslCertExtAnalyzer) {
+		CertificateExtension  ce = null;
+		if (tslCertExtAnalyzer != null) {
+			ce = new CertificateExtension();
+			if (tslCertExtAnalyzer.hasQcStatementExtensionOid(ITSLOIDs.OID_QCSTATEMENT_EXT_COMPLIANCE.getID())) {
+				ce.setQcCompliance(Boolean.TRUE);
+			}
+			// QcType1
+			if (tslCertExtAnalyzer.hasQcStatementEuTypeExtensionOid(ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE_ESIGN.getID())) {
+				ce.setQcType1(Boolean.TRUE);
+			}
+			// QcType2
+			if (tslCertExtAnalyzer.hasQcStatementEuTypeExtensionOid(ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE_ESEAL.getID())) {
+				ce.setQcType2(Boolean.TRUE);
+			}
+			// QcType3
+			if (tslCertExtAnalyzer.hasQcStatementEuTypeExtensionOid(ITSLOIDs.OID_QCSTATEMENT_EXT_EUTYPE_WEB.getID())) {
+				ce.setQcType3(Boolean.TRUE);
+			}
+
+			if (tslCertExtAnalyzer.hasCertPolPolInfExtensionOid(ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_PUBLIC_WITH_SSCD.getID())) {
+				ce.setPolicyIdQCP_SSCD(Boolean.TRUE);
+			}
+			if (tslCertExtAnalyzer.hasCertPolPolInfExtensionOid(ITSLOIDs.OID_POLICY_IDENTIFIER_QCP_PUBLIC.getID())) {
+				ce.setPolicyIdQCP(Boolean.TRUE);
+			}
+			if(tslCertExtAnalyzer.hasQcStatementExtensionOid(QcEuSSCD.statementID.getID())){
+				ce.setQcSSCD(Boolean.TRUE);
+			}
+		}
+		return ce;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * @see es.gob.afirma.tsl.certValidation.impl.common.ATSLValidator#getTSPServiceAdditionalServiceInformationExtensionsDetectCert(es.gob.afirma.tsl.elements.SIResult)
+	 */
+	@Override
+	protected void getTSPServiceAdditionalServiceInformationExtensionsDetectCert(SIResult siResult) {
+		// Inicialmente consideramos que no se han definido extensiones
+				// AdditionalServiceInformation.
+				LOGGER.info(Language.getFormatResIntegraTsl(ILogTslConstant.TV_LOG040, new Object[ ] { siResult.getTspName() }));
+				// Primero recolectamos todas las extensiones del tipo
+				// AdditionalServiceInformation.
+				List<AdditionalServiceInformation> asiList = new ArrayList<AdditionalServiceInformation>();
+
+				// Recuperamos la lista de extensiones del servicio, y si no es nula ni
+				// vacía, continuamos.
+				List<IAnyTypeExtension> extensionsList = siResult.getSiAtDateTime().getServiceInformationExtensions();
+				if (extensionsList != null && !extensionsList.isEmpty()) {
+
+					// Recorremos la lista buscando aquellas que sean de tipo
+					// AdditionalServiceInformation.
+					for (IAnyTypeExtension extension: extensionsList) {
+
+						// Si es del tipo AdditionalServiceInformation...
+						if (extension.getImplementationExtension() == IAnyTypeExtension.IMPL_ADDITIONAL_SERVICE_INFORMATION) {
+
+							// La añadimos a la lista final.
+							AdditionalServiceInformation ext = (AdditionalServiceInformation) extension;
+							asiList.add((AdditionalServiceInformation) extension);
+							LOGGER.info(Language.getFormatResIntegraTsl(ILogTslConstant.TV_LOG041, new Object[ ] { ext.getUri().toString() }));
+						}
+
+					}
+
+				}
+
+				// Si la lista no es vacía...
+				if (!asiList.isEmpty()) {
+					// Recorremos la lista y vamos comprobando las URI.
+					for (AdditionalServiceInformation asi: asiList) {
+
+						// En función de la URI, vamos marcando las banderas.
+						switch (asi.getUri().toString()) {
+							case ITSLCommonURIs.TSL_SERVINFEXT_ADDSERVINFEXT_ROOTCAQC:
+								break;
+
+							case ITSLCommonURIs.TSL_SERVINFEXT_ADDSERVINFEXT_FORESIGNATURES:
+								LOGGER.info(Language.getResIntegraTsl(ILogTslConstant.TV_LOG042));
+								siResult.setAsiForESIG(true);
+								break;
+
+							case ITSLCommonURIs.TSL_SERVINFEXT_ADDSERVINFEXT_FORESEALS:
+								LOGGER.info(Language.getResIntegraTsl(ILogTslConstant.TV_LOG043));
+								siResult.setAsiForESeal(true);
+								break;
+
+							case ITSLCommonURIs.TSL_SERVINFEXT_ADDSERVINFEXT_FORWEBSITEAUTHENTICATION:
+								LOGGER.info(Language.getResIntegraTsl(ILogTslConstant.TV_LOG044));
+								siResult.setAsiForWSA(true);
+								break;
+
+							default:
+								break;
+						}
+
+					}
+
+				}
+
+			}
+		
+	}
+
+

@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 10/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 11/04/2022.
+ * @version 1.2, 22/03/2023.
  */
 package es.gob.afirma.tsl.access;
 
@@ -56,7 +56,7 @@ import es.gob.afirma.tsl.utils.UtilsStringChar;
 /** 
  * <p>Class that reprensents the TSL Manager for all the differents operations.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 18/04/2022.
+ * @version 1.2, 22/03/2023.
  */
 public final class TSLManager {
 
@@ -307,7 +307,7 @@ public final class TSLManager {
 		Map<String, String> mappings = new HashMap<String, String>();
 		// Extraemos los valores de los mapeos fijos para todas las validaciones
 		// mediante TSL.
-		TSLValidatorMappingCalculator.extractStaticMappingsFromResult(tslValidationResult.getTslCertificateExtensionAnalyzer(), mappings, tslValidationResult);
+		TSLValidatorMappingCalculator.extractStaticMappingsFromResult(mappings, tslValidationResult);
 		
 		// Guardamos los mapeos calculados en el resultado de la validación.
 		tslValidationResult.setMappings(mappings);

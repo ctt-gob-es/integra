@@ -17,14 +17,14 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>12/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 27/09/2021.
+ * @version 1.2, 22/03/2023.
  */
 package es.gob.afirma.tsl.i18n;
 
 /** 
  * <p>Interface that defines all the keys of the log messages file of Integra-tsl module.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 27/09/2021.
+ * @version 1.2, 22/03/2023.
  */
 public interface ILogTslConstant {
 
@@ -643,6 +643,119 @@ public interface ILogTslConstant {
      */
     String ATV_LOG050 = "ATV_LOG050";
     /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG051</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG051 = "ATV_LOG051";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG052</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG052 = "ATV_LOG052";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG053</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG053 = "ATV_LOG053";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG054</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG054 = "ATV_LOG054";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG055</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG055 = "ATV_LOG055";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG056</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG056 = "ATV_LOG056";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG057</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG057 = "ATV_LOG057";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG058</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG058 = "ATV_LOG058";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG059</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG059 = "ATV_LOG059";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG060</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG060 = "ATV_LOG060";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG061</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG061 = "ATV_LOG061";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG062</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG062 = "ATV_LOG062";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG063</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG063 = "ATV_LOG063";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG064</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG064 = "ATV_LOG064";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG065</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG065 = "ATV_LOG065";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG066</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG066 = "ATV_LOG066";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG067</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG067 = "ATV_LOG067";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG068</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG068 = "ATV_LOG068";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG069</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG069 = "ATV_LOG069";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG070</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG070 = "ATV_LOG070";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG071</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG071 = "ATV_LOG071";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG072</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG072 = "ATV_LOG072";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG073</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG073 = "ATV_LOG073";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG074</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG074 = "ATV_LOG074";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG075</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG075 = "ATV_LOG075";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG076</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG076 = "ATV_LOG076";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG077</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG077 = "ATV_LOG077";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG078</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG078 = "ATV_LOG078";
+
+    /**
      * Constant attribute that represents the name of the property <code>DIP_LOG001</code> belonging to the file tsl_xx_YY.properties
      */
     String DIP_LOG001 = "DIP_LOG001";
@@ -704,7 +817,10 @@ public interface ILogTslConstant {
      * Constant attribute that represents the name of the property <code>UC_LOG005</code> belonging to the file tsl_xx_YY.properties
      */
     String UC_LOG005 = "UC_LOG005";
-
+    /**
+     * Constant attribute that represents the name of the property <code>UC_LOG006</code> belonging to the file tsl_xx_YY.properties
+     */
+    String UC_LOG006 = "UC_LOG006";
     /**
      * Constant attribute that represents the name of the property <code>TV_LOG001</code> belonging to the file tsl_xx_YY.properties
      */
@@ -871,6 +987,26 @@ public interface ILogTslConstant {
      * Constant attribute that represents the name of the property <code>TV_LOG039</code> belonging to the file tsl_xx_YY.properties
      */
     String TV_LOG039 = "TV_LOG039";
+    /**
+     * Constant attribute that represents the name of the property <code>TV_LOG040</code> belonging to the file tsl_xx_YY.properties
+     */
+    String TV_LOG040 = "TV_LOG040";
+    /**
+     * Constant attribute that represents the name of the property <code>TV_LOG041</code> belonging to the file tsl_xx_YY.properties
+     */
+    String TV_LOG041 = "TV_LOG041";
+    /**
+     * Constant attribute that represents the name of the property <code>TV_LOG042</code> belonging to the file tsl_xx_YY.properties
+     */
+    String TV_LOG042 = "TV_LOG042";
+    /**
+     * Constant attribute that represents the name of the property <code>TV_LOG043</code> belonging to the file tsl_xx_YY.properties
+     */
+    String TV_LOG043 = "TV_LOG043";
+    /**
+     * Constant attribute that represents the name of the property <code>TV_LOG044</code> belonging to the file tsl_xx_YY.properties
+     */
+    String TV_LOG044 = "TV_LOG044";
     
     /**
      * Constant attribute that represents the name of the property <code>UP_LOG000</code> belonging to the file tsl_xx_YY.properties
@@ -1713,6 +1849,19 @@ public interface ILogTslConstant {
      * Constant attribute that represents the name of the property <code>TVMC_LOG22</code> belonging to the file tsl_xx_YY.properties
      */
     String TVMC_LOG022 = "TVMC_LOG022";
+    
+	/**
+	 * Constant attribute that represents the name of the property <code>errorQcSubStatus1</code> belonging to the file messages/valet-core/tsl_xx_YY.properties.
+	 */
+	String ERROR_QC_SUBSTATUS1 = "errorQcSubStatus1";
+	/**
+	 * Constant attribute that represents the name of the property <code>errorQcSubStatus2</code> belonging to the file messages/valet-core/tsl_xx_YY.properties.
+	 */
+	String ERROR_QC_SUBSTATUS2 = "errorQcSubStatus2";
+	/**
+	 * Constant attribute that represents the name of the property <code>warningQcSubStatus</code> belonging to the file messages/valet-core/tsl_xx_YY.properties.
+	 */
+	String WARNING_QC_SUBSTATUS = "warningQcSubStatus";
 
 
 
