@@ -17,15 +17,16 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>10/10/2020.</p>
  * @author Gobierno de España.
- * @version 1.0, 10/10/2020.
+ * @version 1.1, 22/03/2023.
  */
 package es.gob.afirma.tsl.utils;
 
+import java.util.List;
 
 /** 
  * <p>Class that provides functionality for managing strings and characters.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 10/10/2020.
+ * @version 1.1, 22/03/2023.
  */
 public final class UtilsStringChar {
     /**
@@ -264,6 +265,10 @@ public final class UtilsStringChar {
 	 * Constant attribute that represents the token '0'.
 	 */
 	private static final char TOKEN_ZERO = '0';
+	/**
+	 * Constant attribute that represents strings that are neither letters nor numbers
+	 */
+	public static final String SYMBOL_STRING_ONLY_LETTER_NUMBER = "[^a-zA-Z0-9]";
 
 	/**
 	 * Method that checks whether a string is null or empty.
@@ -423,4 +428,28 @@ public final class UtilsStringChar {
 		return result;
 
 	}
+	
+	/**
+	 * Method that checks if a string is found in a list of strings as part of the string.
+	 * 
+	 * @param listString String list where you want to search for the string.
+	 * @param string  String to search for.
+	 * @return True, if the string was found within the list. 
+	 */
+	public static boolean listContainingString(List<String> listString, String stringParam) {
+		boolean result = Boolean.FALSE;
+		if(listString != null && !listString.isEmpty()){
+			String string = removeBlanksFromString(stringParam);
+			string = string.replaceAll(SYMBOL_STRING_ONLY_LETTER_NUMBER, EMPTY_STRING);		
+			for(String s: listString){
+				s = removeBlanksFromString(s);
+				s = s.replaceAll(SYMBOL_STRING_ONLY_LETTER_NUMBER, EMPTY_STRING);
+				if(s.toUpperCase().contains(string.toUpperCase())){
+					result = Boolean.TRUE;
+				}
+			}
+		}
+		return result;
+	}
+
 }

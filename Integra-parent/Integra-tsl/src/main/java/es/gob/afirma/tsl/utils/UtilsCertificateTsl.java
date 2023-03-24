@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 10/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 22/03/2023.
  */
 package es.gob.afirma.tsl.utils;
 
@@ -34,6 +34,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -51,186 +52,190 @@ import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
 import es.gob.afirma.tsl.exceptions.CommonUtilsException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
 import es.gob.afirma.tsl.i18n.Language;
+import iaik.asn1.ObjectID;
+import iaik.x509.X509ExtensionInitException;
+import iaik.x509.extensions.AuthorityInfoAccess;
 import iaik.x509.extensions.ExtendedKeyUsage;
 
 /** 
  * <p>Class that provides methods for managing certificates.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 22/03/2023.
  */
 public final class UtilsCertificateTsl {
 
-    /**
-     * Constant that represents a "X.509" Certificate type.
-     */
-    public static final String X509_TYPE = "X.509";
+	/**
+	 * Constant that represents a "X.509" Certificate type.
+	 */
+	public static final String X509_TYPE = "X.509";
 	/**
 	 * Constant attribute that represents the OID of the ExtendedKeyUsage id-kp-timestamping.
 	 */
-    private static final String ID_KP_TIMESTAMPING_OID = ExtendedKeyUsage.timeStamping.getID();
+	private static final String ID_KP_TIMESTAMPING_OID = ExtendedKeyUsage.timeStamping.getID();
+	
+	/**
+	 * Constant attribute that represetns 
+	 */
 
-    /**
-     * Constructor method for the class UtilsCertificate.java. 
-     */
-    private UtilsCertificateTsl() {
-	super();
-    }
-
-    /**
-     * Creates a X509Certificate given its content.
-     * @param certificate Certificate content.
-     * @return X509Certificate jce X509Certificate.
-     * @throws CommonUtilsException Exception thrown if there is any problem creating the certificate.
-     */
-    public static X509Certificate getX509Certificate(byte[ ] certificate) throws CommonUtilsException {
-	InputStream is = new ByteArrayInputStream(certificate);
-	try {
-	    return (X509Certificate) CertificateFactory.getInstance(X509_TYPE).generateCertificate(is);
-	} catch (CertificateException e) {
-	    throw new CommonUtilsException("Error durante la creación del certificado", e);
-	} finally {
-	    UtilsResourcesCommons.safeCloseInputStream(is);
-	}
-    }
-
- 
-
-
-    /**
-     * Gets the RDN First ocurrence value with the OID indicated from the input X.500 Principal.
-     * @param x500Principal X.500 Principal to analyze.
-     * @param rdnAsn1ObjectIdentifier Object Identifier that represents the RDN to search.
-     * @return the RDN First ocurrence value with the OID indicated from the input X.500 Principal.
-     * <code>null</code> if some of the input parameters are <code>null</code> or there is some
-     * error analyzing the X.500 Principal.
-     */
-    public static String getRDNFirstValueFromX500Principal(X500Principal x500Principal, ASN1ObjectIdentifier rdnAsn1ObjectIdentifier) {
-
-	String result = null;
-
-	if (x500Principal != null && rdnAsn1ObjectIdentifier != null) {
-
-	    X500Name x500Name = X500Name.getInstance(x500Principal.getEncoded());
-	    result = getRDNFirstValueFromX500Name(x500Name, rdnAsn1ObjectIdentifier);
-
+	/**
+	 * Constructor method for the class UtilsCertificate.java. 
+	 */
+	private UtilsCertificateTsl() {
+		super();
 	}
 
-	return result;
-
-    }
-
-    /**
-     * Gets the RDN First ocurrence value with the OID indicated from the input X500Name.
-     * @param x500Name X.500 Name to analyze.
-     * @param rdnAsn1ObjectIdentifier Object Identifier that represents the RDN to search.
-     * @return the RDN First ocurrence value with the OID indicated from the input X500Name.
-     * <code>null</code> if some of the input parameters are <code>null</code> or there is some
-     * error analyzing the X.500 Name.
-     */
-    public static String getRDNFirstValueFromX500Name(X500Name x500Name, ASN1ObjectIdentifier rdnAsn1ObjectIdentifier) {
-
-	String result = null;
-
-	if (x500Name != null && rdnAsn1ObjectIdentifier != null) {
-
-	    RDN[ ] rdnArray = x500Name.getRDNs(rdnAsn1ObjectIdentifier);
-	    if (rdnArray != null && rdnArray.length > 0) {
-		result = IETFUtils.valueToString(rdnArray[0].getFirst().getValue());
-	    }
-
-	}
-
-	return result;
-    }
-
-    /**
-     * Method that indicates whether some other certificate is "equal to" this one (<code>true</code>) or not (<code>false</code>).
-     * @param cert1 Parameter that represents the first certificate to compare.
-     * @param cert2 Parameter that represents the second certificate to compare.
-     * @return a boolean that indicates whether some other certificate is "equal to" this one (<code>true</code>) or not (<code>false</code>).
-     * @throws CommonUtilsException If there is some error getting de issuer information from the input certificates.
-     */
-    public static boolean equals(X509Certificate cert1, X509Certificate cert2) throws CommonUtilsException {
-	boolean res = false;
-	if (cert1 != null && cert2 != null) {
-	    if (cert1.getPublicKey().equals(cert2.getPublicKey())) {
-		String idEmisor1 = getCertificateIssuerId(cert1);
-		String idEmisor2 = getCertificateIssuerId(cert2);
-		if (idEmisor1 != null && idEmisor2 != null && idEmisor1.equalsIgnoreCase(idEmisor2)) {
-		    if (cert1.getSerialNumber() != null && cert2.getSerialNumber() != null && cert1.getSerialNumber().equals(cert2.getSerialNumber())) {
-			res = true;
-		    } else {
-			res = false;
-		    }
+	/**
+	 * Creates a X509Certificate given its content.
+	 * @param certificate Certificate content.
+	 * @return X509Certificate jce X509Certificate.
+	 * @throws CommonUtilsException Exception thrown if there is any problem creating the certificate.
+	 */
+	public static X509Certificate getX509Certificate(byte[ ] certificate) throws CommonUtilsException {
+		InputStream is = new ByteArrayInputStream(certificate);
+		try {
+			return (X509Certificate) CertificateFactory.getInstance(X509_TYPE).generateCertificate(is);
+		} catch (CertificateException e) {
+			throw new CommonUtilsException("Error durante la creación del certificado", e);
+		} finally {
+			UtilsResourcesCommons.safeCloseInputStream(is);
 		}
-	    } else {
-		res = false;
-	    }
 	}
-	return res;
-    }
 
-    /**
-     * Method that obtains the canonicalized identifier of the issuer of a certificate.
-     * @param cert Parameter that represents the certificate.
-     * @return the canonicalized identifier of the issuer of the certificate.
-     * @throws CommonUtilsException If the method fails.
-     */
-    public static String getCertificateIssuerId(X509Certificate cert) throws CommonUtilsException {
-	if (cert == null) {
-	    return null;
-	}
-	return canonicalizarIdCertificado(UtilsASN1.toString(cert.getIssuerX500Principal()));
-    }
+	/**
+	 * Gets the RDN First ocurrence value with the OID indicated from the input X.500 Principal.
+	 * @param x500Principal X.500 Principal to analyze.
+	 * @param rdnAsn1ObjectIdentifier Object Identifier that represents the RDN to search.
+	 * @return the RDN First ocurrence value with the OID indicated from the input X.500 Principal.
+	 * <code>null</code> if some of the input parameters are <code>null</code> or there is some
+	 * error analyzing the X.500 Principal.
+	 */
+	public static String getRDNFirstValueFromX500Principal(X500Principal x500Principal, ASN1ObjectIdentifier rdnAsn1ObjectIdentifier) {
 
-    /**
-     * Method that canonicalizes the identifier of a certificate.
-     * @param idCertificado Parameter that represents the identifier of a certificate.
-     * @return the canonicalized identifier of the certificate.
-     */
-    public static String canonicalizarIdCertificado(String idCertificado) {
-	if (idCertificado.indexOf(UtilsStringChar.SYMBOL_EQUAL_STRING) != -1) {
-	    String[ ] campos = idCertificado.split(UtilsStringChar.SYMBOL_COMMA_STRING);
-	    Set<String> ordenados = new TreeSet<String>();
-	    StringBuffer sb = new StringBuffer();
-	    String[ ] pair;
-	    int i = 0;
-	    while (i < campos.length) {
-		/*Puede darse el caso de que haya campos que incluyan comas, ejemplo:
-		 *[OU=Class 3 Public Primary Certification Authority, O=VeriSign\\,  Inc., C=US]
-		 */
-		int currentIndex = i;
-		// Lo primero es ver si estamos en el campo final y si el
-		// siguiente campo no posee el símbolo igual, lo
-		// concatenamos al actual
-		while (i < campos.length - 1 && !campos[i + 1].contains(UtilsStringChar.SYMBOL_EQUAL_STRING)) {
-		    campos[currentIndex] += UtilsStringChar.SYMBOL_COMMA_STRING + campos[i + 1];
-		    i++;
+		String result = null;
+
+		if (x500Principal != null && rdnAsn1ObjectIdentifier != null) {
+
+			X500Name x500Name = X500Name.getInstance(x500Principal.getEncoded());
+			result = getRDNFirstValueFromX500Name(x500Name, rdnAsn1ObjectIdentifier);
+
 		}
-		sb = new StringBuffer();
-		pair = campos[currentIndex].trim().split(UtilsStringChar.SYMBOL_EQUAL_STRING);
-		sb.append(pair[0].toLowerCase());
-		sb.append(UtilsStringChar.SYMBOL_EQUAL_STRING);
-		if (pair.length == 2) {
-		    sb.append(pair[1]);
-		}
-		ordenados.add(sb.toString());
-		i++;
-	    }
-	    Iterator<String> it = ordenados.iterator();
-	    sb = new StringBuffer();
-	    while (it.hasNext()) {
-		sb.append(it.next());
-		sb.append(UtilsStringChar.SYMBOL_COMMA_STRING);
-	    }
-	    return sb.substring(0, sb.length() - 1);
-	} else {
-	    // No es un identificador de certificado, no se canonicaliza.
-	    return idCertificado;
+
+		return result;
+
 	}
-    }
-    
-    /**
+
+	/**
+	 * Gets the RDN First ocurrence value with the OID indicated from the input X500Name.
+	 * @param x500Name X.500 Name to analyze.
+	 * @param rdnAsn1ObjectIdentifier Object Identifier that represents the RDN to search.
+	 * @return the RDN First ocurrence value with the OID indicated from the input X500Name.
+	 * <code>null</code> if some of the input parameters are <code>null</code> or there is some
+	 * error analyzing the X.500 Name.
+	 */
+	public static String getRDNFirstValueFromX500Name(X500Name x500Name, ASN1ObjectIdentifier rdnAsn1ObjectIdentifier) {
+
+		String result = null;
+
+		if (x500Name != null && rdnAsn1ObjectIdentifier != null) {
+
+			RDN[ ] rdnArray = x500Name.getRDNs(rdnAsn1ObjectIdentifier);
+			if (rdnArray != null && rdnArray.length > 0) {
+				result = IETFUtils.valueToString(rdnArray[0].getFirst().getValue());
+			}
+
+		}
+
+		return result;
+	}
+
+	/**
+	 * Method that indicates whether some other certificate is "equal to" this one (<code>true</code>) or not (<code>false</code>).
+	 * @param cert1 Parameter that represents the first certificate to compare.
+	 * @param cert2 Parameter that represents the second certificate to compare.
+	 * @return a boolean that indicates whether some other certificate is "equal to" this one (<code>true</code>) or not (<code>false</code>).
+	 * @throws CommonUtilsException If there is some error getting de issuer information from the input certificates.
+	 */
+	public static boolean equals(X509Certificate cert1, X509Certificate cert2) throws CommonUtilsException {
+		boolean res = false;
+		if (cert1 != null && cert2 != null) {
+			if (cert1.getPublicKey().equals(cert2.getPublicKey())) {
+				String idEmisor1 = getCertificateIssuerId(cert1);
+				String idEmisor2 = getCertificateIssuerId(cert2);
+				if (idEmisor1 != null && idEmisor2 != null && idEmisor1.equalsIgnoreCase(idEmisor2)) {
+					if (cert1.getSerialNumber() != null && cert2.getSerialNumber() != null && cert1.getSerialNumber().equals(cert2.getSerialNumber())) {
+						res = true;
+					} else {
+						res = false;
+					}
+				}
+			} else {
+				res = false;
+			}
+		}
+		return res;
+	}
+
+	/**
+	 * Method that obtains the canonicalized identifier of the issuer of a certificate.
+	 * @param cert Parameter that represents the certificate.
+	 * @return the canonicalized identifier of the issuer of the certificate.
+	 * @throws CommonUtilsException If the method fails.
+	 */
+	public static String getCertificateIssuerId(X509Certificate cert) throws CommonUtilsException {
+		if (cert == null) {
+			return null;
+		}
+		return canonicalizarIdCertificado(UtilsASN1.toString(cert.getIssuerX500Principal()));
+	}
+
+	/**
+	 * Method that canonicalizes the identifier of a certificate.
+	 * @param idCertificado Parameter that represents the identifier of a certificate.
+	 * @return the canonicalized identifier of the certificate.
+	 */
+	public static String canonicalizarIdCertificado(String idCertificado) {
+		if (idCertificado.indexOf(UtilsStringChar.SYMBOL_EQUAL_STRING) != -1) {
+			String[ ] campos = idCertificado.split(UtilsStringChar.SYMBOL_COMMA_STRING);
+			Set<String> ordenados = new TreeSet<String>();
+			StringBuffer sb = new StringBuffer();
+			String[ ] pair;
+			int i = 0;
+			while (i < campos.length) {
+				/*Puede darse el caso de que haya campos que incluyan comas, ejemplo:
+				 *[OU=Class 3 Public Primary Certification Authority, O=VeriSign\\,  Inc., C=US]
+				 */
+				int currentIndex = i;
+				// Lo primero es ver si estamos en el campo final y si el
+				// siguiente campo no posee el símbolo igual, lo
+				// concatenamos al actual
+				while (i < campos.length - 1 && !campos[i + 1].contains(UtilsStringChar.SYMBOL_EQUAL_STRING)) {
+					campos[currentIndex] += UtilsStringChar.SYMBOL_COMMA_STRING + campos[i + 1];
+					i++;
+				}
+				sb = new StringBuffer();
+				pair = campos[currentIndex].trim().split(UtilsStringChar.SYMBOL_EQUAL_STRING);
+				sb.append(pair[0].toLowerCase());
+				sb.append(UtilsStringChar.SYMBOL_EQUAL_STRING);
+				if (pair.length == 2) {
+					sb.append(pair[1]);
+				}
+				ordenados.add(sb.toString());
+				i++;
+			}
+			Iterator<String> it = ordenados.iterator();
+			sb = new StringBuffer();
+			while (it.hasNext()) {
+				sb.append(it.next());
+				sb.append(UtilsStringChar.SYMBOL_COMMA_STRING);
+			}
+			return sb.substring(0, sb.length() - 1);
+		} else {
+			// No es un identificador de certificado, no se canonicaliza.
+			return idCertificado;
+		}
+	}
+
+	/**
 	 * Checks if a given public key corresponds to the private key that signed the input certificate.
 	 * @param publicKey Public key to use to verify the certificate.
 	 * @param cert Certificate to check.
@@ -257,6 +262,7 @@ public final class UtilsCertificateTsl {
 		}
 		return true;
 	}
+
 	/**
 	 * Checks if a given certificate is issued by another one.
 	 * @param certIssuer Issuer to check
@@ -269,7 +275,6 @@ public final class UtilsCertificateTsl {
 		boolean result = certIssuer != null && cert != null;
 		return result && verify(certIssuer.getPublicKey(), cert) && getCertificateId(certIssuer).equals(getCertificateIssuerId(cert));
 	}
-	
 
 	/**
 	 * Gets certificate´s identifier (canonicalized subject).
@@ -284,7 +289,6 @@ public final class UtilsCertificateTsl {
 		String id = UtilsASN1.toString(cert.getSubjectX500Principal());
 		return canonicalizarIdCertificado(id);
 	}
-	
 
 	/**
 	 * Method that checks whether a certificate is self-signed (<code>true</code>) or not (<code>false</code>).
@@ -298,7 +302,7 @@ public final class UtilsCertificateTsl {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Checks if the input certificate has the key purpose for TimeStamping.
 	 * @param cert X509v3 certificate to check.
@@ -343,7 +347,6 @@ public final class UtilsCertificateTsl {
 		return result;
 
 	}
-	
 
 	/**
 	 * Checks if the input certificate is a CA (it has the flag in the basic constraint).
@@ -356,7 +359,7 @@ public final class UtilsCertificateTsl {
 		return cert != null && cert.getBasicConstraints() != -1;
 
 	}
-	
+
 	/**
 	 * Gets the country specified in the subject name of the input certificate if it is a CA certificate, or from
 	 * the issuer if it is a end certificate.
@@ -386,7 +389,6 @@ public final class UtilsCertificateTsl {
 
 	}
 
-
 	/**
 	 * Gets the country specified in the subject name of the input certificate.
 	 * @param x509cert X509 Certificate to analyze to obtain the country of its subject name.
@@ -406,6 +408,7 @@ public final class UtilsCertificateTsl {
 		return result;
 
 	}
+
 	/**
 	 * Gets the country specified in the issuer name of the input certificate.
 	 * @param x509cert X509 Certificate to analyze to obtain the country of its issuer name.
@@ -425,8 +428,7 @@ public final class UtilsCertificateTsl {
 		return result;
 
 	}
-	
-	
+
 	/**
 	 * Creates a Iaik X509Certificate from a java X509Certificate.
 	 * @param x509cert Certificate to transform.
@@ -448,7 +450,6 @@ public final class UtilsCertificateTsl {
 		}
 
 	}
-	
 
 	/**
 	 * Creates a Iaik X509Certificate given its content.
@@ -461,8 +462,66 @@ public final class UtilsCertificateTsl {
 		try {
 			return new iaik.x509.X509Certificate(certificate);
 		} catch (CertificateException e) {
-		    throw new CommonUtilsException(Language.getResIntegra(ILogTslConstant.UC_LOG000), e);
+			throw new CommonUtilsException(Language.getResIntegra(ILogTslConstant.UC_LOG000), e);
 		}
+	}
+
+	/**
+	 * Gets the common name of the certificate.
+	 * @return
+	 */
+	public static String getCommonName(X509Certificate x509cert) {
+		String result = null;
+		if (x509cert != null) {
+			result = getRDNFirstValueFromX500Principal(x509cert.getIssuerX500Principal(), X509ObjectIdentifiers.commonName);
+		}
+		return result;
+	}
+
+	/**
+	 * Gets the organization name of the certificate.
+	 * @return
+	 */
+	public static String getOrganizationNameCertificate(X509Certificate x509cert) {
+		String result = null;
+		if (x509cert != null) {
+			result = getRDNFirstValueFromX500Principal(x509cert.getIssuerX500Principal(), X509ObjectIdentifiers.organization);
+		}
+		return result;
+	}
+
+	/**
+	 * Get the issuer alternative name.
+	 * @return
+	 * @throws CommonUtilsException 
+	 */
+	public static String getIssuerAlternativeName(X509Certificate x509cert) throws CommonUtilsException {
+		String result = null;
+
+		iaik.x509.X509Certificate iaikCert;
+		try {
+			iaikCert = getIaikCertificate(x509cert.getEncoded());
+
+			AuthorityInfoAccess aia = (AuthorityInfoAccess) iaikCert.getExtension(AuthorityInfoAccess.oid);
+			if (aia != null) {
+				for (Enumeration en2 = aia.getAccessDescriptions(); en2.hasMoreElements();) {
+					iaik.asn1.structures.AccessDescription ad = (iaik.asn1.structures.AccessDescription) en2.nextElement();
+					if(ad.getAccessMethod().getID().equals(ObjectID.caIssuers.getID())){
+						result = ad.getAccessLocation().getName().toString();
+					}
+				
+				}
+			}
+
+		} catch (CertificateEncodingException e) {
+			throw new CommonUtilsException(Language.getResIntegraTsl(ILogTslConstant.UC_LOG004), e);
+		} catch (CommonUtilsException e) {
+			throw new CommonUtilsException(Language.getResIntegraTsl(ILogTslConstant.UC_LOG004), e);
+		} catch (X509ExtensionInitException e) {
+			throw new CommonUtilsException(Language.getResIntegraTsl(ILogTslConstant.UC_LOG004), e);
+		}
+
+		return result;
 	}
 
 }

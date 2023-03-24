@@ -153,8 +153,12 @@ public final class StaticTslConfig {
 	 * by a specified validation date (seconds).
 	 */
 	public static final String TSL_VALIDATION_OCSP_INTERVAL_ALLOWED = "tsl.validation.ocsp.interval.allowed";
-	
 
+	/**
+	 * Constant attribute that represents date time of TSL
+	 */
+	public static final String TSL_DATE_TIME = "tsl.date.time";
+	
 	/**
 	 * Constant attribute that represents name for property <i>"connection.MaxSize"</i>.
 	 */

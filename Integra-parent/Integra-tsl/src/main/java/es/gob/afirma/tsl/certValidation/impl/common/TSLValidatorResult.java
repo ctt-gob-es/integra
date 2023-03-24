@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 16/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 22/03/2023.
  */
 package es.gob.afirma.tsl.certValidation.impl.common;
 
@@ -44,7 +44,7 @@ import es.gob.afirma.tsl.parsing.impl.common.TrustServiceProvider;
 /** 
  * <p>Class that represents a TSL validation result.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 15/06/2021.
+ * @version 1.2, 22/03/2023.
  */
 public class TSLValidatorResult implements ITSLValidatorResult {
 
@@ -179,6 +179,10 @@ public class TSLValidatorResult implements ITSLValidatorResult {
 	 * Attribute that represents the mapping that indicates if the certificate is in QSCD.
 	 */
 	private int mappingQSCD = ITSLValidatorResult.MAPPING_QSCD_UNKNOWN;
+	/**
+	 * Attribute that represents the mapping that indicates additional information returned by ETSI TS 119 615 v.1.1.1.
+	 */
+	private String mappingETSIResult = null;
 
 	/**
 	 * Attribute that represents the issuer X509 certificate of the certificate to validate.
@@ -608,6 +612,24 @@ public class TSLValidatorResult implements ITSLValidatorResult {
 	 */
 	public final void setMappingQSCD(int mappingQSCDParam) {
 		this.mappingQSCD = mappingQSCDParam;
+	}
+
+	
+	/**
+	 * Gets the value of the attribute {@link #mappingETSIResult}.
+	 * @return the value of the attribute {@link #mappingETSIResult}.
+	 */
+	public String getMappingETSIResult() {
+		return mappingETSIResult;
+	}
+
+	
+	/**
+	 * Sets the value of the attribute {@link #mappingETSIResult}.
+	 * @param mappingETSIResult The value for the attribute {@link #mappingETSIResult}.
+	 */
+	public void setMappingETSIResult(String mappingETSIResult) {
+		this.mappingETSIResult = mappingETSIResult;
 	}
 
 	/**
