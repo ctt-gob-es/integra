@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 10/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.3, 18/04/2022.
+ * @version 1.4, 17/04/2023.
  */
 package es.gob.afirma.tsl;
 
@@ -27,16 +27,13 @@ import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-
-import es.gob.afirma.tsl.logger.IntegraLogger;
-
 import es.gob.afirma.tsl.access.TSLManager;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult;
 import es.gob.afirma.tsl.exceptions.CommonUtilsException;
 import es.gob.afirma.tsl.exceptions.TSLManagingException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
 import es.gob.afirma.tsl.i18n.Language;
+import es.gob.afirma.tsl.logger.Logger;
 import es.gob.afirma.tsl.parsing.ifaces.ITSLObject;
 import es.gob.afirma.tsl.parsing.impl.common.TSLObject;
 import es.gob.afirma.tsl.utils.UtilsCertificateTsl;
@@ -47,14 +44,14 @@ import es.gob.afirma.tsl.utils.UtilsStringChar;
 /** 
  * <p>Class that implements the necessary methods to perform certificate validation using a TSL.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.3, 18/04/2022.
+ * @version 1.4, 17/04/2023.
  */
 public class TslValidation implements ITslValidation {
 
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(TslValidation.class);
+    private static final Logger LOGGER = Logger.getLogger(TslValidation.class);
 
     /**
      * Constructor method for the class TslValidation.java. 

@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 16/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.6, 22/03/2023.
+ * @version 1.7, 17/04/2023.
  */
 package es.gob.afirma.tsl.certValidation.impl.common;
 
@@ -34,9 +34,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.http.client.methods.HttpGet;
-
-import org.apache.log4j.Logger; 
-import es.gob.afirma.tsl.logger.IntegraLogger;
 
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidator;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult;
@@ -57,6 +54,7 @@ import es.gob.afirma.tsl.exceptions.TSLQualificationEvalProcessException;
 import es.gob.afirma.tsl.exceptions.TSLValidationException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
 import es.gob.afirma.tsl.i18n.Language;
+import es.gob.afirma.tsl.logger.Logger;
 import es.gob.afirma.tsl.parsing.ifaces.IAnyTypeExtension;
 import es.gob.afirma.tsl.parsing.ifaces.ITSLCommonURIs;
 import es.gob.afirma.tsl.parsing.ifaces.ITSLObject;
@@ -80,14 +78,14 @@ import es.gob.afirma.tsl.utils.UtilsStringChar;
  * <p>Abstract class that represents a TSL validator with the principal functions
  * regardless it implementation.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.6, 22/03/2023.
+ * @version 1.7, 17/04/2023.
  */
 public abstract class ATSLValidator implements ITSLValidator {
 
 	/**
 	 * Attribute that represents the object that manages the log of the class.
 	 */
-	private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(ATSLValidator.class);
+	private static final Logger LOGGER = Logger.getLogger(ATSLValidator.class);
 
 	/**
 	 * Constant attribute that represents a token for a TSP Service Name when the validation has been executed

@@ -17,7 +17,7 @@
  * <b>Project:</b><p@Firma and TS@ Web Services Integration Platform.</p>
  * <b>Date:</b><p>18/03/2011.</p>
  * @author Gobierno de España.
- * @version 1.1, 18/04/2022.
+ * @version 1.2, 17/04/2023.
  */
 package es.gob.afirma.tsl.utils;
 
@@ -27,10 +27,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-
 import es.gob.afirma.tsl.i18n.ILogConstantKeys;
 import es.gob.afirma.tsl.i18n.Language;
+import es.gob.afirma.tsl.logger.Logger;
 import es.gob.afirma.tsl.transformers.TransformersException;
 
 
@@ -38,7 +37,7 @@ import es.gob.afirma.tsl.transformers.TransformersException;
 /**
  * <p>Class with generic utilities.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 18/04/2022.
+ * @version 1.2, 17/04/2023.
  */
 public final class GenericUtilsCommons {
 

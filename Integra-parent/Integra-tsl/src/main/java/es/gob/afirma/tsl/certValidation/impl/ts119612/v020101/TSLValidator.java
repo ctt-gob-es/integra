@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 17/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.5, 22/03/2023.
+ * @version 1.6, 17/04/2023.
  */
 package es.gob.afirma.tsl.certValidation.impl.ts119612.v020101;
 
@@ -27,10 +27,8 @@ import java.util.Date;
 import java.util.List;
 
 
-import org.apache.log4j.Logger; 
-import es.gob.afirma.tsl.logger.IntegraLogger;
-
 import es.gob.afirma.tsl.i18n.Language;
+import es.gob.afirma.tsl.logger.Logger;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorOtherConstants;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult;
 import es.gob.afirma.tsl.certValidation.impl.TSLValidatorMappingCalculator;
@@ -56,14 +54,14 @@ import iaik.x509.extensions.qualified.structures.etsi.QcEuSSCD;
  * <p>Class that represents a TSL Validator implementation for the
  * ETSI TS 119612 2.1.1 specification.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.5, 22/03/2023.
+ * @version 1.6, 17/04/2023.
  */
 public class TSLValidator extends ATSLValidator {
 
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(TSLValidator.class);
+    private static final Logger LOGGER = Logger.getLogger(TSLValidator.class);
 
     /**
      * Constructor method for the class TSLValidator.java. 

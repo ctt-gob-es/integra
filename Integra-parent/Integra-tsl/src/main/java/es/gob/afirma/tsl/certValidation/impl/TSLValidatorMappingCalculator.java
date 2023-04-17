@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 17/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.4, 22/03/2023.
+ * @version 1.5, 17/04/2023.
  */
 package es.gob.afirma.tsl.certValidation.impl;
 
@@ -28,10 +28,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger; 
-import es.gob.afirma.tsl.logger.IntegraLogger;
-
-
 import es.gob.afirma.tsl.access.TSLProperties;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorOtherConstants;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult;
@@ -39,6 +35,7 @@ import es.gob.afirma.tsl.constants.ITslMappingConstants;
 import es.gob.afirma.tsl.exceptions.TSLValidationException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
 import es.gob.afirma.tsl.i18n.Language;
+import es.gob.afirma.tsl.logger.Logger;
 import es.gob.afirma.tsl.parsing.ifaces.ITSLOIDs;
 import es.gob.afirma.tsl.parsing.impl.common.TSLCertificateExtensionAnalyzer;
 import es.gob.afirma.tsl.utils.UtilsStringChar;
@@ -48,13 +45,13 @@ import iaik.x509.extensions.qualified.structures.etsi.QcEuSSCD;
  * <p>This class offers static methods to extract mappings of a certificate
  * validated through a TSL.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.4, 22/03/2023.
+ * @version 1.5, 17/04/2023.
  */
 public final class TSLValidatorMappingCalculator {
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(TSLValidatorMappingCalculator.class);
+    private static final Logger LOGGER = Logger.getLogger(TSLValidatorMappingCalculator.class);
 	/**
 	 * Constant attribute that represents the set of mapping names that are static.
 	 */

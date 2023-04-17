@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 10/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.2, 18/04/2022.
+ * @version 1.3, 17/04/2023.
  */
 package es.gob.afirma.tsl.parsing.impl.common;
 
@@ -37,8 +37,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger; 
-import es.gob.afirma.tsl.logger.IntegraLogger;
 import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.SchemaTypeLoader;
 import org.apache.xmlbeans.XmlBeans;
@@ -46,6 +44,7 @@ import org.w3.x2000.x09.xmldsig.SignatureType;
 import org.w3c.dom.Node;
 
 import es.gob.afirma.tsl.i18n.Language;
+import es.gob.afirma.tsl.logger.Logger;
 import es.gob.afirma.tsl.exceptions.TSLArgumentException;
 import es.gob.afirma.tsl.exceptions.TSLEncodingException;
 import es.gob.afirma.tsl.exceptions.TSLParsingException;
@@ -63,14 +62,14 @@ import es.gob.afirma.tsl.utils.UtilsStringChar;
  * <p>Abstract class that represents a TSL builder with the principal functions
  * regardless it implementation.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 18/04/2022.
+ * @version 1.3, 17/04/2023.
  */
 public abstract class ATSLBuilder implements ITSLBuilder {
 
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(ATSLBuilder.class);
+    private static final Logger LOGGER = Logger.getLogger(ATSLBuilder.class);
 
     /**
      * Constant attribute that represents the token name for the Scheme Type Field.

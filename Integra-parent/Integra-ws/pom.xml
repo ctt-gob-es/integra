@@ -3,7 +3,7 @@
   <parent>
     <groupId>es.gob.afirma</groupId>
     <artifactId>Integra-parent</artifactId>
-    <version>2.2.2_000b</version>
+    <version>2.2.2_000c</version>
   </parent>
   <artifactId>Integra-ws</artifactId>
   <name>Integra-ws</name>

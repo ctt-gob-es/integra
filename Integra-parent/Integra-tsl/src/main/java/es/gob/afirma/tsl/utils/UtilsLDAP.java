@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 18/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.2, 18/04/2022.
+ * @version 1.3, 17/04/2023.
  */
 package es.gob.afirma.tsl.utils;
 
@@ -32,8 +32,6 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.log4j.Logger; 
-import es.gob.afirma.tsl.logger.IntegraLogger;
 
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
@@ -45,18 +43,19 @@ import com.novell.ldap.LDAPSocketFactory;
 
 
 import es.gob.afirma.tsl.i18n.Language;
+import es.gob.afirma.tsl.logger.Logger;
 import es.gob.afirma.tsl.exceptions.CommonUtilsException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
 /** 
  * <p>Utilities class relating to connections and LDAP protocol.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 18/04/2022.
+ * @version 1.3, 17/04/2023.
  */
 public final class UtilsLDAP {
     /**
 	 * Attribute that represents the object that manages the log of the class.
 	 */
-	private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(UtilsLDAP.class);
+	private static final Logger LOGGER = Logger.getLogger(UtilsLDAP.class);
 
 	/**
 	 * Constant attribute that represents the representation string of the LDAP scheme.

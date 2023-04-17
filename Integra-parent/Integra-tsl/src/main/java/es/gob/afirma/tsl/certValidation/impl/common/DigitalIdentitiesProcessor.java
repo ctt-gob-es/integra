@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 16/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.3, 22/03/2023.
+ * @version 1.4, 17/04/2023.
  */
 package es.gob.afirma.tsl.certValidation.impl.common;
 
@@ -30,8 +30,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger; 
-import es.gob.afirma.tsl.logger.IntegraLogger;
 import org.w3.x2000.x09.xmldsig.DSAKeyValueType;
 import org.w3.x2000.x09.xmldsig.KeyValueType;
 import org.w3.x2000.x09.xmldsig.RSAKeyValueType;
@@ -40,6 +38,7 @@ import es.gob.afirma.tsl.elements.ResultServiceInformation;
 import es.gob.afirma.tsl.exceptions.CommonUtilsException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
 import es.gob.afirma.tsl.i18n.Language;
+import es.gob.afirma.tsl.logger.Logger;
 import es.gob.afirma.tsl.parsing.impl.common.DigitalID;
 import es.gob.afirma.tsl.utils.UtilsCertificateTsl;
 import iaik.x509.X509Certificate;
@@ -50,14 +49,14 @@ import iaik.x509.extensions.SubjectKeyIdentifier;
 /** 
  * <p>Class that represents a Digital Identities Processor.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.3, 22/03/2023.
+ * @version 1.4, 17/04/2023.
  */
 public class DigitalIdentitiesProcessor {
 
     /**
 	 * Attribute that represents the object that manages the log of the class.
 	 */
-	private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(DigitalIdentitiesProcessor.class);
+	private static final Logger LOGGER = Logger.getLogger(DigitalIdentitiesProcessor.class);
 
 	/**
 	 * Constant attribute that represents the string 'DSA'.

@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 10/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.2, 18/04/2022.
+ * @version 1.3, 17/04/2023.
  */
 package es.gob.afirma.tsl.parsing.impl.common;
 
@@ -32,9 +32,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger; 
-import es.gob.afirma.tsl.logger.IntegraLogger;
-
 import es.gob.afirma.cert.signvalidation.SignValidity;
 import es.gob.afirma.cert.signvalidation.ValidateXMLSignature;
 import es.gob.afirma.core.AOInvalidFormatException;
@@ -42,6 +39,7 @@ import es.gob.afirma.core.signers.AOSimpleSignInfo;
 import es.gob.afirma.core.util.tree.AOTreeModel;
 import es.gob.afirma.core.util.tree.AOTreeNode;
 import es.gob.afirma.tsl.i18n.Language;
+import es.gob.afirma.tsl.logger.Logger;
 import es.gob.afirma.signers.xades.AOXAdESSigner;
 import es.gob.afirma.tsl.access.TSLProperties;
 import es.gob.afirma.tsl.exceptions.TSLMalformedException;
@@ -59,13 +57,13 @@ import es.gob.afirma.tsl.utils.UtilsStringChar;
  * <p>Abstract class that represents a TSL data checker with the principal functions
  * regardless it implementation.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 18/04/2022.
+ * @version 1.3, 17/04/2023.
  */
 public abstract class ATSLChecker implements ITSLChecker {
     /**
 	 * Attribute that represents the object that manages the log of the class.
 	 */
-	private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(ATSLChecker.class);
+	private static final Logger LOGGER = Logger.getLogger(ATSLChecker.class);
 	
 
 	/**

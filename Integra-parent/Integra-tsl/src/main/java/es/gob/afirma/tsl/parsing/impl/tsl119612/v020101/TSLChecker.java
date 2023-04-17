@@ -21,7 +21,7 @@
  * <b>Project:</b><p>Platform for detection and validation of certificates recognized in European TSL.</p>
  * <b>Date:</b><p>06/11/2018.</p>
  * @author Gobierno de España.
- * @version 1.6, 18/04/2022.
+ * @version 1.7, 17/04/2023.
  */
 package es.gob.afirma.tsl.parsing.impl.tsl119612.v020101;
 
@@ -36,8 +36,6 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger; 
-import es.gob.afirma.tsl.logger.IntegraLogger;
 import org.w3.x2000.x09.xmldsig.CanonicalizationMethodType;
 import org.w3.x2000.x09.xmldsig.KeyValueType;
 import org.w3.x2000.x09.xmldsig.ReferenceType;
@@ -51,6 +49,7 @@ import es.gob.afirma.tsl.access.TSLManager;
 import es.gob.afirma.tsl.exceptions.TSLMalformedException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
 import es.gob.afirma.tsl.i18n.Language;
+import es.gob.afirma.tsl.logger.Logger;
 import es.gob.afirma.tsl.parsing.ifaces.IAnyTypeExtension;
 import es.gob.afirma.tsl.parsing.ifaces.ITSLCommonURIs;
 import es.gob.afirma.tsl.parsing.ifaces.ITSLElementsAndAttributes;
@@ -76,14 +75,14 @@ import iaik.x509.extensions.SubjectKeyIdentifier;
  * <p>Class that represents a TSL Data Checker of TSL implementation as the
  * ETSI TS 119612 2.1.1 specification.</p>
  * <b>Project:</b><p>Platform for detection and validation of certificates recognized in European TSL.</p>
- * @version 1.5, 15/06/2021.
+ * @version 1.7, 17/04/2023.
  */
 public class TSLChecker extends ATSLChecker {
 
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(TSLChecker.class);
+    private static final Logger LOGGER = Logger.getLogger(TSLChecker.class);
 
     /**
      * Constant attribute that represents the start date form which applies this specification.

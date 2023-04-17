@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 11/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.2, 18/04/2022.
+ * @version 1.3, 17/04/2023.
  */
 package es.gob.afirma.tsl.parsing.impl.tsl119612.v020101;
 
@@ -25,10 +25,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Locale;
 
-import org.apache.log4j.Logger; 
-import es.gob.afirma.tsl.logger.IntegraLogger;
-
 import es.gob.afirma.tsl.i18n.Language;
+import es.gob.afirma.tsl.logger.Logger;
 import es.gob.afirma.tsl.exceptions.TSLMalformedException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
 import es.gob.afirma.tsl.parsing.ifaces.IAnyTypeExtension;
@@ -43,7 +41,7 @@ import es.gob.afirma.tsl.utils.UtilsStringChar;
 /** 
  * <p>Class that represents a TSL extension that provide additional information on a service.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 18/04/2022.
+ * @version 1.3, 17/04/2023.
  */
 public class AdditionalServiceInformation extends Extension {
 
@@ -56,7 +54,7 @@ public class AdditionalServiceInformation extends Extension {
 	/**
 	 * Attribute that represents the object that manages the log of the class.
 	 */
-	private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(AdditionalServiceInformation.class);
+	private static final Logger LOGGER = Logger.getLogger(AdditionalServiceInformation.class);
 
 	/**
 	 * Attribute that represents an URI identifying the additional information.

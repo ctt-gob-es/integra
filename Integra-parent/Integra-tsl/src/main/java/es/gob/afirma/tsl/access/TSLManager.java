@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 10/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.2, 22/03/2023.
+ * @version 1.3, 17/04/2023.
  */
 package es.gob.afirma.tsl.access;
 
@@ -32,10 +32,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger; 
-import es.gob.afirma.tsl.logger.IntegraLogger;
-
-import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidator;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult;
 import es.gob.afirma.tsl.certValidation.impl.TSLValidatorFactory;
@@ -47,6 +43,8 @@ import es.gob.afirma.tsl.exceptions.TSLManagingException;
 import es.gob.afirma.tsl.exceptions.TSLParsingException;
 import es.gob.afirma.tsl.exceptions.TSLValidationException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
+import es.gob.afirma.tsl.i18n.Language;
+import es.gob.afirma.tsl.logger.Logger;
 import es.gob.afirma.tsl.parsing.ifaces.ITSLCommonURIs;
 import es.gob.afirma.tsl.parsing.ifaces.ITSLObject;
 import es.gob.afirma.tsl.parsing.impl.common.TSLObject;
@@ -57,14 +55,14 @@ import es.gob.afirma.tsl.utils.UtilsStringChar;
 /** 
  * <p>Class that reprensents the TSL Manager for all the differents operations.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 22/03/2023.
+ * @version 1.3, 17/04/2023.
  */
 public final class TSLManager {
 
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static final Logger LOGGER = IntegraLogger.getInstance().getLogger(TSLManager.class);
+    private static final Logger LOGGER = Logger.getLogger(TSLManager.class);
 
     /**
      * Attribute that represents the unique instance of this class (singleton).
