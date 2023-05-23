@@ -111,6 +111,13 @@ public class ResultQualifiedCertificate implements Serializable {
 		try {
 			tslCertExtAnalyzer = new TSLCertificateExtensionAnalyzer(cert);
 			qcSubStatus = new ArrayList<String>();
+			qcResults  = new ArrayList<QCResult>();
+			check1ListOfQE = new ArrayList<QualificationElement>();
+			check2ListOfQE  = new ArrayList<QualificationElement>();
+			check3ListOfQE  = new ArrayList<QualificationElement>();
+			infoQcResult = new InfoQCResult();
+			endProcedure = Boolean.FALSE;
+			
 		} catch (TSLCertificateValidationException e) {
 			throw new TSLValidationException(e.getMessage(), e);
 		}
