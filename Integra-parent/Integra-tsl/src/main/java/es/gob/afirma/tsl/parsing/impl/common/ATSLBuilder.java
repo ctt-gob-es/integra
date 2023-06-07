@@ -36,19 +36,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.commons.io.IOUtils;
-import es.gob.afirma.tsl.logger.Logger;
+import org.apache.logging.log4j.Level;
 import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.SchemaTypeLoader;
 import org.apache.xmlbeans.XmlBeans;
 import org.w3.x2000.x09.xmldsig.SignatureType;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import es.gob.afirma.tsl.i18n.Language;
 import es.gob.afirma.tsl.exceptions.TSLArgumentException;
 import es.gob.afirma.tsl.exceptions.TSLEncodingException;
 import es.gob.afirma.tsl.exceptions.TSLParsingException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
+import es.gob.afirma.tsl.i18n.Language;
+import es.gob.afirma.tsl.logger.Logger;
 import es.gob.afirma.tsl.parsing.ifaces.IAnyTypeExtension;
 import es.gob.afirma.tsl.parsing.ifaces.IAnyTypeOtherCriteria;
 import es.gob.afirma.tsl.parsing.ifaces.ITSLBuilder;
@@ -75,6 +81,12 @@ public abstract class ATSLBuilder implements ITSLBuilder {
      * Constant attribute that represents the token name for the Scheme Type Field.
      */
     private static final String SCHEME_TYPE_FIELD_NAME = "type";
+    
+
+    /**
+     * Document builder factory for secure XML parsing. 
+     */
+	private static DocumentBuilderFactory SECURE_BUILDER_FACTORY = null;
     
     /**
      * Attribute that represents the TSL object to manage.
@@ -1211,9 +1223,10 @@ public abstract class ATSLBuilder implements ITSLBuilder {
 	    SchemaType sts = (SchemaType) classDocument.getDeclaredField(SCHEME_TYPE_FIELD_NAME).get(null);
 	    SchemaTypeLoader stl = XmlBeans.typeLoaderUnion(new SchemaTypeLoader[ ] { sts.getTypeSystem(), XmlBeans.getContextTypeLoader() });
 	    if (is != null) {
-		return classDocument.cast(stl.parse(is, sts, null));
+	    	Node document = getSecureDocumentBuilder().parse(is);
+	    	return classDocument.cast(stl.parse(document, sts, null));
 	    } else {
-		return classDocument.cast(stl.parse(node, sts, null));
+	    	return classDocument.cast(stl.parse(node, sts, null));
 	    }
 
 	} catch (Exception e) {
@@ -1224,6 +1237,46 @@ public abstract class ATSLBuilder implements ITSLBuilder {
 
     }
 
+	/**
+	 * Obtiene un generador de &aacute;boles DOM con el que crear o cargar un XML.
+	 * @return Generador de &aacute;rboles DOM.
+	 * @throws ParserConfigurationException Cuando ocurre un error durante la creaci&oacute;n.
+	 */
+	public static DocumentBuilder getSecureDocumentBuilder() throws ParserConfigurationException {
+		if (SECURE_BUILDER_FACTORY == null) {
+			SECURE_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
+			try {
+				SECURE_BUILDER_FACTORY.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, Boolean.TRUE.booleanValue());
+			}
+			catch (final Exception e) {
+				LOGGER.warn("No se ha podido establecer el procesado seguro en la factoria XML: " + e); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+
+			// Los siguientes atributos deberia establececerlos automaticamente la implementacion de
+			// la biblioteca al habilitar la caracteristica anterior. Por si acaso, los establecemos
+			// expresamente
+			final String[] securityProperties = new String[] {
+					javax.xml.XMLConstants.ACCESS_EXTERNAL_DTD,
+					javax.xml.XMLConstants.ACCESS_EXTERNAL_SCHEMA,
+					javax.xml.XMLConstants.ACCESS_EXTERNAL_STYLESHEET
+			};
+			for (final String securityProperty : securityProperties) {
+				try {
+					SECURE_BUILDER_FACTORY.setAttribute(securityProperty, ""); //$NON-NLS-1$
+				}
+				catch (final Exception e) {
+					// Podemos las trazas en debug ya que estas propiedades son adicionales
+					// a la activacion de el procesado seguro
+					LOGGER.debug("No se ha podido establecer una propiedad de seguridad '" + securityProperty + "' en la factoria XML"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				}
+			}
+
+			SECURE_BUILDER_FACTORY.setValidating(false);
+			SECURE_BUILDER_FACTORY.setNamespaceAware(true);
+		}
+		return SECURE_BUILDER_FACTORY.newDocumentBuilder();
+	}
+    
     /**
 	 * {@inheritDoc}
 	 * @see es.gob.afirma.tsl.parsing.ifaces.ITSLBuilder#buildXMLfromTSL()
