@@ -1,6 +1,8 @@
 @echo off
 rem #Dependencia con Lowagie IText 2.2.
 call mvn install:install-file -Dfile=./com/lowagie/itext/2.2/itext-2.2.jar -DgroupId=com.lowagie -DartifactId=itext -Dversion=2.2 -Dpackaging=jar
+rem #Dependencia con Lowagie IText 2.2.
+call mvn install:install-file -Dfile=./es/gob/afirma/lib/itext-afirma/2.3/itext-afirma-2.3.jar -DgroupId=es.gob.afirma.lib -DartifactId=itext-afirma -Dversion=2.3 -Dpackaging=jar
 rem #Dependencia con JavaX Activation 1.0.2
 call mvn install:install-file -Dfile=./javax/activation/activation/1.0.2/activation-1.0.2.jar -DgroupId=javax.activation -DartifactId=activation -Dversion=1.0.2 -Dpackaging=jar -DpomFile=./javax/activation/activation/1.0.2/activation-1.0.2.pom
 rem #Dependencia con Sun JaxWS STAX-EX 2.1.1
