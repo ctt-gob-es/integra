@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.CMSObjectIdentifiers;
 import org.bouncycastle.asn1.cms.ContentInfo;
@@ -57,22 +56,22 @@ public final class SignatureFormatDetectorCadesPades implements ISignatureFormat
     /**
      * Constant attribute that represents the OID of the <code>attribute-certificate-references</code> attribute.
      */
-    private static final DERObjectIdentifier ID_ATTRIBUTE_CERTIFICATE_REFERENCES = new ASN1ObjectIdentifier("1.2.840.113549.1.9.16.2.44");
+    private static final ASN1ObjectIdentifier ID_ATTRIBUTE_CERTIFICATE_REFERENCES = new ASN1ObjectIdentifier("1.2.840.113549.1.9.16.2.44");
 
     /**
      * Constant attribute that represents the OID of the <code>attribute-revocation-references</code> attribute.
      */
-    private static final DERObjectIdentifier ID_ATTRIBUTE_REVOCATION_REFERENCES = new ASN1ObjectIdentifier("1.2.840.113549.1.9.16.2.45");
+    private static final ASN1ObjectIdentifier ID_ATTRIBUTE_REVOCATION_REFERENCES = new ASN1ObjectIdentifier("1.2.840.113549.1.9.16.2.45");
 
     /**
      * Constant attribute that represents the OID of the <code>long-term-validation</code> attribute.
      */
-    private static final DERObjectIdentifier ID_LONG_TERM_VALIDATION = new ASN1ObjectIdentifier("0.4.0.1733.2.2");
+    private static final ASN1ObjectIdentifier ID_LONG_TERM_VALIDATION = new ASN1ObjectIdentifier("0.4.0.1733.2.2");
 
     /**
      * Constant attribute that represents the OID of the <code>archive-time-stamp-v3</code> attribute.
      */
-    private static final DERObjectIdentifier ID_ARCHIVE_TIME_STAMP_V3 = new ASN1ObjectIdentifier("0.4.0.1733.2.4");
+    private static final ASN1ObjectIdentifier ID_ARCHIVE_TIME_STAMP_V3 = new ASN1ObjectIdentifier("0.4.0.1733.2.4");
 
     /**
      * Constructor method for the class SignatureFormatDetector.java.
@@ -141,7 +140,7 @@ public final class SignatureFormatDetectorCadesPades implements ISignatureFormat
     public static boolean isASN1Format(byte[ ] signature) {
 	try {
 	    CMSSignedData signedData = new CMSSignedData(signature);
-	    ContentInfo contentInfo = signedData.getContentInfo();
+	    ContentInfo contentInfo = signedData.toASN1Structure();
 	    if (!contentInfo.getContentType().equals(CMSObjectIdentifiers.signedData)) {
 		// Es una estructura ASN.1, pero no es una firma
 		return false;
@@ -1415,7 +1414,7 @@ public final class SignatureFormatDetectorCadesPades implements ISignatureFormat
 	 *
 	 * y que contenga al menos un elemento de revocación dentro de SignedData.crl
 	 */
-	SignedData signedData = SignedData.getInstance(cmsSignedData.getContentInfo().getContent());
+	SignedData signedData = SignedData.getInstance(cmsSignedData.toASN1Structure().getContent());
 	if (checkUnsignedAttributesForCAdESLTLevel(unsignedAttrs) && signedData.getCRLs() != null && signedData.getCRLs().size() > 0) {
 	    return true;
 	}

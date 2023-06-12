@@ -25,8 +25,6 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.cert.CertStore;
-import java.security.cert.CertStoreException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,22 +34,22 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.bouncycastle.asn1.ASN1EncodableVector;
+import org.bouncycastle.asn1.ASN1Encoding;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.tsp.MessageImprint;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
-import org.bouncycastle.cms.SignerInformationVerifier;
+import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.operator.ContentVerifierProvider;
-import org.bouncycastle.operator.DigestCalculatorProvider;
-import org.bouncycastle.operator.jcajce.JcaContentVerifierProviderBuilder;
-import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.tsp.TSPValidationException;
 import org.bouncycastle.tsp.TimeStampToken;
+import org.bouncycastle.util.Store;
+import org.bouncycastle.util.StoreException;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
@@ -88,13 +86,13 @@ public final class UtilsTimestampPdfBc {
 		try {
 			// Comprobamos que el sello de tiempo no sea nulo
 			GenericUtilsCommons.checkInputParameterIsNotNull(tst, Language.getResIntegra(ILogConstantKeys.TSU_LOG014));
-			// Obtenemos al colección de certificados definidos en el almacén de
-			// certificados dentro del sello de tiempo
-			CertStore certStore = null;
 
-			try {
-				certStore = tst.getCertificatesAndCRLs("Collection", BouncyCastleProvider.PROVIDER_NAME);
-				Collection<X509Certificate> collectionSigningCertificate = (Collection<X509Certificate>) certStore.getCertificates(tst.getSID());
+		    // Obtenemos al colección de certificados definidos en el almacén de
+		    // certificados dentro del sello de tiempo y el certificado de firma de ella
+		    try {
+		    	Store<X509CertificateHolder> store = tst.getCertificates();
+		    	Collection<X509Certificate> collectionSigningCertificate = store.getMatches(tst.getSID()); 
+
 
 				if (collectionSigningCertificate.size() != 1) {
 					String errorMsg = Language.getResIntegra(ILogConstantKeys.TSU_LOG015);
@@ -102,21 +100,8 @@ public final class UtilsTimestampPdfBc {
 					throw new SigningException(errorMsg);
 				}
 				return collectionSigningCertificate.iterator().next();
-			} catch (NoSuchAlgorithmException e) {
-				String errorMsg = Language.getResIntegra(ILogConstantKeys.TSU_LOG016);
-				LOGGER.error(errorMsg);
-				throw new SigningException(errorMsg, e);
-
-			} catch (NoSuchProviderException e) {
-				String errorMsg = Language.getResIntegra(ILogConstantKeys.TSU_LOG017);
-				LOGGER.error(errorMsg);
-				throw new SigningException(errorMsg, e);
-			} catch (CMSException e) {
-				String errorMsg = Language.getResIntegra(ILogConstantKeys.TSU_LOG018);
-				LOGGER.error(errorMsg);
-				throw new SigningException(errorMsg, e);
-			} catch (CertStoreException e) {
-				String errorMsg = Language.getResIntegra(ILogConstantKeys.TSU_LOG019);
+		    } catch (StoreException e) {
+				String errorMsg = Language.getResIntegra(ILogConstantKeys.TSU_LOG122);
 				LOGGER.error(errorMsg);
 				throw new SigningException(errorMsg, e);
 			}
@@ -142,18 +127,10 @@ public final class UtilsTimestampPdfBc {
 			// Validamos la firma del sello de tiempo
 			LOGGER.info(Language.getResIntegra(ILogConstantKeys.TSU_LOG021));
 			try {
-				JcaContentVerifierProviderBuilder jcaContentVerifierProviderBuilder = new JcaContentVerifierProviderBuilder();
-				jcaContentVerifierProviderBuilder.setProvider(BouncyCastleProvider.PROVIDER_NAME);
-
-				ContentVerifierProvider contentVerifierProvider = jcaContentVerifierProviderBuilder.build(signingCertificate);
-
-				JcaDigestCalculatorProviderBuilder digestCalculatorProviderBuilder = new JcaDigestCalculatorProviderBuilder();
-				digestCalculatorProviderBuilder.setProvider(BouncyCastleProvider.PROVIDER_NAME);
-				DigestCalculatorProvider digestCalculatorProvider = digestCalculatorProviderBuilder.build();
-
-				SignerInformationVerifier signerInformationVerifier = new SignerInformationVerifier(contentVerifierProvider, digestCalculatorProvider);
-
-				tst.validate(signerInformationVerifier);
+				JcaSimpleSignerInfoVerifierBuilder signerInformationVerifier = new JcaSimpleSignerInfoVerifierBuilder();
+				signerInformationVerifier.setProvider(BouncyCastleProvider.PROVIDER_NAME);
+                
+				tst.validate(signerInformationVerifier.build(signingCertificate));
 
 			} catch (TSPValidationException e) {
 				String errorMsg = Language.getResIntegra(ILogConstantKeys.TSU_LOG022);
@@ -188,7 +165,7 @@ public final class UtilsTimestampPdfBc {
 			if (unsignedAttributes != null && unsignedAttributes.get(PKCSObjectIdentifiers.id_aa_signatureTimeStampToken) != null) {
 				Attribute attributeTimeStampToken = unsignedAttributes.get(PKCSObjectIdentifiers.id_aa_signatureTimeStampToken);
 				try {
-					return new TimeStampToken(new CMSSignedData(attributeTimeStampToken.getAttrValues().getObjectAt(0).getDERObject().getDEREncoded()));
+					return new TimeStampToken(new CMSSignedData(attributeTimeStampToken.getAttrValues().getObjectAt(0).toASN1Primitive().getEncoded(ASN1Encoding.DER)));
 				} catch (Exception e) {
 					String errorMsg = Language.getResIntegra(ILogConstantKeys.TSU_LOG026);
 					LOGGER.error(errorMsg);
@@ -224,7 +201,7 @@ public final class UtilsTimestampPdfBc {
 				Attribute attribute = (Attribute) unsignedAttributes.get(i);
 				TimeStampToken currentTimestamp = null;
 				try {
-					currentTimestamp = new TimeStampToken(new CMSSignedData(attribute.getAttrValues().getObjectAt(0).getDERObject().getEncoded()));
+					currentTimestamp = new TimeStampToken(new CMSSignedData(attribute.getAttrValues().getObjectAt(0).toASN1Primitive().getEncoded()));
 					// Obtenemos la fecha de generación del sello de tiempo
 					currentTSTGenTime = currentTimestamp.getTimeStampInfo().getGenTime();
 				} catch (Exception e) {
@@ -271,7 +248,7 @@ public final class UtilsTimestampPdfBc {
 
 			// Accedemos al sello de tiempo contenido en el atributo
 			// signature-time-stamp
-			TimeStampToken result = new TimeStampToken(new CMSSignedData(signatureTimeStampAttribute.getAttrValues().getObjectAt(0).getDERObject().getEncoded()));
+			TimeStampToken result = new TimeStampToken(new CMSSignedData(signatureTimeStampAttribute.getAttrValues().getObjectAt(0).toASN1Primitive().getEncoded()));
 			LOGGER.info(Language.getResIntegra(ILogConstantKeys.TSU_LOG095));
 			return result;
 		} catch (Exception e) {
@@ -359,7 +336,7 @@ public final class UtilsTimestampPdfBc {
 				// Obtenemos el sello de tiempo asociado al atributo
 				// no firmado y lo añadimos al conjunto
 				Attribute attribute = (Attribute) unsignedAttributes.get(i);
-				setTimestamps.add(new TimeStampToken(new CMSSignedData(attribute.getAttrValues().getObjectAt(0).getDERObject().getEncoded())));
+				setTimestamps.add(new TimeStampToken(new CMSSignedData(attribute.getAttrValues().getObjectAt(0).toASN1Primitive().getEncoded())));
 			}
 			Language.getResIntegra(ILogConstantKeys.TSU_LOG103);
 

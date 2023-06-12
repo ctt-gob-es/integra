@@ -5,13 +5,33 @@
   <parent>
     <groupId>es.gob.afirma</groupId>
     <artifactId>Integra-parent</artifactId>
-    <version>2.2.3_001</version>
+    <version>2.2.4_000</version>
   </parent>
   <artifactId>Integra-commons-tsl</artifactId>
   <name>Integra-commons-tsl</name>
   <organization>
 		<name>Gobierno de España</name>
 	</organization>
+
+ 	<dependencies>
+  		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>${version.log4j2}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>${version.log4j2}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-jcl</artifactId>
+			<version>${version.log4j2}</version>
+		</dependency>
+	</dependencies>
+	
+	
 	<build>
 		<resources>
 			<resource>
@@ -32,7 +52,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.3.1</version>
 				<configuration>
 					<excludes>
 						<exclude>*.properties</exclude>
@@ -58,90 +77,11 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>${project.build.jdk}</source>
+					<target>${project.build.jdk}</target>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
- <dependencies>
-
-  			<dependency>
-    			<groupId>org.apache.logging.log4j</groupId>
-    			<artifactId>log4j-core</artifactId>
-    			<version>2.17.1</version>
-  			</dependency>
-  			<dependency>
-   	 			<groupId>org.apache.logging.log4j</groupId>
-    			<artifactId>log4j-jcl</artifactId>
-    			<version>2.17.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.opensaml</groupId>
-			<artifactId>xmltooling</artifactId>
-			<version>1.3.2-1</version>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>bcprov-jdk15</artifactId>
-					<groupId>org.bouncycastle</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>slf4j-api</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>jcl-over-slf4j</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>log4j-over-slf4j</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>jul-to-slf4j</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>joda-time</artifactId>
-					<groupId>joda-time</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>xmlsec</artifactId>
-					<groupId>org.apache.santuario</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>not-yet-commons-ssl</artifactId>
-					<groupId>ca.juliusdavies</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>jcip-annotations</artifactId>
-					<groupId>net.jcip</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>xml-apis</artifactId>
-					<groupId>xml-apis</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>xercesImpl</artifactId>
-					<groupId>xerces</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>xml-resolver</artifactId>
-					<groupId>xml-resolver</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>xalan</artifactId>
-					<groupId>xalan</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-	</dependencies>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<project.build.jdk>1.8</project.build.jdk>
-	</properties>
 </project>

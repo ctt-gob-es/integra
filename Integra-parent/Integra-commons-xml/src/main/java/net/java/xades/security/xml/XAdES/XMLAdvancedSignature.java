@@ -377,7 +377,7 @@ public class XMLAdvancedSignature {
 
 	X509Data x509Data = keyInfoFactory.newX509Data(x509DataList);
 
-	List<Object> newList = new ArrayList<Object>();
+	List<XMLStructure> newList = new ArrayList<>();
 	newList.add(keyValue);
 	newList.add(x509Data);
 

@@ -1714,7 +1714,14 @@ public interface ILogTslConstant {
      */
     String TVMC_LOG022 = "TVMC_LOG022";
 
+    /**
+     * Constant attribute that represents the name of the property <code>SXB_LOG001</code> belonging to the file tsl_xx_YY.properties
+     */
+    String SXB_LOG001 = "SXB_LOG001";
 
-
+    /**
+     * Constant attribute that represents the name of the property <code>SXB_LOG002</code> belonging to the file tsl_xx_YY.properties
+     */
+    String SXB_LOG002 = "SXB_LOG002";
 
 }

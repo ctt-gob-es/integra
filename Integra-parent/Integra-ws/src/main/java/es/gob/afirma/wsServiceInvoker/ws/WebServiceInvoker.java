@@ -37,8 +37,8 @@ import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.engine.Handler;
 import org.apache.axis2.engine.Phase;
+import org.apache.axis2.kernel.http.HTTPConstants;
 import org.apache.axis2.phaseresolver.PhaseException;
-import org.apache.axis2.transport.http.HTTPConstants;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;

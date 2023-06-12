@@ -55,14 +55,14 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.saaj.SOAPHeaderElementImpl;
 import org.apache.axis2.saaj.util.SAAJUtil;
-import org.apache.ws.security.WSConstants;
-import org.apache.ws.security.WSSecurityException;
-import org.apache.ws.security.components.crypto.Crypto;
-import org.apache.ws.security.message.WSSecHeader;
-import org.apache.ws.security.message.WSSecSAMLToken;
-import org.apache.ws.security.message.WSSecSignature;
-import org.apache.ws.security.message.WSSecUsernameToken;
-import org.apache.ws.security.saml.ext.AssertionWrapper;
+import org.apache.wss4j.common.crypto.Crypto;
+import org.apache.wss4j.common.ext.WSSecurityException;
+import org.apache.wss4j.common.saml.SamlAssertionWrapper;
+import org.apache.wss4j.dom.WSConstants;
+import org.apache.wss4j.dom.message.WSSecHeader;
+import org.apache.wss4j.dom.message.WSSecSAMLToken;
+import org.apache.wss4j.dom.message.WSSecSignature;
+import org.apache.wss4j.dom.message.WSSecUsernameToken;
 import org.apache.xml.security.keys.KeyInfo;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -230,18 +230,20 @@ class TSAClientHandler extends AbstractTSAHandler {
 
 	try {
 	    // Inserción del tag wsse:Security y userNameToken
-	    wsSecHeader = new WSSecHeader(null, false);
-	    wsSecUsernameToken = new WSSecUsernameToken();
+	    wsSecHeader = new WSSecHeader(null, false, soapEnvelopeRequest);
+	    wsSecHeader.insertSecurityHeader();
+	    wsSecUsernameToken = new WSSecUsernameToken(wsSecHeader);
 	    wsSecUsernameToken.setPasswordType(getPasswordType());
 	    wsSecUsernameToken.setUserInfo(getUserAlias(), getPassword());
-	    wsSecHeader.insertSecurityHeader(soapEnvelopeRequest);
-	    wsSecUsernameToken.prepare(soapEnvelopeRequest);
+	    wsSecUsernameToken.prepare();
+		
+		
 	    // Añadimos una marca de tiempo inidicando la fecha de creación del
 	    // tag
 	    wsSecUsernameToken.addCreated();
 	    wsSecUsernameToken.addNonce();
 	    // Modificación de la petición
-	    secSOAPReqDoc = wsSecUsernameToken.build(soapEnvelopeRequest, wsSecHeader);
+	    secSOAPReqDoc = wsSecUsernameToken.build();
 	    element = secSOAPReqDoc.getDocumentElement();
 
 	    // Transformación del elemento DOM a String
@@ -287,7 +289,7 @@ class TSAClientHandler extends AbstractTSAHandler {
 	DOMSource source;
 	Element element;
 	StreamResult streamResult;
-	String secSOAPReq;
+	byte[] secSOAPReq;
 	SOAPMessage res;
 	WSSecSignature wsSecSignature = null;
 	WSSecHeader wsSecHeader = null;
@@ -299,30 +301,32 @@ class TSAClientHandler extends AbstractTSAHandler {
 
 	try {
 	    // Inserción del tag wsse:Security y X509CertificateToken
-	    wsSecHeader = new WSSecHeader(null, false);
+	    wsSecHeader = new WSSecHeader(null, false, soapEnvelopeRequest);
 	    wsSecHeader.setMustUnderstand(true);
-	    wsSecSignature = new WSSecSignature();
-	    crypto = getCryptoInstance();
+	    wsSecHeader.insertSecurityHeader();
+	    wsSecSignature = new WSSecSignature(wsSecHeader);
 	    // Indicación para que inserte el tag X509CertificateToken
 	    wsSecSignature.setKeyIdentifierType(WSConstants.BST_DIRECT_REFERENCE);
 	    wsSecSignature.setUserInfo(getUserAlias(), getPassword());
-	    wsSecHeader.insertSecurityHeader(soapEnvelopeRequest);
-	    wsSecSignature.prepare(soapEnvelopeRequest, crypto, wsSecHeader);
-
+	    
+	    crypto = getCryptoInstance();
+	    wsSecSignature.prepare(crypto);
+		
+		
 	    // Modificación y firma de la petición
-	    secSOAPReqDoc = wsSecSignature.build(soapEnvelopeRequest, crypto, wsSecHeader);
+	    secSOAPReqDoc = wsSecSignature.build(crypto);
 	    element = secSOAPReqDoc.getDocumentElement();
 	    // Transformación del elemento DOM a String
 	    source = new DOMSource(element);
 	    baos = new ByteArrayOutputStream();
 	    streamResult = new StreamResult(baos);
 	    TransformerFactory.newInstance().newTransformer().transform(source, streamResult);
-	    secSOAPReq = new String(baos.toByteArray());
+	    secSOAPReq = baos.toByteArray();
 
 	    // Creación de un nuevo mensaje SOAP a partir del mensaje SOAP
 	    // securizado formado
 	    MessageFactory mf = new org.apache.axis2.saaj.MessageFactoryImpl();
-	    res = mf.createMessage(null, new ByteArrayInputStream(secSOAPReq.getBytes()));
+	    res = mf.createMessage(null, new ByteArrayInputStream(secSOAPReq));
 
 	} finally {
 	    // Restauramos el provider ApacheXMLDSig eliminado inicialmente.
@@ -382,17 +386,17 @@ class TSAClientHandler extends AbstractTSAHandler {
 	    Security.removeProvider("ApacheXMLDSig");
 
 	    try {
-		wsSecHeader = new WSSecHeader(null, false);
-		wsSecSamlToken = new WSSecSAMLToken();
-
+		wsSecHeader = new WSSecHeader(null, false, doc);
+		wsSecHeader.insertSecurityHeader();
+		
+		wsSecSamlToken = new WSSecSAMLToken(wsSecHeader);
 		wsSecSamlToken.setUserInfo(getUserAlias(), getPassword());
-		wsSecHeader.insertSecurityHeader(doc);
-		AssertionWrapper assertion;
-		assertion = new AssertionWrapper(createHOKSAMLAssertion());
-		wsSecSamlToken.prepare(doc, assertion);
+		
+		SamlAssertionWrapper assertion = new SamlAssertionWrapper(createHOKSAMLAssertion());
+		wsSecSamlToken.prepare(assertion);
 
 		// Modificación de la petición
-		secSOAPReqDoc = wsSecSamlToken.build(doc, assertion, wsSecHeader);
+		secSOAPReqDoc = wsSecSamlToken.build(assertion);
 		element = secSOAPReqDoc.getDocumentElement();
 
 		// Transformación del elemento DOM a String
@@ -436,7 +440,7 @@ class TSAClientHandler extends AbstractTSAHandler {
 	Element element;
 	SOAPMessage res;
 	StreamResult streamResult;
-	String secSOAPReq;
+	byte[] secSOAPReq;
 	WSSecSAMLToken wsSecSamlToken;
 	WSSecHeader wsSecHeader;
 
@@ -445,17 +449,16 @@ class TSAClientHandler extends AbstractTSAHandler {
 	Security.removeProvider("ApacheXMLDSig");
 
 	try {
-	    wsSecHeader = new WSSecHeader(null, false);
-	    wsSecSamlToken = new WSSecSAMLToken();
-
+	    wsSecHeader = new WSSecHeader(null, false, doc);
+	    wsSecHeader.insertSecurityHeader();
+	    wsSecSamlToken = new WSSecSAMLToken(wsSecHeader);
 	    wsSecSamlToken.setUserInfo(getUserAlias(), getPassword());
-	    wsSecHeader.insertSecurityHeader(doc);
-	    AssertionWrapper assertion;
-	    assertion = new AssertionWrapper(createSVSAMLAssertion());
-	    wsSecSamlToken.prepare(doc, assertion);
+	    
+	    SamlAssertionWrapper assertion = new SamlAssertionWrapper(createSVSAMLAssertion());
+	    wsSecSamlToken.prepare(assertion);
 
 	    // Modificación de la petición
-	    secSOAPReqDoc = wsSecSamlToken.build(doc, assertion, wsSecHeader);
+	    secSOAPReqDoc = wsSecSamlToken.build(assertion);
 	    element = secSOAPReqDoc.getDocumentElement();
 
 	    // Transformación del elemento DOM a String
@@ -463,12 +466,12 @@ class TSAClientHandler extends AbstractTSAHandler {
 	    baos = new ByteArrayOutputStream();
 	    streamResult = new StreamResult(baos);
 	    TransformerFactory.newInstance().newTransformer().transform(source, streamResult);
-	    secSOAPReq = new String(baos.toByteArray());
+	    secSOAPReq = baos.toByteArray();
 
 	    // Creación de un nuevo mensaje SOAP a partir del mensaje SOAP
 	    // securizado formado
 	    MessageFactory mf = new org.apache.axis2.saaj.MessageFactoryImpl();
-	    res = mf.createMessage(null, new ByteArrayInputStream(secSOAPReq.getBytes()));
+	    res = mf.createMessage(null, new ByteArrayInputStream(secSOAPReq));
 
 	} catch (Exception e) {
 	    throw e;
