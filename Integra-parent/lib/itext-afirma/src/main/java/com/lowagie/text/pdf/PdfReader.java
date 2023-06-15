@@ -67,6 +67,7 @@ import java.util.zip.InflaterInputStream;
 import java.util.Stack;
 import java.security.Key;
 import java.security.MessageDigest;
+import java.security.PrivateKey;
 import java.security.cert.Certificate;
 
 import com.lowagie.text.ExceptionConverter;
@@ -80,6 +81,7 @@ import com.lowagie.text.pdf.internal.PdfViewerPreferencesImp;
 
 import org.bouncycastle.cms.CMSEnvelopedData;
 import org.bouncycastle.cms.RecipientInformation;
+import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
 
 /** Reads a PDF document.
  * @author Paulo Soares (psoares@consiste.pt)
@@ -719,7 +721,9 @@ public class PdfReader implements PdfViewerPreferences {
                         RecipientInformation recipientInfo = (RecipientInformation)recipientCertificatesIt.next();
 
                         if (recipientInfo.getRID().match(certificate) && !foundRecipient) {
-                         envelopedData = recipientInfo.getContent(certificateKey, certificateKeyProvider);
+                         envelopedData = recipientInfo.getContent(
+                        		 new JceKeyTransEnvelopedRecipient((PrivateKey) this.certificateKey)
+                        );
                          foundRecipient = true;
                         }
                     }
