@@ -15,7 +15,7 @@
  * <b>Project:</b><p>Horizontal platform of validation services of multiPKI certificates and electronic signature.</p>
  * <b>Date:</b><p> 24/02/2023.</p>
  * @author Gobierno de España.
- * @version 1.0, 24/02/2023.
+ * @version 1.1, 24/07/2023.
  */
 package es.gob.afirma.tsl.elements;
 
@@ -23,7 +23,7 @@ package es.gob.afirma.tsl.elements;
 /** 
  * <p>Interface defining all constants related to the outputs of procedures 4.3 and 4.4 inhe ETSI TS 119 615 v.1.1.1.</p>
  * <b>Project:</b><p>Horizontal platform of validation services of multiPKI certificates and electronic signature.</p>
- * @version 1.0,  24/02/2023.
+ * @version 1.1,  24/07/2023.
  */
 public interface ITSLStatusConstants {
 	/**
@@ -37,7 +37,7 @@ public interface ITSLStatusConstants {
 	/**
 	 * Constant attribute that represents the token 'PROCESS_PASSED_WITH_WARNING'.
 	 */
-	String PROCESS_FAILED_WARNING ="PROCESS_PASSED_WITH_WARNING";
+	String PROCESS_PASSED_WITH_WARNING ="PROCESS_PASSED_WITH_WARNING";
 	/**
 	 * Constant attribute that represents the token 'WARNING_T1_DUPLICATION'.
 	 */

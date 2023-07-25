@@ -754,6 +754,26 @@ public interface ILogTslConstant {
      * Constant attribute that represents the name of the property <code>ATV_LOG078</code> belonging to the file tsl_xx_YY.properties
      */
     String ATV_LOG078 = "ATV_LOG078";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG079</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG079 = "ATV_LOG079";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG080</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG080 = "ATV_LOG080";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG081</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG081 = "ATV_LOG081";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG082</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG082 = "ATV_LOG082";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG083</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG083 = "ATV_LOG083";
 
     /**
      * Constant attribute that represents the name of the property <code>DIP_LOG001</code> belonging to the file tsl_xx_YY.properties

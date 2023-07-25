@@ -15,7 +15,7 @@
  * <b>Project:</b><p>Horizontal platform of validation services of multiPKI certificates and electronic signature.</p>
  * <b>Date:</b><p> 23/02/2023.</p>
  * @author Gobierno de España.
- * @version 1.0, 23/02/2023.
+ * @version 1.1,  24/07/2023.
  */
 package es.gob.afirma.tsl.elements;
 
@@ -25,7 +25,7 @@ import java.io.Serializable;
 /** 
  * <p>Class representing the extensions contained in the certificate.</p>
  * <b>Project:</b><p>Horizontal platform of validation services of multiPKI certificates and electronic signature.</p>
- * @version 1.0,  23/02/2023.
+ * @version 1.1,  24/07/2023.
  */
 public class CertificateExtension implements Serializable {
 
@@ -83,35 +83,35 @@ public class CertificateExtension implements Serializable {
 	 * @return Selected row.
 	 */
 	public String getRowCheck() {
-		String row = null;
-		if (qcCompliance || (!qcCompliance && qcType1 && !qcType2 && !qcType3)) {
+	    String row = null;
+		if ((qcCompliance && !qcType1 && !qcType2 && !qcType3)|| (qcCompliance && qcType1 && !qcType2 && !qcType3)) {
 			return row = IQCCertificateConstants.QC_ROW1;
 		}
 		if (qcCompliance && !qcType1 && qcType2 && !qcType3) {
 			return row = IQCCertificateConstants.QC_ROW2;
 		}
-		if (qcCompliance && !qcType1 && qcType2 && !qcType3) {
+		if (qcCompliance && !qcType1 && !qcType2 && qcType3) {
 			return row = IQCCertificateConstants.QC_ROW3;
 		}
-		if (qcCompliance && !qcType1 && !qcType2 && qcType3) {
+		if (qcCompliance && qcType1 && qcType2 && !qcType3) {
 			return row = IQCCertificateConstants.QC_ROW4;
 		}
-		if (qcCompliance && qcType1 && qcType2 && !qcType3) {
+		if (qcCompliance && qcType1 && !qcType2 && qcType3) {
 			return row = IQCCertificateConstants.QC_ROW5;
 		}
-		if (qcCompliance && qcType1 && !qcType2 && qcType3) {
+		if (qcCompliance && !qcType1 && qcType2 && qcType3) {
 			return row = IQCCertificateConstants.QC_ROW6;
 		}
-		if (qcCompliance && !qcType1 && qcType2 && qcType3) {
+		if (qcCompliance && qcType1 && qcType2 && qcType3) {
 			return row = IQCCertificateConstants.QC_ROW7;
 		}
-		if (qcCompliance && qcType1 && qcType2 && qcType3) {
+		if (!qcCompliance && !qcType1 && !qcType2 && !qcType3) {
 			return row = IQCCertificateConstants.QC_ROW8;
 		}
-		if (!qcCompliance && !qcType1 && !qcType2 && !qcType3) {
+		if (!qcCompliance && qcType1 && !qcType2 && !qcType3) {
 			return row = IQCCertificateConstants.QC_ROW9;
 		}
-		if (!qcCompliance && qcType1 && !qcType2 && !qcType3) {
+		if (!qcCompliance && !qcType1 && qcType2 && !qcType3) {
 			return row = IQCCertificateConstants.QC_ROW10;
 		}
 		if (!qcCompliance && !qcType1 && !qcType2 && qcType3) {
