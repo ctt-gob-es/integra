@@ -17,14 +17,14 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>12/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.2, 22/03/2023.
+ * @version 1.3, 24/07/2023.
  */
 package es.gob.afirma.tsl.i18n;
 
 /** 
  * <p>Interface that defines all the keys of the log messages file of Integra-tsl module.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 22/03/2023.
+ * @version 1.3, 24/07/2023.
  */
 public interface ILogTslConstant {
 
@@ -754,7 +754,26 @@ public interface ILogTslConstant {
      * Constant attribute that represents the name of the property <code>ATV_LOG078</code> belonging to the file tsl_xx_YY.properties
      */
     String ATV_LOG078 = "ATV_LOG078";
-
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG079</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG079 = "ATV_LOG079";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG080</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG080 = "ATV_LOG080";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG081</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG081 = "ATV_LOG081";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG082</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG082 = "ATV_LOG082";
+    /**
+     * Constant attribute that represents the name of the property <code>ATV_LOG083</code> belonging to the file tsl_xx_YY.properties
+     */
+    String ATV_LOG083 = "ATV_LOG083";
     /**
      * Constant attribute that represents the name of the property <code>DIP_LOG001</code> belonging to the file tsl_xx_YY.properties
      */

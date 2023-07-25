@@ -84,34 +84,34 @@ public class CertificateExtension implements Serializable {
 	 */
 	public String getRowCheck() {
 		String row = null;
-		if (qcCompliance || (!qcCompliance && qcType1 && !qcType2 && !qcType3)) {
+		if ((qcCompliance && !qcType1 && !qcType2 && !qcType3)|| (qcCompliance && qcType1 && !qcType2 && !qcType3)) {
 			return row = IQCCertificateConstants.QC_ROW1;
 		}
 		if (qcCompliance && !qcType1 && qcType2 && !qcType3) {
 			return row = IQCCertificateConstants.QC_ROW2;
 		}
-		if (qcCompliance && !qcType1 && qcType2 && !qcType3) {
+		if (qcCompliance && !qcType1 && !qcType2 && qcType3) {
 			return row = IQCCertificateConstants.QC_ROW3;
 		}
-		if (qcCompliance && !qcType1 && !qcType2 && qcType3) {
+		if (qcCompliance && qcType1 && qcType2 && !qcType3) {
 			return row = IQCCertificateConstants.QC_ROW4;
 		}
-		if (qcCompliance && qcType1 && qcType2 && !qcType3) {
+		if (qcCompliance && qcType1 && !qcType2 && qcType3) {
 			return row = IQCCertificateConstants.QC_ROW5;
 		}
-		if (qcCompliance && qcType1 && !qcType2 && qcType3) {
+		if (qcCompliance && !qcType1 && qcType2 && qcType3) {
 			return row = IQCCertificateConstants.QC_ROW6;
 		}
-		if (qcCompliance && !qcType1 && qcType2 && qcType3) {
+		if (qcCompliance && qcType1 && qcType2 && qcType3) {
 			return row = IQCCertificateConstants.QC_ROW7;
 		}
-		if (qcCompliance && qcType1 && qcType2 && qcType3) {
+		if (!qcCompliance && !qcType1 && !qcType2 && !qcType3) {
 			return row = IQCCertificateConstants.QC_ROW8;
 		}
-		if (!qcCompliance && !qcType1 && !qcType2 && !qcType3) {
+		if (!qcCompliance && qcType1 && !qcType2 && !qcType3) {
 			return row = IQCCertificateConstants.QC_ROW9;
 		}
-		if (!qcCompliance && qcType1 && !qcType2 && !qcType3) {
+		if (!qcCompliance && !qcType1 && qcType2 && !qcType3) {
 			return row = IQCCertificateConstants.QC_ROW10;
 		}
 		if (!qcCompliance && !qcType1 && !qcType2 && qcType3) {
@@ -131,7 +131,8 @@ public class CertificateExtension implements Serializable {
 		}
 		return row;
 	}
-
+	
+	
 	/**
 	 * Method that obtains the row to be selected in the Table 5: QC-For-eSig
 	 * determination under Directive 1999/93/EC [i.7]

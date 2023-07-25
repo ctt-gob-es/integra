@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 17/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 22/03/2023.
+ * @version 1.2, 22/07/2023.
  */
 package es.gob.afirma.tsl.constants;
 
@@ -25,7 +25,7 @@ package es.gob.afirma.tsl.constants;
 /** 
  * <p>Interface that defines all the commons constants related with the mappings.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 22/03/2023.
+ * @version 1.2, 22/07/2023.
  */
 public interface ITslMappingConstants {
 	/**
@@ -162,12 +162,12 @@ public interface ITslMappingConstants {
 	/**
 	 * Constant attribute that represents the mapping value 'INDET_QC_For_eSig - INDET_QC_For_eSeal - INDET_QWAC '.
 	 */
-	String MAPPING_VALUE_ETSI_RESULT_ALL_INDET = MAPPING_VALUE_ETSI_RESULT_INDET_ESIG+HYPHEN_SYMBOL+MAPPING_VALUE_ETSI_RESULT_INDET_ESIG+HYPHEN_SYMBOL+MAPPING_VALUE_ETSI_RESULT_NQ_WSA;
+	String MAPPING_VALUE_ETSI_RESULT_ALL_INDET = MAPPING_VALUE_ETSI_RESULT_INDET_ESIG+HYPHEN_SYMBOL+MAPPING_VALUE_ETSI_RESULT_INDET_ESIG+HYPHEN_SYMBOL+MAPPING_VALUE_ETSI_RESULT_INDET_WSA;
 	
 	/**
 	 * Constant attribute that represents the mapping value 'Not_Qualified_For_eSig - Not_Qualified_For_eSeal - Not_QWAC '.
 	 */
-	String MAPPING_VALUE_ETSI_RESULT_ALL_NQ = MAPPING_VALUE_ETSI_RESULT_NQ_ESIG+HYPHEN_SYMBOL+MAPPING_VALUE_ETSI_RESULT_NQ_ESEAL+HYPHEN_SYMBOL+MAPPING_VALUE_ETSI_RESULT_INDET_WSA;
+	String MAPPING_VALUE_ETSI_RESULT_ALL_NQ = MAPPING_VALUE_ETSI_RESULT_NQ_ESIG+HYPHEN_SYMBOL+MAPPING_VALUE_ETSI_RESULT_NQ_ESEAL+HYPHEN_SYMBOL+MAPPING_VALUE_ETSI_RESULT_NQ_WSA;
 
 			
 }

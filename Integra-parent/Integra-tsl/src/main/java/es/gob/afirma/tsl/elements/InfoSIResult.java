@@ -16,7 +16,7 @@
  * <b>Project:</b><p>Horizontal platform of validation services of multiPKI certificates and electronic signature.</p>
  * <b>Date:</b><p> 24/02/2023.</p>
  * @author Gobierno de España.
- * @version 1.0, 24/02/2023.
+ * @version 1.1, 24/07/2023.
  */
 package es.gob.afirma.tsl.elements;
 
@@ -31,7 +31,7 @@ import es.gob.afirma.tsl.parsing.impl.common.ServiceHistoryInstance;
  * <p>Class representing information obtained in the procedure 4.3.Obtaining listed
  * services matching a certificate of ETSI TS 119 615 v.1.1.1.</p>
  * <b>Project:</b><p>Horizontal platform of validation services of multiPKI certificates and electronic signature.</p>
- * @version 1.0,  24/02/2023.
+ * @version 1.1,  24/07/2023.
  */
 public class InfoSIResult implements Serializable {
 
@@ -49,6 +49,15 @@ public class InfoSIResult implements Serializable {
 	 * the certificate identifies.
 	 */
 	private List<String> listTSPTradeNames;
+	
+	/**
+	 * Attribute that represents the 'TSPNames' list of the TSPServices of the country of the certificate.
+	 */
+	private List<String> listTSPNamesCountry;
+	/**
+	 * Attribute that represents the 'TSPTradeName' list of the TSPServices of the country of the certificate.
+	 */
+	private List<String> listTSPTradeNamesCountry;
 
 	/**
 	 * Attribute that represents the list of the ServiceHistoryInstance.
@@ -67,6 +76,8 @@ public class InfoSIResult implements Serializable {
 		listTSPNames = new ArrayList<String>();
 		listTSPTradeNames = new ArrayList<String>();
 		listSiAtDateTime = new ArrayList<ServiceHistoryInstance>();
+		listTSPNamesCountry = new ArrayList<String>();
+		listTSPTradeNamesCountry = new ArrayList<String>();
 	}
 
 	/**
@@ -143,6 +154,42 @@ public class InfoSIResult implements Serializable {
 	 */
 	public void setSiResultTSA(SIResult siResultTSA) {
 		this.siResultTSA = siResultTSA;
+	}
+
+	
+	/**
+	 * Gets the value of the attribute {@link #listTSPNamesCountry}.
+	 * @return the value of the attribute {@link #listTSPNamesCountry}.
+	 */
+	public List<String> getListTSPNamesCountry() {
+	    return listTSPNamesCountry;
+	}
+
+	
+	/**
+	 * Sets the value of the attribute {@link #listTSPNamesCountry}.
+	 * @param listTSPNamesCountry The value for the attribute {@link #listTSPNamesCountry}.
+	 */
+	public void setListTSPNamesCountry(List<String> listTSPNamesCountry) {
+	    this.listTSPNamesCountry = listTSPNamesCountry;
+	}
+
+	
+	/**
+	 * Gets the value of the attribute {@link #listTSPTradeNamesCountry}.
+	 * @return the value of the attribute {@link #listTSPTradeNamesCountry}.
+	 */
+	public List<String> getListTSPTradeNamesCountry() {
+	    return listTSPTradeNamesCountry;
+	}
+
+	
+	/**
+	 * Sets the value of the attribute {@link #listTSPTradeNamesCountry}.
+	 * @param listTSPTradeNamesCountry The value for the attribute {@link #listTSPTradeNamesCountry}.
+	 */
+	public void setListTSPTradeNamesCountry(List<String> listTSPTradeNamesCountry) {
+	    this.listTSPTradeNamesCountry = listTSPTradeNamesCountry;
 	}
 
 }
