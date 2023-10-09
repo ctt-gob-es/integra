@@ -410,60 +410,6 @@ public abstract class ATSLValidator implements ITSLValidator {
     }
 
     /**
-     * Method that gets the certificate issuer of the certificate and updates
-     * the result of the validation.
-     * 
-     * @param resultQC
-     *            Result obtained when executing the procedure 4.4.EU qualified
-     *            certificate determination of ETSI TS 119 615 v.1.1.1.
-     * @param cert
-     *            Certificate X509 v3 to validate.
-     * @param validationResult
-     *            Object where stores the validation result data.
-     */
-    private void assingIssuerCertificateToResult(TSLValidatorResult validationResult, ResultQualifiedCertificate resultQC, X509Certificate cert) {
-	if (resultQC.getInfoQcResult().getInfoCertificateIssuer() != null && resultQC.getInfoQcResult().getInfoCertificateIssuer().getIssuerCert() != null) {
-	    try {
-		validationResult.setIssuerCert(UtilsCertificateTsl.getIaikCertificate(resultQC.getInfoQcResult().getInfoCertificateIssuer().getIssuerCert()));
-
-	    } catch (CertificateEncodingException | CommonUtilsException e) {
-
-		LOGGER.warn(Language.getFormatResIntegraTsl(ILogTslConstant.ATV_LOG077, new Object[ ] { e.getMessage() }));
-	    }
-	    validationResult.setIssuerPublicKey(resultQC.getInfoQcResult().getInfoCertificateIssuer().getIssuerPublicKey());
-	    validationResult.setIssuerSubjectName(resultQC.getInfoQcResult().getInfoCertificateIssuer().getIssuerSubjectName());
-	    validationResult.setIssuerSKIbytes(resultQC.getInfoQcResult().getInfoCertificateIssuer().getIssuerSKIbytes());
-	} else {
-	    X509Certificate issuerCert = getX509CertificateIssuer(cert);
-	    if (issuerCert != null) {
-		try {
-		    validationResult.setIssuerCert(UtilsCertificateTsl.getIaikCertificate(issuerCert));
-
-		} catch (CertificateEncodingException
-			| CommonUtilsException e) {
-
-		    LOGGER.warn(Language.getFormatResIntegraTsl(ILogTslConstant.ATV_LOG077, new Object[ ] { e.getMessage() }));
-		}
-		validationResult.setIssuerPublicKey(issuerCert.getPublicKey());
-		try {
-		    validationResult.setIssuerSubjectName(UtilsCertificateTsl.getCertificateId(issuerCert));
-		} catch (CommonUtilsException e) {
-		    LOGGER.warn(Language.getResCoreTsl(ICoreTslMessages.LOGMTSL182));
-		}
-
-		try {
-		    if (!UtilsCertificate.isSelfSigned(cert)) {
-			SubjectKeyIdentifier ski = SubjectKeyIdentifier.fromExtensions(UtilsCertificate.getBouncyCastleCertificate(issuerCert).getTBSCertificate().getExtensions());
-			validationResult.setIssuerSKIbytes(ski.getKeyIdentifier());
-		    }
-		} catch (Exception e) {
-		    LOGGER.warn(Language.getResCoreTsl(ICoreTslMessages.LOGMTSL183));
-		}
-	    }
-	}
-    }
-
-    /**
      * Method where the qualification of a certificate is obtained according to
      * the ETSI TS 119 615 v.1.1.1
      * 
@@ -512,6 +458,9 @@ public abstract class ATSLValidator implements ITSLValidator {
 			    resultQC.setQcStatus(ITSLStatusConstants.PROCESS_FAILED);
 			    // PRO-4.4.4-35 a) 2)
 			    resultQC.getQcSubStatus().add(Language.getResIntegraTsl(ILogTslConstant.ERROR_QC_SUBSTATUS2));
+			    resultQC.setInfoQcResult(resultQCDateIssue.getInfoQcResult());
+			    resultQC.getQcResults().clear();
+			    resultQC.setEndProcedure(Boolean.TRUE);
 			}
 			// PRO-4.4.4-36 b)
 			if (checkQCSubStatusWarning(resultQCDateIssue.getQcSubStatus())) {
@@ -1718,13 +1667,18 @@ public abstract class ATSLValidator implements ITSLValidator {
 
 		// PRO-4.4.4-33 j)k)
 		getCheck1Dir1999_93_EC(resultQC);
+		//se actualiza el valor de check1
+		if(resultQC.getInfoQcResult() != null){
+		    check1 = resultQC.getInfoQcResult().getCheck1();
+		}
 
 		// PRO-4.4.4-33 l)
 		resultQC.setQcStatus(ITSLStatusConstants.PROCESS_PASSED);
 		// PRO-4.4.4-33 m)
 		// Se comprueba si no existe, para no tener elementos
 		// repetidos...
-
+		
+		
 		if (!resultQC.getQcResults().contains(check1)) {
 		    resultQC.getQcResults().add(QCResult.getQCResult(check1));
 		}
