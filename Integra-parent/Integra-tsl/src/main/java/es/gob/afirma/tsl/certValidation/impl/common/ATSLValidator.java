@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 16/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.8, 24/07/2023.
+ * @version 1.9, 09/10/2023.
  */
 package es.gob.afirma.tsl.certValidation.impl.common;
 
@@ -78,7 +78,7 @@ import es.gob.afirma.tsl.utils.UtilsStringChar;
  * <p>Abstract class that represents a TSL validator with the principal functions
  * regardless it implementation.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.8, 24/07/2023.
+ * @version 1.9, 09/10/2023.
  */
 public abstract class ATSLValidator implements ITSLValidator {
 
@@ -443,6 +443,9 @@ public abstract class ATSLValidator implements ITSLValidator {
 			    resultQC.setQcStatus(ITSLStatusConstants.PROCESS_FAILED);
 			    // PRO-4.4.4-35 a) 2)
 			    resultQC.getQcSubStatus().add(Language.getResIntegraTsl(ILogTslConstant.ERROR_QC_SUBSTATUS2));
+			    resultQC.setInfoQcResult(resultQCDateIssue.getInfoQcResult());
+			    resultQC.getQcResults().clear();
+			    resultQC.setEndProcedure(Boolean.TRUE);
 			}
 			// PRO-4.4.4-36 b)
 			if (checkQCSubStatusWarning(resultQCDateIssue.getQcSubStatus())) {
@@ -1681,6 +1684,10 @@ public abstract class ATSLValidator implements ITSLValidator {
 
 		// PRO-4.4.4-33 j)k)
 		getCheck1Dir1999_93_EC(resultQC);
+		// se actualiza el valor de check1
+		if (resultQC.getInfoQcResult() != null) {
+		    check1 = resultQC.getInfoQcResult().getCheck1();
+		}
 
 		// PRO-4.4.4-33 l)
 		resultQC.setQcStatus(ITSLStatusConstants.PROCESS_PASSED);
