@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 12/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.1, 18/04/2022.
+ * @version 1.2, 25/09/2023.
  */
 package es.gob.afirma.tsl.utils;
 
@@ -33,7 +33,7 @@ import es.gob.afirma.tsl.logger.Logger;
 /** 
  * <p>Class contains static properties of Integra-tsl module.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 12/11/2020.
+ * @version 1.2, 25/09/2023.
  */
 public final class StaticTslConfig {
 
@@ -182,7 +182,11 @@ public final class StaticTslConfig {
 	/**
 	 * Constant attribute that represents name for property <i>"ssl.restricted.protocols"</i>.
 	 */
-	public static final String SSL_RESTRICTED_PROTOCOLS = "ssl.restricted.protocols";
+	public static final String SSL_RESTRICTED_PROTOCOLS = "ssl.restricted.protocols";	
+	/**
+	 * Constant attribute that represents date time of TSL
+	 */
+	public static final String TSL_DATE_TIME = "tsl.date.time";
 	
 	/**
 	 * Constructor method for the class StaticTslConfig.java.

@@ -100,6 +100,29 @@ public class TSLCertificateExtensionAnalyzer {
 	analyzeCertificateExtensions();
 
     }
+    
+	/**
+	 * Constructor method for the class TSLCertificateExtensionAnalyzer.java.
+	 * @param cert X509v3 Certificate (Bouncy Castle Provider implementation) to analyze.
+	 * @throws TSLCertificateValidationException If the input certificate is <code>null</code>, or there is
+	 * some error extracting its information.
+	 */
+	public TSLCertificateExtensionAnalyzer(Certificate cert) throws TSLCertificateValidationException {
+
+		this();
+
+		// Si la entrada es nula lanzamos excepción.
+		if (cert == null) {
+			throw new TSLCertificateValidationException(Language.getResIntegraTsl(ILogTslConstant.TCEA_LOG001));
+		}
+
+		// Almacenamos el certificado.
+		certBc = cert;
+
+		// Extraemos y analizamos las extensiones que pueda tener.
+		analyzeCertificateExtensions();
+
+	}
 
     /**
      * Auxiliar method that analyzes and extracts all the certificate

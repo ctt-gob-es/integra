@@ -36,6 +36,7 @@ import org.w3.x2000.x09.xmldsig.DSAKeyValueType;
 import org.w3.x2000.x09.xmldsig.KeyValueType;
 import org.w3.x2000.x09.xmldsig.RSAKeyValueType;
 
+import es.gob.afirma.tsl.certValidation.ResultServiceInformation;
 import es.gob.afirma.tsl.exceptions.CommonUtilsException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
 import es.gob.afirma.tsl.i18n.Language;
@@ -489,4 +490,179 @@ public class DigitalIdentitiesProcessor {
 
     }
 
+    /**
+	 * Checks if the input certificate is issued by some of the identities and sets its in the result.
+	 * @param cert X509v3 certificate to check.
+	 * @param  resultSI Result obtained when executing the procedure 4.3.Obtaining
+	 *            listed services matching a certificate of ETSI TS 119 615
+	 *            v.1.1.1.
+	 * @return <code>true</code> if the certificate is issued by some of the input identities, otherwise <code>false</code>.
+	 */
+	public final boolean checkIfCertificateIsIssuedBySomeIdentity(X509Certificate cert, ResultServiceInformation resultSI) {
+
+		// Por defecto, indicamos que el certificado no está emitido
+		// por ninguno de los contenidos en las identidades digitales.
+		boolean result = false;
+
+		// Creamos una resultado parcial para cada subanálisis.
+		boolean partialResult = false;
+
+		// Comprobamos primero los certificados X509v3.
+		for (X509Certificate issuerCert: x509certList) {
+
+			// Comprobamos si la clave pública del certificado de la CA
+			// firma el certificado.
+			try {
+				partialResult = UtilsCertificateTsl.verify(issuerCert, cert);
+			} catch (CommonUtilsException e) {
+				LOGGER.debug(Language.getResIntegraTsl(ILogTslConstant.DIP_LOG001));
+			}
+
+			// Si se ha encontrado el emisor del certificado y no lo habíamos
+			// detectado ya,
+			// lo indicamos en el resultado.
+			if (partialResult) {
+				result = true;
+				resultSI.getInfoCertificateIssuer().setIssuerCert(issuerCert);
+				resultSI.getInfoCertificateIssuer().setIssuerPublicKey(issuerCert.getPublicKey());
+				try {
+					resultSI.getInfoCertificateIssuer().setIssuerSubjectName(UtilsCertificateTsl.getCertificateId(issuerCert));
+				} catch (CommonUtilsException e) {
+					LOGGER.warn(Language.getResIntegraTsl(ILogTslConstant.DIP_LOG002));
+				}
+				try {
+					if (!UtilsCertificateTsl.isSelfSigned(cert)) {
+						SubjectKeyIdentifier ski = SubjectKeyIdentifier.fromExtensions(UtilsCertificateTsl.getBouncyCastleCertificate(issuerCert).getTBSCertificate().getExtensions());
+						resultSI.getInfoCertificateIssuer().setIssuerSKIbytes(ski.getKeyIdentifier());
+					}
+				} catch (Exception e) {
+					LOGGER.warn(Language.getResIntegraTsl(ILogTslConstant.DIP_LOG003));
+				}
+				break;
+			}
+
+		}
+
+		// Si ya hemos encontrado un emisor que verifica el certificado, tenemos
+		// todos los datos.
+		// En caso contrario, continuamos examinando las demás identidades
+		// digitales.
+		if (!result || resultSI.getInfoCertificateIssuer().getIssuerSubjectName() == null || resultSI.getInfoCertificateIssuer().getIssuerSKIbytes() == null) {
+
+			partialResult = false;
+			// Comprobamos las claves públicas.
+			for (PublicKey issuerPublicKey: x509publicKeysList) {
+
+				try {
+					partialResult = UtilsCertificateTsl.verify(issuerPublicKey, cert);
+				} catch (CommonUtilsException e) {
+					LOGGER.warn(Language.getResIntegraTsl(ILogTslConstant.DIP_LOG004));
+				}
+				// Si se ha encontrado el emisor del certificado y no
+				// lo habíamos detectado ya,
+				// lo indicamos en el resultado.
+				if (partialResult) {
+					result = true;
+					resultSI.getInfoCertificateIssuer().setIssuerPublicKey(issuerPublicKey);
+					break;
+				}
+
+			}
+
+			// IMPORTANTE: Consideramos que comparar el emisor del certificado a
+			// validar
+			// con los asuntos recuperados, no es garantía suficiente para
+			// determinar que
+			// estas identidades digitales representan al emisor del
+			// certificado.
+			partialResult = false;
+			// Comprobamos los Subject Names.
+			for (String issuerSubjectName: x509SubjectNameList) {
+
+				// Comprobamos que el subject de la CA coincide con el emisor
+				// del
+				// certificado.
+				String caSubject = null;
+				try {
+					caSubject = UtilsCertificateTsl.canonicalizarIdCertificado(issuerSubjectName);
+					String certIssuer = UtilsCertificateTsl.getCertificateIssuerId(cert);
+					partialResult = caSubject.equals(certIssuer);
+				} catch (CommonUtilsException e) {
+					LOGGER.warn(Language.getResIntegraTsl(ILogTslConstant.DIP_LOG005));
+				}
+				// Si se ha detectado el emisor del certificado y no lo habíamos
+				// detectado
+				// ya, lo indicamos en el resultado.
+				if (partialResult) {
+
+					// No se considera prueba suficiente para determinar que
+					// este sea el emisor del certificado.
+					result = true;
+					resultSI.getInfoCertificateIssuer().setIssuerSubjectName(caSubject);
+					break;
+				}
+
+			}
+
+			// Y por último comprobamos los Subject Key Identifier si el
+			// certificado no es autoemitido.
+			if (resultSI.getInfoCertificateIssuer().getIssuerSKIbytes() == null && !UtilsCertificateTsl.isSelfSigned(cert)) {
+
+				// IMPORTANTE: Consideramos que comparar el emisor del
+				// certificado a validar
+				// con los asuntos recuperados, no es garantía suficiente para
+				// determinar que
+				// estas identidades digitales representan al emisor del
+				// certificado.
+
+				byte[ ] akiBytes = null;
+				try {
+
+					// Obtenemos el AuthorityKeyIdentifier en array de
+					// bytes.
+					AuthorityKeyIdentifier aki = null;
+					byte[ ] authKeyIdent = cert.getExtensionValue(Extension.authorityKeyIdentifier.getId());
+					if (authKeyIdent != null) {
+						aki = AuthorityKeyIdentifier.getInstance(ASN1OctetString.getInstance(authKeyIdent).getOctets());
+					}
+					if (aki != null) {
+						akiBytes = aki.getKeyIdentifier();
+					}
+
+				} catch (Exception e) {
+					LOGGER.warn(Language.getResIntegraTsl(ILogTslConstant.DIP_LOG006));
+				}
+
+				if (akiBytes != null) {
+
+					partialResult = false;
+					for (byte[ ] issuerSKI: x509ski) {
+
+						// Comparamos los arrays...
+						partialResult = Arrays.equals(issuerSKI, akiBytes);
+
+						// Si se ha encontrado el emisor del certificado y no lo
+						// habíamos
+						// detectado ya, lo indicamos en el resultado.
+						if (partialResult) {
+							// No se considera prueba suficiente para determinar
+							// que
+							// este sea
+							// el emisor del certificado.
+							result = true;
+							resultSI.getInfoCertificateIssuer().setIssuerSKIbytes(issuerSKI);
+							break;
+						}
+
+					}
+
+				}
+
+			}
+
+		}
+
+		return result;
+
+	}
 }

@@ -160,6 +160,10 @@ public class UtilsDate {
 	 * Constant attribute that represents the date format <code>"yyyy-MM-dd'T'HH:mm:ss.SSSXXX"</code>.
 	 */
 	public static final String FORMAT_DATE_TIME_JSON = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
+	/**
+	 * Constant attribute that represents the date format <code>"yyyy-MM-dd'T'HH:mm:ss'Z"</code>.
+	 */
+	public static final String FORMAT_DATE_TIME_TSL = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
 	/**
 	 * Attribute that represents the value of the date.
