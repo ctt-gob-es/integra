@@ -22,8 +22,11 @@
  */
 package es.gob.afirma.tsl.parsing.impl.common;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
@@ -32,16 +35,16 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.crypto.dsig.XMLSignature;
+
+import org.apache.commons.codec.binary.Base64;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 import es.gob.afirma.tsl.logger.Logger;
 
-import es.gob.afirma.cert.signvalidation.SignValidity;
-import es.gob.afirma.cert.signvalidation.ValidateXMLSignature;
-import es.gob.afirma.core.AOInvalidFormatException;
-import es.gob.afirma.core.signers.AOSimpleSignInfo;
-import es.gob.afirma.core.util.tree.AOTreeModel;
-import es.gob.afirma.core.util.tree.AOTreeNode;
 import es.gob.afirma.tsl.i18n.Language;
-import es.gob.afirma.signers.xades.AOXAdESSigner;
 import es.gob.afirma.tsl.access.TSLProperties;
 import es.gob.afirma.tsl.exceptions.TSLMalformedException;
 import es.gob.afirma.tsl.i18n.ILogTslConstant;
@@ -1401,7 +1404,7 @@ public abstract class ATSLChecker implements ITSLChecker {
 	}
 
 	/**
-	 * Gets the signin certificates of the TSL signature.
+	 * Gets the signing certificates of the TSL signature.
 	 * @param fullTSLxml Byte array that represents the full TSL xml to check the signature.
 	 * @return X509 certificate that sign the TSL.
 	 * @throws TSLMalformedException In case of some error getting the signing certificates from
@@ -1411,28 +1414,63 @@ public abstract class ATSLChecker implements ITSLChecker {
 
 		X509Certificate result = null;
 
-		try {
-			// Construimos la estructura/modelo xades.
-			AOTreeModel model = new AOXAdESSigner().getSignersStructure(fullTSLxml, true);
-			// A través del nodo raíz extraemos los certificados firmantes.
-			AOTreeNode signatureNode = (AOTreeNode) AOTreeModel.getChild(model.getRoot(), 0);
-			X509Certificate[ ] certsArray = ((AOSimpleSignInfo) signatureNode.getUserObject()).getCerts();
-			// Si no es nulo, nos quedamos con el primero.
-			if (certsArray != null && certsArray.length > 0 && certsArray[0] != null) {
-				result = certsArray[0];
+		try (InputStream is = new ByteArrayInputStream(fullTSLxml)) {
+			Document tslDocument = SecureXmlBuilder.getSecureDocumentBuilder().parse(is);
+
+			// Obtenemos todas las firmas del documento y el SignatureValue de cada
+			// una de ellas
+			final NodeList signatures = tslDocument.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
+			if (signatures.getLength() < 1) {
+				throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.ATC_LOG010));
 			}
-		} catch (AOInvalidFormatException e) {
+
+			final Element signature = (Element) signatures.item(0);
+
+			final NodeList certificates = signature.getElementsByTagNameNS(XMLSignature.XMLNS, "X509Certificate");
+			if (certificates.getLength() < 1) {
+				throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.ATC_LOG010));
+			}
+
+			result = getCertificate((Element) certificates.item(0));
+		}
+		catch (TSLMalformedException e) {
+			throw e;
+		}
+		catch (Exception e) {
 			throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.ATC_LOG010), e);
 		}
 
-		// Si no lo hemos encontrado lanzamos excepción.
-		if (result == null) {
-			throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.ATC_LOG010));
-		}
-
 		return result;
-
 	}
+	
+    /** Genera un certificado X.509 a partir de un nodo de certificado de firma.
+     * @param certificateElement Nodo "X509Certificate" de la firma.
+     * @return Certificado de firma. */
+	private static X509Certificate getCertificate(final Element certificateElement) {
+        return createCert(certificateElement.getTextContent()
+        		.replace("\r", "")
+        		.replace("\n", "")
+        		.replace(" ", "")
+        		.replace("\t", ""));
+    }
+	
+    /** Crea un X509Certificate a partir de un certificado en Base64.
+     * @param b64Cert Certificado en Base64. No debe incluir <i>Bag Attributes</i>.
+     * @return Certificado X509 o <code>null</code> si no se pudo crear. */
+    private static X509Certificate createCert(final String b64Cert) {
+        if (b64Cert == null || b64Cert.isEmpty()) {
+            return null;
+        }
+        final X509Certificate cert;
+        try (InputStream isCert = new ByteArrayInputStream(Base64.decodeBase64(b64Cert))) {
+            cert = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(isCert);
+        }
+        catch (final Exception e) {
+            return null;
+        }
+        return cert;
+    }
+	
 
 	/**
 	 * Generic method to parse a XML input stream or XML node to the indicated Document Class through

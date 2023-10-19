@@ -21,9 +21,9 @@
  */
 package es.gob.afirma.tsl.utils;
 
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.regex.Pattern;
-
-import org.opensaml.xml.util.Base64;
 
 import es.gob.afirma.tsl.i18n.ILogConstantKeys;
 import es.gob.afirma.tsl.i18n.Language;
@@ -50,16 +50,16 @@ public final class Base64CoderCommons {
      * @return the data encoded on Base64.
      * @throws TransformersException If the method fails.
      */
-    public static byte[ ] encodeBase64(byte[ ] data) throws TransformersException {
-	if (data == null) {
-	    throw new TransformersException(Language.getResIntegra(ILogConstantKeys.BC_LOG001));
-	}
-	try {
-	    byte[ ] result = Base64.encodeBytes(data).getBytes();
-	    return result == null ? data : result;
-	} catch (Exception e) {
-	    throw new TransformersException(Language.getResIntegra(ILogConstantKeys.BC_LOG002), e);
-	}
+    public static byte[] encodeBase64(byte[] data) throws TransformersException {
+    	if (data == null) {
+    		throw new TransformersException(Language.getResIntegra(ILogConstantKeys.BC_LOG001));
+    	}
+    	try {
+    		byte[] result = Base64.getEncoder().encode(data);
+    		return result == null ? data : result;
+    	} catch (Exception e) {
+    		throw new TransformersException(Language.getResIntegra(ILogConstantKeys.BC_LOG002), e);
+    	}
     }
 
     /**
@@ -70,17 +70,17 @@ public final class Base64CoderCommons {
      * @return the data encoded on Base64.
      * @throws TransformersException If the method fails.
      */
-    public static byte[ ] encodeBase64(byte[ ] data, int offset, int len) throws TransformersException {
-	if (data == null) {
-	    throw new TransformersException(Language.getResIntegra(ILogConstantKeys.BC_LOG001));
-	}
+    public static byte[] encodeBase64(byte[] data, int offset, int len) throws TransformersException {
+    	if (data == null) {
+    		throw new TransformersException(Language.getResIntegra(ILogConstantKeys.BC_LOG001));
+    	}
 
-	try {
-	    byte[ ] result = Base64.encodeBytes(data, offset, len).getBytes();
-	    return result == null ? data : result;
-	} catch (Exception e) {
-	    throw new TransformersException(Language.getResIntegra(ILogConstantKeys.BC_LOG002), e);
-	}
+    	try {
+    		byte[] result = Base64.getEncoder().encode(Arrays.copyOfRange(data, offset, offset + len));
+    		return result == null ? data : result;
+    	} catch (Exception e) {
+    		throw new TransformersException(Language.getResIntegra(ILogConstantKeys.BC_LOG002), e);
+    	}
     }
 
     /**
@@ -89,8 +89,8 @@ public final class Base64CoderCommons {
      * @return the decoded data.
      * @throws TransformersException If the method fails.
      */
-    public static byte[ ] decodeBase64(byte[ ] data) throws TransformersException {
-	return Base64.decode(new String(data));
+    public static byte[] decodeBase64(byte[] data) throws TransformersException {
+    	return Base64.getDecoder().decode(data);
     }
 
     /**
@@ -102,18 +102,17 @@ public final class Base64CoderCommons {
      * @return the decoded data.
      * @throws TransformersException If the method fails.
      */
-    public static byte[ ] decodeBase64(byte[ ] data, int offset, int len) throws TransformersException {
-	byte result[ ] = null;
+    public static byte[] decodeBase64(byte[] data, int offset, int len) throws TransformersException {
 
-	if (data == null) {
-	    throw new TransformersException(Language.getResIntegra(ILogConstantKeys.BC_LOG001));
-	}
-	try {
-	    result = Base64.decode(data, offset, len);
-	    return result == null ? data : result;
-	} catch (Exception e) {
-	    throw new TransformersException(Language.getResIntegra(ILogConstantKeys.BC_LOG003), e);
-	}
+    	if (data == null) {
+    		throw new TransformersException(Language.getResIntegra(ILogConstantKeys.BC_LOG001));
+    	}
+    	try {
+    		byte[] result = Base64.getDecoder().decode(Arrays.copyOfRange(data, offset, offset + len));
+    		return result == null ? data : result;
+    	} catch (Exception e) {
+    		throw new TransformersException(Language.getResIntegra(ILogConstantKeys.BC_LOG003), e);
+    	}
     }
 
     /**
@@ -145,7 +144,7 @@ public final class Base64CoderCommons {
 	    throw new TransformersException(Language.getResIntegra(ILogConstantKeys.BC_LOG001));
 	}
 	try {
-	    return Base64.encodeBytes(data.getBytes());
+	    return Base64.getEncoder().encodeToString(data.getBytes());
 	} catch (Exception e) {
 	    throw new TransformersException(e);
 	}
@@ -158,14 +157,14 @@ public final class Base64CoderCommons {
      * @throws TransformersException If the method fails.
      */
     public static String decodeBase64(String data) throws TransformersException {
-	if (data == null) {
-	    throw new TransformersException(Language.getResIntegra(ILogConstantKeys.BC_LOG001));
-	}
-	try {
-	    return new String(Base64.decode(data));
-	} catch (Exception e) {
-	    throw new TransformersException(e);
-	}
+    	if (data == null) {
+    		throw new TransformersException(Language.getResIntegra(ILogConstantKeys.BC_LOG001));
+    	}
+    	try {
+    		return new String(Base64.getDecoder().decode(data));
+    	} catch (Exception e) {
+    		throw new TransformersException(e);
+    	}
     }
 
 }

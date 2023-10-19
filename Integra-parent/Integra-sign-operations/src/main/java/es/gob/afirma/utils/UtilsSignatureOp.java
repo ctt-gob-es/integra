@@ -66,14 +66,14 @@ import org.apache.xml.security.signature.XMLSignatureInput;
 import org.apache.xml.security.utils.resolver.ResourceResolver;
 import org.apache.xml.security.utils.resolver.ResourceResolverContext;
 import org.apache.xml.security.utils.resolver.ResourceResolverException;
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
+import org.bouncycastle.asn1.ASN1Encoding;
 import org.bouncycastle.asn1.ASN1GeneralizedTime;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1OctetString;
+import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1UTCTime;
-import org.bouncycastle.asn1.DEREncodable;
-import org.bouncycastle.asn1.DERObject;
-import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
@@ -205,7 +205,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
     /**
      * Constant attribute that represents the OID of the <code>archive-time-stamp-v3</code> attribute.
      */
-    private static final DERObjectIdentifier ID_ARCHIVE_TIME_STAMP_V3 = new ASN1ObjectIdentifier("0.4.0.1733.2.4");
+    private static final ASN1ObjectIdentifier ID_ARCHIVE_TIME_STAMP_V3 = new ASN1ObjectIdentifier("0.4.0.1733.2.4");
 
     /**
      * Constant attribute that represents the local name of a ASN.1 archiveTimestamp.
@@ -281,10 +281,18 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	// extensión id-kp-timestamping
 	try {
 	    if (isTimestampCertificate) {
-		TSPUtil.validateCertificate(certificate);
+		TSPUtil.validateCertificate(new X509CertificateHolder(certificate.getEncoded()));
 	    }
 	} catch (TSPValidationException e) {
 	    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG238);
+	    LOGGER.error(errorMsg, e);
+	    throw new SigningException(errorMsg, e);
+	} catch (CertificateEncodingException e) {
+	    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG259);
+	    LOGGER.error(errorMsg, e);
+	    throw new SigningException(errorMsg, e);
+	} catch (IOException e) {
+	    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG260);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	}
@@ -539,12 +547,17 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG050));
 	// Por defecto indicamos que la firma es explícita
 	boolean result = false;
-	ContentInfo contentInfo = cmsSignedData.getContentInfo();
-	SignedData signedData = SignedData.getInstance(contentInfo.getContent());
-	if (signedData.getEncapContentInfo() != null && signedData.getEncapContentInfo().getContent() != null) {
-	    // Si la firma contiene los datos originales, es implícita
-	    result = true;
+//	ContentInfo contentInfo = cmsSignedData.getContentInfo();
+//	SignedData signedData = SignedData.getInstance(contentInfo.getContent());
+//	if (signedData.getEncapContentInfo() != null && signedData.getEncapContentInfo().getContent() != null) {
+//	    // Si la firma contiene los datos originales, es implícita
+//	    result = true;
+//	}
+	if (cmsSignedData.getSignedContent() != null && cmsSignedData.getSignedContent().getContent() != null) {
+		// Si la firma contiene los datos originales, es implícita
+		result = true;
 	}
+	
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG051));
 	return result;
     }
@@ -1856,7 +1869,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return the upgraded certificates store.
      * @throws SigningException If the method fails.
      */
-    public static Store addCertificateToStore(Store certificates, X509Certificate certificate) throws SigningException {
+    public static Store<X509CertificateHolder> addCertificateToStore(Store<X509CertificateHolder> certificates, X509Certificate certificate) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG095));
 	try {
 	    // Comprobamos que se ha indicado el almacén de certificados
@@ -1947,7 +1960,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG016, new Object[ ] { signatureName });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
-	} else if (!contentTypeAttribute.getAttrValues().getObjectAt(0).getDERObject().equals(PKCSObjectIdentifiers.data)) {
+	} else if (!contentTypeAttribute.getAttrValues().getObjectAt(0).toASN1Primitive().equals(PKCSObjectIdentifiers.data)) {
 	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG017, new Object[ ] { signatureName });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
@@ -2980,7 +2993,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		    AlgorithmIdentifier signAlgorithmOID = getSignatureAlgorithm(signerInformation);
 		    Signature signatureValidator = Signature.getInstance(signAlgorithmOID.getAlgorithm().getId(), BouncyCastleProvider.PROVIDER_NAME);
 		    signatureValidator.initVerify(signingCertificate.getPublicKey());
-		    signatureValidator.update(new DERSet(vectorSignedAttributes).getDEREncoded());
+		    signatureValidator.update(new DERSet(vectorSignedAttributes).getEncoded(ASN1Encoding.DER));
 		    signatureValid = signatureValidator.verify(signerInformation.getSignature());
 		    if (!signatureValid) {
 			String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG072, new Object[ ] { signingCertificate.getSubjectDN().getName() });
@@ -3261,7 +3274,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	try {
 	    Date signingTimeDate = null;
 	    // Accedemos a la fecha de generación de la firma
-	    DEREncodable signingTime = attSigningTime.getAttrValues().getObjectAt(0);
+	    ASN1Encodable signingTime = attSigningTime.getAttrValues().getObjectAt(0);
 	    if (signingTime instanceof ASN1UTCTime) {
 		signingTimeDate = ((ASN1UTCTime) signingTime).getDate();
 	    } else if (signingTime instanceof ASN1GeneralizedTime) {
@@ -4307,7 +4320,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    AttributeTable signedAttr = signerInformation.getSignedAttributes();
 	    Attribute attrMessageDigest = signedAttr.get(CMSAttributes.messageDigest);
 
-	    DERObject hashObj = attrMessageDigest.getAttrValues().getObjectAt(0).getDERObject();
+	    ASN1Primitive hashObj = attrMessageDigest.getAttrValues().getObjectAt(0).toASN1Primitive();
 	    hashSignature = ((ASN1OctetString) hashObj).getOctets();
 
 	    messageDigestSignature = MessageDigest.getInstance(hashAlgorithmSignature.getAlgorithm().getId(), BouncyCastleProvider.PROVIDER_NAME);
@@ -4553,7 +4566,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG016, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
-	    } else if (!contentTypeAttribute.getAttrValues().getObjectAt(0).getDERObject().equals(PKCSObjectIdentifiers.data)) {
+	    } else if (!contentTypeAttribute.getAttrValues().getObjectAt(0).toASN1Primitive().equals(PKCSObjectIdentifiers.data)) {
 		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG017, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
@@ -4956,7 +4969,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG016, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
-	    } else if (!contentTypeAttribute.getAttrValues().getObjectAt(0).getDERObject().equals(PKCSObjectIdentifiers.data)) {
+	    } else if (!contentTypeAttribute.getAttrValues().getObjectAt(0).toASN1Primitive().equals(PKCSObjectIdentifiers.data)) {
 		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG017, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
@@ -6337,6 +6350,6 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    signatureAlgOid = encryptionAlgOid;
 	}
 
-	return new AlgorithmIdentifier(signatureAlgOid);
+	return new AlgorithmIdentifier(new ASN1ObjectIdentifier(signatureAlgOid));
     }
 }

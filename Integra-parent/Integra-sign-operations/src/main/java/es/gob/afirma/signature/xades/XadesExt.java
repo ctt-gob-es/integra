@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.crypto.MarshalException;
+import javax.xml.crypto.XMLStructure;
 import javax.xml.crypto.dom.DOMStructure;
 import javax.xml.crypto.dsig.CanonicalizationMethod;
 import javax.xml.crypto.dsig.Reference;
@@ -121,7 +122,7 @@ public final class XadesExt extends XMLAdvancedSignature {
 	if (!XmlWrappedKeyInfo.PUBLIC_KEY.equals(getXmlWrappedKeyInfo())) {
 	    x509DataList.add(certificate);
 	}
-	final List<Object> newList = new ArrayList<Object>();
+	final List<XMLStructure> newList = new ArrayList<>();
 	newList.add(keyInfoFactory.newKeyValue(certificate.getPublicKey()));
 	newList.add(keyInfoFactory.newX509Data(x509DataList));
 	return keyInfoFactory.newKeyInfo(newList, keyInfoId);

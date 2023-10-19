@@ -23,9 +23,7 @@ package es.gob.afirma.wsServiceInvoker.ws;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.security.Provider;
 import java.security.Security;
 import java.util.Iterator;
@@ -48,12 +46,12 @@ import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.saaj.SOAPElementImpl;
 import org.apache.axis2.saaj.SOAPHeaderElementImpl;
 import org.apache.axis2.saaj.util.SAAJUtil;
-import org.apache.ws.security.WSConstants;
-import org.apache.ws.security.WSSecurityException;
-import org.apache.ws.security.components.crypto.Crypto;
-import org.apache.ws.security.message.WSSecHeader;
-import org.apache.ws.security.message.WSSecSignature;
-import org.apache.ws.security.message.WSSecUsernameToken;
+import org.apache.wss4j.common.crypto.Crypto;
+import org.apache.wss4j.common.ext.WSSecurityException;
+import org.apache.wss4j.dom.WSConstants;
+import org.apache.wss4j.dom.message.WSSecHeader;
+import org.apache.wss4j.dom.message.WSSecSignature;
+import org.apache.wss4j.dom.message.WSSecUsernameToken;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -223,18 +221,20 @@ class ClientHandler extends AbstractCommonHandler {
 
 	try {
 	    // Inserción del tag wsse:Security y userNameToken
-	    wsSecHeader = new WSSecHeader(null, false);
-	    wsSecUsernameToken = new WSSecUsernameToken();
+	    wsSecHeader = new WSSecHeader(null, false, soapEnvelopeRequest);
+	    wsSecHeader.insertSecurityHeader();
+	    
+	    wsSecUsernameToken = new WSSecUsernameToken(wsSecHeader);
 	    wsSecUsernameToken.setPasswordType(getPasswordType());
 	    wsSecUsernameToken.setUserInfo(getUserAlias(), getPassword());
-	    wsSecHeader.insertSecurityHeader(soapEnvelopeRequest);
-	    wsSecUsernameToken.prepare(soapEnvelopeRequest);
+	    
+	    wsSecUsernameToken.prepare();
 	    // Añadimos una marca de tiempo inidicando la fecha de creación del
 	    // tag
 	    wsSecUsernameToken.addCreated();
 	    wsSecUsernameToken.addNonce();
 	    // Modificación de la petición
-	    secSOAPReqDoc = wsSecUsernameToken.build(soapEnvelopeRequest, wsSecHeader);
+	    secSOAPReqDoc = wsSecUsernameToken.build();
 	    element = secSOAPReqDoc.getDocumentElement();
 
 	    // Transformación del elemento DOM a String
@@ -294,17 +294,18 @@ class ClientHandler extends AbstractCommonHandler {
 	    wsSecHeader = null;
 	    wsSecSignature = null;
 	    // Inserción del tag wsse:Security y BinarySecurityToken
-	    wsSecHeader = new WSSecHeader(null, false);
-	    wsSecSignature = new WSSecSignature();
+	    wsSecHeader = new WSSecHeader(null, false, soapEnvelopeRequest);
+	    wsSecHeader.insertSecurityHeader();
+	    wsSecSignature = new WSSecSignature(wsSecHeader);
 	    crypto = getCryptoInstance();
 	    // Indicación para que inserte el tag BinarySecurityToken
 	    wsSecSignature.setKeyIdentifierType(WSConstants.BST_DIRECT_REFERENCE);
 	    wsSecSignature.setUserInfo(getUserAlias(), getPassword());
-	    wsSecHeader.insertSecurityHeader(soapEnvelopeRequest);
-	    wsSecSignature.prepare(soapEnvelopeRequest, crypto, wsSecHeader);
+
+	    wsSecSignature.prepare(crypto);
 
 	    // Modificación y firma de la petición
-	    secSOAPReqDoc = wsSecSignature.build(soapEnvelopeRequest, crypto, wsSecHeader);
+	    secSOAPReqDoc = wsSecSignature.build(crypto);
 	    element = secSOAPReqDoc.getDocumentElement();
 	    // Transformación del elemento DOM a String
 	    source = new DOMSource(element);

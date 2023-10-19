@@ -256,19 +256,19 @@ public class RFC3161TSAServiceInvoker {
     private void getDigestData(String hashAlgorithm) throws TSAServiceInvokerException {
 	if (hashAlgorithm.equals(CryptoUtilCommons.HASH_ALGORITHM_SHA)) {
 	    digest = new SHA1Digest();
-	    digestAlgorithm = TSPAlgorithms.SHA1;
+	    digestAlgorithm = TSPAlgorithms.SHA1.getId();
 	} else if (hashAlgorithm.equals(CryptoUtilCommons.HASH_ALGORITHM_SHA1)) {
 	    digest = new SHA1Digest();
-	    digestAlgorithm = TSPAlgorithms.SHA1;
+	    digestAlgorithm = TSPAlgorithms.SHA1.getId();
 	} else if (hashAlgorithm.equals(CryptoUtilCommons.HASH_ALGORITHM_SHA256)) {
 	    digest = new SHA256Digest();
-	    digestAlgorithm = TSPAlgorithms.SHA256;
+	    digestAlgorithm = TSPAlgorithms.SHA256.getId();
 	} else if (hashAlgorithm.equals(CryptoUtilCommons.HASH_ALGORITHM_SHA512)) {
 	    digest = new SHA512Digest();
-	    digestAlgorithm = TSPAlgorithms.SHA512;
+	    digestAlgorithm = TSPAlgorithms.SHA512.getId();
 	} else if (hashAlgorithm.equals(CryptoUtilCommons.HASH_ALGORITHM_RIPEMD160)) {
 	    digest = new RIPEMD160Digest();
-	    digestAlgorithm = TSPAlgorithms.RIPEMD160;
+	    digestAlgorithm = TSPAlgorithms.RIPEMD160.getId();
 	} else {
 	    throw new TSAServiceInvokerException(Language.getFormatResIntegra(ILogConstantKeys.RTSI_LOG013, new Object[ ] { hashAlgorithm }));
 	}

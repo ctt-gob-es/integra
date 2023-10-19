@@ -44,34 +44,36 @@ import java.security.Security;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
-
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.ocsp.OCSPObjectIdentifiers;
+import org.bouncycastle.asn1.x509.Extension;
+import org.bouncycastle.asn1.x509.Extensions;
 import org.bouncycastle.asn1.x509.GeneralName;
-import org.bouncycastle.asn1.x509.X509Extension;
-import org.bouncycastle.asn1.x509.X509Extensions;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.ocsp.BasicOCSPResp;
+import org.bouncycastle.cert.ocsp.CertificateID;
+import org.bouncycastle.cert.ocsp.OCSPException;
+import org.bouncycastle.cert.ocsp.OCSPReq;
+import org.bouncycastle.cert.ocsp.OCSPReqBuilder;
+import org.bouncycastle.cert.ocsp.OCSPResp;
+import org.bouncycastle.cert.ocsp.RevokedStatus;
+import org.bouncycastle.cert.ocsp.SingleResp;
+import org.bouncycastle.cert.ocsp.UnknownStatus;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.ocsp.BasicOCSPResp;
-import org.bouncycastle.ocsp.CertificateID;
-import org.bouncycastle.ocsp.OCSPException;
-import org.bouncycastle.ocsp.OCSPReq;
-import org.bouncycastle.ocsp.OCSPReqGenerator;
-import org.bouncycastle.ocsp.OCSPResp;
-import org.bouncycastle.ocsp.RevokedStatus;
-import org.bouncycastle.ocsp.SingleResp;
-import org.bouncycastle.ocsp.UnknownStatus;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.ContentVerifierProvider;
+import org.bouncycastle.operator.bc.BcDigestCalculatorProvider;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.bouncycastle.operator.jcajce.JcaContentVerifierProviderBuilder;
 import org.bouncycastle.util.encoders.Base64;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
@@ -551,11 +553,11 @@ public final class OCSPClient {
 		try {
 			// Obtenemos el certificado de la respuesta, en caso de que esté
 			// firmada
-			X509Certificate[ ] responderCerts = ocspResp.getCerts(BouncyCastleProvider.PROVIDER_NAME);
+			X509CertificateHolder[] responderCerts = ocspResp.getCerts();
 			if (responderCerts != null && responderCerts.length > 0) {
 				// Obtenemos el certificado del servidor OCSP contenido en la
 				// respuesta OCSP
-				X509Certificate responderCert = responderCerts[0];
+				X509CertificateHolder responderCert = responderCerts[0];
 
 				// Rescatamos del archivo de propiedades la ruta del
 				// certificado con el que firma las respuestas el servidor OCSP
@@ -576,15 +578,21 @@ public final class OCSPClient {
 					throw new OCSPClientException();
 				}
 				X509Certificate responseCertificate = UtilsCertificateCommons.generateCertificate(responseCertificateBytes);
+				X509Certificate responderCertificate = UtilsCertificateCommons.generateCertificate(responderCert.getEncoded());
 
 				// Comprobamos si ambos certificados son iguales
-				if (!UtilsCertificateCommons.equals(responseCertificate, responderCert)) {
+				if (!UtilsCertificateCommons.equals(responseCertificate, responderCertificate)) {
 					isValid = false;
 					result.setErrorMsg(Language.getFormatResIntegra(ILogConstantKeys.OC_LOG036, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE }));
 				} else {
 					// Comprobamos si la firma de la respuesta es válida
 					errorMsg = Language.getResIntegra(ILogConstantKeys.OC_LOG037);
-					if (!ocspResp.verify(responseCertificate.getPublicKey(), BouncyCastleProvider.PROVIDER_NAME)) {
+					
+                    JcaContentVerifierProviderBuilder verifierBuilder = new JcaContentVerifierProviderBuilder();
+                    verifierBuilder.setProvider(BouncyCastleProvider.PROVIDER_NAME);
+					
+                    ContentVerifierProvider verifier = verifierBuilder.build(responseCertificate.getPublicKey());
+                    if (!ocspResp.isSignatureValid(verifier)) {
 						isValid = false;
 						result.setErrorMsg(Language.getResIntegra(ILogConstantKeys.OC_LOG038));
 					}
@@ -889,9 +897,19 @@ public final class OCSPClient {
 	 */
 	private static OCSPReq getOCSPRequest(X509Certificate certificateCA, BigInteger serialNumber, String applicationID, X509Certificate[ ] clientCertChain, PrivateKey clientPk) throws OCSPClientException {
 		try {
-			CertificateID id = new CertificateID(CertificateID.HASH_SHA1, certificateCA, serialNumber);
-
-			OCSPReqGenerator gen = new OCSPReqGenerator();
+	        CertificateID id;
+	        try {
+		        id = new CertificateID(
+		        		new BcDigestCalculatorProvider().get(CertificateID.HASH_SHA1),
+		        		new X509CertificateHolder(certificateCA.getEncoded()),
+		        		serialNumber);
+	        }
+	        catch (Exception e) {
+	        	throw new IOException("Failed to build CertificateID", e);
+			}
+			
+			
+			OCSPReqBuilder gen = new OCSPReqBuilder();
 			gen.addRequest(id);
 
 			// Si se ha indicado el identificador de aplicación se establece en
@@ -901,19 +919,31 @@ public final class OCSPClient {
 			}
 			// Añadimos la extensión NONCE
 			BigInteger nonce = BigInteger.valueOf(System.currentTimeMillis());
-			List<ASN1ObjectIdentifier> oids = new ArrayList<ASN1ObjectIdentifier>();
-			List<X509Extension> values = new ArrayList<X509Extension>();
-			oids.add(OCSPObjectIdentifiers.id_pkix_ocsp_nonce);
-			values.add(new X509Extension(false, new DEROctetString(nonce.toByteArray())));
-			gen.setRequestExtensions(new X509Extensions(new Vector<ASN1ObjectIdentifier>(oids), new Vector<X509Extension>(values)));
-
+	        Extension extension = new Extension(
+	        		OCSPObjectIdentifiers.id_pkix_ocsp_nonce,
+	        		false,
+	        		new DEROctetString(nonce.toByteArray())); 
+	        
+	        gen.setRequestExtensions(new Extensions(extension));
+			
 			// Firmamos la petición OCSP en caso de que se haya indicado la
 			// cadena de certificación y la clave privada del certificado
 			// cliente
 			if (clientCertChain != null && clientPk != null) {
-				return gen.generate(SignatureConstants.SIGN_ALGORITHM_SHA1WITHRSA, clientPk, clientCertChain, BouncyCastleProvider.PROVIDER_NAME);
+				
+				JcaContentSignerBuilder signerBuilder = new JcaContentSignerBuilder(SignatureConstants.SIGN_ALGORITHM_SHA1WITHRSA);
+				ContentSigner contentSigner = signerBuilder.build(clientPk);
+				
+				X509CertificateHolder[] certChainHolder = null;
+				if (clientCertChain != null) {
+					certChainHolder = new X509CertificateHolder[clientCertChain.length];
+					for (int i = 0; i < clientCertChain.length; i++) {
+						certChainHolder[i] = new X509CertificateHolder(clientCertChain[i].getEncoded());
+					}
+				}
+				return gen.build(contentSigner, certChainHolder);
 			} else {
-				return gen.generate();
+				return gen.build();
 			}
 		} catch (Exception e) {
 			String msg = Language.getResIntegra(ILogConstantKeys.OC_LOG009);

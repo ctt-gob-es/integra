@@ -47,8 +47,8 @@ import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.saaj.util.SAAJUtil;
-import org.apache.ws.security.components.crypto.CryptoType;
-import org.apache.ws.security.components.crypto.CryptoType.TYPE;
+import org.apache.wss4j.common.crypto.CryptoType;
+import org.apache.wss4j.common.crypto.CryptoType.TYPE;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.x509.SubjectKeyIdentifier;
@@ -273,7 +273,11 @@ public class TSAResponseHandler extends AbstractTSAHandler {
 		asn1is = new ASN1InputStream(is);
 		ASN1Sequence asn1Sequence = (ASN1Sequence) asn1is.readObject();
 		SubjectPublicKeyInfo spki = new SubjectPublicKeyInfo(asn1Sequence);
-		SubjectKeyIdentifier skiApp = new SubjectKeyIdentifier(spki);
+		
+		// Con el BouncyCastle antiguo se hacia asi
+		//SubjectKeyIdentifier skiApp = new SubjectKeyIdentifier(spki);
+		
+		SubjectKeyIdentifier skiApp = new SubjectKeyIdentifier(spki.getEncoded());
 		// Comprobamos que el SubjectKeyIdentifier sea el mismo. En caso
 		// de no serlo, se lanza una excepción.
 		if (!skiRequest.equals(skiApp)) {

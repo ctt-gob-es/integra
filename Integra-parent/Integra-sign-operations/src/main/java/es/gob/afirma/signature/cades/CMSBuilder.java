@@ -37,30 +37,35 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
+import org.bouncycastle.asn1.ASN1BitString;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
+import org.bouncycastle.asn1.ASN1Encoding;
+import org.bouncycastle.asn1.ASN1External;
 import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1OctetString;
+import org.bouncycastle.asn1.ASN1OutputStream;
+import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.ASN1Set;
 import org.bouncycastle.asn1.BERSet;
-import org.bouncycastle.asn1.DEREncodable;
-import org.bouncycastle.asn1.DERInteger;
 import org.bouncycastle.asn1.DERNull;
-import org.bouncycastle.asn1.DERObject;
-import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.DERUTCTime;
+import org.bouncycastle.asn1.OIDTokenizer;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.CMSAttributes;
@@ -69,6 +74,7 @@ import org.bouncycastle.asn1.cms.IssuerAndSerialNumber;
 import org.bouncycastle.asn1.cms.SignedData;
 import org.bouncycastle.asn1.cms.SignerIdentifier;
 import org.bouncycastle.asn1.cms.SignerInfo;
+import org.bouncycastle.asn1.dvcs.Data;
 import org.bouncycastle.asn1.esf.ESFAttributes;
 import org.bouncycastle.asn1.ess.ContentHints;
 import org.bouncycastle.asn1.ess.ESSCertID;
@@ -78,22 +84,28 @@ import org.bouncycastle.asn1.ess.SigningCertificateV2;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
+import org.bouncycastle.asn1.x509.Certificate;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.GeneralNames;
 import org.bouncycastle.asn1.x509.IssuerSerial;
 import org.bouncycastle.asn1.x509.TBSCertificateStructure;
 import org.bouncycastle.asn1.x509.X509CertificateStructure;
+import org.bouncycastle.cert.X509CRLHolder;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSSignedDataGenerator;
+import org.bouncycastle.cms.CMSSignedGenerator;
+import org.bouncycastle.cms.CMSTypedData;
 import org.bouncycastle.cms.SignerId;
+import org.bouncycastle.cms.SignerInfoGeneratorBuilder;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.DefaultSignatureAlgorithmIdentifierFinder;
+import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.bouncycastle.util.Store;
 import org.ietf.jgss.Oid;
@@ -272,7 +284,7 @@ public final class CMSBuilder {
 	    // firmante
 
 	    X509Certificate signerCertificate = (X509Certificate) parameters.getPrivateKey().getCertificate();
-	    ASN1Set certificates = createBerSetFromList(X509CertificateStructure.getInstance(ASN1Object.fromByteArray(signerCertificate.getEncoded())));
+	    ASN1Set certificates = createBerSetFromList(X509CertificateStructure.getInstance(ASN1Primitive.fromByteArray(signerCertificate.getEncoded())));
 
 	    ASN1Set certrevlist = null;
 
@@ -280,13 +292,13 @@ public final class CMSBuilder {
 	    // raiz de la secuencia de SignerInfo
 	    ASN1EncodableVector signerInfos = new ASN1EncodableVector();
 
-	    TBSCertificateStructure tbs = TBSCertificateStructure.getInstance(ASN1Object.fromByteArray(signerCertificate.getTBSCertificate()));
+	    TBSCertificateStructure tbs = TBSCertificateStructure.getInstance(ASN1Primitive.fromByteArray(signerCertificate.getTBSCertificate()));
 	    IssuerAndSerialNumber encSid = new IssuerAndSerialNumber(X500Name.getInstance(tbs.getIssuer()), tbs.getSerialNumber().getValue());
 
 	    SignerIdentifier identifier = new SignerIdentifier(encSid);
 
 	    // AlgorithmIdentifier
-	    digAlgId = new AlgorithmIdentifier(new DERObjectIdentifier(digestAlgorithmId.getOID().toString()), new DERNull());
+	    digAlgId = new AlgorithmIdentifier(new ASN1ObjectIdentifier(digestAlgorithmId.getOID().toString()), DERNull.INSTANCE);
 
 	    // Atributos firmados
 	    ASN1Set signedAttr = generateSignedAttr(parameters, digestAlgorithmId, digAlgId, digestAlgorithm, dataType, optionalParams, signatureForm, signaturePolicyID, includeContent, idClient);
@@ -314,7 +326,7 @@ public final class CMSBuilder {
 		InputStream is = null;
 		try {
 		    is = new ASN1InputStream(tst.getEncoded());
-		    DERObject derObject = ((ASN1InputStream) is).readObject();
+		    ASN1Primitive derObject = ((ASN1InputStream) is).readObject();
 		    DERSet derSet = new DERSet(derObject);
 		    Attribute unsignAtt = new Attribute(PKCSObjectIdentifiers.id_aa_signatureTimeStampToken, derSet);
 		    Map<ASN1ObjectIdentifier, Attribute> hashtable = new Hashtable<ASN1ObjectIdentifier, Attribute>();
@@ -348,7 +360,7 @@ public final class CMSBuilder {
 	    signerInfos.add(signerInfo);
 
 	    // construimos el Signed Data y lo devolvemos
-	    return new ContentInfo(PKCSObjectIdentifiers.signedData, new SignedData(new DERSet(digestAlgs), encInfo, certificates, certrevlist, new DERSet(signerInfos))).getDEREncoded();
+	    return new ContentInfo(PKCSObjectIdentifiers.signedData, new SignedData(new DERSet(digestAlgs), encInfo, certificates, certrevlist, new DERSet(signerInfos))).getEncoded(ASN1Encoding.DER);
 	} catch (CertificateException e) {
 	    throw new SigningException(Language.getResIntegra(ILogConstantKeys.CMSB_LOG006), e);
 	} catch (NoSuchAlgorithmException e) {
@@ -520,7 +532,7 @@ public final class CMSBuilder {
 	    ASN1EncodableVector contexExpecific = new ASN1EncodableVector();
 
 	    // tipo de contenido
-	    contexExpecific.add(new Attribute(CMSAttributes.contentType, new DERSet(new DERObjectIdentifier(dataType.toString()))));
+	    contexExpecific.add(new Attribute(CMSAttributes.contentType, new DERSet(new ASN1ObjectIdentifier(dataType.toString()))));
 
 	    // fecha de firma
 	    if (!isPadesSigner) {
@@ -556,7 +568,7 @@ public final class CMSBuilder {
 		     *
 		     */
 
-		    TBSCertificateStructure tbs = TBSCertificateStructure.getInstance(ASN1Object.fromByteArray(cert.getTBSCertificate()));
+		    TBSCertificateStructure tbs = TBSCertificateStructure.getInstance(ASN1Primitive.fromByteArray(cert.getTBSCertificate()));
 		    GeneralName gn = new GeneralName(tbs.getIssuer());
 		    GeneralNames gns = new GeneralNames(gn);
 
@@ -608,7 +620,7 @@ public final class CMSBuilder {
 		     *	}
 		     */
 
-		    TBSCertificateStructure tbs = TBSCertificateStructure.getInstance(ASN1Object.fromByteArray(cert.getTBSCertificate()));
+		    TBSCertificateStructure tbs = TBSCertificateStructure.getInstance(ASN1Primitive.fromByteArray(cert.getTBSCertificate()));
 		    GeneralName gn = new GeneralName(tbs.getIssuer());
 		    GeneralNames gns = new GeneralNames(gn);
 
@@ -939,7 +951,7 @@ public final class CMSBuilder {
 	byte[ ] tmp = null;
 
 	try {
-	    tmp = signedAttributes.getEncoded(ASN1Encodable.DER);
+	    tmp = signedAttributes.getEncoded(ASN1Encoding.DER);
 	} catch (IOException ex) {
 	    LOGGER.error(ex);
 	    throw new SigningException(Language.getResIntegra(ILogConstantKeys.CMSB_LOG012), ex);
@@ -1031,7 +1043,7 @@ public final class CMSBuilder {
 	    PrivateKeyEntry privateKey = parameters.getPrivateKey();
 	    X509Certificate signerCertificate = (X509Certificate) privateKey.getCertificate();
 	    X509CertificateHolder cert = new X509CertificateHolder(signerCertificate.getEncoded());
-	    IssuerAndSerialNumber issuerAndSerial = cert.getIssuerAndSerialNumber();
+	    IssuerAndSerialNumber issuerAndSerial = new IssuerAndSerialNumber(cert.getIssuer(), cert.getSerialNumber());
 
 	    // SignerIdentifier
 	    SignerIdentifier signerIdentifier = new SignerIdentifier(issuerAndSerial);
@@ -1095,7 +1107,7 @@ public final class CMSBuilder {
 		InputStream is = null;
 		try {
 		    is = new ASN1InputStream(tst.getEncoded());
-		    DERObject derObject = ((ASN1InputStream) is).readObject();
+		    ASN1Primitive derObject = ((ASN1InputStream) is).readObject();
 		    DERSet derSet = new DERSet(derObject);
 		    Attribute unsignAtt = new Attribute(PKCSObjectIdentifiers.id_aa_signatureTimeStampToken, derSet);
 		    Map<ASN1ObjectIdentifier, Attribute> hashtable = new Hashtable<ASN1ObjectIdentifier, Attribute>();
@@ -1275,7 +1287,7 @@ public final class CMSBuilder {
 		// Si se debe actualizar el firmante comprobamos si ya tiene un
 		// sello de tiempo
 		// asociado. En dicho caso, no se le añade otro.
-		String issuer = signerInformation.getSID().getIssuerAsString();
+		String issuer = signerInformation.getSID().getIssuer().toString();
 		BigInteger serialNumber = signerInformation.getSID().getSerialNumber();
 
 		if (upgrade) {
@@ -1380,8 +1392,9 @@ public final class CMSBuilder {
      * @throws IOException if cetificate is wrong.
      */
     private Attribute generateSigningCertAttr(X509CertificateHolder cert, String digestAlgorithm, AlgorithmIdentifier digestAlgorithmId) throws SigningException, IOException {
-	X500Name x500Name = cert.getIssuerAndSerialNumber().getName();
-	DERInteger serialNumber = cert.getIssuerAndSerialNumber().getSerialNumber();
+
+	X500Name x500Name = cert.getIssuer();
+	BigInteger serialNumber = cert.getSerialNumber();
 
 	/**
 	 IssuerSerial ::= SEQUENCE {
@@ -1459,16 +1472,92 @@ public final class CMSBuilder {
 	    CMSSignedDataGenerator cmsGenerator = new CMSSignedDataGenerator();
 	    cmsGenerator.addCertificates(certificates);
 	    cmsGenerator.addSigners(signerInfos);
-	    return cmsGenerator.generate(oldSignedData.getSignedContent(), new BouncyCastleProvider());
+	    return cmsGenerator.generate(oldSignedData.getSignedContent());
 	} catch (CMSException e) {
-	    LOGGER.error(e);
-	    throw new SigningException(e);
-	} catch (NoSuchAlgorithmException e) {
 	    LOGGER.error(e);
 	    throw new SigningException(e);
 	}
     }
 
+//    /**
+//     * Generates a signature object.
+//     * @param cmsSignedData object that contains all data of original signature.
+//     * @param digestAlgId digest algorithm OID.
+//     * @param certificates list of certificates to include in the signature.
+//     * @param signerInfos list of signers to include in the signature.
+//     * @return a DER byte array of signature object (SignedData object).
+//     * @throws SigningException if happens a error in the
+//     */
+//    byte[ ] generateSignedData(CMSSignedData cmsSignedData, AlgorithmIdentifier digestAlgId, Store<X509CertificateHolder> certificates, ASN1Set signerInfos) throws SigningException {
+//
+//    	ASN1Set digestAlgorithms = prepareNewAlgorithmList(cmsSignedData.getDigestAlgorithmIDs(), digestAlgId);
+//    	digestAlgorithms = addElementToASN1Set(digestAlgorithms, digestAlgId.toASN1Primitive());
+//
+//
+//    	ContentInfo encInfo = new ContentInfo(
+//    			PKCSObjectIdentifiers.data,
+//    			new DEROctetString((byte[]) cmsSignedData.getSignedContent().getContent()));
+//
+//    	ASN1Set certList = prepareNewCertList(cmsSignedData.getCertificates(), certificates);
+//    	ASN1Set crlList = prepareNewCRLList(cmsSignedData.getCRLs());
+//    	SignedData newSignedData = new SignedData(
+//    			digestAlgorithms,
+//    			encInfo,
+//    			certList,
+//    			crlList,
+//    			signerInfos
+//    			);
+//
+//    	byte[] signedData;
+//    	try {
+//    		signedData = new ContentInfo(PKCSObjectIdentifiers.signedData, newSignedData).getEncoded(ASN1Encoding.DER);
+//    	}
+//    	catch (IOException e) {
+//    		LOGGER.error(e);
+//    		throw new SigningException(e);
+//    	}
+//    	
+//    	return signedData;
+//    }
+//
+//    private ASN1Set prepareNewAlgorithmList(Set<AlgorithmIdentifier> digestAlgorithmIDs, AlgorithmIdentifier digestAlgId) {
+//
+//    	// Agregamos el algoritmo al conjunto para que solo se agregue si no estaba ya
+//    	HashSet<AlgorithmIdentifier> algorithms = new HashSet<>(digestAlgorithmIDs);
+//    	algorithms.add(digestAlgId);
+//    	
+//    	ASN1EncodableVector digestAlgorithmVector = new ASN1EncodableVector();
+//    	for (AlgorithmIdentifier algorithm : algorithms) {
+//    		digestAlgorithmVector.add(algorithm);	
+//    	}
+//    	return new BERSet(digestAlgorithmVector);
+//	}
+//
+//	private ASN1Set prepareNewCertList(Store<X509CertificateHolder> certs1, Store<X509CertificateHolder> certs2) {
+//
+//    	ASN1EncodableVector certs = new ASN1EncodableVector();
+//    	
+//        for (final X509CertificateHolder element : certs1.getMatches(null)) {
+//            certs.add(element.toASN1Structure());
+//        }
+//        for (final X509CertificateHolder element : certs2.getMatches(null)) {
+//            certs.add(element.toASN1Structure());
+//        }
+//    	
+//		return new BERSet(certs);
+//	}
+//    
+//    private ASN1Set prepareNewCRLList(Store<X509CRLHolder> crls) {
+//
+//    	ASN1EncodableVector certs = new ASN1EncodableVector();
+//    	
+//        for (final X509CRLHolder element : crls.getMatches(null)) {
+//            certs.add(element.toASN1Structure());
+//        }
+//    	
+//		return new BERSet(certs);
+//	}
+    
     /**
      * Generates a signature object.
      * @param cmsSignedData object that contains all data of original signature.
@@ -1479,15 +1568,23 @@ public final class CMSBuilder {
      * @throws SigningException if happens a error in the
      */
     byte[ ] generateSignedData(CMSSignedData cmsSignedData, AlgorithmIdentifier digestAlgId, Store certificates, ASN1Set signerInfos) throws SigningException {
-	// Obtención del contentInfo de la firma original.
-	SignedData originalSignedData = SignedData.getInstance(cmsSignedData.getContentInfo().getContent());
-	ASN1Set digestAlgorithms = originalSignedData.getDigestAlgorithms();
-	digestAlgorithms = addElementToASN1Set(digestAlgorithms, digestAlgId.getDERObject());
-	SignedData newSignedData = new SignedData(digestAlgorithms, originalSignedData.getEncapContentInfo(), convertCertStoreToASN1Set(certificates), null, signerInfos);
-	return new ContentInfo(PKCSObjectIdentifiers.signedData, newSignedData).getDEREncoded();
+    	// Obtención del contentInfo de la firma original.
+    	SignedData originalSignedData = SignedData.getInstance(cmsSignedData.toASN1Structure().getContent());
+    	ASN1Set digestAlgorithms = originalSignedData.getDigestAlgorithms();
+    	digestAlgorithms = addElementToASN1Set(digestAlgorithms, digestAlgId.toASN1Primitive());
+    	SignedData newSignedData = new SignedData(digestAlgorithms, originalSignedData.getEncapContentInfo(), convertCertStoreToASN1Set(certificates), null, signerInfos);
+    	
+    	byte[] signedData;
+    	try {
+			signedData = new ContentInfo(PKCSObjectIdentifiers.signedData, newSignedData).getEncoded(ASN1Encoding.DER);
+		} catch (IOException e) {
+		    LOGGER.error(e);
+		    throw new SigningException(e);
+		}
+    	return signedData;
     }
 
-    /**
+	/**
      * Converts a {@link SignerInformation} store to a set of {@link SignerInfo}.
      * @param signerInfos store with a collection of SignatureInformation objects.
      * @return a set of {@link SignerInfo} objects.
@@ -1556,9 +1653,9 @@ public final class CMSBuilder {
      */
     private AlgorithmIdentifier makeAlgId(String oid, byte[ ] params) throws IOException {
 	if (params != null) {
-	    return new AlgorithmIdentifier(new DERObjectIdentifier(oid), makeObj(params));
+	    return new AlgorithmIdentifier(new ASN1ObjectIdentifier(oid), makeObj(params));
 	}
-	return new AlgorithmIdentifier(new DERObjectIdentifier(oid), new DERNull());
+	return new AlgorithmIdentifier(new ASN1ObjectIdentifier(oid), DERNull.INSTANCE);
     }
 
     /**
@@ -1568,7 +1665,7 @@ public final class CMSBuilder {
      * @throws IOException If the method fails.
      */
     @SuppressWarnings("resource")
-    private DERObject makeObj(byte[ ] encoding) throws IOException {
+    private ASN1Primitive makeObj(byte[ ] encoding) throws IOException {
 	if (encoding == null) {
 	    LOGGER.warn(Language.getResIntegra(ILogConstantKeys.CMSB_LOG017));
 	    return null;
@@ -1594,7 +1691,7 @@ public final class CMSBuilder {
      * @param derObject Parameter that represents the DER element.
      * @return the generated element.
      */
-    private ASN1Set createBerSetFromList(DEREncodable derObject) {
+    private ASN1Set createBerSetFromList(ASN1Encodable derObject) {
 	ASN1EncodableVector v = new ASN1EncodableVector();
 	v.add(derObject);
 	return new BERSet(v);
@@ -1642,7 +1739,7 @@ public final class CMSBuilder {
 	// contrafirma
 	for (Iterator<?> iterator = signerInfos.getSigners().iterator(); iterator.hasNext();) {
 	    SignerInformation signerInfoOld = (SignerInformation) iterator.next();
-	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG037, new Object[ ] { signerInfoOld.getSID().getIssuerAsString(), signerInfoOld.getSID().getSerialNumber() }));
+	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG037, new Object[ ] { signerInfoOld.getSID().getIssuer(), signerInfoOld.getSID().getSerialNumber() }));
 
 	    // Accedemos al conjunto de atributos no firmados
 	    AttributeTable unsignedAtts = signerInfoOld.getUnsignedAttributes();

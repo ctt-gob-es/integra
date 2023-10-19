@@ -21,6 +21,7 @@
  */
 package es.gob.afirma.signature.cades;
 
+import java.io.IOException;
 import java.security.KeyStore.PrivateKeyEntry;
 import java.security.MessageDigest;
 import java.security.Security;
@@ -31,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import org.bouncycastle.asn1.ASN1Encoding;
 import org.bouncycastle.asn1.ASN1Set;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.cms.CMSAttributes;
@@ -375,7 +377,13 @@ public final class CadesSigner implements Signer {
 	    SignerInformationStore sis = new SignerInformationStore(listNewSigners);
 	    CMSSignedData newSignedData = CMSSignedData.replaceSigners(signedData, sis);
 	    // Obtenemos la firma actualizada
-	    upgradedSignature = newSignedData.getContentInfo().getDEREncoded();
+	    try {
+			upgradedSignature = newSignedData.toASN1Structure().getEncoded(ASN1Encoding.DER);
+		} catch (IOException e) {
+		    String errorMsg = Language.getResIntegra(ILogConstantKeys.CS_LOG023);
+		    LOGGER.error(errorMsg);
+		    throw new SigningException(errorMsg);
+		}
 	}
 
 	GenericUtilsCommons.printResult(upgradedSignature, LOGGER);
@@ -425,9 +433,15 @@ public final class CadesSigner implements Signer {
 	else {
 	    // accedemos al signedContent para obtener los datos firmados
 	    if (cmsSignedData.getSignedContent() != null) {
-		signedData = (byte[ ]) cmsSignedData.getSignedContent().getContent();
+	    	signedData = (byte[ ]) cmsSignedData.getSignedContent().getContent();
 	    } else {
-		signedData = (byte[ ]) cmsSignedData.getContentInfo().getContent().getDERObject().getDEREncoded();
+			try {
+				signedData = (byte[ ]) cmsSignedData.toASN1Structure().getContent().toASN1Primitive().getEncoded(ASN1Encoding.DER);
+			} catch (IOException e) {
+			    String errorMsg = Language.getResIntegra(ILogConstantKeys.CS_LOG024);
+			    LOGGER.error(errorMsg);
+			    throw new SigningException(errorMsg);
+			}
 	    }
 	    // Accedemos al primer firmante
 	    SignerInformation signerInformation = ((List<SignerInformation>) cmsSignedData.getSignerInfos().getSigners()).iterator().next();

@@ -22,6 +22,7 @@
 package es.gob.afirma.signature.cades;
 
 import java.security.KeyStore.PrivateKeyEntry;
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.Security;
 import java.security.cert.X509Certificate;
@@ -31,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import org.bouncycastle.asn1.ASN1Encoding;
 import org.bouncycastle.asn1.ASN1Set;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.cms.CMSAttributes;
@@ -466,10 +468,16 @@ public final class CAdESBaselineSigner implements Signer {
 	    // que los firmantes se hayan actualizado
 	    byte[ ] upgradedSignature = signature;
 	    if (!listSignersSignature.equals(listNewSigners)) {
-		SignerInformationStore sis = new SignerInformationStore(listNewSigners);
-		CMSSignedData newSignedData = CMSSignedData.replaceSigners(signedData, sis);
-		// Obtenemos la firma actualizada
-		upgradedSignature = newSignedData.getContentInfo().getDEREncoded();
+			SignerInformationStore sis = new SignerInformationStore(listNewSigners);
+			CMSSignedData newSignedData = CMSSignedData.replaceSigners(signedData, sis);
+			// Obtenemos la firma actualizada
+			try {
+				upgradedSignature = newSignedData.toASN1Structure().getEncoded(ASN1Encoding.DER);
+			} catch (IOException e) {
+			    String errorMsg = Language.getResIntegra(ILogConstantKeys.CBS_LOG032);
+			    LOGGER.error(errorMsg);
+			    throw new SigningException(errorMsg);
+			}
 	    }
 
 	    // Escribimos la firma actualizada en el Log
@@ -535,7 +543,13 @@ public final class CAdESBaselineSigner implements Signer {
 	    if (cmsSignedData.getSignedContent() != null) {
 		signedData = (byte[ ]) cmsSignedData.getSignedContent().getContent();
 	    } else {
-		signedData = (byte[ ]) cmsSignedData.getContentInfo().getContent().getDERObject().getDEREncoded();
+	    	try {
+	    		signedData = (byte[ ]) cmsSignedData.toASN1Structure().getContent().toASN1Primitive().getEncoded(ASN1Encoding.DER);
+			} catch (IOException e) {
+			    String errorMsg = Language.getResIntegra(ILogConstantKeys.CBS_LOG033);
+			    LOGGER.error(errorMsg);
+			    throw new SigningException(errorMsg);
+			}
 	    }
 	    // Accedemos al primer firmante
 	    SignerInformation signerInformation = ((List<SignerInformation>) cmsSignedData.getSignerInfos().getSigners()).iterator().next();

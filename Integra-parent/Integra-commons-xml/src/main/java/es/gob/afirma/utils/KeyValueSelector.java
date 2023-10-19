@@ -65,7 +65,7 @@ public class KeyValueSelector extends KeySelector {
 	for (int i = 0; i < list.size(); i++) {
 	    XMLStructure xmlStructure = list.get(i);
 	    if (xmlStructure instanceof X509Data) {
-		List<X509Certificate> x509datalist = ((X509Data) xmlStructure).getContent();
+		List<X509Certificate> x509datalist = (List<X509Certificate>) ((X509Data) xmlStructure).getContent();
 		for (int y = x509datalist.size() - 1; y >= 0; y--) {
 		    PublicKey pk = null;
 

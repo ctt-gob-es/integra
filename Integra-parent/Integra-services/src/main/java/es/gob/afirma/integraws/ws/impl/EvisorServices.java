@@ -21,10 +21,9 @@
  */
 package es.gob.afirma.integraws.ws.impl;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.opensaml.xml.util.Base64;
 
 import es.gob.afirma.i18n.Language;
 import es.gob.afirma.integraws.beans.BarcodeEvisorRequest;
@@ -85,7 +84,7 @@ public class EvisorServices implements IEvisorServices {
 	    String report = (String) result.get("srsm:Report");
 	    byte[] reportByteArray = null;
 	    if (report != null) {
-		reportByteArray = Base64.decode(report);
+		reportByteArray = Base64.getDecoder().decode(report);
 	    }
 
 	    return new ResponseEvisorGenerateReport(new EvisorResult(codeResult, message, cause), reportByteArray, true);
@@ -160,10 +159,10 @@ public class EvisorServices implements IEvisorServices {
 	    inputParams.put(EVisorTagsRequest.DOC_REPO_ID, request.getDocRepositoryLocationRepositoryId());
 	}
 	if (request.getDocument() != null) {
-		inputParams.put(EVisorTagsRequest.ENCODED_DOCUMENT, Base64.encodeBytes(request.getDocument()));
+		inputParams.put(EVisorTagsRequest.ENCODED_DOCUMENT, Base64.getEncoder().encode(request.getDocument()));
 	}
 	if (request.getSignature() != null) {
-		inputParams.put(EVisorTagsRequest.ENCODED_SIGNATURE, Base64.encodeBytes(request.getSignature()));
+		inputParams.put(EVisorTagsRequest.ENCODED_SIGNATURE, Base64.getEncoder().encode(request.getSignature()));
 	}
 	if (request.getExternalParameterList() != null && !request.getExternalParameterList().isEmpty()) {
 	    Map<String, String> params = new HashMap<String, String>();
@@ -196,7 +195,7 @@ public class EvisorServices implements IEvisorServices {
 	    inputParams.put(EVisorTagsRequest.TEMPLATE_ID, request.getTemplateId());
 	}
 	if (request.getValidationResponse() != null) {
-	    inputParams.put(EVisorTagsRequest.VALIDATION_RESPONSE,  Base64.encodeBytes(request.getValidationResponse()));
+	    inputParams.put(EVisorTagsRequest.VALIDATION_RESPONSE,  Base64.getEncoder().encode(request.getValidationResponse()));
 	}
 	return inputParams;
     }
@@ -221,7 +220,7 @@ public class EvisorServices implements IEvisorServices {
 	    return new ResponseEvisorValidateReport(false, Language.getResIntegra(IWSConstantKeys.IWS_004));
 	}
 	if (request.getReport() != null) {
-	    inputParams.put(EVisorTagsRequest.REPORT, Base64.encodeBytes(request.getReport()));
+	    inputParams.put(EVisorTagsRequest.REPORT, Base64.getEncoder().encode(request.getReport()));
 	} else {
 	    LOGGER.error(Language.getResIntegra(IWSConstantKeys.IWS_005));
 	    return new ResponseEvisorValidateReport(false, Language.getResIntegra(IWSConstantKeys.IWS_005));

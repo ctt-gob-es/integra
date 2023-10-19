@@ -35,9 +35,8 @@ import javax.xml.crypto.dsig.XMLSignature;
 
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.DERIA5String;
-import org.bouncycastle.asn1.DERObject;
-import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
@@ -200,7 +199,7 @@ public final class SignaturePolicyManager {
 		sigPolicyQualifiers = new SigPolicyQualifiers(sigPolicyQualifierInfo);
 	    }
 
-	    contexExpecific.add(new Attribute(PKCSObjectIdentifiers.id_aa_ets_sigPolicyId, new DERSet(new org.bouncycastle.asn1.esf.SignaturePolicyIdentifier(new SignaturePolicyId(new DERObjectIdentifier(sigPolicyId), new OtherHashAlgAndValue(policyAlgorithm, new DEROctetString(policyDigest)), sigPolicyQualifiers)))));
+	    contexExpecific.add(new Attribute(PKCSObjectIdentifiers.id_aa_ets_sigPolicyId, new DERSet(new org.bouncycastle.asn1.esf.SignaturePolicyIdentifier(new SignaturePolicyId(new ASN1ObjectIdentifier(sigPolicyId), new OtherHashAlgAndValue(policyAlgorithm, new DEROctetString(policyDigest)), sigPolicyQualifiers)))));
 	}
 	// catch (TransformersException e) {
 	// throw new
@@ -1794,7 +1793,7 @@ public final class SignaturePolicyManager {
 	String notAllowedValueStr = (String) policyProperties.get(policyID + "-[" + attributeName + "]" + ISignPolicyConstants.KEY_NOT_ALLOWED_VALUE);
 	if (notAllowedValueStr != null) {
 	    // Instanciamos una lista con los valores no permitidos
-	    List<DERObject> listNotAllowedValues = new ArrayList<DERObject>();
+	    List<ASN1Primitive> listNotAllowedValues = new ArrayList<>();
 	    // Comprobamos si el elemento es único o tiene varios a
 	    // elegir
 	    if (notAllowedValueStr.contains(ISignPolicyConstants.OPERATOR_AND)) {
@@ -1831,18 +1830,18 @@ public final class SignaturePolicyManager {
 		}
 	    }
 	    // Obtenemos el valor que presenta el elemento
-	    DERObject attributeValue = attr.getAttrValues().getObjectAt(0).getDERObject();
+	    ASN1Primitive attributeValue = attr.getAttrValues().getObjectAt(0).toASN1Primitive();
 
 	    // Buscamos en la lista de valores admitidos si está
 	    // presente el valor que presenta el elemento
 	    boolean enc = false;
 	    int i = 0;
 	    while (!enc && i < listNotAllowedValues.size()) {
-		DERObject allowedValue = listNotAllowedValues.get(i);
-		if (allowedValue.equals(attributeValue)) {
-		    enc = true;
-		}
-		i++;
+	    	ASN1Primitive allowedValue = listNotAllowedValues.get(i);
+			if (allowedValue.equals(attributeValue)) {
+			    enc = true;
+			}
+			i++;
 	    }
 	    if (enc) {
 		throw new SignaturePolicyException(Language.getFormatResIntegra(ILogConstantKeys.SPM_LOG018, new Object[ ] { attributeName, attributeValue, policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE }));
@@ -1997,7 +1996,7 @@ public final class SignaturePolicyManager {
 	String requiredValueStr = (String) policyProperties.get(policyID + "-[" + attributeName + "]" + ISignPolicyConstants.KEY_REQUIRED_VALUE);
 	if (requiredValueStr != null) {
 	    // Instanciamos una lista con los valores obligatorios
-	    List<DERObject> listRequiredValues = new ArrayList<DERObject>();
+	    List<ASN1Primitive> listRequiredValues = new ArrayList<>();
 	    // Comprobamos si el elemento es único o tiene varios a
 	    // elegir
 	    if (requiredValueStr.contains(ISignPolicyConstants.OPERATOR_OR)) {
@@ -2034,7 +2033,7 @@ public final class SignaturePolicyManager {
 		}
 	    }
 	    // Obtenemos el valor que presenta el elemento
-	    DERObject elementValue = attr.getAttrValues().getObjectAt(0).getDERObject();
+	    ASN1Primitive elementValue = attr.getAttrValues().getObjectAt(0).toASN1Primitive();
 
 	    // Buscamos en la lista de valores admitidos si está
 	    // presente el valor que presenta el elemento

@@ -1232,7 +1232,7 @@ public final class ASiCSBaselineSigner implements Signer {
 		Attribute messageDigestAttribute = signedAttributes.get(CMSAttributes.messageDigest);
 
 		// Obtenemos el resumen de los datos firmados
-		byte[ ] signatureSignedDigest = ((ASN1OctetString) messageDigestAttribute.getAttrValues().getObjectAt(0).getDERObject()).getOctets();
+		byte[ ] signatureSignedDigest = ((ASN1OctetString) messageDigestAttribute.getAttrValues().getObjectAt(0).toASN1Primitive()).getOctets();
 
 		// Obtenemos el algoritmo de resumen usado para calcular el
 		// resumen

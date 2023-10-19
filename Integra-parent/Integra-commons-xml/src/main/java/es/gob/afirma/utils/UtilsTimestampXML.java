@@ -45,15 +45,22 @@ import javax.xml.crypto.dsig.dom.DOMValidateContext;
 import org.apache.xml.security.c14n.CanonicalizationException;
 import org.apache.xml.security.c14n.Canonicalizer;
 import org.apache.xml.security.c14n.InvalidCanonicalizerException;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.cms.DefaultCMSSignatureAlgorithmNameGenerator;
 import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jce.provider.X509CertificateObject;
 import org.bouncycastle.operator.ContentVerifierProvider;
+import org.bouncycastle.operator.DefaultSignatureAlgorithmIdentifierFinder;
 import org.bouncycastle.operator.DigestCalculatorProvider;
 import org.bouncycastle.operator.jcajce.JcaContentVerifierProviderBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.bouncycastle.tsp.TSPValidationException;
 import org.bouncycastle.tsp.TimeStampToken;
+import org.bouncycastle.util.Selector;
+import org.bouncycastle.util.Store;
+import org.bouncycastle.util.StoreException;
 import org.bouncycastle.util.encoders.Base64;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -98,36 +105,21 @@ public final class UtilsTimestampXML {
 	    GenericUtilsCommons.checkInputParameterIsNotNull(tst, Language.getResIntegra(ILogConstantKeys.TSU_LOG014));
 
 	    // Obtenemos al colección de certificados definidos en el almacén de
-	    // certificados dentro del sello de tiempo
-	    CertStore certStore = null;
-
+	    // certificados dentro del sello de tiempo y el certificado de firma de ella
 	    try {
-		certStore = tst.getCertificatesAndCRLs("Collection", BouncyCastleProvider.PROVIDER_NAME);
-		Collection<X509Certificate> collectionSigningCertificate = (Collection<X509Certificate>) certStore.getCertificates(tst.getSID());
+	    	Store<X509CertificateHolder> store = tst.getCertificates();
+	    	Collection<X509Certificate> collectionSigningCertificate = store.getMatches(tst.getSID()); 
 
-		if (collectionSigningCertificate.size() != 1) {
-		    String errorMsg = Language.getResIntegra(ILogConstantKeys.TSU_LOG015);
-		    LOGGER.error(errorMsg);
-		    throw new SigningException(errorMsg);
-		}
-		return collectionSigningCertificate.iterator().next();
-	    } catch (NoSuchAlgorithmException e) {
-		String errorMsg = Language.getResIntegra(ILogConstantKeys.TSU_LOG016);
-		LOGGER.error(errorMsg);
-		throw new SigningException(errorMsg, e);
-
-	    } catch (NoSuchProviderException e) {
-		String errorMsg = Language.getResIntegra(ILogConstantKeys.TSU_LOG017);
-		LOGGER.error(errorMsg);
-		throw new SigningException(errorMsg, e);
-	    } catch (CMSException e) {
-		String errorMsg = Language.getResIntegra(ILogConstantKeys.TSU_LOG018);
-		LOGGER.error(errorMsg);
-		throw new SigningException(errorMsg, e);
-	    } catch (CertStoreException e) {
-		String errorMsg = Language.getResIntegra(ILogConstantKeys.TSU_LOG019);
-		LOGGER.error(errorMsg);
-		throw new SigningException(errorMsg, e);
+			if (collectionSigningCertificate.size() != 1) {
+			    String errorMsg = Language.getResIntegra(ILogConstantKeys.TSU_LOG015);
+			    LOGGER.error(errorMsg);
+			    throw new SigningException(errorMsg);
+			}
+			return collectionSigningCertificate.iterator().next();
+	    } catch (StoreException e) {
+			String errorMsg = Language.getResIntegra(ILogConstantKeys.TSU_LOG122);
+			LOGGER.error(errorMsg);
+			throw new SigningException(errorMsg, e);
 	    }
 	} finally {
 	    LOGGER.info(Language.getResIntegra(ILogConstantKeys.TSU_LOG039));
@@ -223,7 +215,11 @@ public final class UtilsTimestampXML {
 		digestCalculatorProviderBuilder.setProvider(BouncyCastleProvider.PROVIDER_NAME);
 		DigestCalculatorProvider digestCalculatorProvider = digestCalculatorProviderBuilder.build();
 
-		SignerInformationVerifier signerInformationVerifier = new SignerInformationVerifier(contentVerifierProvider, digestCalculatorProvider);
+		SignerInformationVerifier signerInformationVerifier = new SignerInformationVerifier(
+            	new	DefaultCMSSignatureAlgorithmNameGenerator(),
+            	new DefaultSignatureAlgorithmIdentifierFinder(),
+            	contentVerifierProvider,
+            	digestCalculatorProvider);
 
 		tst.validate(signerInformationVerifier);
 
