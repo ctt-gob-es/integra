@@ -43,7 +43,7 @@
 		<version.commons.codec>1.15</version.commons.codec>
 		<version.commons.fileupload>1.5</version.commons.fileupload>
 		<version.commons.io>2.11.0</version.commons.io>
-		<version.commons.lang>3.3.2</version.commons.lang>
+		<version.commons.lang3>3.13.0</version.commons.lang3>
 		<version.fop>2.9</version.fop>
 		<version.guava>32.0.1-jre</version.guava>
 		<version.httpclient>4.5.13</version.httpclient>
@@ -55,6 +55,7 @@
 		<version.xalan>2.7.3</version.xalan>
 		<version.xerces>2.12.2</version.xerces>
 		
+		<version.slf4j>2.0.9</version.slf4j>
 		<version.junit>4.13.2</version.junit>
 		
 		<version.plugin.compiler>2.3.2</version.plugin.compiler>
@@ -156,6 +157,12 @@
 				<version>${version.commons.io}</version>
 			</dependency>
 
+			<!-- Forzamos a una version para la homogeneidad de versiones entre los proyectos hijos -->
+			<dependency>
+			    <groupId>org.apache.commons</groupId>
+			    <artifactId>commons-lang3</artifactId>
+			    <version>${version.commons.lang3}</version>
+			</dependency>
 
 			<!-- Forzamos a una version de WoodStox sin vulnerabilidades conocidas. Esta versión debe ser compatible con
 				 las versiones importadas de Axis2 y Apache Santuario -->
@@ -171,11 +178,23 @@
 				<artifactId>xalan</artifactId>
 				<version>${version.xalan}</version>
 			</dependency>
+			<dependency>
+				<groupId>xalan</groupId>
+				<artifactId>serializer</artifactId>
+				<version>${version.xalan}</version>
+			</dependency>
 
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
 				<version>${version.guava}</version>
+			</dependency>
+
+			<!-- Forzamos a una version unica de SLF4J para evitar el uso de distintas versiones por modulos desacoplados del proyecto. -->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${version.slf4j}</version>
 			</dependency>
 
 			<!-- Scope provided -->
@@ -192,7 +211,7 @@
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
-				<version>4.13.2</version>
+				<version>${version.junit}</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>

@@ -46,6 +46,10 @@
 			<groupId>xalan</groupId>
 			<artifactId>xalan</artifactId>
 		</dependency>
+		<dependency>
+        	<groupId>xalan</groupId>
+        	<artifactId>serializer</artifactId>
+        </dependency>
 
 		<dependency>
 			<groupId>com.google.zxing</groupId>
