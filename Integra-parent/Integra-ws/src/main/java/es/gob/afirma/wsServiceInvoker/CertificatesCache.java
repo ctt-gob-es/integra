@@ -23,8 +23,6 @@ package es.gob.afirma.wsServiceInvoker;
 
 import java.math.BigInteger;
 import java.util.Calendar;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
@@ -53,12 +51,7 @@ public final class CertificatesCache {
     /**
      * Attribute that represents the information of the certificates validation responses cache.
      */
-    private Map<CertificateCacheKey, CertificateCacheValue> cache;
-
-    /**
-     * Attribute that represents the maximum number of entries for the certificates validation responses cache.
-     */
-    private int maxEntriesNumber = 0;
+    private CacheStorage cache;
 
     /**
      * Attribute that represents the life time, in seconds, for each od the entries of the certificates validation responses cache.
@@ -71,30 +64,33 @@ public final class CertificatesCache {
      * @throws WSServiceInvokerException If there is an error.
      */
     private CertificatesCache(String idClient) throws WSServiceInvokerException {
-	cache = new LinkedHashMap<CertificateCacheKey, CertificateCacheValue>();
-	Properties prop = new IntegraProperties().getIntegraProperties(idClient);
-	if (prop != null) {
-	    // Obtenemos el número de entradas máximas que puede tener la caché
-	    String maxEntries = prop.getProperty(WSServiceInvokerConstants.WS_CERTIFICATES_CACHE_ENTRIES_PROP);
-	    if (maxEntries == null) {
-		throw new WSServiceInvokerException(Language.getFormatResIntegra(ILogConstantKeys.CC_LOG003, new Object[ ] { WSServiceInvokerConstants.WS_CERTIFICATES_CACHE_ENTRIES_PROP, IIntegraConstants.DEFAULT_PROPERTIES_FILE }));
-	    }
-	    try {
-		maxEntriesNumber = Integer.valueOf(maxEntries);
-	    } catch (NumberFormatException e) {
-		throw new WSServiceInvokerException(Language.getFormatResIntegra(ILogConstantKeys.CC_LOG004, new Object[ ] { WSServiceInvokerConstants.WS_CERTIFICATES_CACHE_ENTRIES_PROP, IIntegraConstants.DEFAULT_PROPERTIES_FILE, maxEntries }), e);
-	    }
-	    // Obtenemos el número de segundos de validez que tiene cada entrada
-	    String lifeTime = prop.getProperty(WSServiceInvokerConstants.WS_CERTIFICATES_CACHE_LIFETIME_PROP);
-	    if (lifeTime == null) {
-		throw new WSServiceInvokerException(Language.getFormatResIntegra(ILogConstantKeys.CC_LOG003, new Object[ ] { WSServiceInvokerConstants.WS_CERTIFICATES_CACHE_LIFETIME_PROP, IIntegraConstants.DEFAULT_PROPERTIES_FILE }));
-	    }
-	    try {
-		lifeTimeNumber = Integer.valueOf(lifeTime);
-	    } catch (NumberFormatException e) {
-		throw new WSServiceInvokerException(Language.getFormatResIntegra(ILogConstantKeys.CC_LOG004, new Object[ ] { WSServiceInvokerConstants.WS_CERTIFICATES_CACHE_LIFETIME_PROP, IIntegraConstants.DEFAULT_PROPERTIES_FILE, lifeTime }), e);
-	    }
-	}
+    	cache = new CacheStorage();
+    	Properties prop = new IntegraProperties().getIntegraProperties(idClient);
+    	if (prop != null) {
+    		// Obtenemos el número de entradas máximas que puede tener la caché
+    		String maxEntries = prop.getProperty(WSServiceInvokerConstants.WS_CERTIFICATES_CACHE_ENTRIES_PROP);
+    		if (maxEntries == null) {
+    			throw new WSServiceInvokerException(Language.getFormatResIntegra(ILogConstantKeys.CC_LOG003, new Object[ ] { WSServiceInvokerConstants.WS_CERTIFICATES_CACHE_ENTRIES_PROP, IIntegraConstants.DEFAULT_PROPERTIES_FILE }));
+    		}
+    		int maxEntriesNumber;
+    		try {
+    			maxEntriesNumber = Integer.valueOf(maxEntries);
+    		} catch (NumberFormatException e) {
+    			throw new WSServiceInvokerException(Language.getFormatResIntegra(ILogConstantKeys.CC_LOG004, new Object[ ] { WSServiceInvokerConstants.WS_CERTIFICATES_CACHE_ENTRIES_PROP, IIntegraConstants.DEFAULT_PROPERTIES_FILE, maxEntries }), e);
+    		}
+    		this.cache.setMaxSize(maxEntriesNumber);
+    		
+    		// Obtenemos el número de segundos de validez que tiene cada entrada
+    		String lifeTime = prop.getProperty(WSServiceInvokerConstants.WS_CERTIFICATES_CACHE_LIFETIME_PROP);
+    		if (lifeTime == null) {
+    			throw new WSServiceInvokerException(Language.getFormatResIntegra(ILogConstantKeys.CC_LOG003, new Object[ ] { WSServiceInvokerConstants.WS_CERTIFICATES_CACHE_LIFETIME_PROP, IIntegraConstants.DEFAULT_PROPERTIES_FILE }));
+    		}
+    		try {
+    			lifeTimeNumber = Integer.valueOf(lifeTime);
+    		} catch (NumberFormatException e) {
+    			throw new WSServiceInvokerException(Language.getFormatResIntegra(ILogConstantKeys.CC_LOG004, new Object[ ] { WSServiceInvokerConstants.WS_CERTIFICATES_CACHE_LIFETIME_PROP, IIntegraConstants.DEFAULT_PROPERTIES_FILE, lifeTime }), e);
+    		}
+    	}
     }
 
     /**
@@ -133,23 +129,19 @@ public final class CertificatesCache {
 	// Comprobamos que la caché existe
 	if (cache == null) {
 	    // Inicializamos la caché
-	    cache = new LinkedHashMap<CertificateCacheKey, CertificateCacheValue>();
+	    cache = new CacheStorage();
 	}
 
-	// Comprobamos si el elemento a añadir existe previamente y si estamos
-	// en el máximo tamaño definido para la
-	// caché. En ese caso, eliminamos el primer elemento que se añadió
-	if (!cache.containsKey(key)) {
-	    if (cache.size() == maxEntriesNumber) {
-		CertificateCacheKey firstKey = cache.keySet().iterator().next();
-		cache.remove(firstKey);
-		LOGGER.info(Language.getFormatResIntegra(ILogConstantKeys.CC_LOG005, new Object[ ] { issuer, serialNumber, requestType }));
-	    }
-	    // Añadimos la entrada a la caché para el momento actual
-	    CertificateCacheValue ccv = new CertificateCacheValue(Calendar.getInstance().getTime(), xmlResponse);
-	    cache.put(key, ccv);
-	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.CC_LOG002, new Object[ ] { issuer, serialNumber, requestType }));
+	// Comprobamos si el elemento a añadir existe previamente y lo agregamos si no
+	synchronized (cache) {
+		if (!cache.containsKey(key)) {
+			// Añadimos la entrada a la caché para el momento actual
+			CertificateCacheValue ccv = new CertificateCacheValue(Calendar.getInstance().getTime(), xmlResponse);
+			cache.put(key, ccv);
+			LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.CC_LOG002, new Object[ ] { issuer, serialNumber, requestType }));
+		}
 	}
+	
 	return true;
     }
 
@@ -166,21 +158,23 @@ public final class CertificatesCache {
 	// Comprobamos si el elemento existe
 	CertificateCacheValue ccv = cache.get(key);
 	if (ccv != null) {
-	    // En caso de existir comprobamos si su tiempo de vida se ha
-	    // superado
-	    Calendar calendar = Calendar.getInstance();
-	    calendar.setTime(ccv.getInsertDate());
-	    calendar.add(Calendar.SECOND, lifeTimeNumber);
+		// En caso de existir comprobamos si su tiempo de vida se ha
+		// superado
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(ccv.getInsertDate());
+		calendar.add(Calendar.SECOND, lifeTimeNumber);
 
-	    Calendar now = Calendar.getInstance();
-	    if (now.getTime().compareTo(calendar.getTime()) > 0) {
-		// Eliminamos la entrada de la caché
-		cache.remove(key);
-		LOGGER.info(Language.getFormatResIntegra(ILogConstantKeys.CC_LOG005, new Object[ ] { key.getIssuer(), key.getSerialNumber() }));
-		return null;
-	    } else {
-		return ccv.getXmlResponse();
-	    }
+		Calendar now = Calendar.getInstance();
+		if (now.getTime().compareTo(calendar.getTime()) > 0) {
+			// Eliminamos la entrada de la caché
+			synchronized (cache) {
+				cache.remove(key);
+			}
+			LOGGER.info(Language.getFormatResIntegra(ILogConstantKeys.CC_LOG005, new Object[ ] { key.getIssuer(), key.getSerialNumber() }));
+			return null;
+		} else {
+			return ccv.getXmlResponse();
+		}
 	} else {
 	    return null;
 	}
