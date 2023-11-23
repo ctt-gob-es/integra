@@ -8,20 +8,120 @@
 	<packaging>pom</packaging>
 	<name>Integra-parent</name>
 	<description>Kit de integracion para la Suite de @Firma</description>
-	<modules>
-		<module>Integra-commons-xml</module>
-		<module>Integra-commons-pdf-bc</module>
-		<module>Integra-commons</module>
-		<module>Integra-ocsp-rfc3161</module>
-		<module>Integra-ws</module>
-		<module>Integra-sign-operations</module>
-		<module>Integra-utils</module>
-		<module>Integra-encryption</module>
-		<module>Integra-services</module>
-		<module>Integra-tsl</module>
-		<module>Integra-signature-report</module>
-		<module>Integra-commons-tsl</module>
-	</modules>
+	
+	<profiles>
+		<!-- ===== Construccion por defecto ===== -->
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+      		</activation>
+
+			<modules>
+				<module>Integra-commons-xml</module>
+				<module>Integra-commons-pdf-bc</module>
+				<module>Integra-commons</module>
+				<module>Integra-ocsp-rfc3161</module>
+				<module>Integra-ws</module>
+				<module>Integra-sign-operations</module>
+				<module>Integra-utils</module>
+				<module>Integra-encryption</module>
+				<module>Integra-services</module>
+				<module>Integra-tsl</module>
+				<module>Integra-signature-report</module>
+				<module>Integra-commons-tsl</module>
+			</modules>
+		</profile>
+		
+		<!-- Tipo de integracion 1 -->
+		<profile>
+			<id>int1</id>
+			<modules>
+				<module>Integra-commons</module>
+				<module>Integra-commons-pdf-bc</module>
+				<module>Integra-ocsp-rfc3161</module>
+				<module>Integra-utils</module>
+			</modules>
+		</profile>
+		
+		<!-- Tipo de integracion 2 -->
+		<profile>
+			<id>int2</id>
+			<modules>
+				<module>Integra-commons</module>
+				<module>Integra-commons-xml</module>
+				<module>Integra-ws</module>
+				<module>Integra-utils</module>
+			</modules>
+		</profile>
+		
+		<!-- Tipo de integracion 3 -->
+		<profile>
+			<id>int3</id>
+			<modules>
+				<module>Integra-commons</module>
+				<module>Integra-commons-xml</module>
+				<module>Integra-ws</module>
+				<module>Integra-utils</module>
+				<module>Integra-commons-pdf-bc</module>
+				<module>Integra-ocsp-rfc3161</module>
+			</modules>
+		</profile>
+		
+		<!-- Tipo de integracion 4 -->
+		<profile>
+			<id>int4</id>
+			<modules>
+				<module>Integra-commons</module>
+				<module>Integra-commons-pdf-bc</module>
+				<module>Integra-ocsp-rfc3161</module>
+				<module>Integra-utils</module>
+				<module>Integra-sign-operations</module>
+			</modules>
+		</profile>
+		
+		<!-- Tipo de integracion 5 -->
+		<profile>
+			<id>int5</id>
+			<modules>
+				<module>Integra-commons</module>
+				<module>Integra-commons-pdf-bc</module>
+				<module>Integra-ocsp-rfc3161</module>
+				<module>Integra-sign-operations</module>
+				<module>Integra-commons-xml</module>
+				<module>Integra-ws</module>
+				<module>Integra-utils</module>
+			</modules>
+		</profile>
+		
+		<!-- Tipo de integracion 6 -->
+		<profile>
+			<id>int6</id>
+			<modules>
+				<module>Integra-encryption</module>
+				<module>Integra-commons</module>
+			</modules>
+		</profile>
+		
+		<!-- Tipo de integracion 7 -->
+		<profile>
+			<id>int7</id>
+			<modules>
+				<module>Integra-signature-report</module>
+			</modules>
+		</profile>
+
+		<!-- Tipo de integracion 8 -->
+		<profile>
+			<id>int8</id>
+			<modules>
+				<module>Integra-commons-tsl</module>
+				<module>Integra-tsl</module>
+			</modules>
+		</profile>
+		
+	</profiles>
+		
 	<properties>
 		<version.Integra.commons>2.2.4_000</version.Integra.commons>
 		<version.Integra.commons.pdf.bc>2.2.4_000</version.Integra.commons.pdf.bc>

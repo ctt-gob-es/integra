@@ -1,4 +1,4 @@
-// Copyright (C) 2012-23 MINHAP, Gobierno de España
+// Copyright (C) 2012-23 MINHAP, Gobierno de Espana
 // This program is licensed and may be used, modified and redistributed under the terms
 // of the European Public License (EUPL), either version 1.1 or (at your
 // option) any later version as soon as they are approved by the European Commission.
@@ -16,7 +16,7 @@
  * <b>Description:</b><p>Class that storage the cached data.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>26/10/2023.</p>
- * @author Gobierno de España.
+ * @author Gobierno de Espa&ntilde;a.
  * @version 1.0, 26/10/2023.
  */
 package es.gob.afirma.wsServiceInvoker;
@@ -45,7 +45,7 @@ public class CacheStorage extends LinkedHashMap<CertificateCacheKey, Certificate
 	private int maxSize;
 
 	/**
-	 * Crea el almac&eacute;n de la cach&eacute con el maximo tama&ntilde;;o posible.
+	 * Crea el almac&eacute;n de la cach&eacute; con el m&aacute;ximo tama&ntilde;o posible.
 	 */
 	CacheStorage() {
 		this(Integer.MAX_VALUE);
