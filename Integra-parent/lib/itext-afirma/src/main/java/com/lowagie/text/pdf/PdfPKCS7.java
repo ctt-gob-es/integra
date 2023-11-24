@@ -77,7 +77,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Enumerated;
 import org.bouncycastle.asn1.ASN1InputStream;
@@ -96,6 +95,7 @@ import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.DERTaggedObject;
 import org.bouncycastle.asn1.DERUTCTime;
+import org.bouncycastle.asn1.DLTaggedObject;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.ContentInfo;
@@ -353,8 +353,8 @@ public class PdfPKCS7 {
                 }
                 if (seq.getObjectAt(k) instanceof ASN1TaggedObject) {
                     ASN1TaggedObject tag = (ASN1TaggedObject)seq.getObjectAt(k);
-                    if (tag.getObject() instanceof ASN1Sequence) {
-                        seq = (ASN1Sequence)tag.getObject();
+                    if (tag.getBaseObject() instanceof ASN1Sequence) {
+                        seq = (ASN1Sequence)tag.getBaseObject();
                         ret = false;
                         break;
                     }
@@ -400,7 +400,7 @@ public class PdfPKCS7 {
             ASN1ObjectIdentifier objId = (ASN1ObjectIdentifier)signedData.getObjectAt(0);
             if (!objId.getId().equals(ID_PKCS7_SIGNED_DATA))
                 throw new IllegalArgumentException("Not a valid PKCS#7 object - not signed data");
-            ASN1Sequence content = (ASN1Sequence)((DERTaggedObject)signedData.getObjectAt(1)).getObject();
+            ASN1Sequence content = (ASN1Sequence)((DERTaggedObject)signedData.getObjectAt(1)).getBaseObject();
             // the positions that we care are:
             //     0 - version
             //     1 - digestAlgorithms
@@ -432,7 +432,7 @@ public class PdfPKCS7 {
             // the possible ID_PKCS7_DATA
             ASN1Sequence rsaData = (ASN1Sequence)content.getObjectAt(2);
             if (rsaData.size() > 1) {
-                DEROctetString rsaDataContent = (DEROctetString)((DERTaggedObject)rsaData.getObjectAt(1)).getObject();
+                DEROctetString rsaDataContent = (DEROctetString)((DERTaggedObject)rsaData.getObjectAt(1)).getBaseObject();
                 RSAdata = rsaDataContent.getOctets();
             }
 
@@ -485,7 +485,7 @@ public class PdfPKCS7 {
                             ASN1TaggedObject tg = (ASN1TaggedObject)seqout.getObjectAt(j);
                             if (tg.getTagNo() != 1)
                                 continue;
-                            ASN1Sequence seqin = (ASN1Sequence)tg.getObject();
+                            ASN1Sequence seqin = (ASN1Sequence)tg.getBaseObject();
                             findOcsp(seqin);
                         }
                     }
@@ -1061,7 +1061,8 @@ public class PdfPKCS7 {
         try {
             ASN1InputStream in = new ASN1InputStream(new ByteArrayInputStream(enc));
             ASN1Sequence seq = (ASN1Sequence)in.readObject();
-            return (ASN1Primitive)seq.getObjectAt(seq.getObjectAt(0) instanceof DERTaggedObject ? 5 : 4);
+            return (ASN1Primitive)seq.getObjectAt(
+            		seq.getObjectAt(0) instanceof DERTaggedObject || seq.getObjectAt(0) instanceof DLTaggedObject ? 5 : 4);
         }
         catch (IOException e) {
             throw new ExceptionConverter(e);
