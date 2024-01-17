@@ -64,6 +64,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import com.lowagie.text.Chunk;
@@ -151,6 +152,13 @@ public class PdfSignatureAppearance {
         this.writer = writer;
         signDate = new GregorianCalendar();
         fieldName = getNewSigName();
+    }
+    
+    PdfSignatureAppearance(final PdfStamperImp writer, final Calendar globalDate,
+    		final List<PRAcroForm.FieldInformation> signatureFieldNames) {
+        this.writer = writer;
+        this.signDate = globalDate!=null ? globalDate : new GregorianCalendar();
+        this.fieldName = getNewSigName(signatureFieldNames);
     }
     
     private int render = SignatureRenderDescription;
@@ -819,6 +827,15 @@ public class PdfSignatureAppearance {
      * @return a new signature fied name
      */    
     public String getNewSigName() {
+    	return getNewSigName(null);
+    }
+
+    /**
+     * Gets a new signature fied name that doesn't clash with any existing name.
+     * @param signatureFieldNames Field names to avoid
+     * @return a new signature fied name
+     */
+    public String getNewSigName(final List<PRAcroForm.FieldInformation> signatureFieldNames) {
         AcroFields af = writer.getAcroFields();
         String name = "Signature";
         int step = 0;
@@ -826,16 +843,29 @@ public class PdfSignatureAppearance {
         while (!found) {
             ++step;
             String n1 = name + step;
-            if (af.getFieldItem(n1) != null)
+            if (af.getFieldItem(n1) != null) {
                 continue;
-            n1 += ".";
+            }
+            final String nameWithDot = n1 + "."; //$NON-NLS-1$
             found = true;
-            for (Iterator it = af.getFields().keySet().iterator(); it.hasNext();) {
-                String fn = (String)it.next();
-                if (fn.startsWith(n1)) {
+            for (final Object element : af.getFields().keySet()) {
+                final String fn = (String)element;
+                if (fn.startsWith(nameWithDot)) {
                     found = false;
                     break;
                 }
+            }
+            // Si parece que los hemos encontrado, hacemos una ultima
+            // comprobacion buscando el nombre en el resto de campos
+            if (found && signatureFieldNames != null) {
+            	for (int i = 0; found && i < signatureFieldNames.size(); i++) {
+            		final PRAcroForm.FieldInformation fieldInfo = signatureFieldNames.get(i);
+            		if (fieldInfo.getName() != null
+            				&& (fieldInfo.getName().equals(n1) || fieldInfo.getName().startsWith(nameWithDot))) {
+            			found = false;
+            			break;
+            		}
+            	}
             }
         }
         name += step;
