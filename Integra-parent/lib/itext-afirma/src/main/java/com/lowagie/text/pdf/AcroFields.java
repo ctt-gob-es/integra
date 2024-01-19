@@ -195,6 +195,15 @@ public class AcroFields {
                     PdfReader.releaseLastXrefPartial(annots.getAsIndirectObject(j));
                     continue;
                 }
+                
+            	// 19/01/2024 - Ignoraremos las firmas en las que haya un valor
+                // en el lugar erroneo y no uno en el correcto
+                if (!checkInvalidValuePosition(annot)) {
+                    PdfReader.releaseLastXrefPartial(annots.getAsIndirectObject(j));
+                    continue;
+                }
+            	// 19/01/2024 - FIN
+                
                 PdfDictionary widget = annot;
                 PdfDictionary dic = new PdfDictionary();
                 dic.putAll(annot);
@@ -202,6 +211,13 @@ public class AcroFields {
                 PdfDictionary value = null;
                 PdfObject lastV = null;
                 while (annot != null) {
+                	// 19/01/2024 - Cargamos el valor correcto de la firma
+                	// con cuidado de no sobreescribirlo con uno anterior
+                	if (PdfName.SIG.equals(annot.getAsName(PdfName.FT))
+                			&& dic.get(PdfName.V) != null) {
+                		dic.remove(PdfName.V);
+                	}
+                	// 19/01/2024 - FIN
                     dic.mergeDifferent(annot);
                     PdfString t = annot.getAsString(PdfName.T);
                     if (t != null)
@@ -272,6 +288,45 @@ public class AcroFields {
         }
     }
 
+    /**
+     * Comprueba si una anotacion es defirma y tiene asignado su valor en un lugar
+     * no v&aacute;lido.
+     * @param targetAnnot Anotaci&oacute;n que se quiere comprobar.
+     * @return {@code true} si la anotacion no es de firma, si no tiene valor o
+     * si este esta en el sitio correcto; {@code false} en caso contrario.
+     */
+    private static boolean checkInvalidValuePosition(final PdfDictionary targetAnnot) {
+
+    	PdfDictionary annot = new PdfDictionary();
+    	annot.putAll(targetAnnot);
+
+        final PdfDictionary dic = new PdfDictionary();
+        dic.putAll(annot);
+        while (annot != null) {
+        	// Comprobamos que no se haya encontrado el valor de firma antes
+        	// de llegar al propio elemento de firma. Si se encuentra antes
+        	// y ademas el objeto de firma no tiene un valor propio, se ignora
+        	// el campo
+        	if (PdfName.SIG.equals(annot.getAsName(PdfName.FT))
+        			&& dic.get(PdfName.V) != null) {
+
+        		// Si el elemento no tiene su propio valor, no podemos admitirno
+        		 if (annot.get(PdfName.V) == null) {
+        			 return false;
+        		 }
+
+        		// Ya que el elemento de firma tiene un valor, eliminamos
+        		// el anterior
+        		dic.remove(PdfName.V);
+        	}
+        	dic.mergeDifferent(annot);
+
+            annot = annot.getAsDict(PdfName.PARENT);
+        }
+
+		return true;
+	}
+    
     /**
      * Obtiene la referencia del objeto padre del diccionario indicado.
      * @param dict Diccionario del que tomar el padre.
