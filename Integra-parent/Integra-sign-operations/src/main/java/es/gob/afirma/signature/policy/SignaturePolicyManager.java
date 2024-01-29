@@ -1334,9 +1334,9 @@ public final class SignaturePolicyManager {
      * generation of signatures with signature policies.
      * @param signingMode Parameter that represents the signing mode of the XAdES-EPES signature. The possible values are:
      * <ul>
-     * <li>{@link UtilsSignature#DETACHED_SIGNATURE_MODE}</li>
-     * <li>{@link UtilsSignature##ENVELOPED_SIGNATURE_MODE}</li>
-     * <li>{@link UtilsSignature##ENVELOPING_SIGNATURE_MODE}</li>
+     * <li>{@link es.gob.afirma.Utils.IUtilsSignature#DETACHED_SIGNATURE_MODE}</li>
+     * <li>{@link es.gob.afirma.Utils.IUtilsSignature#ENVELOPED_SIGNATURE_MODE}</li>
+     * <li>{@link es.gob.afirma.Utils.IUtilsSignature#ENVELOPING_SIGNATURE_MODE}</li>
      * </ul>
      * @param idClient Parameter that represents the client application identifier.
      * @throws SignaturePolicyException If the method fails.
@@ -2275,7 +2275,7 @@ public final class SignaturePolicyManager {
      * validation and generation of signatures with signature policies.
      * @param properties Parameter that represents the set of properties defined inside of the properties file where to configure the validation
      * and generation of signatures with signature policies.
-     * * @param idClient Parameter that represents the client application identifier.
+     * @param idClient Parameter that represents the client application identifier.
      * @return a boolean that indicates if the signing mode of the CAdES-EPES signature is allowed by the signature policy (true) or not (false).
      */
     public static boolean isValidASN1SigningModeByPolicy(boolean includeContent, String policyID, Properties properties, String idClient) {
@@ -2308,9 +2308,9 @@ public final class SignaturePolicyManager {
      * to configure the validation and generation of signatures with signature policies.
      * @param signingMode Parameter that represents the signing mode of the XAdES-EPES signature. The possible values are:
      * <ul>
-     * <li>{@link UtilsSignature#DETACHED_SIGNATURE_MODE}</li>
-     * <li>{@link UtilsSignature##ENVELOPED_SIGNATURE_MODE}</li>
-     * <li>{@link UtilsSignature##ENVELOPING_SIGNATURE_MODE}</li>
+     * <li>{@link es.gob.afirma.Utils.IUtilsSignature#DETACHED_SIGNATURE_MODE}</li>
+     * <li>{@link es.gob.afirma.Utils.IUtilsSignature#ENVELOPED_SIGNATURE_MODE}</li>
+     * <li>{@link es.gob.afirma.Utils.IUtilsSignature#ENVELOPING_SIGNATURE_MODE}</li>
      * </ul>
      * @param policyID Parameter that represents the identifier of the signature policy defined inside of the properties file where to configure the
      * validation and generation of signatures with signature policies.

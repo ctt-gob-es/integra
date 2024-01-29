@@ -705,7 +705,7 @@ public class TSLValidatorResult implements ITSLValidatorResult {
 
 	/**
 	 * {@inheritDoc}
-	 * @see es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult#getRevocationValueBasicOCSPResponse()
+	 * @see es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult#getRevocationValueBasicOCSPResp()
 	 */
 	@Override
 	public BasicOCSPResp getRevocationValueBasicOCSPResp() {
@@ -714,7 +714,7 @@ public class TSLValidatorResult implements ITSLValidatorResult {
 
 	/**
 	 * {@inheritDoc}
-	 * @see es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult#setRevocationValueBasicOCSPResponse(org.bouncycastle.cert.ocsp.BasicOCSPResp)
+	 * @see es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult#setRevocationValueBasicOCSPResp(BasicOCSPResp)
 	 */
 	@Override
 	public void setRevocationValueBasicOCSPResp(BasicOCSPResp bor) {

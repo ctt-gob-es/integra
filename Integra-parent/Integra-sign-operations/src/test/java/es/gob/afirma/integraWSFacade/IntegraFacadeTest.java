@@ -924,7 +924,7 @@ public class IntegraFacadeTest extends TestCase {
     }
 
     /**
-     * Test for methods {@link IntegraFacade#generateSignaturePAdESRubric(byte[], PrivateKeyEntry, boolean, boolean, String, String, int, int, int, int)}.
+     * Test for methods {@link IntegraFacade#generateSignaturePAdESRubric(byte[], java.security.KeyStore.PrivateKeyEntry, boolean, boolean, byte[], String, int, int, int, int)}.
      */
     public final void testPAdESSignatureWithRubric() {
 	renameProperties("integraFacadePades.properties");
@@ -1006,7 +1006,7 @@ public class IntegraFacadeTest extends TestCase {
     }
 
     /**
-     * Test for methods {@link IntegraFacade#generateMultiSignaturePAdESRubric(byte[], PrivateKeyEntry, boolean, boolean, byte[], String, int, int, int, int).
+     * Test for methods {@link IntegraFacade#generateMultiSignaturePAdESRubric(byte[], java.security.KeyStore.PrivateKeyEntry, boolean, boolean, byte[], String, int, int, int, int)}.
      */
     public final void testPAdESMultiSignatureWithRubric() {
 	renameProperties("integraFacadePades.properties");
@@ -1088,7 +1088,7 @@ public class IntegraFacadeTest extends TestCase {
     }
 
     /**
-     * Test for methods {@link IntegraFacade#generateSignature(byte[], PrivateKeyEntry, boolean, boolean).
+     * Test for methods {@link IntegraFacade#generateSignature(byte[], java.security.KeyStore.PrivateKeyEntry, boolean, boolean)}.
      * 
      */
     public final void testGenerateSignatureASiCSBaseline() {

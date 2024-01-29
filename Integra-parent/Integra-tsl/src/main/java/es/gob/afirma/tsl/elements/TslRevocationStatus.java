@@ -105,8 +105,8 @@ public class TslRevocationStatus implements Serializable {
 	}
 
 	/**
-	 * Gets the value of the attribute {@link #revocationDescription}.
-	 * @return the value of the attribute {@link #revocationDescription}.
+	 * Gets the value of the attribute {@link #revocationDesc}.
+	 * @return the value of the attribute {@link #revocationDesc}.
 	 */
 	public final String getRevocationDesc() {
 		return revocationDesc;

@@ -75,7 +75,7 @@ public final class GenericUtilsCommons {
 	/**
 	 * Retrieves a value from a tree of several maps by a path given.
 	 * @param path path of maps tree separated by  '/'.
-	 * @param treeValues collection of maps (type: Map<String, Object>).
+	 * @param treeValues collection of maps (type: Map@lt;String, Object@gt;).
 	 * @return value of the key requested.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })

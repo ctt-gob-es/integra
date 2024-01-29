@@ -194,7 +194,6 @@ public final class TSLManager {
 
     /**
      * Tries to validate the input X509v3 certificate with.
-     * @param auditTransNumber Audit transaction number.
      * @param cert X509v3 certificate to validate.
      * @param validationDate Validation date to check.
      * @param checkStatusRevocation Flag that indicates if only try to detect the input certificate (<code>false</code>)

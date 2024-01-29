@@ -211,10 +211,12 @@ public class XMLUtils {
     /**
      * Writes the specified document to the given file. The default encoding is UTF-8.
      * 
-     * @param out
-     *            the output File
-     * @param document
-     *            the document to be writen
+     * @param writer
+     *            the writer to print the xml node.
+     * @param node
+     *            xml node.
+     * @param indent
+     * 			  {@code true} to pretty print, {@code false} otherwise.
      */
     public static void writeXML(Writer writer, Node node, boolean indent) {
 	// TODO: This section only works with XALAN transformation!!!
@@ -261,11 +263,12 @@ public class XMLUtils {
     }
 
     /**
-     * Returns the element which is at the end of the specified chain <parent><child><grandchild>...
+     * Returns the element which is at the end of the specified chain &lt;parent&gt;&lt;child&gt;&lt;grandchild&gt;...
      * 
-     * @param element
-     * @param chain
-     * @return
+     * @param element Element node.
+     * @param chain Chain of elements.
+     * @param create no use.
+     * @return Element node.
      */
     public static Element getChildElementByChain(Element element, String[ ] chain, boolean create) {
 	if (chain == null) {
@@ -330,9 +333,9 @@ public class XMLUtils {
     /**
      * Returns the child element with the specified tagName for the specified parent element
      * 
-     * @param parent
-     * @param tagName
-     * @return
+     * @param parent Parent element.
+     * @param tagName Tag name. 
+     * @return Element.
      */
     public static Element getChildElementByTagName(Element parent, String tagName) {
 	if (parent == null || tagName == null) {
@@ -442,8 +445,8 @@ public class XMLUtils {
 
     /**
      * Method that indicates whether a document is XML (true) or not (false).
-     * @param document
-     * @return
+     * @param document XML document.
+     * @return {@code true} if document is XML.
      */
     public static boolean isXMLFormat(byte[ ] document) {
 	try {

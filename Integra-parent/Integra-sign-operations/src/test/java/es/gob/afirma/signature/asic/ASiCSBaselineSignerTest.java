@@ -212,7 +212,7 @@ public class ASiCSBaselineSignerTest extends TestCase {
     }
 
     /**
-     * Test for method {@link ASiCSBaselineSigner#sign(byte[], String, String, PrivateKeyEntry, Properties, boolean, String, String)}.
+     * Test for method {@link ASiCSBaselineSigner#sign(byte[], String, String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String)}.
      */
     public final void testSignWithoutTimestamp() {
 	byte[ ] dataToSignCades = UtilsFileSystemCommons.readFile("ficheroAfirmar.txt", true);
@@ -332,7 +332,7 @@ public class ASiCSBaselineSignerTest extends TestCase {
     }
 
     /**
-     * Test for method {@link ASiCSBaselineSigner#sign(byte[], String, String, PrivateKeyEntry, Properties, boolean, String, String)}.
+     * Test for method {@link ASiCSBaselineSigner#sign(byte[], String, String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String)}.
      */
     public final void testSignWithTimestamp() {
 	byte[ ] dataToSignCades = UtilsFileSystemCommons.readFile("ficheroAfirmar.txt", true);

@@ -48,14 +48,14 @@ public class TSPInformation implements Serializable {
     /**
 	 * Attribute that represents the name of the legal entity responsible for the TSP
 	 * in all the presented languages:
-	 * Map<Language, List<Names>>.
+	 * Map&lt;Language, List&lt;Names&gt;&gt;.
 	 */
 	private Map<String, List<String>> tspNames = null;
 
 	/**
 	 * Attribute that represents the trade name of the legal entity responsible for the TSP
 	 * in all the presented languages:
-	 * Map<Language, List<TradeNames>>.
+	 * Map&lt;Language, List&lt;TradeNames&gt;&gt;.
 	 */
 	private Map<String, List<String>> tspTradeNames = null;
 

@@ -93,7 +93,7 @@ public final class PDFUtils {
 	 * @param pdf	PDF file.
 	 * @param attachments	 Attachment files.
 	 * @return	Modified file.
-	 * @throws UtilsException	If an error occurs.
+	 * @throws SignatureReportException	if an error occurs.
 	 */
 	public static byte[ ] addAttachment(byte[ ] pdf, ArrayList<FileAttachment> attachments) throws SignatureReportException {
 		byte[ ] doc = null;

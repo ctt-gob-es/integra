@@ -79,7 +79,7 @@ public interface IXMLConstants {
 	String AFIRMA_TAG = "AFIRMA";
 
 	/**
-	 * Constant attribute that represents <code><asic:XAdESSignatures</code> tag name.
+	 * Constant attribute that represents <code>&lt;asic:XAdESSignatures</code> tag name.
 	 */
 	String ASICS_TAG = "asic:XAdESSignatures";
 

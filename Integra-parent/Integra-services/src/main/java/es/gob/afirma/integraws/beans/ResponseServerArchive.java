@@ -56,9 +56,9 @@ public class ResponseServerArchive extends ArchiveResponse{
 
     /**
      * Constructor method for the class ResponseServerArchive.java.
-     * @param result 
-     * @param signature 
-     * @param integraSuccessParam 
+     * @param result The result value.
+     * @param signature The signature value.
+     * @param integraSuccessParam The value for the attribute {@link #integraSuccess}
      */
     public ResponseServerArchive(Result result, byte[ ] signature, boolean integraSuccessParam) {
 	this.setResult(result);
@@ -69,12 +69,12 @@ public class ResponseServerArchive extends ArchiveResponse{
 
     /**
      * Constructor method for the class ResponseServerArchive.java.
-     * @param integraSuccessParam 
-     * @param message 
+     * @param integraSuccessParam The value for the attribute {@link #integraSuccess}
+     * @param integraErrorMsg The value for the attribute {@link #integraErrorMsg}
      */
-    public ResponseServerArchive(boolean integraSuccessParam, String message) {
+    public ResponseServerArchive(boolean integraSuccessParam, String integraErrorMsg) {
 	this.integraSuccess = integraSuccessParam;
-	this.integraErrorMsg = message;
+	this.integraErrorMsg = integraErrorMsg;
     }
 
     /**

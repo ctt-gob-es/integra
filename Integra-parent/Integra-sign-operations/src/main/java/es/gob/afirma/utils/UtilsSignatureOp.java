@@ -300,8 +300,8 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
     /**
      * Method that validates the validity period of a certificate and the revocation status
-     * of a certificate (if the validation level for the certificates is defined with the value {@link IntegraFacadeConstants#VALIDATION_LEVEL_COMPLETE}).
-     * If the validation level for the certificates is defined with the value {@link IntegraFacadeConstants#VALIDATION_LEVEL_COMPLETE} the validation of
+     * of a certificate (if the validation level for the certificates is defined with the value {@link IUtilsSignature#VALIDATION_LEVEL_COMPLETE}).
+     * If the validation level for the certificates is defined with the value {@link IUtilsSignature#VALIDATION_LEVEL_COMPLETE} the validation of
      * the revocation status will be via OCSP.
      * @param certificate Parameter that represents the certificate to validate.
      * @param validationDate Parameter that represents the validation date.
@@ -1769,8 +1769,8 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signingMode Parameter that represents the signing mode of the XAdES signature. The possible values are:
      * <ul>
      * <li>{@link IUtilsSignature#DETACHED_SIGNATURE_MODE}</li>
-     * <li>{@link IUtilsSignature##ENVELOPED_SIGNATURE_MODE}</li>
-     * <li>{@link IUtilsSignature##ENVELOPING_SIGNATURE_MODE}</li>
+     * <li>{@link IUtilsSignature#ENVELOPED_SIGNATURE_MODE}</li>
+     * <li>{@link IUtilsSignature#ENVELOPING_SIGNATURE_MODE}</li>
      * </ul>
      * @param signedFile Parameter that represents the file signed by the XML signature when the signed data isn't included into the signed XML document.
      * @param signedFileName Parameter that represents the name of the file signed by the XML signature when the signed data isn't included into the signed XML document.

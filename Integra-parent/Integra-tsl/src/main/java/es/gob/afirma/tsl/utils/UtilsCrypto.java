@@ -48,7 +48,7 @@ public final class UtilsCrypto {
 
 	/**
 	 * Method that obtains the name of certain algorithm from the URI of the algorithm (only for XML format).
-	 * For example: "http://www.w3.org/2000/09/xmldsig#sha1" --> "SHA1".
+	 * For example: "http://www.w3.org/2000/09/xmldsig#sha1" --&lt; "SHA1".
 	 * @param algorithmURI Parameter that represents the URI of the algorithm.
 	 * @return the name of the algorithm.
 	 * @throws CommonUtilsException If the algorithm isn't supported.

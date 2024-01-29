@@ -60,7 +60,6 @@ public class MustUnderstandResponseHander extends AbstractTSAHandler {
 
     /**
      * {@inheritDoc}
-     * @see org.apache.axis.Handler#invoke(org.apache.axis.MessageContext)
      */
     @Override
     public InvocationResponse invoke(MessageContext msgContext) throws AxisFault {

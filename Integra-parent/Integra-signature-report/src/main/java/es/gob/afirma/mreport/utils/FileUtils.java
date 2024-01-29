@@ -318,7 +318,7 @@ public final class FileUtils {
 	 * Detects the media type of the given document.
 	 * @param document	The document stream.
 	 * @return	Detected media type.
-	 * @throws UtilsException 
+	 * @throws UtilsException if the method fails.
 	 */
 	public static String getMediaType(byte[ ] document) throws UtilsException {
 		return tika.detect(document);

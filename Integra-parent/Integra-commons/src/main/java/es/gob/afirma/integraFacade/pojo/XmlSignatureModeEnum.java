@@ -28,8 +28,8 @@ public enum XmlSignatureModeEnum {
     }
 
     /**
-     * Gets the value of the attribute {@link #type}.
-     * @return the value of the attribute {@link #type}.
+     * Gets the value of the attribute {@link #mode}.
+     * @return the value of the attribute {@link #mode}.
      */
     public String getMode() {
 	return mode;

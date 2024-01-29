@@ -26,10 +26,10 @@ import org.w3c.dom.Node;
  * 
  * Sample usage of signing SignatureProductionPlace:
  * 
- * <xades:SignatureProductionPlace> <xades:City>p:City</p:City>
- * <xades:StateOrProvince>p:StateOrProvince</p:StateOrProvince>
- * <xades:PostalCode>p:PostalCode</p:PostalCode> <xades:CountryName>p:CountryName</p:CountryName>
- * </xades:SignatureProductionPlace>
+ * &lt;xades:SignatureProductionPlace&gt; &lt;xades:City&gt;p:City&lt;/p:City&gt;
+ * &lt;xades:StateOrProvince&gt;p:StateOrProvince&lt;/p:StateOrProvince&gt;
+ * &lt;xades:PostalCode&gt;p:PostalCode&lt;/p:PostalCode&gt; &lt;xades:CountryName&gt;p:CountryName&lt;/p:CountryName&gt;
+ * &lt;/xades:SignatureProductionPlace&gt;
  * 
  */
 

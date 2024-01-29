@@ -115,7 +115,7 @@ public abstract class ATSLValidator implements ITSLValidator {
 
     /**
      * {@inheritDoc}
-     * @see es.gob.afirma.tsl.certValidation.ifaces.ITSLValidator#validateCertificateWithTSL(java.lang.String, java.security.cert.X509Certificate, boolean, boolean, java.util.Date, boolean)
+     * @see es.gob.afirma.tsl.certValidation.ifaces.ITSLValidator#validateCertificateWithTSL(X509Certificate, boolean, boolean, Date, boolean)
      */
     @Override
     public ITSLValidatorResult validateCertificateWithTSL(X509Certificate cert, boolean isCACert, boolean isTsaCertificate, Date validationDate, boolean checkStatusRevocation) throws TSLArgumentException, TSLValidationException {
@@ -2240,10 +2240,10 @@ public abstract class ATSLValidator implements ITSLValidator {
     /**
      * Method that obtains the certificate from a URI passed by parameter.
      * 
-     * @param uri
-     * @param readTimeout
-     * @param connectionTimeout
-     * @return
+     * @param uri target URI.
+     * @param readTimeout Max millis to read the response.
+     * @param connectionTimeout Max millis to connect to server.
+     * @return Target certificate.
      */
     public X509Certificate getCertificateFromHTTPURI(URI uri, int readTimeout, int connectionTimeout) {
 	X509Certificate result = null;
@@ -2280,7 +2280,7 @@ public abstract class ATSLValidator implements ITSLValidator {
      * @param qcResults
      *            List of QCResult obtained in the detection of the certificate
      *            according to the validation date.
-     * @return
+     * @return {@code true} if results include "QC_For_eSig" or "QC_For_eSeal" value.
      */
     private boolean checkQCResultsEsigOrEseal(List<QCResult> qcResults) {
 	return qcResults.contains(QCResult.QC_FOR_ESIG) || qcResults.contains(QCResult.QC_FOR_ESEAL);

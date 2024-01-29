@@ -44,18 +44,18 @@ public interface IReportManager {
     /**
      * Create a signature report from the information supplied.
      * @param validationData	{@link ValidationData} that contains the validation results.
-     * @param docIncMode		Inclusion mode for the original document:
-     * 									{@link ITemplateConfiguration.INC_SIGNED_DOC_EMBED}
-     *									{@link ITemplateConfiguration.INC_SIGNED_DOC_CONCAT}
+     * @param docIncData		Inclusion mode for the original document:
+     * 									{@link ITemplateConfiguration#INC_SIGNED_DOC_EMBED}
+     *									{@link ITemplateConfiguration#INC_SIGNED_DOC_CONCAT}
      * @param xsltTemplate		XSLT Template to apply the FO transformation.
-     * @param signature			Electronic signature.
      * @param document			Signed document.
      * @param barcodes			Bar code to include into the signature report.
+     * @param attachments		Documents attached.
      * @param additionalParameters	Additional parameters included in the request.
      * @return	byte[] that represents the generated PDF Report.
      * @throws SignatureReportException		If an error occurs generating the report.
      */
-   byte[ ] createReport(ValidationData validationData, DocInclusionData docIncDAta, byte[] xsltTemplate, byte[ ] document, ArrayList<Barcode> barcodes, ArrayList<FileAttachment> attachments, HashMap<String, String> additionalParameters) throws SignatureReportException;
+   byte[ ] createReport(ValidationData validationData, DocInclusionData docIncData, byte[] xsltTemplate, byte[ ] document, ArrayList<Barcode> barcodes, ArrayList<FileAttachment> attachments, HashMap<String, String> additionalParameters) throws SignatureReportException;
 
 
 }

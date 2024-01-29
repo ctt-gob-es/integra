@@ -77,7 +77,7 @@ public enum QCResult {
 	
 	/**
 	 * Obtains a SignatureFormat instance by a format name.
-	 * @param formatName name of signature format.
+	 * @param qc name of signature format.
 	 * @return a SignatureFormat instance
 	 */
 	public static final QCResult getQCResult(String qc) {

@@ -52,8 +52,8 @@ public class ResponseVerifySign {
 
     /**
      * Constructor method for the class ResponseVerifySign.java.
-     * @param validationResultParam 
-     * @param integraSuccessParam 
+     * @param validationResultParam validation result.
+     * @param integraSuccessParam integraSuccessParam value.
      */
     public ResponseVerifySign(ValidationResultWS validationResultParam, boolean integraSuccessParam) {
 	super();
@@ -63,13 +63,13 @@ public class ResponseVerifySign {
 
     /**
      * Constructor method for the class ResponseVerifySign.java.
-     * @param integraSuccessParam 
-     * @param integraErrorMsgParam 
+     * @param integraSuccessParam integraSuccessParam value.
+     * @param message error message. 
      */
-    public ResponseVerifySign(boolean integraSuccessParam, String integraErrorMsgParam) {
+    public ResponseVerifySign(boolean integraSuccessParam, String message) {
 	super();
 	this.integraSuccess = integraSuccessParam;
-	this.integraErrorMsg = integraErrorMsgParam;
+	this.integraErrorMsg = message;
     }
 
     /**

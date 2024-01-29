@@ -50,72 +50,72 @@ Below follows the structure of a XAdES-T form built on a XAdES-BES or a XAdES-EP
 time-stamp token within the SignatureTimeStamp element. A XAdES-T form based on time-marks MAY exist
 without such an element.
 
-        <ds:Signature ID?>
+        &lt;ds:Signature ID?&gt;
             ...
-            <ds:Object>
-                <QualifyingProperties>
+            &lt;ds:Object&gt;
+                &lt;QualifyingProperties&gt;
                     ...
-                    <UnsignedProperties>
-                        <UnsignedSignatureProperties>
+                    &lt;UnsignedProperties&gt;
+                        &lt;UnsignedSignatureProperties&gt;
                             (SignatureTimeStamp)+
-                        </UnsignedSignatureProperties>
-                    </UnsignedProperties>
-                </QualifyingProperties>
-            </ds:Object>
-        </ds:Signature>-
+                        &lt;/UnsignedSignatureProperties&gt;
+                    &lt;/UnsignedProperties&gt;
+                &lt;/QualifyingProperties&gt;
+            &lt;/ds:Object&gt;
+        &lt;/ds:Signature&gt;-
 
 XMLDISG
 |
-<ds:Signature ID?>- - - - - - - - +- - - - +- - - +
-<ds:SignedInfo> | | |
-<ds:CanonicalizationMethod/> | | |
-<ds:SignatureMethod/> | | |
-(<ds:Reference URI? > | | |
-(<ds:Transforms>)? | | |
-<ds:DigestMethod/> | | |
-<ds:DigestValue/> | | |
-</ds:Reference>)+ | | |
-</ds:SignedInfo> | | |
-<ds:SignatureValue/> | | |
-(<ds:KeyInfo>)? - - - - - - - - + | |
+&lt;ds:Signature ID?&gt;- - - - - - - - +- - - - +- - - +
+&lt;ds:SignedInfo&gt; | | |
+&lt;ds:CanonicalizationMethod/&gt; | | |
+&lt;ds:SignatureMethod/&gt; | | |
+(&lt;ds:Reference URI? &gt; | | |
+(&lt;ds:Transforms&gt;)? | | |
+&lt;ds:DigestMethod/&gt; | | |
+&lt;ds:DigestValue/&gt; | | |
+&lt;/ds:Reference&gt;)+ | | |
+&lt;/ds:SignedInfo&gt; | | |
+&lt;ds:SignatureValue/&gt; | | |
+(&lt;ds:KeyInfo&gt;)? - - - - - - - - + | |
 | |
-<ds:Object> | |
+&lt;ds:Object&gt; | |
 | |
-<QualifyingProperties> | |
+&lt;QualifyingProperties&gt; | |
 | |
-<SignedProperties> | |
+&lt;SignedProperties&gt; | |
 | |
-<SignedSignatureProperties> | |
+&lt;SignedSignatureProperties&gt; | |
 (SigningTime)? | |
 (SigningCertificate)? | |
 (SignaturePolicyIdentifier)? | |
 (SignatureProductionPlace)? | |
 (SignerRole)? | |
-</SignedSignatureProperties> | |
+&lt;/SignedSignatureProperties&gt; | |
 | |
-<SignedDataObjectProperties> | |
+&lt;SignedDataObjectProperties&gt; | |
 (DataObjectFormat)* | |
 (CommitmentTypeIndication)* | |
 (AllDataObjectsTimeStamp)* | |
 (IndividualDataObjectsTimeStamp)*| |
-</SignedDataObjectProperties> | |
+&lt;/SignedDataObjectProperties&gt; | |
 | |
-</SignedProperties> | |
+&lt;/SignedProperties&gt; | |
 | |
-<UnsignedProperties> | |
+&lt;UnsignedProperties&gt; | |
 | |
-<UnsignedSignatureProperties> | |
+&lt;UnsignedSignatureProperties&gt; | |
 (CounterSignature)*- - - - - - - + |
 (SignatureTimeStamp)+ |
-</UnsignedSignatureProperties>- - -+ |
+&lt;/UnsignedSignatureProperties&gt;- - -+ |
 | |
-</UnsignedProperties> | |
+&lt;/UnsignedProperties&gt; | |
 | |
-</QualifyingProperties> | |
+&lt;/QualifyingProperties&gt; | |
 | |
-</ds:Object> | |
+&lt;/ds:Object&gt; | |
 | |
-</ds:Signature>- - - - - - - - - - - - - - +- - - +
+&lt;/ds:Signature&gt;- - - - - - - - - - - - - - +- - - +
 | |
 XAdES-BES(-EPES) |
 |

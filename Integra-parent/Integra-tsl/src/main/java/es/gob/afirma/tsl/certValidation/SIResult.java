@@ -193,7 +193,7 @@ public class SIResult implements Serializable {
 
 	/**
 	 * Sets the value of the attribute {@link #listTspTradeName}.
-	 * @param tspTradeName The value for the attribute {@link #listTspTradeName}.
+	 * @param listTspTradeName The list with values for the attribute {@link #listTspTradeName}.
 	 */
 	public void setListTspTradeName(List<String> listTspTradeName) {
 		this.listTspTradeName = listTspTradeName;

@@ -205,7 +205,6 @@ public class CadesSignerTest extends AbstractSignatureTest {
 
     /**
      * Tests for generating CAdES signatures with timestamp.
-     * @throws Exception If the test fails.
      */
     public void testSignWithTimestamp() {
 	CadesSigner cadesSigner = new CadesSigner();
@@ -251,7 +250,6 @@ public class CadesSignerTest extends AbstractSignatureTest {
 
     /**
      * Tests for generating CAdES co-signatures with timestamp.
-     * @throws Exception If the test fails.
      */
     public void testCoSignWithTimestamp() {
 	CadesSigner cadesSigner = new CadesSigner();
@@ -296,7 +294,6 @@ public class CadesSignerTest extends AbstractSignatureTest {
 
     /**
      * Tests for generating CAdES counter-ignatures with timestamp.
-     * @throws Exception If the test fails.
      */
     public void testCounterSignWithTimestamp() {
 	CadesSigner cadesSigner = new CadesSigner();
@@ -332,7 +329,6 @@ public class CadesSignerTest extends AbstractSignatureTest {
 
     /**
      * Tests for {@link CadesSigner#upgrade(byte[], List)}.
-     * @throws Exception If the test fails.
      */
     public void testUpgrade() {
 	CadesSigner cadesSigner = new CadesSigner();

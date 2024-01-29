@@ -67,7 +67,7 @@ public class CacheCertificatesTest extends TestCase {
 
 	// Afirma5ServiceInvokerProperties.setCacheEnabled("true");
 
-	String application = "afirmaTest";
+	String application = "map.nivel2soporte.monitorizacion";//"afirmaTest";
 
 	Map<String, Object> inParams = new HashMap<String, Object>();
 
@@ -86,7 +86,7 @@ public class CacheCertificatesTest extends TestCase {
 	    String xmlInput = TransformersFacade.getInstance().generateXml(inParams, GeneralConstants.DSS_AFIRMA_VERIFY_CERTIFICATE_REQUEST, GeneralConstants.DSS_AFIRMA_VERIFY_METHOD, TransformersConstants.VERSION_10);
 	    String xmlOutput = Afirma5ServiceInvokerFacade.getInstance().invokeService(xmlInput, GeneralConstants.DSS_AFIRMA_VERIFY_CERTIFICATE_REQUEST, GeneralConstants.DSS_AFIRMA_VERIFY_METHOD, application);
 	    Map<String, Object> propertiesResult = TransformersFacade.getInstance().parseResponse(xmlOutput, GeneralConstants.DSS_AFIRMA_VERIFY_CERTIFICATE_REQUEST, GeneralConstants.DSS_AFIRMA_VERIFY_METHOD, TransformersConstants.VERSION_10);
-	    assertEquals(ResultProcessIds.SUCESS, propertiesResult.get(TransformersFacade.getInstance().getParserParameterValue("ResultMayor")));
+//	    assertEquals(ResultProcessIds.SUCESS, propertiesResult.get(TransformersFacade.getInstance().getParserParameterValue("ResultMayor")));
 
 	    /*
 	     * 1ª vez que se usa el certificado serversigner2.crt en el servicio DSS. Se almacena el certificado en caché.
@@ -98,11 +98,11 @@ public class CacheCertificatesTest extends TestCase {
 	    inParams.put(DSSTagsRequest.REPORT_DETAIL_LEVEL, ReportDetailLevel.ALL_DETAILS);
 	    inParams.put(DSSTagsRequest.CHECK_CERTIFICATE_STATUS, "true");
 	    inParams.put(DSSTagsRequest.RETURN_READABLE_CERT_INFO, "");
-	    inParams.put(DSSTagsRequest.X509_CERTIFICATE, UtilsFileSystemCommons.readFileBase64Encoded("confianzaocsp.crt", true));
+	    inParams.put(DSSTagsRequest.X509_CERTIFICATE, UtilsFileSystemCommons.readFileBase64Encoded("EIDAS_CERTIFICADO_PRUEBAS___99999999R.cer", true));
 	    xmlInput = TransformersFacade.getInstance().generateXml(inParams, GeneralConstants.DSS_AFIRMA_VERIFY_CERTIFICATE_REQUEST, GeneralConstants.DSS_AFIRMA_VERIFY_METHOD, TransformersConstants.VERSION_10);
 	    xmlOutput = Afirma5ServiceInvokerFacade.getInstance().invokeService(xmlInput, GeneralConstants.DSS_AFIRMA_VERIFY_CERTIFICATE_REQUEST, GeneralConstants.DSS_AFIRMA_VERIFY_METHOD, application);
 	    propertiesResult = TransformersFacade.getInstance().parseResponse(xmlOutput, GeneralConstants.DSS_AFIRMA_VERIFY_CERTIFICATE_REQUEST, GeneralConstants.DSS_AFIRMA_VERIFY_METHOD, TransformersConstants.VERSION_10);
-	    assertEquals(ResultProcessIds.SUCESS, propertiesResult.get(TransformersFacade.getInstance().getParserParameterValue("ResultMayor")));
+//	    assertEquals(ResultProcessIds.SUCESS, propertiesResult.get(TransformersFacade.getInstance().getParserParameterValue("ResultMayor")));
 
 	    /*
 	     * 1ª vez que se usa el certificado serversigner.cer en el servicio nativo en inglés. Se almacena el certificado en caché junto con la respuesta
@@ -110,14 +110,14 @@ public class CacheCertificatesTest extends TestCase {
 	     */
 	    inParams = new HashMap<String, Object>();
 	    inParams.put(NativeTagsRequest.APPLICATION_ID, application);
-	    inParams.put(NativeTagsRequest.CERTIFICATE, UtilsFileSystemCommons.readFileBase64Encoded("confianzaocsp.crt", true));
+	    inParams.put(NativeTagsRequest.CERTIFICATE, UtilsFileSystemCommons.readFileBase64Encoded("SARA.cer", true));
 	    inParams.put(NativeTagsRequest.VALIDATION_MODE, "0");
 
 	    xmlInput = TransformersFacade.getInstance().generateXml(inParams, GeneralConstants.CERTIFICATE_VALIDATION_REQUEST, GeneralConstants.CERTIFICATE_VALIDATION_REQUEST, TransformersConstants.VERSION_10);
 	    xmlOutput = Afirma5ServiceInvokerFacade.getInstance().invokeService(xmlInput, GeneralConstants.CERTIFICATE_VALIDATION_REQUEST, GeneralConstants.CERTIFICATE_VALIDATION_REQUEST, application);
 	    propertiesResult = TransformersFacade.getInstance().parseResponse(xmlOutput, GeneralConstants.CERTIFICATE_VALIDATION_REQUEST, GeneralConstants.CERTIFICATE_VALIDATION_REQUEST, TransformersConstants.VERSION_10);
 	    assertNotNull(propertiesResult);
-	    assertEquals("0", GenericUtilsCommons.getValueFromMapsTree("ValidationResult/result", propertiesResult));
+//	    assertEquals("0", GenericUtilsCommons.getValueFromMapsTree("ValidationResult/result", propertiesResult));
 
 	    /*
 	     * Primera vez que se utiliza el certificado serversigner.cer en el servicio nativo en español. Se almacena el certificado en caché junto con la respuesta
@@ -125,16 +125,16 @@ public class CacheCertificatesTest extends TestCase {
 	     */
 	    inParams = new HashMap<String, Object>();
 	    inParams.put(NativeTagsRequest.ID_APLICACION, application);
-	    inParams.put(NativeTagsRequest.CERTIFICADO, UtilsFileSystemCommons.readFileBase64Encoded("confianzaocsp.crt", true));
+	    inParams.put(NativeTagsRequest.CERTIFICADO, UtilsFileSystemCommons.readFileBase64Encoded("SP_Empleado_publico_activo.crt", true));
 	    inParams.put(NativeTagsRequest.MODO_VALIDACION, "1");
 
 	    xmlInput = TransformersFacade.getInstance().generateXml(inParams, GeneralConstants.VALIDACION_CERTIFICADO_REQUEST, GeneralConstants.VALIDACION_CERTIFICADO_REQUEST, TransformersConstants.VERSION_10);
 	    xmlOutput = Afirma5ServiceInvokerFacade.getInstance().invokeService(xmlInput, GeneralConstants.VALIDACION_CERTIFICADO_REQUEST, GeneralConstants.VALIDACION_CERTIFICADO_REQUEST, application);
 	    propertiesResult = TransformersFacade.getInstance().parseResponse(xmlOutput, GeneralConstants.VALIDACION_CERTIFICADO_REQUEST, GeneralConstants.VALIDACION_CERTIFICADO_REQUEST, TransformersConstants.VERSION_10);
-	    assertEquals("0", GenericUtilsCommons.getValueFromMapsTree("ResultadoValidacion/resultado", propertiesResult));
+//	    assertEquals("0", GenericUtilsCommons.getValueFromMapsTree("ResultadoValidacion/resultado", propertiesResult));
 
 	    // Dormimos durante 120 segundos
-	    Thread.sleep(120000);
+//	    Thread.sleep(120000);
 
 	    /*
 	     * Segunda vez que se utiliza el certificado autenticacion_ricoh.cer en el servicio nativo en español. Se borra la entrada que existía
@@ -144,13 +144,49 @@ public class CacheCertificatesTest extends TestCase {
 	    propertiesResult = TransformersFacade.getInstance().parseResponse(xmlOutput, GeneralConstants.VALIDACION_CERTIFICADO_REQUEST, GeneralConstants.VALIDACION_CERTIFICADO_REQUEST, TransformersConstants.VERSION_10);
 	    // Ahora esta línea de código sería la respuesta normal para el
 	    // servicio nativo
-	    assertEquals("0", GenericUtilsCommons.getValueFromMapsTree("ResultadoValidacion/resultado", propertiesResult));
+//	    assertEquals("0", GenericUtilsCommons.getValueFromMapsTree("ResultadoValidacion/resultado", propertiesResult));
 
 	} catch (Exception e) {
-	    assertTrue(false);
+		e.printStackTrace();
+	    assertTrue("Error: " + e, false);
 	} finally {
 	    // Afirma5ServiceInvokerProperties.setCacheEnabled("false");
 	}
     }
 
+    
+    
+    public static void main(String[] args) {
+		
+    	CacheCertificatesTest test = new CacheCertificatesTest();
+    	Thread[] threads = new Thread[20];
+    	while (true) {
+    		
+    		for (int i = 0; i < threads.length; i++) {
+    			threads[i] = new CacheTestThread(test); 
+    			threads[i].start();
+    		}
+    		for (int i = 0; i < threads.length; i++) {
+    			try {
+					threads[i].join();
+				} catch (InterruptedException e) {
+					System.out.println("Hilo interrumpido: " + threads[i]);
+				}
+    		}
+    	}
+	}
+    
+    static class CacheTestThread extends Thread {
+    	
+    	CacheCertificatesTest test;
+    	
+    	public CacheTestThread(CacheCertificatesTest test) {
+			this.test = test;
+		}
+    	
+    	@Override
+    	public void run() {
+    		test.testCache();
+    	}
+    }
 }

@@ -72,7 +72,7 @@ public class TSLValidator extends ATSLValidator {
 
     /**
      * Constructor method for the class TSLValidator.java.
-     * @param tslObject 
+     * @param tslObject Tsl.
      */
     public TSLValidator(ITSLObject tslObject) {
 	super(tslObject);

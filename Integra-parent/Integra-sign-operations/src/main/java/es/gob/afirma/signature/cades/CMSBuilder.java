@@ -208,8 +208,8 @@ public final class CMSBuilder {
 
     /**
      *<p> Builds a signedData object used in CAdES signatures. SignedData is defined in the
-     * <a href="http://tools.ietf.org/html/rfc3852">rfc3852</a>:<br>
-     * <code><pre>
+     * <a href="http://tools.ietf.org/html/rfc3852">rfc3852</a>:</p>
+     * <pre>
      * id-signedData OBJECT IDENTIFIER ::= { iso(1) member-body(2)
          us(840) rsadsi(113549) pkcs(1) pkcs7(7) 2 }
     
@@ -221,7 +221,7 @@ public final class CMSBuilder {
         crls [1] IMPLICIT RevocationInfoChoices OPTIONAL,
         signerInfos SignerInfos }
     
-    </pre></code></p>
+    </pre>
      * @param parameters parameters used in the signature.
      * @param includeContent indicates whether the document content is included in the signature or is only referenced.
      * @param dataType type of content to sign.
@@ -373,8 +373,8 @@ public final class CMSBuilder {
 
     /**
      *<p> Builds a signedData object used in CAdES signatures. SignedData is defined in the
-     * <a href="http://tools.ietf.org/html/rfc3852">rfc3852</a>:<br>
-     * <code><pre>
+     * <a href="http://tools.ietf.org/html/rfc3852">rfc3852</a>:</p>
+     * <pre>
      * id-signedData OBJECT IDENTIFIER ::= { iso(1) member-body(2)
          us(840) rsadsi(113549) pkcs(1) pkcs7(7) 2 }
     
@@ -386,7 +386,7 @@ public final class CMSBuilder {
         crls [1] IMPLICIT RevocationInfoChoices OPTIONAL,
         signerInfos SignerInfos }
     
-    </pre></code></p>
+    </pre>
      * @param parameters parameters used in the signature.
      * @param includeContent indicates whether the document content is included in the signature or is only referenced.
      * @param dataType type of content to sign.

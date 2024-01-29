@@ -42,7 +42,7 @@ public class TSLEncodingException extends Exception {
 
     /**
      * Constructor method for the class TSLEncodingException.java.
-     * @param message 
+     * @param message Description.
      */
     public TSLEncodingException(String message) {
 	super(message);
@@ -50,7 +50,7 @@ public class TSLEncodingException extends Exception {
 
     /**
      * Constructor method for the class TSLEncodingException.java.
-     * @param cause 
+     * @param cause Cause.
      */
     public TSLEncodingException(Throwable cause) {
 	super(cause);
@@ -58,8 +58,8 @@ public class TSLEncodingException extends Exception {
 
     /**
      * Constructor method for the class TSLEncodingException.java.
-     * @param message
-     * @param cause 
+     * @param message Description.
+     * @param cause Cause.
      */
     public TSLEncodingException(String message, Throwable cause) {
 	super(message, cause);
@@ -67,10 +67,10 @@ public class TSLEncodingException extends Exception {
 
     /**
      * Constructor method for the class TSLEncodingException.java.
-     * @param message
-     * @param cause
-     * @param enableSuppression
-     * @param writableStackTrace 
+     * @param message Description.
+     * @param cause Cause.
+     * @param enableSuppression Suppression.
+     * @param writableStackTrace  Write stacktrace.
      */
     public TSLEncodingException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
 	super(message, cause, enableSuppression, writableStackTrace);

@@ -90,7 +90,7 @@ public class WrapperX509Cert {
 	
 	/**
 	 * Gets the organization name of the certificate.
-	 * @return
+	 * @return Organization name.
 	 */
 	public String getOrganizationNameCertificate() {
 		String result = null;
@@ -108,6 +108,7 @@ public class WrapperX509Cert {
 	
 	/**
 	 * Gets the common name of the issuer certificate
+	 * @return Issuer name.
 	 */
 	public String getCommonNameIssuer(){
 		String result = null;
@@ -125,7 +126,7 @@ public class WrapperX509Cert {
 	
 	/**
 	 * Get the issuer alternative name.
-	 * @return
+	 * @return Issuer alternative name.
 	 */
 	public String getIssuerAlternativeName() {
 		String result = null;

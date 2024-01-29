@@ -209,6 +209,9 @@ public class SystemUtils {
 
     /**
      * Return the value of the boolean System property propName.
+     * @param propName property name.
+     * @param defaultValue default value.
+     * @return Property value as boolean.
      */
     public static boolean getBooleanProperty(String propName, boolean defaultValue) {
 	// if set, require value of either true or false

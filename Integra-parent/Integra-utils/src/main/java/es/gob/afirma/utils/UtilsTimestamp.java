@@ -83,9 +83,9 @@ public final class UtilsTimestamp {
      * @param applicationID Parameter that represents the identifier of the client application.
      * @param tsaCommunicationMode Parameter that represents the protocol defined to communicate with TS@. The allowed values are:
      * <ul>
-     * <li>{@link #TSA_RFC3161_TCP_COMMUNICATION} for TCP communication.</li>
-     * <li>{@link #TSA_RFC3161_HTTPS_COMMUNICATION} for HTTPS communication.</li>
-     * <li>{@link #TSA_RFC3161_SSL_COMMUNICATION} for SSL communication.</li>
+     * <li>{@link IUtilsTimestamp#TSA_RFC3161_TCP_COMMUNICATION} for TCP communication.</li>
+     * <li>{@link IUtilsTimestamp#TSA_RFC3161_HTTPS_COMMUNICATION} for HTTPS communication.</li>
+     * <li>{@link IUtilsTimestamp#TSA_RFC3161_SSL_COMMUNICATION} for SSL communication.</li>
      * </ul>
      * @param idClient Parameter that represents the client application identifier.
      * @return an object that represents the ASN.1 timestamp.
@@ -101,9 +101,9 @@ public final class UtilsTimestamp {
      * @param applicationID Parameter that represents the identifier of the client application.
      * @param tsaCommunicationMode Parameter that represents the protocol defined to communicate with TS@. The allowed values are:
      * <ul>
-     * <li>{@link #TSA_RFC3161_TCP_COMMUNICATION} for TCP communication.</li>
-     * <li>{@link #TSA_RFC3161_HTTPS_COMMUNICATION} for HTTPS communication.</li>
-     * <li>{@link #TSA_RFC3161_SSL_COMMUNICATION} for SSL communication.</li>
+     * <li>{@link IUtilsTimestamp#TSA_RFC3161_TCP_COMMUNICATION} for TCP communication.</li>
+     * <li>{@link IUtilsTimestamp#TSA_RFC3161_HTTPS_COMMUNICATION} for HTTPS communication.</li>
+     * <li>{@link IUtilsTimestamp#TSA_RFC3161_SSL_COMMUNICATION} for SSL communication.</li>
      * </ul>
      * @return an object that represents the ASN.1 timestamp.
      * @throws SigningException If the method fails.

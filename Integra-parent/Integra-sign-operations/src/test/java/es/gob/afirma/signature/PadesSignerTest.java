@@ -414,7 +414,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
     }
 
     /**
-     * Test for method {@link PadesSigner#sign(byte[], String, String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String).
+     * Test for method {@link es.gob.afirma.signature.pades.PadesSigner#sign(byte[], String, String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String)}.
      * 
      * @throws Exception If the method fails.
      */
@@ -534,7 +534,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
     }
 
     /**
-     * Test for method {@link PadesSigner#counterSign(byte[], String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String, String).
+     * Test for method {@link PadesSigner#counterSign(byte[], String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String, String)}.
      * 
      * @throws Exception If the method fails.
      */

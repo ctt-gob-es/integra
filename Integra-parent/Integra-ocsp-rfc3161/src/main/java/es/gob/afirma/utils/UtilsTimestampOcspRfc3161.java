@@ -60,9 +60,9 @@ public final class UtilsTimestampOcspRfc3161 {
 	 * @param applicationID Parameter that represents the identifier of the client application.
 	 * @param tsaCommunicationMode Parameter that represents the protocol defined to communicate with TS@. The allowed values are:
 	 * <ul>
-	 * <li>{@link #TSA_RFC3161_TCP_COMMUNICATION} for TCP communication.</li>
-	 * <li>{@link #TSA_RFC3161_HTTPS_COMMUNICATION} for HTTPS communication.</li>
-	 * <li>{@link #TSA_RFC3161_SSL_COMMUNICATION} for SSL communication.</li>
+	 * <li>{@link es.gob.afirma.utils.IUtilsTimestamp#TSA_RFC3161_TCP_COMMUNICATION} for TCP communication.</li>
+	 * <li>{@link es.gob.afirma.utils.IUtilsTimestamp#TSA_RFC3161_HTTPS_COMMUNICATION} for HTTPS communication.</li>
+	 * <li>{@link es.gob.afirma.utils.IUtilsTimestamp#TSA_RFC3161_SSL_COMMUNICATION} for SSL communication.</li>
 	 * </ul>
 	 */
 	private static void checkInputParamsGetTimestampFromRFC3161Service(byte[ ] dataToStamp, String applicationID, String tsaCommunicationMode) {
@@ -81,9 +81,9 @@ public final class UtilsTimestampOcspRfc3161 {
 	 * @param applicationID Parameter that represents the identifier of the client application.
 	 * @param tsaCommunicationMode Parameter that represents the protocol defined to communicate with TS@. The allowed values are:
 	 * <ul>
-	 * <li>{@link #TSA_RFC3161_TCP_COMMUNICATION} for TCP communication.</li>
-	 * <li>{@link #TSA_RFC3161_HTTPS_COMMUNICATION} for HTTPS communication.</li>
-	 * <li>{@link #TSA_RFC3161_SSL_COMMUNICATION} for SSL communication.</li>
+	 * <li>{@link es.gob.afirma.utils.IUtilsTimestamp#TSA_RFC3161_TCP_COMMUNICATION} for TCP communication.</li>
+	 * <li>{@link es.gob.afirma.utils.IUtilsTimestamp#TSA_RFC3161_HTTPS_COMMUNICATION} for HTTPS communication.</li>
+	 * <li>{@link es.gob.afirma.utils.IUtilsTimestamp#TSA_RFC3161_SSL_COMMUNICATION} for SSL communication.</li>
 	 * </ul>
 	 * @return an object that represents the ASN.1 timestamp.
 	 * @param idClient Parameter that represents the client application identifier.
@@ -92,7 +92,7 @@ public final class UtilsTimestampOcspRfc3161 {
 	public static TimeStampToken getTimestampFromRFC3161Service(byte[ ] dataToStamp, String applicationID, String tsaCommunicationMode, String idClient) throws SigningException {
 		LOGGER.debug(Language.getResIntegra(ILogConstantKeys.TSU_LOG037));
 
-		// Comprobamos que los parámetros de entrada no son nulos
+		// Comprobamos que los parametros de entrada no son nulos
 		checkInputParamsGetTimestampFromRFC3161Service(dataToStamp, applicationID, tsaCommunicationMode);
 		try {
 			// Instanciamos la clase encargada de llevar a cabo la
@@ -101,22 +101,22 @@ public final class UtilsTimestampOcspRfc3161 {
 			try {
 				RFC3161TSAServiceInvoker invoker = new RFC3161TSAServiceInvoker();
 				String protocol = null;
-				// Si el modo de comunicación es TCP
+				// Si el modo de comunicacion es TCP
 				if (tsaCommunicationMode.equals(IUtilsTimestamp.TSA_RFC3161_TCP_COMMUNICATION)) {
 					LOGGER.debug(Language.getResIntegra(ILogConstantKeys.TSU_LOG010));
 					protocol = TSAServiceInvokerConstants.RFC3161Protocol.TCP;
 				}
-				// Si el modo de comunicación es HTTPS
+				// Si el modo de comunicacion es HTTPS
 				else if (tsaCommunicationMode.equals(IUtilsTimestamp.TSA_RFC3161_HTTPS_COMMUNICATION)) {
 					LOGGER.debug(Language.getResIntegra(ILogConstantKeys.TSU_LOG011));
 					protocol = TSAServiceInvokerConstants.RFC3161Protocol.HTTPS;
 				}
-				// Si el modo de comunicación es SSL
+				// Si el modo de comunicacion es SSL
 				else if (tsaCommunicationMode.equals(IUtilsTimestamp.TSA_RFC3161_SSL_COMMUNICATION)) {
 					LOGGER.debug(Language.getResIntegra(ILogConstantKeys.TSU_LOG012));
 					protocol = TSAServiceInvokerConstants.RFC3161Protocol.SSL;
 				}
-				// Si el modo de comunicación no está reconocido
+				// Si el modo de comunicacion no está reconocido
 				else {
 					String propertiesName = IIntegraConstants.PROPERTIES_FILE;
 					errorMsg = Language.getFormatResIntegra(ILogConstantKeys.TSU_LOG013, new Object[ ] { tsaCommunicationMode, propertiesName });
@@ -132,7 +132,7 @@ public final class UtilsTimestampOcspRfc3161 {
 				if (tsp.getFailInfo() != null) {
 					// Si se ha producido un error, accedemos al mensaje de
 					// error y
-					// lanzamos una excepción
+					// lanzamos una excepcion
 					errorMsg = Language.getFormatResIntegra(ILogConstantKeys.TSU_LOG006, new Object[ ] { tsp.getStatusString() });
 					LOGGER.error(errorMsg);
 					throw new SigningException(errorMsg);
@@ -159,9 +159,9 @@ public final class UtilsTimestampOcspRfc3161 {
 	 * @param applicationID Parameter that represents the identifier of the client application.
 	 * @param tsaCommunicationMode Parameter that represents the protocol defined to communicate with TS@. The allowed values are:
 	 * <ul>
-	 * <li>{@link #TSA_RFC3161_TCP_COMMUNICATION} for TCP communication.</li>
-	 * <li>{@link #TSA_RFC3161_HTTPS_COMMUNICATION} for HTTPS communication.</li>
-	 * <li>{@link #TSA_RFC3161_SSL_COMMUNICATION} for SSL communication.</li>
+	 * <li>{@link es.gob.afirma.utils.IUtilsTimestamp#TSA_RFC3161_TCP_COMMUNICATION} for TCP communication.</li>
+	 * <li>{@link es.gob.afirma.utils.IUtilsTimestamp#TSA_RFC3161_HTTPS_COMMUNICATION} for HTTPS communication.</li>
+	 * <li>{@link es.gob.afirma.utils.IUtilsTimestamp#TSA_RFC3161_SSL_COMMUNICATION} for SSL communication.</li>
 	 * </ul>
 	 * @return an object that represents the ASN.1 timestamp.
 	 * @throws SigningException If the method fails.

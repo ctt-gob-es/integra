@@ -54,8 +54,8 @@ public class ResponseTimestamp extends TimestampResponse{
     
     /**
      * Constructor method for the class ResponseTimestamp.java.
-     * @param resultTSA 
-     * @param integraSuccessParam 
+     * @param resultTSA TSA result.
+     * @param integraSuccessParam integraSuccessParam value.
      */
     public ResponseTimestamp(TimestampResponse resultTSA, boolean integraSuccessParam) {
 	super();
@@ -67,13 +67,13 @@ public class ResponseTimestamp extends TimestampResponse{
 
     /**
      * Constructor method for the class ResponseTimestamp.java.
-     * @param integraSuccessParam 
-     * @param integraErrorMsgParam 
+     * @param integraSuccessParam integraSuccessParam value.
+     * @param message error message.
      */
-    public ResponseTimestamp(boolean integraSuccessParam, String integraErrorMsgParam) {
+    public ResponseTimestamp(boolean integraSuccessParam, String message) {
 	super();
 	this.integraSuccess = integraSuccessParam;
-	this.integraErrorMsg = integraErrorMsgParam;
+	this.integraErrorMsg = message;
     }
 
     /**

@@ -23,7 +23,7 @@ package es.gob.afirma.tsl.exceptions;
 
 
 /** 
- * <p><Class that manages the exceptions of the Integra-tsl module.</p>
+ * <p>Class that manages the exceptions of the Integra-tsl module.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * @version 1.0, 10/11/2020.
  */
@@ -43,16 +43,7 @@ public class TSLException extends Exception {
 
     /**
      * Constructor method for the class TSLException.java.
-     * @param message
-     * @param cause 
-     */
-    public TSLException(String message, Throwable cause) {
-	super(message, cause);
-    }
-
-    /**
-     * Constructor method for the class TSLException.java.
-     * @param message 
+     * @param message Description.
      */
     public TSLException(String message) {
 	super(message);
@@ -60,11 +51,18 @@ public class TSLException extends Exception {
 
     /**
      * Constructor method for the class TSLException.java.
-     * @param cause 
+     * @param cause Cause.
      */
     public TSLException(Throwable cause) {
 	super(cause);
     }
     
-
+    /**
+     * Constructor method for the class TSLException.java.
+     * @param message Description.
+     * @param cause Cause.
+     */
+    public TSLException(String message, Throwable cause) {
+	super(message, cause);
+    }
 }

@@ -68,7 +68,7 @@ public final class FOUtils {
 	 * Creates a PDF file from a XSL-FO document.
 	 * @param foFile	XSL-FO document.
 	 * @return	PDF File.
-	 * @throws ToolsException If an error occurs.
+	 * @throws UtilsException If an error occurs.
 	 */
 	public static byte[ ] fo2pdf(byte[ ] foFile) throws UtilsException {
 		FopFactory fopFactory = FopFactory.newInstance(new File(".").toURI());

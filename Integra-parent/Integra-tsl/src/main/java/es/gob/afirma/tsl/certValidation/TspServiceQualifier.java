@@ -114,11 +114,12 @@ public class TspServiceQualifier implements Serializable {
 	 * them: 'QCForESig'
 	 * ("http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/QCForESig"),
 	 * 'NotQualified'
-	 * ("http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/NotQualified") and
+	 * ("http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/NotQualified") or
 	 * 'QCStatement'
 	 * ("http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/QCStatement")
 	 * 
-	 * @return
+	 * @return {code true} if QCForESig or notQualified or qcStatement is
+	 * established, {@code false} otherwise.
 	 */
 	public boolean checkQcForEsigAndNotQualifiedAndQCStatementCompliance() {
 		return qcForESig || notQualified || qcStatement;
@@ -129,18 +130,17 @@ public class TspServiceQualifier implements Serializable {
 	 * them: 'QCForESig'
 	 * ("http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/QCForEseal"),
 	 * 'NotQualified'
-	 * ("http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/NotQualified") and
+	 * ("http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/NotQualified") or
 	 * 'QCStatement'
 	 * ("http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/QCStatement")
-	 * 
-	 * @return
+	 * @return {code true} if qcForESeal or notQualified or qcStatement is
+	 * established, {@code false} otherwise.
 	 */
 	public boolean checkQcForEsealgAndNotQualifiedAndQCStatementCompliance() {
 		return qcForESeal || notQualified || qcStatement;
 	}
 	
 	/**
-	 * 	/**
 	 * Method that check whether the following qualifiers are present among
 	 * them: 'QCForESig'
 	 * ("http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/QCForWSA"),
@@ -148,8 +148,9 @@ public class TspServiceQualifier implements Serializable {
 	 * ("http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/NotQualified") and
 	 * 'QCStatement'
 	 * ("http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/QCStatement")
-	 * 
-	 * @return
+	 * qcForESeal
+	 * @return {code true} if qcForWSA or notQualified or qcStatement is
+	 * established, {@code false} otherwise.
 	 */
 	public boolean checkQcForWSAAndNotQualifiedAndQCStatementCompliance() {
 		return qcForWSA || notQualified || qcStatement;

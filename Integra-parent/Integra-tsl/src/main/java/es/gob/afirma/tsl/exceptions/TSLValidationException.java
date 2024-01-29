@@ -42,8 +42,8 @@ public class TSLValidationException extends TSLException {
 
     /**
      * Constructor method for the class TSLValidationException.java.
-     * @param message
-     * @param cause 
+     * @param message Description.
+     * @param cause Cause. 
      */
     public TSLValidationException(String message, Throwable cause) {
 	super(message, cause);
@@ -51,7 +51,7 @@ public class TSLValidationException extends TSLException {
 
     /**
      * Constructor method for the class TSLValidationException.java.
-     * @param message 
+     * @param message Description.
      */
     public TSLValidationException(String message) {
 	super(message);
@@ -59,7 +59,7 @@ public class TSLValidationException extends TSLException {
 
     /**
      * Constructor method for the class TSLValidationException.java.
-     * @param cause 
+     * @param cause Cause.
      */
     public TSLValidationException(Throwable cause) {
 	super(cause);

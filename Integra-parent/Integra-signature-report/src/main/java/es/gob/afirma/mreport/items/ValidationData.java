@@ -144,8 +144,8 @@ public class ValidationData {
 	}
 
 	/**
-	 * Sets the value of the attribute {@link #signaturesParam}.
-	 * @param signaturesParam the value for the attribute {@link #signaturesParam} to set.
+	 * Sets the value of the attribute {@link #signatures}.
+	 * @param signaturesParam the value for the attribute {@link #signatures} to set.
 	 */
 	public void setSignatures(List<IndividualSignature> signaturesParam) {
 		this.signatures = signaturesParam;

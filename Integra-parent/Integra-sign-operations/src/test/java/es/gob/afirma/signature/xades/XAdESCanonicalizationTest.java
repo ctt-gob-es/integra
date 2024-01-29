@@ -77,10 +77,10 @@ public class XAdESCanonicalizationTest extends TestCase {
     }
 
     /**
-     * Test for methods {@link XadesSigner#sign(byte[], String, String, PrivateKeyEntry, java.util.Properties, boolean, String, String)},
-     * {@link XadesSigner#coSign(byte[], byte[], String, PrivateKeyEntry, java.util.Properties, boolean, String, String)},
-     * {@link XadesSigner#counterSign(byte[], String, PrivateKeyEntry, java.util.Properties, boolean, String, String)},
-     * and {@link XadesSigner#verifySignature(byte[])}.
+     * Test for methods {@link es.gob.afirma.signature.xades.XadesSigner#sign(byte[], String, String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, String, String)},
+     * {@link es.gob.afirma.signature.xades.XadesSigner#coSign(byte[], byte[], String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, String, String)},
+     * {@link es.gob.afirma.signature.xades.XadesSigner#counterSign(byte[], String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, String, String)},
+     * and {@link es.gob.afirma.signature.xades.XadesSigner#verifySignature(byte[])}.
      */
     public final void testSignDetached() {
 
@@ -136,10 +136,10 @@ public class XAdESCanonicalizationTest extends TestCase {
     }
     
     /**
-     * Test for methods {@link XadesSigner#sign(byte[], String, String, PrivateKeyEntry, java.util.Properties, boolean, String, String)},
-     * {@link XadesSigner#coSign(byte[], byte[], String, PrivateKeyEntry, java.util.Properties, boolean, String, String)},
-     * {@link XadesSigner#counterSign(byte[], String, PrivateKeyEntry, java.util.Properties, boolean, String, String)},
-     * and {@link XadesSigner#verifySignature(byte[])}.
+     * Test for methods {@link es.gob.afirma.signature.xades.XadesSigner#sign(byte[], String, String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, String, String)},
+     * {@link es.gob.afirma.signature.xades.XadesSigner#coSign(byte[], byte[], String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, String, String)},
+     * {@link es.gob.afirma.signature.xades.XadesSigner#counterSign(byte[], String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, String, String)},
+     * and {@link es.gob.afirma.signature.xades.XadesSigner#verifySignature(byte[])}.
      */
     public final void testSignEnveloped() {
 
@@ -194,10 +194,10 @@ public class XAdESCanonicalizationTest extends TestCase {
     }
 
     /**
-     * Test for methods {@link XadesSigner#sign(byte[], String, String, PrivateKeyEntry, java.util.Properties, boolean, String, String)},
-     * {@link XadesSigner#coSign(byte[], byte[], String, PrivateKeyEntry, java.util.Properties, boolean, String, String)},
-     * {@link XadesSigner#counterSign(byte[], String, PrivateKeyEntry, java.util.Properties, boolean, String, String)},
-     * and {@link XadesSigner#verifySignature(byte[])}.
+     * Test for methods {@link es.gob.afirma.signature.xades.XadesSigner#sign(byte[], String, String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, String, String)},
+     * {@link es.gob.afirma.signature.xades.XadesSigner#coSign(byte[], byte[], String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, String, String)},
+     * {@link es.gob.afirma.signature.xades.XadesSigner#counterSign(byte[], String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, String, String)},
+     * and {@link es.gob.afirma.signature.xades.XadesSigner#verifySignature(byte[])}.
      */
     public final void testSignEnveloping() {
 
@@ -252,10 +252,10 @@ public class XAdESCanonicalizationTest extends TestCase {
     }
 
     /**
-     * Test for methods {@link XadesSigner#sign(byte[], String, String, PrivateKeyEntry, java.util.Properties, boolean, String, String)},
-     * {@link XadesSigner#coSign(byte[], byte[], String, PrivateKeyEntry, java.util.Properties, boolean, String, String)},
-     * {@link XadesSigner#counterSign(byte[], String, PrivateKeyEntry, java.util.Properties, boolean, String, String)},
-     * and {@link XadesSigner#verifySignature(byte[])}.
+     * Test for methods {@link es.gob.afirma.signature.xades.XadesSigner#sign(byte[], String, String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, String, String)},
+     * {@link es.gob.afirma.signature.xades.XadesSigner#coSign(byte[], byte[], String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, String, String)},
+     * {@link es.gob.afirma.signature.xades.XadesSigner#counterSign(byte[], String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, String, String)},
+     * and {@link es.gob.afirma.signature.xades.XadesSigner#verifySignature(byte[])}.
      */
     public final void testSignExternallyDetached() {
 

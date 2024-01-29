@@ -304,8 +304,8 @@ public class TslData implements Serializable {
 
 	
 	/**
-	 * Gets the value of the attribute {@link #serialversionuid}.
-	 * @return the value of the attribute {@link #serialversionuid}.
+	 * Gets the value of the attribute {@link #serialVersionUID}.
+	 * @return the value of the attribute {@link #serialVersionUID}.
 	 */
 	public static long getSerialversionuid() {
 	    return serialVersionUID;

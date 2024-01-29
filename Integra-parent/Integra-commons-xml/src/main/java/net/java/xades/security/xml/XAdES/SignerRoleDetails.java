@@ -24,17 +24,17 @@ import org.w3c.dom.Node;
 
 /**
  * 
- * <p:SignerRole>
- * <p:ClaimedRoles>
- * <p:ClaimedRole>
+ * &lt;p:SignerRole&gt;
+ * &lt;p:ClaimedRoles&gt;
+ * &lt;p:ClaimedRole&gt;
  * ANYTYPE
- * </p:ClaimedRole>
- * </p:ClaimedRoles>
- * <p:CertifiedRoles>
- * <p:CertifiedRole Encoding="http://tempuri.org" Id="id">
+ * &lt;/p:ClaimedRole&gt;
+ * &lt;/p:ClaimedRoles&gt;
+ * &lt;p:CertifiedRoles&gt;
+ * &lt;p:CertifiedRole Encoding="http://tempuri.org" Id="id"&gt;
  * 0
- * </p:CertifiedRole>
- * </p:CertifiedRoles> </p:SignerRole>
+ * &lt;/p:CertifiedRole&gt;
+ * &lt;/p:CertifiedRoles&gt; &lt;/p:SignerRole&gt;
  * 
  */
 

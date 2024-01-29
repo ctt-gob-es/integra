@@ -55,13 +55,13 @@ public class ResponseServerSign extends ServerSignerResponse{
     
     /**
      * Constructor method for the class ResponseServerSign.java.
-     * @param asyncResponse 
-     * @param idTransaction 
-     * @param result 
-     * @param signature 
-     * @param signatureFormat 
-     * @param updatedSignature 
-     * @param integraSuccessParam 
+     * @param asyncResponse Async response.
+     * @param idTransaction Id transaction.
+     * @param result Result.
+     * @param signature  Signature.
+     * @param signatureFormat Signature format.
+     * @param updatedSignature  Updated signature.
+     * @param integraSuccessParam integraSuccessParam value.
      */
     public ResponseServerSign(String asyncResponse, String idTransaction, Result result, byte[ ] signature, String signatureFormat, byte[ ] updatedSignature, boolean integraSuccessParam) {
 	super();
@@ -78,8 +78,8 @@ public class ResponseServerSign extends ServerSignerResponse{
 
     /**
      * Constructor method for the class ResponseServerSign.java.
-     * @param integraSuccessParam 
-     * @param message 
+     * @param integraSuccessParam integraSuccessParam value.
+     * @param message error message.
      */
     public ResponseServerSign(boolean integraSuccessParam, String message) {
 	super();

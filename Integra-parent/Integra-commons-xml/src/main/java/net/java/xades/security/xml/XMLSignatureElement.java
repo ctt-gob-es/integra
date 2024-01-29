@@ -81,7 +81,10 @@ public class XMLSignatureElement {
 	});
     }
 
-    /** Creates a new instance of XMLSignatureElement */
+    /**
+     * Creates a new instance of XMLSignatureElement
+     * @param signatureElement Node Signature.
+     */
     public XMLSignatureElement(Element signatureElement) {
 	if (signatureElement == null) {
 	    throw new IllegalArgumentException("Signature Element can not be NULL.");

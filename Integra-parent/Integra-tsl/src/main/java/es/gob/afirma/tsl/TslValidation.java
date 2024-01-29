@@ -80,7 +80,7 @@ public class TslValidation implements ITslValidation {
     
     /**
      * {@inheritDoc}
-     * @see es.gob.afirma.tsl.ITslValidation#validateCertificateTsl(byte[], es.gob.afirma.tsl.parsing.impl.common.TSLObject, java.util.Date)
+     * @see es.gob.afirma.tsl.ITslValidation#validateCertificateTsl(byte[], TSLObject, Date, boolean, boolean)
      */
     public DetectCertInTslInfoAndValidationResponse validateCertificateTsl(byte[ ] certByteArrayB64, TSLObject tslObject, Date detectionDate, boolean getInfo, boolean checkRevStatus) throws TSLManagingException {
 
@@ -550,7 +550,7 @@ public class TslValidation implements ITslValidation {
 
     /**
      * {@inheritDoc}
-     * @see es.gob.afirma.tsl.ITslValidation#downloadTLSbyHTTP(java.lang.String)
+     * @see es.gob.afirma.tsl.ITslValidation#downloadTLSbyHTTP(String, int, int)
      */
     @Override
     public ITSLObject downloadTLSbyHTTP(String uriTSL, int connectionTimeout, int readTimeout) throws TSLManagingException {

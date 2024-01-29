@@ -71,7 +71,7 @@ public class TSA3WebServiceInvoker extends AbstractTSAServiceInvoker {
 
     /**
      * {@inheritDoc}
-     * @see es.gob.afirma.tsaServiceInvoker.AbstractTSAServiceInvoker#invokeService(java.lang.Object[])
+     * @see es.gob.afirma.tsaServiceInvoker.AbstractTSAServiceInvoker#invokeService(Object[], String)
      */
     @Override
     public final String invokeService(Object[ ] parameters, String idClient) throws TSAServiceInvokerException {

@@ -52,8 +52,8 @@ public class ResponseCipher {
 
     /**
      * Constructor method for the class ResponseCipher.java.
-     * @param integraSuccessParam 
-     * @param integraErrorMsgParam 
+     * @param integraSuccessParam The value for the attribute {@link #integraSuccess}.
+     * @param integraErrorMsgParam The value for the attribute {@link #integraErrorMsg}.
      **/
     public ResponseCipher(boolean integraSuccessParam, String integraErrorMsgParam) {
 	super();
@@ -65,8 +65,8 @@ public class ResponseCipher {
 
     /**
      * Constructor method for the class ResponseCipher.java.
-     * @param resultTextParam 
-     * @param integraSuccessParam  
+     * @param resultTextParam The value for the attribute {@link #resultText}.
+     * @param integraSuccessParam The value for the attribute {@link #integraSuccess}.
      */
     public ResponseCipher(String resultTextParam, boolean integraSuccessParam) {
 	super();

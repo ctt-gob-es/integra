@@ -43,27 +43,7 @@ public class TSLArgumentException extends Exception {
 
     /**
      * Constructor method for the class TSLArgumentException.java.
-     * @param message
-     * @param cause
-     * @param enableSuppression
-     * @param writableStackTrace 
-     */
-    public TSLArgumentException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-	super(message, cause, enableSuppression, writableStackTrace);
-    }
-
-    /**
-     * Constructor method for the class TSLArgumentException.java.
-     * @param message
-     * @param cause 
-     */
-    public TSLArgumentException(String message, Throwable cause) {
-	super(message, cause);
-    }
-
-    /**
-     * Constructor method for the class TSLArgumentException.java.
-     * @param message 
+     * @param message Description.
      */
     public TSLArgumentException(String message) {
 	super(message);
@@ -71,10 +51,29 @@ public class TSLArgumentException extends Exception {
 
     /**
      * Constructor method for the class TSLArgumentException.java.
-     * @param cause 
+     * @param cause Cause.
      */
     public TSLArgumentException(Throwable cause) {
 	super(cause);
     }
+    
+    /**
+     * Constructor method for the class TSLArgumentException.java.
+     * @param message Description.
+     * @param cause Cause.
+     */
+    public TSLArgumentException(String message, Throwable cause) {
+	super(message, cause);
+    }
 
+    /**
+     * Constructor method for the class TSLArgumentException.java.
+     * @param message Description.
+     * @param cause Cause.
+     * @param enableSuppression Suppression.
+     * @param writableStackTrace  Write stacktrace.
+     */
+    public TSLArgumentException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+	super(message, cause, enableSuppression, writableStackTrace);
+    }
 }

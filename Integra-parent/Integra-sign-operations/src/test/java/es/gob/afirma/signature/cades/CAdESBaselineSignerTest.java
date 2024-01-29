@@ -64,9 +64,9 @@ public class CAdESBaselineSignerTest extends TestCase {
     }
 
     /**
-     * Test for methods {@link CAdESBaselineSigner#sign(byte[], String, String, PrivateKeyEntry, java.util.Properties, boolean, String, String)},
-     * {@link CAdESBaselineSigner#coSign(byte[], byte[], String, PrivateKeyEntry, java.util.Properties, boolean, String, String)},
-     * {@link CAdESBaselineSigner#counterSign(byte[], String, PrivateKeyEntry, java.util.Properties, boolean, String, String)},
+     * Test for methods {@link CAdESBaselineSigner#sign(byte[], String, String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, String, String)},
+     * {@link CAdESBaselineSigner#coSign(byte[], byte[], String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, String, String)},
+     * {@link CAdESBaselineSigner#counterSign(byte[], String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, String, String)},
      * and {@link CAdESBaselineSigner#verifySignature(byte[], byte[])}.
      */
     public final void testSignWithoutTimestamp() {
@@ -170,9 +170,9 @@ public class CAdESBaselineSignerTest extends TestCase {
     }
 
     /**
-     * Test for methods {@link CAdESBaselineSigner#sign(byte[], String, String, PrivateKeyEntry, java.util.Properties, boolean, String, String)},
-     * {@link CAdESBaselineSigner#coSign(byte[], byte[], String, PrivateKeyEntry, java.util.Properties, boolean, String, String)},
-     * {@link CAdESBaselineSigner#counterSign(byte[], String, PrivateKeyEntry, java.util.Properties, boolean, String, String)},
+     * Test for methods {@link CAdESBaselineSigner#sign(byte[], String, String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, String, String)},
+     * {@link CAdESBaselineSigner#coSign(byte[], byte[], String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, String, String)},
+     * {@link CAdESBaselineSigner#counterSign(byte[], String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, String, String)},
      * and {@link CAdESBaselineSigner#verifySignature(byte[], byte[])}.
      */
     public final void testSignWithTimestamp() {

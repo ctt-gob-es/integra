@@ -58,10 +58,10 @@ public class ResponseServerBatchVerifyCertificate extends BatchVerifyCertificate
     
     /**
      * Constructor method for the class ResponseServerBatchVerifyCertificate.java.
-     * @param asyncResponseParam 
-     * @param resulParam 
-     * @param listVerifyResponseParam 
-     * @param integraSuccessParam 
+     * @param asyncResponseParam asyncResponseParam value.
+     * @param resulParam resulParam value.
+     * @param listVerifyResponseParam listVerifyResponseParam value.
+     * @param integraSuccessParam The value for the attribute {@link #integraSuccess}
      */
     public ResponseServerBatchVerifyCertificate(String asyncResponseParam, Result resulParam, List<VerifyCertificateResponse> listVerifyResponseParam, boolean integraSuccessParam) {
 	super();
@@ -75,13 +75,13 @@ public class ResponseServerBatchVerifyCertificate extends BatchVerifyCertificate
 
     /**
      * Constructor method for the class ResponseServerBatchVerifyCertificate.java.
-     * @param integraSuccessParam 
-     * @param message 
+     * @param integraSuccessParam The value for the attribute {@link #integraSuccess}.
+     * @param integraErrorMsg The value for the attribute {@link #integraErrorMsg}. 
      */
-    public ResponseServerBatchVerifyCertificate(boolean integraSuccessParam, String message) {
+    public ResponseServerBatchVerifyCertificate(boolean integraSuccessParam, String integraErrorMsg) {
 	super();
 	this.integraSuccess = integraSuccessParam;
-	this.integraErrorMsg = message;
+	this.integraErrorMsg = integraErrorMsg;
     }
 
     /**

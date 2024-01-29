@@ -84,7 +84,6 @@ public class ResponseHandler extends AbstractCommonHandler {
 
     /**
      * {@inheritDoc}
-     * @see org.apache.axis.Handler#invoke(org.apache.axis.MessageContext)
      */
     @Override
     public InvocationResponse invoke(MessageContext msgContext) throws AxisFault {

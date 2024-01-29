@@ -52,8 +52,8 @@ public class ResponseEvisorValidateReport {
 
     /**
      * Constructor method for the class ResponseEvisorValidateReport.java.
-     * @param integraSuccessParam 
-     * @param integraErrorMsgParam 
+     * @param integraSuccessParam The value for the attribute {@link #integraSuccess} 
+     * @param integraErrorMsgParam The value for the attribute {@link #integraErrorMsg}
      */
     public ResponseEvisorValidateReport(boolean integraSuccessParam, String integraErrorMsgParam) {
 	super();
@@ -63,8 +63,8 @@ public class ResponseEvisorValidateReport {
 
     /**
      * Constructor method for the class ResponseEvisorValidateReport.java.
-     * @param resultParam 
-     * @param integraSuccessParam  
+     * @param resultParam  The value for the attribute {@link #result}
+     * @param integraSuccessParam The value for the attribute {@link #integraSuccess} 
      */
     public ResponseEvisorValidateReport(EvisorResult resultParam, boolean integraSuccessParam) {
 	super();

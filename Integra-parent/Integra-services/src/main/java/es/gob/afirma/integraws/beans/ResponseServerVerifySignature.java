@@ -59,11 +59,11 @@ public class ResponseServerVerifySignature extends VerifySignatureResponse{
     
     /**
      * Constructor method for the class ResponseServerVerifySignature.java.
-     * @param result 
-     * @param signatureFormatParam 
-     * @param signedDataInfoParam 
-     * @param verificationReportParam 
-     * @param integraSuccessParam 
+     * @param result result.
+     * @param signatureFormatParam signature format. 
+     * @param signedDataInfoParam signed data info.
+     * @param verificationReportParam verification report.
+     * @param integraSuccessParam integraSuccessParam value.
      */
     public ResponseServerVerifySignature(Result result, String signatureFormatParam, List<DataInfo> signedDataInfoParam, List<IndividualSignatureReport> verificationReportParam, boolean integraSuccessParam) {
 	super();
@@ -78,8 +78,8 @@ public class ResponseServerVerifySignature extends VerifySignatureResponse{
 
     /**
      * Constructor method for the class ResponseServerVerifySignature.java.
-     * @param integraSuccessParam 
-     * @param message 
+     * @param integraSuccessParam integraSuccessParam value.
+     * @param message error message.
      */
     public ResponseServerVerifySignature(boolean integraSuccessParam, String message) {
 	super();

@@ -969,6 +969,7 @@ public final class UtilsXML {
 	 * @param signatureId Parameter that represents the <code>Id</code> attribute of the signature.
 	 * @param isRequired Parameter that indicates whether the elements is required (true) or not (false).
 	 * @return an object that represents the found element, or <code>null</code>.
+	 * @throws SigningException if child is required and it is not found.
 	 */
 	public static Element getChildElement(Element parentElement, String childElementName, String signatureId, boolean isRequired) throws SigningException {
 		Element result = null;

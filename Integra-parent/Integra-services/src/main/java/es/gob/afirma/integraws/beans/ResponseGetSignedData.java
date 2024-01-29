@@ -60,8 +60,8 @@ public class ResponseGetSignedData {
     
     /**
      * Constructor method for the class ResponseGetSignedData.java.
-     * @param originalSignedDataParam 
-     * @param integraSuccessParam 
+     * @param originalSignedDataParam The value for the attribute {@link #originalSignedData}
+     * @param integraSuccessParam The value for the attribute {@link #integraSuccess}
      */
     public ResponseGetSignedData(OriginalSignedData originalSignedDataParam, boolean integraSuccessParam) {
 	super();
@@ -71,8 +71,8 @@ public class ResponseGetSignedData {
 
     /**
      * Constructor method for the class ResponseGetSignedData.java.
-     * @param integraSuccessParam 
-     * @param integraErrorMsgParam  
+     * @param integraSuccessParam The value for the attribute {@link #integraSuccess}
+     * @param integraErrorMsgParam The value for the attribute {@link #integraErrorMsg}
      */
     public ResponseGetSignedData(boolean integraSuccessParam, String integraErrorMsgParam) {
 	super();

@@ -56,7 +56,7 @@ public class KeyUsage implements Serializable {
 
     /**
 	 * Attribute that represents the list with the differente key usages.
-	 * The maximum elements is {@link NumberConstants#NUM9}.
+	 * The maximum elements is {@link NumberConstants#INT_9}.
 	 */
 	private List<KeyUsageBit> keyUsageBitList = null;
 

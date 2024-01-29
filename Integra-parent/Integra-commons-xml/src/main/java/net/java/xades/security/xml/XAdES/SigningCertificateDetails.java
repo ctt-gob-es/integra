@@ -32,12 +32,12 @@ import org.w3c.dom.Node;
  * 
  *         Sample usage of signing Certificate:
  * 
- *         <xades:SigningCertificate> <xades:Cert> <xades:CertDigest> <ds:DigestMethod
- *         Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
- *         <ds:DigestValue>rFQEEAdlZJieHIdInK8bYoB6aMs=</ds:DigestValue> </xades:CertDigest>
- *         <xades:IssuerSerial> <ds:X509IssuerName>CN=UJI Test CA,OU=UJI Test
- *         CA,O=UJI,C=ES</ds:X509IssuerName> <ds:X509SerialNumber>523398</ds:X509SerialNumber>
- *         </xades:IssuerSerial> </xades:Cert> </xades:SigningCertificate>
+ *         &lt;xades:SigningCertificate&gt; &lt;xades:Cert&gt; &lt;xades:CertDigest&gt; &lt;ds:DigestMethod
+ *         Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" /&gt;
+ *         &lt;ds:DigestValue&gt;rFQEEAdlZJieHIdInK8bYoB6aMs=&lt;/ds:DigestValue&gt; &lt;/xades:CertDigest&gt;
+ *         &lt;xades:IssuerSerial&gt; &lt;ds:X509IssuerName&gt;CN=UJI Test CA,OU=UJI Test
+ *         CA,O=UJI,C=ES&lt;/ds:X509IssuerName&gt; &lt;ds:X509SerialNumber&gt;523398&lt;/ds:X509SerialNumber&gt;
+ *         &lt;/xades:IssuerSerial&gt; &lt;/xades:Cert&gt; &lt;/xades:SigningCertificate&gt;
  * 
  */
 

@@ -68,8 +68,8 @@ public class ContentRequest implements Serializable {
     }
 
     /**
-     * Sets the value of the attribute {@link #idTransaction}.
-     * @param idTransactionParam The value for the attribute {@link #idTransaction}.
+     * Sets the value of the attribute {@link #transactionId}.
+     * @param idTransactionParam The value for the attribute {@link #transactionId}.
      */
     public final void setTransactionId(String idTransactionParam) {
 	this.transactionId = idTransactionParam;

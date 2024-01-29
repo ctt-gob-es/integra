@@ -57,8 +57,8 @@ public class ResponseEvisorGenerateReport {
 
     /**
      * Constructor method for the class ResponseEvisorGenerateReport.java.
-     * @param integraSuccessParam 
-     * @param integraErrorMsgParam 
+     * @param integraSuccessParam  The value for the attribute {@link #integraSuccess}
+     * @param integraErrorMsgParam  The value for the attribute {@link #integraErrorMsg}
      */
     public ResponseEvisorGenerateReport(boolean integraSuccessParam, String integraErrorMsgParam) {
 	super();
@@ -69,9 +69,9 @@ public class ResponseEvisorGenerateReport {
    
     /**
      * Constructor method for the class ResponseEvisorGenerateReport.java.
-     * @param resultParam 
-     * @param reportParam 
-     * @param integraSuccessParam  
+     * @param resultParam  The value for the attribute {@link #result}
+     * @param reportParam  The value for the attribute {@link #report}
+     * @param integraSuccessParam   The value for the attribute {@link #integraSuccess}
      */
     public ResponseEvisorGenerateReport(EvisorResult resultParam, byte[ ] reportParam, boolean integraSuccessParam) {
 	super();

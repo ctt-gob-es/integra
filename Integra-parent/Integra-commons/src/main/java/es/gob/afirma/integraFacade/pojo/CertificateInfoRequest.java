@@ -46,8 +46,8 @@ public class CertificateInfoRequest implements Serializable {
     private byte[ ] certificate;
 
     /**
-     * Gets the value of the attribute {@link #idApplication}.
-     * @return the value of the attribute {@link #idApplication}.
+     * Gets the value of the attribute {@link #applicationId}.
+     * @return the value of the attribute {@link #applicationId}.
      */
     public final String getApplicationId() {
 	return applicationId;

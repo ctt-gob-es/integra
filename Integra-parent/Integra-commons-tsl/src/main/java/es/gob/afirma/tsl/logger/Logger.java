@@ -60,7 +60,7 @@ public class Logger {
 
     /**
      * Method that encapsulates the call to the logger retrieval according to the chosen logger system implementation.
-     * @param name The name of the configured logger.
+     * @param clazz The name of the configured logger.
      * @return a new {@link Logger}
      */
     public static Logger getLogger(Class<?> clazz) {
@@ -80,7 +80,7 @@ public class Logger {
     /**
      * Method that encapsulates the call to the info logger method, including the stack trace.
      * @param message String that represents the message to log with the INFO level.
-     * @param the exception to log, including its stack trace.
+     * @param t the exception to log, including its stack trace.
      */
     public void info(final Object message, final Throwable t) {
 
@@ -99,7 +99,7 @@ public class Logger {
     /**
      * Method that encapsulates the call to the info logger method, including the stack trace.
      * @param message String that represents the message to log with the DEBUG level.
-     * @param the exception to log, including its stack trace.
+     * @param t the exception to log, including its stack trace.
      */
     public void debug(final Object message, final Throwable t) {
 
@@ -118,7 +118,7 @@ public class Logger {
     /**
      * Method that encapsulates the call to the info logger method, including the stack trace.
      * @param message String that represents the message to log with the WARN level.
-     * @param the exception to log, including its stack trace.
+     * @param t the exception to log, including its stack trace.
      */
     public void warn(final Object message, final Throwable t) {
 
@@ -137,7 +137,7 @@ public class Logger {
     /**
      * Method that encapsulates the call to the info logger method, including the stack trace.
      * @param message String that represents the message to log with the ERROR level.
-     * @param the exception to log, including its stack trace.
+     * @param t the exception to log, including its stack trace.
      */
     public void error(final Object message, final Throwable t) {
 
@@ -146,8 +146,7 @@ public class Logger {
 
     /**
      * Checks whether this Logger is enabled for the DEBUG Level.
-     * 
-     * @return
+     * @return {@code true} if debug mode is enabled, {@code false} otherwise.
      */
     public boolean isDebugEnabled() {
 

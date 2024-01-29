@@ -2472,9 +2472,9 @@ public final class XAdESBaselineSigner implements Signer {
      * Method that validates a signer/counter-signer of a XML signature.
      * @param signingMode Parameter that represents the signing mode of the signed XML document. The possible values are:
      * <ul>
-     * <li>{@link IUtilsSignature#DETACHED_SIGNATURE_MODE}</li>
-     * <li>{@link IUtilsSignature##ENVELOPED_SIGNATURE_MODE}</li>
-     * <li>{@link IUtilsSignature##ENVELOPING_SIGNATURE_MODE}</li>
+     * <li>{@link es.gob.afirma.utils.IUtilsSignature#DETACHED_SIGNATURE_MODE}</li>
+     * <li>{@link es.gob.afirma.utils.IUtilsSignature#ENVELOPED_SIGNATURE_MODE}</li>
+     * <li>{@link es.gob.afirma.utils.IUtilsSignature#ENVELOPING_SIGNATURE_MODE}</li>
      * </ul>
      * @param signerInfo Parameter that represents the information about the signer.
      * @param validationResult Parameter that represents the information about the validation of the signed XML document.
@@ -3328,9 +3328,9 @@ public final class XAdESBaselineSigner implements Signer {
      * Method that validates all the counter-signers associated to a signer.
      * @param signingMode Parameter that represents the signing mode of the signed XML document. The possible values are:
      * <ul>
-     * <li>{@link IUtilsSignature#DETACHED_SIGNATURE_MODE}</li>
-     * <li>{@link IUtilsSignature##ENVELOPED_SIGNATURE_MODE}</li>
-     * <li>{@link IUtilsSignature##ENVELOPING_SIGNATURE_MODE}</li>
+     * <li>{@link es.gob.afirma.utils.IUtilsSignature#DETACHED_SIGNATURE_MODE}</li>
+     * <li>{@link es.gob.afirma.utils.IUtilsSignature#ENVELOPED_SIGNATURE_MODE}</li>
+     * <li>{@link es.gob.afirma.utils.IUtilsSignature#ENVELOPING_SIGNATURE_MODE}</li>
      * </ul>
      * @param signerInfo Parameter that represents the information about the parent signer.
      * @param signerValidationResult Parameter that represents the information about the validation of the parent signer.

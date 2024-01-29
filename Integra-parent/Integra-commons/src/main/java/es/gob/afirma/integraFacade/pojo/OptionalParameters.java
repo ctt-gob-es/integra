@@ -206,7 +206,7 @@ public class OptionalParameters implements Serializable {
 
     /**
      * Sets the value of the attribute {@link #processAsNotBaseline}.
-     * @param returnNextUpdateParam The value for the attribute {@link #processAsNotBaseline}.
+     * @param processAsNotBaseline The value for the attribute {@link #processAsNotBaseline}.
      */
     public void setProcessAsNotBaseline(boolean processAsNotBaseline) {
         this.processAsNotBaseline = processAsNotBaseline;

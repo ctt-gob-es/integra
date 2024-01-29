@@ -162,8 +162,6 @@ public class CipherIntegraTest implements Serializable {
 
     /**
      *  Test for {@link CipherIntegra#CipherIntegra(AlgorithmCipherEnum, java.security.Key)}.
-     * @throws Exception 
-     * 
      * @throws Exception If test fails.
      */
     @Test

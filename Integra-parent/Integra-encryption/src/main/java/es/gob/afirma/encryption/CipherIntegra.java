@@ -76,7 +76,7 @@ public class CipherIntegra implements Serializable {
      * Constructor method for the class Cipher.java.
      * @param algorithmCipherParam Parameter that represents the selected cipher algorithm.
      * @param keyParam Parameter that represents the used key to encrypt/decrypt a message.
-     * @throws CipherException 
+     * @throws CipherException If the method fails.
      */
     public CipherIntegra(AlgorithmCipherEnum algorithmCipherParam, Key keyParam) throws CipherException {
 	if (algorithmCipherParam != null && keyParam != null) {

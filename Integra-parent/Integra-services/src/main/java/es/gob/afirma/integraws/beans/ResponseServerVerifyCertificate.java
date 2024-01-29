@@ -58,10 +58,10 @@ public class ResponseServerVerifyCertificate extends VerifyCertificateResponse{
     
     /**
      * Constructor method for the class ResponseServerVerifyCertificate.java.
-     * @param result 
-     * @param certificatePathValidityParam 
-     * @param readableCertificateInfoParam 
-     * @param integraSuccessParam 
+     * @param result Result.
+     * @param certificatePathValidityParam certification path validity. 
+     * @param readableCertificateInfoParam readable certificate info param.
+     * @param integraSuccessParam integraSuccessParam value.
      */
     public ResponseServerVerifyCertificate(Result result, CertificatePathValidity certificatePathValidityParam, Map<String,String> readableCertificateInfoParam, boolean integraSuccessParam) {
 	super();
@@ -75,8 +75,8 @@ public class ResponseServerVerifyCertificate extends VerifyCertificateResponse{
 
     /**
      * Constructor method for the class ResponseServerVerifyCertificate.java.
-     * @param integraSuccessParam 
-     * @param message  
+     * @param integraSuccessParam integraSuccessParam value.
+     * @param message error message.
      */
     public ResponseServerVerifyCertificate(boolean integraSuccessParam, String message) {
 	super();

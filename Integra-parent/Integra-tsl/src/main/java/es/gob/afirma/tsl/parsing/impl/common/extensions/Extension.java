@@ -120,7 +120,7 @@ public abstract class Extension implements IAnyTypeExtension {
 
 	/**
 	 * {@inheritDoc}
-	 * @see es.gob.afirma.mtsl.parsing.impl.common.extensions.IAnyTypeExtension#getImplementationExtension()
+	 * @see es.gob.afirma.tsl.parsing.ifaces.IAnyTypeExtension#getImplementationExtension()
 	 */
 	@Override
 	public final int getImplementationExtension() {

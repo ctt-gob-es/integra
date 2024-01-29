@@ -89,7 +89,6 @@ public final class UtilsAESCipher {
 	 * Method that checks a new key.
 	 * @param newAES The new key.
 	 * @return <code>true</code> if the key is valid, otherwise <code>false</code>.
-	 * @throws CipherException If the method fails.
 	 */
 	public static boolean testCipher(String newAES) {
 		boolean result = true;

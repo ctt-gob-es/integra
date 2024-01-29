@@ -2265,8 +2265,8 @@ public final class XadesSigner implements Signer {
      * @param signingMode Parameter that represents the signing mode of the signed XML document. The possible values are:
      * <ul>
      * <li>{@link IUtilsSignature#DETACHED_SIGNATURE_MODE}</li>
-     * <li>{@link IUtilsSignature##ENVELOPED_SIGNATURE_MODE}</li>
-     * <li>{@link IUtilsSignature##ENVELOPING_SIGNATURE_MODE}</li>
+     * <li>{@link IUtilsSignature#ENVELOPED_SIGNATURE_MODE}</li>
+     * <li>{@link IUtilsSignature#ENVELOPING_SIGNATURE_MODE}</li>
      * </ul>
      * @param signerInfo Parameter that represents the information about the signer.
      * @param validationResult Parameter that represents the information about the validation of the signed XML document.

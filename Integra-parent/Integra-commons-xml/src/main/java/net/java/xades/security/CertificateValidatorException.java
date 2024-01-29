@@ -32,15 +32,27 @@ public class CertificateValidatorException extends GeneralSecurityException {
      */
     private static final long serialVersionUID = -4063199462796472613L;
 
-    /** Creates a new instance of CertificateValidatorException */
+    /**
+     * Creates a new instance of CertificateValidatorException
+     * @param message the exception's description. 
+     * @param cause the cause that provoke the exception. 
+     */
     public CertificateValidatorException(String message, Throwable cause) {
 	super(message, cause);
     }
 
+    /**
+     * Creates a new instance of CertificateValidatorException
+     * @param message the exception's description.
+     */
     public CertificateValidatorException(String message) {
 	super(message);
     }
 
+    /**
+     * Creates a new instance of CertificateValidatorException
+     * @param cause the cause that provoke the exception. 
+     */
     public CertificateValidatorException(Throwable cause) {
 	super(cause);
     }

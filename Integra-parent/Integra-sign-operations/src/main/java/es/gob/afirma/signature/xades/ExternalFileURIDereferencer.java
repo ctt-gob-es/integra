@@ -60,7 +60,6 @@ public class ExternalFileURIDereferencer extends ResourceResolverSpi {
 
     /**
      * {@inheritDoc}
-     * @see org.apache.xml.security.utils.resolver.ResourceResolverSpi#engineResolve(org.w3c.dom.Attr, java.lang.String)
      */
     @Override
     public XMLSignatureInput engineResolveURI(ResourceResolverContext context) throws ResourceResolverException {
@@ -72,7 +71,6 @@ public class ExternalFileURIDereferencer extends ResourceResolverSpi {
 
     /**
      * {@inheritDoc}
-     * @see org.apache.xml.security.utils.resolver.ResourceResolverSpi#engineCanResolve(org.w3c.dom.Attr, java.lang.String)
      */
     @Override
     public boolean engineCanResolveURI(ResourceResolverContext context) {

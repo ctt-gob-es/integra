@@ -84,7 +84,7 @@ public class BarcodeManager implements BarcodeManagerI {
 
 	/**
 	 * {@inheritDoc}
-	 * @see es.gob.signaturereport.barcode.BarcodeManagerI#generateBarcode(java.util.ArrayList)
+	 * @see es.gob.afirma.mreport.barcode.BarcodeManagerI#generateBarcode(ArrayList, boolean, boolean)
 	 */
 	public ArrayList<BarcodeImage> generateBarcode(ArrayList<Barcode> barcodes, boolean includeURL, boolean includeContent) throws BarcodeException {
 		ArrayList<BarcodeImage> result = new ArrayList<BarcodeImage>();

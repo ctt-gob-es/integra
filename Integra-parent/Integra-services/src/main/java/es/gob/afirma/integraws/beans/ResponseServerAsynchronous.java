@@ -59,11 +59,11 @@ public class ResponseServerAsynchronous extends AsynchronousResponse{
     
     /**
      * Constructor method for the class ResponseServerAsynchronous.java.
-     * @param batVerCerResParam 
-     * @param batVerSigResParam 
-     * @param invAsyResParam 
-     * @param serSigResParam 
-     * @param integraSuccessParam  
+     * @param batVerCerResParam batVerCerResParam value. 
+     * @param batVerSigResParam batVerSigResParam value.
+     * @param invAsyResParam invAsyResParam value.
+     * @param serSigResParam serSigResParam value.
+     * @param integraSuccessParam The value for the attribute {@link #integraSuccess}
      */
     public ResponseServerAsynchronous(BatchVerifyCertificateResponse batVerCerResParam, BatchVerifySignatureResponse batVerSigResParam, InvalidAsyncResponse invAsyResParam, ServerSignerResponse serSigResParam, boolean integraSuccessParam) {
 	super();
@@ -78,13 +78,13 @@ public class ResponseServerAsynchronous extends AsynchronousResponse{
 
     /**
      * Constructor method for the class ResponseServerAsynchronous.java.
-     * @param integraSuccessParam 
-     * @param message  
+     * @param integraSuccessParam The value for the attribute {@link #integraSuccess}
+     * @param integraErrorMsg The value for the attribute {@link #integraErrorMsg}
      */
-    public ResponseServerAsynchronous(boolean integraSuccessParam, String message) {
+    public ResponseServerAsynchronous(boolean integraSuccessParam, String integraErrorMsg) {
 	super();
 	this.integraSuccess = integraSuccessParam;
-	this.integraErrorMsg = message;
+	this.integraErrorMsg = integraErrorMsg;
     }
 
 

@@ -54,13 +54,13 @@ import net.java.xades.security.xml.XAdES.XAdES_BES;
 import net.java.xades.security.xml.XAdES.XMLAdvancedSignature;
 
 /**
- * <p>Class that extends {@link XMLAdvancedSignature} with new changes:
+ * <p>Class that extends {@link XMLAdvancedSignature} with new changes:</p>
  * <ul>
  * <li><code>SubjectX500Principal</code> and <code>X509IssuerSerial</code> elements are included in the <code>KeyInfo</code> element.</li>
  * <li>Signature algorithm can be set.</li>
  * <li>Canonicalization algorithm of the signature can be set.</li>
  * <li>Namespace of XAdES can be set.</li>
- * </ul></p>
+ * </ul>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * @version 1.3, 13/04/2020.
  */

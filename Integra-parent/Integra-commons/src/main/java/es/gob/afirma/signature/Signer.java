@@ -96,9 +96,9 @@ public interface Signer {
      * </ul>
      * The allowed values for PAdES signature are:
      * <ul>
-     * <li>{@link es.gob.afirma.signature.SignatureFormatDetector#FORMAT_PADES_BASIC}</li>
-     * <li>{@link es.gob.afirma.signature.SignatureFormatDetector#FORMAT_PADES_BES}</li>
-     * <li>{@link es.gob.afirma.signature.SignatureFormatDetector#FORMAT_PADES_EPES}</li>
+     * <li>{@link es.gob.afirma.signature.ISignatureFormatDetector#FORMAT_PADES_BASIC}</li>
+     * <li>{@link es.gob.afirma.signature.ISignatureFormatDetector#FORMAT_PADES_BES}</li>
+     * <li>{@link es.gob.afirma.signature.ISignatureFormatDetector#FORMAT_PADES_EPES}</li>
      * </ul>
      * The allowed values for PAdES Baseline signature are:
      * <ul>
@@ -281,9 +281,9 @@ public interface Signer {
      * </ul>
      * The allowed values for PAdES signature are:
      * <ul>
-     * <li>{@link es.gob.afirma.signature.SignatureFormatDetector#FORMAT_PADES_BASIC}</li>
-     * <li>{@link es.gob.afirma.signature.SignatureFormatDetector#FORMAT_PADES_BES}</li>
-     * <li>{@link es.gob.afirma.signature.SignatureFormatDetector#FORMAT_PADES_EPES}</li>
+     * <li>{@link es.gob.afirma.signature.ISignatureFormatDetector#FORMAT_PADES_BASIC}</li>
+     * <li>{@link es.gob.afirma.signature.ISignatureFormatDetector#FORMAT_PADES_BES}</li>
+     * <li>{@link es.gob.afirma.signature.ISignatureFormatDetector#FORMAT_PADES_EPES}</li>
      * </ul>
      * The allowed values for PAdES Baseline signature are:
      * <ul>

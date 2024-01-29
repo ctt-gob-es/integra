@@ -51,7 +51,7 @@ public interface ITslValidation {
      * @param certByteArrayB64 Certificate to detect (byte[] in Base64 encoded).
      * @param tslObject TSL object representation to use.
      * @param date Date to use to detect and validate the input certificate.
-     * 	 * @param getInfo Flag that indicates if it is necessary to get the certificate information in response.
+     * @param getInfo Flag that indicates if it is necessary to get the certificate information in response.
      * @param checkRevStatus Flag that indicates if it is necessary to check the revocation status of the input certificate.
      * @return Structure with detected certificate in TSL and revocation status.
      * @throws TSLManagingException If some error is produced in the execution of the service.
@@ -68,9 +68,11 @@ public interface ITslValidation {
     ITSLObject getTSLObjectFromPath(String pathTsl) throws TSLManagingException;
 
     /**
-     * MEthod that downloads a TSL from a specified URI
+     * Method that downloads a TSL from a specified URI
      * 
      * @param uriTSL RL from where the TSL will be downloaded.
+     * @param connectionTimeout Max millis to connect to server. 
+     * @param readTimeout Max millis to read the response.
      * @return a TSL Data Object representation.
      * @throws TSLManagingException  In case of some error getting the information from the file.
      */

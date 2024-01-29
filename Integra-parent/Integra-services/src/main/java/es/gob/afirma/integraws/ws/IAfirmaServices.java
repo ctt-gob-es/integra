@@ -72,7 +72,7 @@ public interface IAfirmaServices {
     
     /**
      * Method that obtains the response of the server counter-signature service.
-     * @param couSigReq 
+     * @param couSigReq Object that represents request to service.
      * @return Result object of service request.
      */
     ResponseServerSign serverCounterSign(RequestServerCounterSign couSigReq);

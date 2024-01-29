@@ -97,12 +97,12 @@ public final class UtilsStringChar {
 	public static final String SYMBOL_PAD_STRING = String.valueOf(SYMBOL_PAD);
 
 	/**
-	 * Constant attribute that represents the char to identify the symbol: <code>&</code>.
+	 * Constant attribute that represents the char to identify the symbol: <code>&amp;</code>.
 	 */
 	public static final char SYMBOL_AMPERSAND = '&';
 
 	/**
-	 * Constant attribute that represents the string to identify the symbol: <code>&</code>.
+	 * Constant attribute that represents the string to identify the symbol: <code>&amp;</code>.
 	 */
 	public static final String SYMBOL_AMPERSAND_STRING = String.valueOf(SYMBOL_AMPERSAND);
 
@@ -433,7 +433,7 @@ public final class UtilsStringChar {
 	 * Method that checks if a string is found in a list of strings as part of the string.
 	 * 
 	 * @param listString String list where you want to search for the string.
-	 * @param string  String to search for.
+	 * @param stringParam String to search for.
 	 * @return True, if the string was found within the list. 
 	 */
 	public static boolean listContainingString(List<String> listString, String stringParam) {

@@ -29,12 +29,12 @@ import org.w3c.dom.Element;
  * 
  * The correct Structure here is:
  * 
- * <xades:SignaturePolicyIdentifier> <xades:SignaturePolicyId> <xades:SigPolicyId>
- * <xades:SigPolicyQualifiers> <xades:SigPolicyQualifier> </xades:SigPolicyQualifier>
- * </xades:SigPolicyQualifiers> <xades:Identifier> </xades:Identifier> <xades:Description>
- * </xades:Description> </xades:SigPolicyId> <xades:SigPolicyHash> <dsign:DigestMethod
- * Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" /> <dsign:DigestValue> </dsign:DigestValue>
- * </xades:SigPolicyHash> </xades:SignaturePolicyId> </xades:SignaturePolicyIdentifier>
+ * &lt;xades:SignaturePolicyIdentifier&gt; &lt;xades:SignaturePolicyId&gt; &lt;xades:SigPolicyId&gt;
+ * &lt;xades:SigPolicyQualifiers&gt; &lt;xades:SigPolicyQualifier&gt; &lt;/xades:SigPolicyQualifier&gt;
+ * &lt;/xades:SigPolicyQualifiers&gt; &lt;xades:Identifier&gt; &lt;/xades:Identifier&gt; &lt;xades:Description&gt;
+ * &lt;/xades:Description&gt; &lt;/xades:SigPolicyId&gt; &lt;xades:SigPolicyHash&gt; &lt;dsign:DigestMethod
+ * Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" /&gt; &lt;dsign:DigestValue&gt; &lt;/dsign:DigestValue&gt;
+ * &lt;/xades:SigPolicyHash&gt; &lt;/xades:SignaturePolicyId&gt; &lt;/xades:SignaturePolicyIdentifier&gt;
  * 
  * 
  */

@@ -248,13 +248,13 @@ public final class XMLUtils {
 	 * Method that includes a DOM object into the XML supplied and in the indicated path.
 	 * @param xml	Document for including of element.
 	 * @param xpath	Xpath that locates the node where will be included the element.
-	 * @param value	Object that represents the element to be included. Allowed Object:<br/>
-	 * 			{@link String} - If the object to include is a text node or a cdata section.<br/>
-	 * 			{@link Node} - If the object to include is a element node.<br/>
-	 * @param type	Parameter that indicates the type object to be included. Allowed values:<br/>
-	 * 			{@link Node#TEXT_NODE} - If the object to include is a text node.<br/>
-	 * 			{@link Node#CDATA_SECTION_NODE} - If the object to include is a cdata section.<br/>
-	 * 			{@link Node#ELEMENT_NODE} - If the object to include is a element node.<br/>
+	 * @param value	Object that represents the element to be included. Allowed Object:<br>
+	 * 			{@link String} - If the object to include is a text node or a cdata section.<br>
+	 * 			{@link Node} - If the object to include is a element node.<br>
+	 * @param type	Parameter that indicates the type object to be included. Allowed values:<br>
+	 * 			{@link Node#TEXT_NODE} - If the object to include is a text node.<br>
+	 * 			{@link Node#CDATA_SECTION_NODE} - If the object to include is a cdata section.<br>
+	 * 			{@link Node#ELEMENT_NODE} - If the object to include is a element node.<br>
 	 * @throws UtilsException	There was an error processing the XML.
 	 */
 	public static void includeElementValue(Document xml, String xpath, Object value, int type) throws UtilsException {

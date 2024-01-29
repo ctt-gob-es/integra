@@ -56,8 +56,8 @@ public class DocumentRequest implements Serializable {
     private String type;
 
     /**
-     * Gets the value of the attribute {@link #idApplication}.
-     * @return the value of the attribute {@link #idApplication}.
+     * Gets the value of the attribute {@link #applicationId}.
+     * @return the value of the attribute {@link #applicationId}.
      */
     public final String getApplicationId() {
 	return applicationId;
