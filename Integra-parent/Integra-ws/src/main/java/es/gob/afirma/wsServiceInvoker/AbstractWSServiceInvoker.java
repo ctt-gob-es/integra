@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 /**
  * <b>File:</b><p>es.gob.afirma.afirma5ServiceInvoker.AbstractAfirma5ServiceInvoker.java.</p>
  * <b>Description:</b><p>Class that defines the common functionality for all the classes which allow to invoke the web services of @Firma.</p>
