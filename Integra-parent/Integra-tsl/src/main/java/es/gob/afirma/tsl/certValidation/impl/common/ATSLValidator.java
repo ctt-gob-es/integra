@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 16/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.9, 09/10/2023.
+ * @version 1.10, 13/02/2024.
  */
 package es.gob.afirma.tsl.certValidation.impl.common;
 
@@ -78,7 +78,7 @@ import es.gob.afirma.tsl.utils.UtilsStringChar;
  * <p>Abstract class that represents a TSL validator with the principal functions
  * regardless it implementation.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.9, 09/10/2023.
+ * @version 1.10, 13/02/2024.
  */
 public abstract class ATSLValidator implements ITSLValidator {
 
@@ -277,122 +277,138 @@ public abstract class ATSLValidator implements ITSLValidator {
 
     }
 
+    /**
+     * Validates the input certificate knowing this TSL is not list of lists.
+     * @param cert Certificate X509 v3 to validate.
+     * @param isCACert Flag that indicates if the input certificate has the Basic Constraints with the CA flag activated
+     * (<code>true</code>) or not (<code>false</code>).
+     * @param isTsaCertificate Flag that indicates if the input certificate has the id-kp-timestamping key purpose
+     * (<code>true</code>) or not (<code>false</code>).
+     * @param validationDate Validation date to check the certificate status revocation.
+     * @param checkStatusRevocation Flag that indicates if only try to detect the input certificate (<code>false</code>)
+     * or also checks the revocation status of this (<code>true</code>).
+     * @param validationResult Object where stores the validation result data.
+     * @throws TSLValidationException If there is some error or inconsistency in the certificate validation.
+     */
     private void validateCertificate(X509Certificate cert, boolean isCACert, boolean isTsaCertificate, Date validationDate, boolean checkStatusRevocation, TSLValidatorResult validationResult) throws TSLValidationException {
 
-   	// Comprobamos que el "Status Determination Approach" no sea
-   	// "delinquent" o equivalente.
-   	if (checkIfStatusDeterminationApproachIsDelinquentOrEquivalent(tsl.getSchemeInformation().getStatusDeterminationApproach().toString())) {
+	// Comprobamos que el "Status Determination Approach" no sea
+	// "delinquent" o equivalente.
+	if (checkIfStatusDeterminationApproachIsDelinquentOrEquivalent(tsl.getSchemeInformation().getStatusDeterminationApproach().toString())) {
 
-   	    throw new TSLValidationException(Language.getResIntegraTsl(ILogTslConstant.ATV_LOG004));
+	    throw new TSLValidationException(Language.getResIntegraTsl(ILogTslConstant.ATV_LOG004));
 
-   	} else {
+	} else {
 
-   	    // TODO: Aún no se hace nada con las extensiones del esquema. No se
-   	    // identifica ninguna.
-   	    // doSomethingWithSchemeExtensions();
+	    // TODO: Aún no se hace nada con las extensiones del esquema. No se
+	    // identifica ninguna.
+	    // doSomethingWithSchemeExtensions();
 
-   	    // Recuperamos la lista de TSP y vamos analizando uno a uno.
-   	    List<TrustServiceProvider> tspList = tsl.getTrustServiceProviderList();
-   	    ResultQualifiedCertificate resultQC = new ResultQualifiedCertificate(cert);
-   	    ResultQSCDDetermination resultQSCD = new ResultQSCDDetermination();
-   	    try {
-   		validateCertificateETSI(cert, isCACert, isTsaCertificate, validationDate, checkStatusRevocation, tspList, resultQC, resultQSCD);
+	    // Recuperamos la lista de TSP y vamos analizando uno a uno.
+	    List<TrustServiceProvider> tspList = tsl.getTrustServiceProviderList();
+	    ResultQualifiedCertificate resultQC = new ResultQualifiedCertificate(cert);
+	    ResultQSCDDetermination resultQSCD = new ResultQSCDDetermination();
+	    try {
+		validateCertificateETSI(cert, isCACert, isTsaCertificate, validationDate, checkStatusRevocation, tspList, resultQC, resultQSCD);
 
-   		if (resultQC.getInfoQcResult().isCertificateDetected() || resultQC.getInfoQcResult().isTspServiceTSADetected()) {
-   		    // detectado pero desconocido
-   		    validationResult.setResult(ITSLValidatorResult.RESULT_DETECTED_STATE_UNKNOWN);
+		if (resultQC.getInfoQcResult().isCertificateDetected() || resultQC.getInfoQcResult().isTspServiceTSADetected()) {
+		    // detectado pero desconocido
+		    validationResult.setResult(ITSLValidatorResult.RESULT_DETECTED_STATE_UNKNOWN);
 
-   		    ServiceHistoryInstance shiSelected = resultQC.getInfoQcResult().getShiSelected();
-   		    if (shiSelected != null) {
-   			// Se establece el resultado según el estado.
-   			setStatusResultInAccordanceWithTSPServiceCurrentStatus(isCACert, shiSelected.getServiceStatus().toString(), shiSelected.getServiceStatusStartingTime(), validationDate, validationResult);
-   			// Guardamos la información del servicio histórico
-   			// usado.
-   			if (resultQC.getInfoQcResult().isHistoricServiceInf()) {
-   			    assignTSPServiceHistoryInformationNameForDetectToResult(validationResult, shiSelected);
-   			    validationResult.setTSPServiceHistoryInformationInstanceForDetect(shiSelected);
-   			}
-   		    }
+		    ServiceHistoryInstance shiSelected = resultQC.getInfoQcResult().getShiSelected();
+		    if (shiSelected != null) {
+			// Se establece el resultado según el estado.
+			setStatusResultInAccordanceWithTSPServiceCurrentStatus(isCACert, shiSelected.getServiceStatus().toString(), shiSelected.getServiceStatusStartingTime(), validationDate, validationResult);
+			// Guardamos la información del servicio histórico
+			// usado.
+			if (resultQC.getInfoQcResult().isHistoricServiceInf()) {
+			    assignTSPServiceHistoryInformationNameForDetectToResult(validationResult, shiSelected);
+			    validationResult.setTSPServiceHistoryInformationInstanceForDetect(shiSelected);
+			}
+		    }
 
-   		    TSPService tspServiceSelected = resultQC.getInfoQcResult().getTspServiceDetected();
-   		    // Almacenamos el nombre del TSP Service usado.
-   		    assignTSPServiceNameForDetectToResult(validationResult, tspServiceSelected);
-   		    // Y el servicio.
-   		    validationResult.setTSPServiceForDetect(tspServiceSelected);
+		    TSPService tspServiceSelected = resultQC.getInfoQcResult().getTspServiceDetected();
+		    // Almacenamos el nombre del TSP Service usado.
+		    assignTSPServiceNameForDetectToResult(validationResult, tspServiceSelected);
+		    // Y el servicio.
+		    validationResult.setTSPServiceForDetect(tspServiceSelected);
 
-   		    // asigna el certificado emisor obtenido al resultado.
-   		    InfoCertificateIssuer infoCertIssuer = resultQC.getInfoQcResult().getInfoCertificateIssuer();
-   		    if (infoCertIssuer != null) {
-   			// informacion del certificado emisor
-   			if (infoCertIssuer.getIssuerCert() != null) {
-   			    try {
-   				validationResult.setIssuerCert(UtilsCertificateTsl.getIaikCertificate(infoCertIssuer.getIssuerCert().getEncoded()));
-   			    } catch (CertificateEncodingException
-   				    | CommonUtilsException e) {
+		    // asigna el certificado emisor obtenido al resultado.
+		    InfoCertificateIssuer infoCertIssuer = resultQC.getInfoQcResult().getInfoCertificateIssuer();
+		    if (infoCertIssuer != null) {
+			// informacion del certificado emisor
+			if (infoCertIssuer.getIssuerCert() != null) {
+			    try {
+				validationResult.setIssuerCert(UtilsCertificateTsl.getIaikCertificate(infoCertIssuer.getIssuerCert().getEncoded()));
+				validationResult.setIssuerPublicKey(infoCertIssuer.getIssuerPublicKey());
+				validationResult.setIssuerSubjectName(infoCertIssuer.getIssuerSubjectName());
+				validationResult.setIssuerSKIbytes(infoCertIssuer.getIssuerSKIbytes());
+			    } catch (CertificateEncodingException
+				    | CommonUtilsException e) {
 
-   				LOGGER.warn(Language.getFormatResIntegraTsl(ILogTslConstant.ATV_LOG077, new Object[ ] { e.getMessage() }));
-   			    }
-   			    
-   			}
-   			
-   		    }
+				LOGGER.warn(Language.getFormatResIntegraTsl(ILogTslConstant.ATV_LOG077, new Object[ ] { e.getMessage() }));
+			    }
 
-   		    TrustServiceProvider tspSelected = resultQC.getInfoQcResult().getTspDetected();
-   		    // Se almacena el nombre del TSP seleccionado.
-   		    assignTSPandNameToResult(validationResult, tspSelected);
+			}
 
-   		    // Si el estado no es desconocido, significa que ya se ha
-   		    // determinado la validez del certificado,
-   		    // por lo que asignamos el mismo nombre de servicio al
-   		    // resultado de la validación (y el servicio).
-   		    if (!validationResult.hasBeenDetectedTheCertificateWithUnknownState()) {
-   			LOGGER.info(Language.getResIntegraTsl(ILogTslConstant.ATV_LOG076));
-   			validationResult.setResultFromServiceStatus(Boolean.TRUE);
-   			validationResult.setResultFromDPorAIA(Boolean.FALSE);
-   			validationResult.setTSPServiceNameForValidate(validationResult.getTSPServiceNameForDetect());
-   			validationResult.setTSPServiceForValidate(validationResult.getTSPServiceForDetect());
-   			validationResult.setTspServiceHistoryInformationInstanceNameForValidate(validationResult.getTSPServiceHistoryInformationInstanceNameForDetect());
-   			validationResult.setTspServiceHistoryInformationInstanceForValidate(validationResult.getTSPServiceHistoryInformationInstanceForDetect());
+		    }
 
-   		    }
+		    TrustServiceProvider tspSelected = resultQC.getInfoQcResult().getTspDetected();
+		    // Se almacena el nombre del TSP seleccionado.
+		    assignTSPandNameToResult(validationResult, tspSelected);
 
-   		    // se actualiza los mapeos obtenidos.
-   		    updateMappingValidationResult(validationResult, resultQC, resultQSCD);
+		    // Si el estado no es desconocido, significa que ya se ha
+		    // determinado la validez del certificado,
+		    // por lo que asignamos el mismo nombre de servicio al
+		    // resultado de la validación (y el servicio).
+		    if (!validationResult.hasBeenDetectedTheCertificateWithUnknownState()) {
+			LOGGER.info(Language.getResIntegraTsl(ILogTslConstant.ATV_LOG076));
+			validationResult.setResultFromServiceStatus(Boolean.TRUE);
+			validationResult.setResultFromDPorAIA(Boolean.FALSE);
+			validationResult.setTSPServiceNameForValidate(validationResult.getTSPServiceNameForDetect());
+			validationResult.setTSPServiceForValidate(validationResult.getTSPServiceForDetect());
+			validationResult.setTspServiceHistoryInformationInstanceNameForValidate(validationResult.getTSPServiceHistoryInformationInstanceNameForDetect());
+			validationResult.setTspServiceHistoryInformationInstanceForValidate(validationResult.getTSPServiceHistoryInformationInstanceForDetect());
 
-   		}
-   	    } catch (TSLQualificationEvalProcessException e) {
+		    }
 
-   		// Si se produce esta excepción, significa que se
-   		// produjo un error
-   		// evaluando el certificado frente a un CriteriaList de
-   		// un QualificationExtension,
-   		// siendo esta una extensión crítica. En consecuencia se
-   		// debe considerar
-   		// como certificado no detectado, e impedir que se
-   		// continúen evaluando
-   		// otros servicios.
-   		// Mostramos en el log el motivo y la excepción.
-   		LOGGER.error(Language.getResIntegraTsl(ILogTslConstant.ATV_LOG019));
-   		LOGGER.error(e.getMessage(), e);
-   		// Limpiamos toda la información acumulada hasta el
-   		// momento.
-   		validationResult.resetAllData();
-   	    }
+		    // se actualiza los mapeos obtenidos.
+		    updateMappingValidationResult(validationResult, resultQC, resultQSCD);
 
-   	    // Si no ha sido detectado el certificado, lo indicamos en
-   	    // auditoría.
-   	    if (!validationResult.hasBeenDetectedTheCertificate()) {
-   		LOGGER.info(Language.getResIntegraTsl(ILogTslConstant.ATV_LOG020));
+		}
+	    } catch (TSLQualificationEvalProcessException e) {
 
-   	    }
+		// Si se produce esta excepción, significa que se
+		// produjo un error
+		// evaluando el certificado frente a un CriteriaList de
+		// un QualificationExtension,
+		// siendo esta una extensión crítica. En consecuencia se
+		// debe considerar
+		// como certificado no detectado, e impedir que se
+		// continúen evaluando
+		// otros servicios.
+		// Mostramos en el log el motivo y la excepción.
+		LOGGER.error(Language.getResIntegraTsl(ILogTslConstant.ATV_LOG019));
+		LOGGER.error(e.getMessage(), e);
+		// Limpiamos toda la información acumulada hasta el
+		// momento.
+		validationResult.resetAllData();
+	    }
 
-   	}
+	    // Si no ha sido detectado el certificado, lo indicamos en
+	    // auditoría.
+	    if (!validationResult.hasBeenDetectedTheCertificate()) {
+		LOGGER.info(Language.getResIntegraTsl(ILogTslConstant.ATV_LOG020));
 
-   	// Mostramos en el log si el certificado ha sido detectado/validado y
-   	// por cual TSP y servicio.
-   	showInLogResultOfValidation(validationResult, checkStatusRevocation);
+	    }
 
-       }
+	}
+
+	// Mostramos en el log si el certificado ha sido detectado/validado y
+	// por cual TSP y servicio.
+	showInLogResultOfValidation(validationResult, checkStatusRevocation);
+
+    }
 
     /**
      * Method where the qualification of a certificate is obtained according to
@@ -413,7 +429,7 @@ public abstract class ATSLValidator implements ITSLValidator {
      */
     private void validateCertificateETSI(X509Certificate cert, boolean isCACert, boolean isTsaCertificate, Date validationDate, boolean checkStatusRevocation, List<TrustServiceProvider> tspList, ResultQualifiedCertificate resultQC, ResultQSCDDetermination resultQSCD) throws TSLQualificationEvalProcessException, TSLValidationException {
 
-	procEUQualifiedCertificateDetermination(resultQC, cert, isCACert, isTsaCertificate, validationDate, tspList, false);
+	procEUQualifiedCertificateDetermination(resultQC, cert, isCACert, isTsaCertificate, validationDate, tspList);
 
 	if (!resultQC.isEndProcedure()) {
 
@@ -423,7 +439,7 @@ public abstract class ATSLValidator implements ITSLValidator {
 		// validación.
 		LOGGER.info(Language.getFormatResIntegraTsl(ILogTslConstant.ATV_LOG078, new Object[ ] { cert.getNotBefore().toString() }));
 		ResultQualifiedCertificate resultQCDateIssue = new ResultQualifiedCertificate(cert);
-		procEUQualifiedCertificateDetermination(resultQCDateIssue, cert, isCACert, isTsaCertificate, cert.getNotBefore(), tspList, true);
+		procEUQualifiedCertificateDetermination(resultQCDateIssue, cert, isCACert, isTsaCertificate, cert.getNotBefore(), tspList);
 
 		// PRO-4.4.4-35
 		if (resultQCDateIssue.getQcStatus().equals(ITSLStatusConstants.PROCESS_FAILED)) {
@@ -499,19 +515,16 @@ public abstract class ATSLValidator implements ITSLValidator {
      *            List of TrustServiceProvider.
      * @param validationResult
      *            Object where stores the validation result data.
-     * @param isDateIssue
-     *            Flag taht indicates if the validation is being done using the
-     *            date of issue of the certificate.
      * @throws TSLQualificationEvalProcessException
      */
-    private void procEUQualifiedCertificateDetermination(ResultQualifiedCertificate resultQC, X509Certificate cert, boolean isCACert, boolean isTsaCertificate, Date validationDate, List<TrustServiceProvider> tspList, boolean isDateIssue) throws TSLQualificationEvalProcessException {
+    private void procEUQualifiedCertificateDetermination(ResultQualifiedCertificate resultQC, X509Certificate cert, boolean isCACert, boolean isTsaCertificate, Date validationDate, List<TrustServiceProvider> tspList) throws TSLQualificationEvalProcessException {
 
 	boolean endProc = Boolean.FALSE;
 	if (tspList != null && !tspList.isEmpty()) {
 	    // se llama al PROC3. Obtaining listed services matching a
 	    // certificate
 	    ResultServiceInformation resultSI = new ResultServiceInformation();
-	    procListedServiceMachingCertificate(resultSI, cert, isCACert, isTsaCertificate, validationDate, tspList, isDateIssue);
+	    procListedServiceMachingCertificate(resultSI, cert, isCACert, isTsaCertificate, validationDate, tspList);
 
 	    // PRO-4.4.4-04
 	    if (resultSI.getSiStatus().equals(ITSLStatusConstants.PROCESS_FAILED)) {
@@ -700,36 +713,6 @@ public abstract class ATSLValidator implements ITSLValidator {
 
     }
 
-    /**
-      * Auxiliar method to extract a TSP name from the TSP provider.
-      * 
-      * @param tsp
-      *            TSP provider from which extracts the name.
-      * @return TSP name from the TSP provider.
-      */
-    private String getTSPNameCountry(TrustServiceProvider tsp, String country) {
-
-	String result = null;
-	if (country != null) {
-	    // Verificamos que haya algún nombre asignado al TSP.
-	    if (tsp.getTspInformation().isThereSomeName()) {
-
-		// Recuperamos el correspondiente al idioma inglés por defecto.
-		List<String> tspNamesCountry = tsp.getTspInformation().getTSPNamesForLanguage(country.toLowerCase());
-
-		// Si lo hemos obtenido, asignamos el nombre al resultado.
-		if (tspNamesCountry != null && !tspNamesCountry.isEmpty()) {
-
-		    result = tspNamesCountry.get(0);
-
-		}
-
-	    }
-	}
-
-	return result;
-
-    }
 
     /**
      * Shows in log the result of the validation.
@@ -1045,11 +1028,8 @@ public abstract class ATSLValidator implements ITSLValidator {
      *            List of TrustServiceProvider.
      * @param validationResult
      *            Object where stores the validation result data.
-     *  @param isDateIssue
-     *            Flag taht indicates if the validation is being done using the
-     *            date of issue of the certificate.
      */
-    private void procListedServiceMachingCertificate(ResultServiceInformation resultSI, X509Certificate cert, boolean isCACert, boolean isTsaCertificate, Date validationDate, List<TrustServiceProvider> tspList, boolean isDateIssue) {
+    private void procListedServiceMachingCertificate(ResultServiceInformation resultSI, X509Certificate cert, boolean isCACert, boolean isTsaCertificate, Date validationDate, List<TrustServiceProvider> tspList) {
 	LOGGER.info(Language.getResIntegraTsl(ILogTslConstant.ATV_LOG056));
 	obtainListServicesMatchingCertificate(resultSI, cert, isCACert, isTsaCertificate, validationDate, tspList);
 
@@ -1058,7 +1038,7 @@ public abstract class ATSLValidator implements ITSLValidator {
 	    LOGGER.info(Language.getFormatResIntegraTsl(ILogTslConstant.ATV_LOG057, new Object[ ] { resultSI.getSiStatus(), resultSI.getSiResults().size() }));
 	}
 
-	if (!isDateIssue && resultSI.getSiStatus().equals(ITSLStatusConstants.PROCESS_PASSED) && resultSI.getSiResults().isEmpty()) {
+	if (resultSI.getSiStatus().equals(ITSLStatusConstants.PROCESS_PASSED) && resultSI.getSiResults().isEmpty()) {
 	    // si el proceso no ha fallado pero no se ha encontrado tspServices
 	    // y estamos en la primera vuelta del proceso, donde se valida con
 	    // la fecha de validación y no la fecha de emisión,
@@ -1077,7 +1057,7 @@ public abstract class ATSLValidator implements ITSLValidator {
 		LOGGER.info(Language.getResIntegraTsl(ILogTslConstant.ATV_LOG059));
 		ResultServiceInformation resultSIIssuer = new ResultServiceInformation();
 
-		procListedServiceMachingCertificate(resultSIIssuer, issuerCert, isCACert, isTsaCertificate, validationDate, tspList, isDateIssue);
+		procListedServiceMachingCertificate(resultSIIssuer, issuerCert, isCACert, isTsaCertificate, validationDate, tspList);
 
 		if (resultSIIssuer.getSiStatus().equals(ITSLStatusConstants.PROCESS_PASSED) && !resultSIIssuer.getSiResults().isEmpty()) {
 		    resultSI.removeAllData();
@@ -1099,7 +1079,6 @@ public abstract class ATSLValidator implements ITSLValidator {
 	procObtainSiSubStatus(resultSI);
 
     }
-
 
     /**
      * Method that goes through the list of TSPServices to obtain those that use the certificate.
@@ -1285,9 +1264,12 @@ public abstract class ATSLValidator implements ITSLValidator {
 	    DigitalIdentitiesProcessor dip = new DigitalIdentitiesProcessor(digitalIdentitiesList);
 	    // Procesamos el certificado a validar y modificamos el resultado si
 	    // fuera necesario.
-	    if (isCACert) {
-		result = dip.checkIfDigitalIdentitiesMatchesCertificate(cert);
-	    } else {
+
+	    result = dip.checkIfDigitalIdentitiesMatchesCertificate(cert);
+	    // si no se encuentra el certificado, se comprueba si está el emisor
+	    // del mismo.
+	    if (!result) {
+
 		result = dip.checkIfCertificateIsIssuedBySomeIdentity(cert, resultSI);
 	    }
 	}
@@ -1347,7 +1329,7 @@ public abstract class ATSLValidator implements ITSLValidator {
 	boolean verify = Boolean.FALSE;
 
 	if (!UtilsStringChar.isNullOrEmpty(commonName)) {
-	    if ((UtilsStringChar.listContainingString(resultSI.getInfoSIResult().getListTSPNames(), commonName) || UtilsStringChar.listContainingString(resultSI.getInfoSIResult().getListTSPTradeNames(), commonName))) {
+	    if ((UtilsStringChar.listContainingString(resultSI.getInfoSIResult().getListTSPNames(), commonName) || UtilsStringChar.listContainingString(resultSI.getInfoSIResult().getListTSPTradeNames(), commonName) || UtilsStringChar.listContainingString(resultSI.getInfoSIResult().getListTSPNamesCountry(), commonName))) {
 		verify = Boolean.TRUE;
 	    }
 	}
@@ -2196,7 +2178,7 @@ public abstract class ATSLValidator implements ITSLValidator {
 	}
 
 	// PRO-4.5.4-04 b)
-	if (checkQSCDIndeterminateEsigEseal(listQualifiersUri)) {
+	if (!listQualifiersUri.isEmpty() && checkQSCDIndeterminateEsigEseal(listQualifiersUri)) {
 	    resultQSCD.setQscdResult(ITSLStatusConstants.QSCD_INDETERMINATE);
 	    resultQSCD.setQscdStatus(ITSLStatusConstants.QSCD_STATUS_WARNING);
 	    resultQSCD.getQscdSubStatus().add(ITSLStatusConstants.QSCD_SUBSTATUS_WARNING_2);
@@ -2236,32 +2218,32 @@ public abstract class ATSLValidator implements ITSLValidator {
     }
 
     /**
-	 * Method to obtain QSCD according to Table 6: QSCD status check (Directive regime).
-	 * 
-	 * @param listQualifiersUri  List of qualifiers.
-	 *  @param certExtension Object that represetn the extensions contained in the certificate.
-	 * @param resultQSCD Result obtained when executing the procedure 4.5.QSCD
-	 *            determination of ETSI TS 119 615 v.1.1.1.
-	 */
-	private void proc_getQSCDStatusRegulationRegime(List<String> listQualifiersUri, CertificateExtension certExtension, ResultQSCDDetermination resultQSCD) {
-		// PRO-4.5.4-03 a) 4)
-		if (checkQCQSCDManagedOnBehalfOrQCWithQSCD(listQualifiersUri)) {
-			resultQSCD.setQscdResult(ITSLStatusConstants.QSCD_YES);
-		} else if (listQualifiersUri.contains(ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_QCNOSSCD)) {
-			resultQSCD.setQscdResult(ITSLStatusConstants.QSCD_NO);
-		}else if (listQualifiersUri.contains(ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_QCQSCDSTATUSASINCERT) || listQualifiersUri.isEmpty()) {
-			// obtenemos la fila
-			String row = certExtension.getRowQSCDRegulationRegime();
-			if (row != null) {
-				if (row.equalsIgnoreCase(IQCCertificateConstants.QC_ROW1)) {
-					resultQSCD.setQscdResult(ITSLStatusConstants.QSCD_YES);
-				} else {
-					resultQSCD.setQscdResult(ITSLStatusConstants.QSCD_NO);
-				}
-			}
+     * Method to obtain QSCD according to Table 6: QSCD status check (Directive regime).
+     * 
+     * @param listQualifiersUri  List of qualifiers.
+     *  @param certExtension Object that represetn the extensions contained in the certificate.
+     * @param resultQSCD Result obtained when executing the procedure 4.5.QSCD
+     *            determination of ETSI TS 119 615 v.1.1.1.
+     */
+    private void proc_getQSCDStatusRegulationRegime(List<String> listQualifiersUri, CertificateExtension certExtension, ResultQSCDDetermination resultQSCD) {
+	// PRO-4.5.4-03 a) 4)
+	if (checkQCQSCDManagedOnBehalfOrQCWithQSCD(listQualifiersUri)) {
+	    resultQSCD.setQscdResult(ITSLStatusConstants.QSCD_YES);
+	} else if (listQualifiersUri.contains(ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_QCNOSSCD)) {
+	    resultQSCD.setQscdResult(ITSLStatusConstants.QSCD_NO);
+	} else if (listQualifiersUri.contains(ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_QCQSCDSTATUSASINCERT) || listQualifiersUri.isEmpty()) {
+	    // obtenemos la fila
+	    String row = certExtension.getRowQSCDRegulationRegime();
+	    if (row != null) {
+		if (row.equalsIgnoreCase(IQCCertificateConstants.QC_ROW1)) {
+		    resultQSCD.setQscdResult(ITSLStatusConstants.QSCD_YES);
+		} else {
+		    resultQSCD.setQscdResult(ITSLStatusConstants.QSCD_NO);
 		}
-
+	    }
 	}
+
+    }
 
     /**
      * Method that checks if the value "QSCD" is undetermined.
@@ -3574,5 +3556,37 @@ public abstract class ATSLValidator implements ITSLValidator {
 	}
 
     }
+    
+    /**
+     * Auxiliar method to extract a TSP name from the TSP provider.
+     * 
+     * @param tsp
+     *            TSP provider from which extracts the name.
+     * @return TSP name from the TSP provider.
+     */
+   private String getTSPNameCountry(TrustServiceProvider tsp, String country) {
+
+	String result = null;
+	if (country != null) {
+	    // Verificamos que haya algún nombre asignado al TSP.
+	    if (tsp.getTspInformation().isThereSomeName()) {
+
+		// Recuperamos el correspondiente al idioma inglés por defecto.
+		List<String> tspNamesCountry = tsp.getTspInformation().getTSPNamesForLanguage(country.toLowerCase());
+
+		// Si lo hemos obtenido, asignamos el nombre al resultado.
+		if (tspNamesCountry != null && !tspNamesCountry.isEmpty()) {
+
+		    result = tspNamesCountry.get(0);
+
+		}
+
+	    }
+	}
+
+	return result;
+
+   }
+
 
 }
