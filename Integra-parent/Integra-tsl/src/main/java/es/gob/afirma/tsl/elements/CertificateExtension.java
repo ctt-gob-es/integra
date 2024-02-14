@@ -15,7 +15,7 @@
  * <b>Project:</b><p>Horizontal platform of validation services of multiPKI certificates and electronic signature.</p>
  * <b>Date:</b><p> 23/02/2023.</p>
  * @author Gobierno de España.
- * @version 1.0, 23/02/2023.
+ * @version 1.1, 13/02/2024.
  */
 package es.gob.afirma.tsl.elements;
 
@@ -25,7 +25,7 @@ import java.io.Serializable;
 /** 
  * <p>Class representing the extensions contained in the certificate.</p>
  * <b>Project:</b><p>Horizontal platform of validation services of multiPKI certificates and electronic signature.</p>
- * @version 1.0,  23/02/2023.
+ * @version 1.1, 13/02/2024.
  */
 public class CertificateExtension implements Serializable {
 
@@ -300,7 +300,7 @@ public class CertificateExtension implements Serializable {
 	 */
 	public String getRowQSCDDirectiveRegime() {
 		String row = null;
-		if (qcSSCD) {
+		if (qcSSCD || policyIdQCP_SSCD) {
 			row = IQCCertificateConstants.QC_ROW1;
 		}
 		if (!qcSSCD && !policyIdQCP_SSCD) {
