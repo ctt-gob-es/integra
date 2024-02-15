@@ -2989,7 +2989,7 @@ public abstract class ATSLValidator implements ITSLValidator {
 		    previous = (ServiceHistoryInstance) it.next();
 	    while (it.hasNext()) {
 		current = it.next();
-		if (!previous.getServiceStatusStartingTime().before(current.getServiceStatusStartingTime()) || previous.getServiceStatusStartingTime().equals(current.getServiceStatusStartingTime())) {
+		if (!current.getServiceStatusStartingTime().before(previous.getServiceStatusStartingTime()) || current.getServiceStatusStartingTime().equals(previous.getServiceStatusStartingTime())) {
 		    verify = Boolean.FALSE;
 		    break;
 		}
