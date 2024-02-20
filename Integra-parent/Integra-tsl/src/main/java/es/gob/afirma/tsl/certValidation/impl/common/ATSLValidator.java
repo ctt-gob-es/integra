@@ -1174,7 +1174,7 @@ public abstract class ATSLValidator implements ITSLValidator {
 		// PRO-4.3.4-03 i).
 		if (checkIfTSPServiceTypeIsCAQC(tspServiceType)) {
 		    // PRO-4.3.4-03 ii).
-		    if (checkIfCADigitalIdentitiesVerifyCertificate(si.getAllDigitalIdentities(), cert, isCACert, resultSI)) {
+		    if (checkIfDigitalIdentitiesMatchesCertificate(si.getAllDigitalIdentities(), cert, resultSI)) {
 
 			SIResult siResult = new SIResult();
 			// PRO-4.3.4-03 b)
@@ -1242,43 +1242,6 @@ public abstract class ATSLValidator implements ITSLValidator {
 	}
     }
 
-    /**
-     * Checks if some of the input CA identities detect the input X509v3 certificate and then set its information
-     * on the result.
-     * @param digitalIdentitiesList List of CA digital identities.
-     * @param cert
-     *            Certificate X509 v3 to validate.
-     * @param isCACert
-     *            Flag that indicates if the input certificate has the Basic
-     *            Constraints with the CA flag activated (<code>true</code>) or
-     *            not (<code>false</code>).
-     * @param resultSI  Result obtained when executing the procedure 4.3.Obtaining
-     *            listed services matching a certificate of ETSI TS 119 615
-     *            v.1.1.1.
-     * @return <code>true</code> if the certificate is issued by some of the input identities, otherwise <code>false</code>.
-     */
-    private boolean checkIfCADigitalIdentitiesVerifyCertificate(List<DigitalID> digitalIdentitiesList, X509Certificate cert, boolean isCACert, ResultServiceInformation resultSI) {
-	// Por defecto consideramos que no se ha detectado, y si se encuentra se
-	// le cambia el resultado
-	boolean result = false;
-
-	// Si la lista de identidades no es nula ni vacía...
-	if (digitalIdentitiesList != null && !digitalIdentitiesList.isEmpty()) {
-
-	    // Creamos el procesador de identidades digitales.
-	    DigitalIdentitiesProcessor dip = new DigitalIdentitiesProcessor(digitalIdentitiesList);
-	    // Procesamos el certificado a validar y modificamos el resultado si
-	    // fuera necesario.
-	  
-		result = dip.checkIfDigitalIdentitiesMatchesCertificate(cert);
-		//si no se encuentra el certificado, se comprueba si está el emisor del mismo.
-	    if (!result) {
-		result = dip.checkIfCertificateIsIssuedBySomeIdentity(cert, resultSI);
-	    }
-	}
-
-	return result;
-    }
 
     /**
      * Method checks if there is an inconsistency between the certificate and
@@ -2991,7 +2954,7 @@ public abstract class ATSLValidator implements ITSLValidator {
 		    previous = (ServiceHistoryInstance) it.next();
 	    while (it.hasNext()) {
 		current = it.next();
-		if (!previous.getServiceStatusStartingTime().before(current.getServiceStatusStartingTime()) || previous.getServiceStatusStartingTime().equals(current.getServiceStatusStartingTime())) {
+		if (!current.getServiceStatusStartingTime().before(previous.getServiceStatusStartingTime()) || current.getServiceStatusStartingTime().equals(previous.getServiceStatusStartingTime())) {
 		    verify = Boolean.FALSE;
 		    break;
 		}
@@ -3146,6 +3109,11 @@ public abstract class ATSLValidator implements ITSLValidator {
 	    if (!resultSI.getInfoSIResult().getListTSPNames().contains(siResult.getTspName())) {
 		resultSI.getInfoSIResult().getListTSPNames().add(siResult.getTspName());
 	    }
+	    
+	    if (!resultSI.getInfoSIResult().getListTSPNamesCountry().contains(siResult.getTspNameCountry())) {
+		resultSI.getInfoSIResult().getListTSPNamesCountry().add(siResult.getTspNameCountry());
+	    }
+
 	    for (String tspTradeName: siResult.getListTspTradeName()) {
 		if (!resultSI.getInfoSIResult().getListTSPTradeNames().contains(tspTradeName)) {
 		    resultSI.getInfoSIResult().getListTSPTradeNames().add(tspTradeName);
