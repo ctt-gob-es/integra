@@ -16,7 +16,7 @@
  * <b>Project:</b><p>Horizontal platform of validation services of multiPKI certificates and electronic signature.</p>
  * <b>Date:</b><p> 24/02/2023.</p>
  * @author Gobierno de España.
- * @version 1.0, 24/02/2023.
+ * @version 1.1, 05/03/2024.
  */
 package es.gob.afirma.tsl.elements;
 
@@ -27,7 +27,7 @@ import java.io.Serializable;
  * <p>Class representing the qualifiers contained in a TSPservice that identifies a
  * certificate.</p>
  * <b>Project:</b><p>Horizontal platform of validation services of multiPKI certificates and electronic signature.</p>
- * @version 1.0,  24/02/2023.
+ * @version 1.1,  05/03/2024.
  */
 public class TspServiceQualifier implements Serializable {
 
@@ -164,7 +164,7 @@ public class TspServiceQualifier implements Serializable {
 		if (!notQualified && !qcStatement && !qcForESig) {
 			return column = IQCCertificateConstants.QC_CHECK_COLUMN1;
 		}
-		if (notQualified && !qcStatement) {
+		if (notQualified) {
 			return column = IQCCertificateConstants.QC_CHECK_COLUMN2;
 		}
 		if (!notQualified && qcStatement && !qcForESig) {
@@ -181,25 +181,26 @@ public class TspServiceQualifier implements Serializable {
 	}
 
 
+
 	/**
 	 * Method that obtains the column to be selected in the table Table 2: QC-For-eSeal determination
 	 * @return Selected column.
 	 */
 	public String getColumnCheck2() {
 		String column = null;
-		if (!notQualified && !qcStatement && !qcForESig) {
+		if (!notQualified && !qcStatement && !qcForESeal) {
 			return column = IQCCertificateConstants.QC_CHECK_COLUMN1;
 		}
-		if (notQualified && !qcStatement) {
+		if (notQualified) {
 			return column = IQCCertificateConstants.QC_CHECK_COLUMN2;
 		}
-		if (!notQualified && qcStatement && !qcForESig) {
+		if (!notQualified && qcStatement && !qcForESeal) {
 			return column = IQCCertificateConstants.QC_CHECK_COLUMN3;
 		}
-		if (!notQualified && !qcStatement && qcForESig) {
+		if (!notQualified && !qcStatement && qcForESeal) {
 			return column = IQCCertificateConstants.QC_CHECK_COLUMN4;
 		}
-		if (!notQualified && qcStatement && qcForESig) {
+		if (!notQualified && qcStatement && qcForESeal) {
 			return column = IQCCertificateConstants.QC_CHECK_COLUMN5;
 		}
 
@@ -216,7 +217,7 @@ public class TspServiceQualifier implements Serializable {
 		if (!notQualified && !qcStatement && !qcForWSA) {
 			return column = IQCCertificateConstants.QC_CHECK_COLUMN1;
 		}
-		if (notQualified && !qcStatement) {
+		if (notQualified) {
 			return column = IQCCertificateConstants.QC_CHECK_COLUMN2;
 		}
 		if (!notQualified && qcStatement && !qcForWSA) {

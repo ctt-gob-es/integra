@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 16/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.10, 13/02/2024.
+ * @version 1.11, 05/03/2024.
  */
 package es.gob.afirma.tsl.certValidation.impl.common;
 
@@ -78,7 +78,7 @@ import es.gob.afirma.tsl.utils.UtilsStringChar;
  * <p>Abstract class that represents a TSL validator with the principal functions
  * regardless it implementation.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.10, 13/02/2024.
+ * @version 1.11, 05/03/2024.
  */
 public abstract class ATSLValidator implements ITSLValidator {
 
@@ -1753,7 +1753,8 @@ public abstract class ATSLValidator implements ITSLValidator {
 	    resultQSCD.setQscdResult(ITSLStatusConstants.QSCD_YES);
 	} else if (qualifierCheck1.isQcNoSSCD()) {
 	    resultQSCD.setQscdResult(ITSLStatusConstants.QSCD_NO);
-	} else {
+	} else if(qualifierCheck1.isQcSSCDStatusAsInCert() || (!qualifierCheck1.isQcWithSSCD() && !qualifierCheck1.isQcNoSSCD() && !qualifierCheck1.isQcSSCDStatusAsInCert())) 
+	{
 	    // depende de la fila
 	    String row = certExtension.getRowQSCDDirectiveRegime();
 	    if (row.equalsIgnoreCase(IQCCertificateConstants.QC_ROW1)) {
@@ -2231,7 +2232,7 @@ public abstract class ATSLValidator implements ITSLValidator {
 	    resultQSCD.setQscdResult(ITSLStatusConstants.QSCD_YES);
 	} else if (listQualifiersUri.contains(ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_QCNOSSCD)) {
 	    resultQSCD.setQscdResult(ITSLStatusConstants.QSCD_NO);
-	} else if (listQualifiersUri.contains(ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_QCQSCDSTATUSASINCERT) || listQualifiersUri.isEmpty()) {
+	} else if (listQualifiersUri.contains(ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_QCQSCDSTATUSASINCERT) || checkNoneQualifiersQSCDStatusRegulationRegime(listQualifiersUri)) {
 	    // obtenemos la fila
 	    String row = certExtension.getRowQSCDRegulationRegime();
 	    if (row != null) {
@@ -3144,6 +3145,10 @@ public abstract class ATSLValidator implements ITSLValidator {
 	    if (!resultSI.getInfoSIResult().getListTSPNames().contains(siResult.getTspName())) {
 		resultSI.getInfoSIResult().getListTSPNames().add(siResult.getTspName());
 	    }
+	    if (!resultSI.getInfoSIResult().getListTSPNamesCountry().contains(siResult.getTspNameCountry())) {
+		resultSI.getInfoSIResult().getListTSPNamesCountry().add(siResult.getTspNameCountry());
+	    }
+
 	    for (String tspTradeName: siResult.getListTspTradeName()) {
 		if (!resultSI.getInfoSIResult().getListTSPTradeNames().contains(tspTradeName)) {
 		    resultSI.getInfoSIResult().getListTSPTradeNames().add(tspTradeName);
@@ -3556,7 +3561,7 @@ public abstract class ATSLValidator implements ITSLValidator {
 	}
 
     }
-    
+
     /**
      * Auxiliar method to extract a TSP name from the TSP provider.
      * 
@@ -3564,7 +3569,7 @@ public abstract class ATSLValidator implements ITSLValidator {
      *            TSP provider from which extracts the name.
      * @return TSP name from the TSP provider.
      */
-   private String getTSPNameCountry(TrustServiceProvider tsp, String country) {
+    private String getTSPNameCountry(TrustServiceProvider tsp, String country) {
 
 	String result = null;
 	if (country != null) {
@@ -3586,7 +3591,28 @@ public abstract class ATSLValidator implements ITSLValidator {
 
 	return result;
 
-   }
-
+    }
+    
+    /**
+	 *  Method that checks that the qualifiers don't include the URIs
+	 * 'http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/QCWithQSCD',
+	 * 'http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/QCNoQSCD,
+	 * 'http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/QCQSCDStatusAsInCert' and
+	 * 'http://uri.etsi.org/TrstSvc/TrustedList/SvcInfoExt/QCQSCDManagedOnBehalf'
+	 * 
+	 * @param listQualifiersUri List of qualifiers.
+	 * @return true if one of the necessary qualifiers exists to obtain the QSCD value.
+	 */
+	private boolean checkNoneQualifiersQSCDStatusRegulationRegime(List<String> listQualifiersUri) {
+		// PRO-4.5.4-04 a) 1)
+		boolean result = Boolean.FALSE;
+		if(!listQualifiersUri.contains(ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_QCWITHQSCD) 
+				&& !listQualifiersUri.contains(ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_QCNOQSCD) 
+				&& !listQualifiersUri.contains(ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_QCQSCDSTATUSASINCERT)
+				&& !listQualifiersUri.contains(ITSLCommonURIs.TSL_SERVINFEXT_QUALEXT_QUALIFIER_QCQSCDMANAGEDONBEHALF)){
+			return Boolean.TRUE;
+		}
+		return result;
+	}
 
 }
