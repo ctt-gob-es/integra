@@ -56,6 +56,7 @@ public class StandardDecryption {
     protected AESCipher cipher;
     private byte[] key;
     private static final int AES_128 = 4;
+    private static final int AES_256_V3 = 6;
     private boolean aes;
     private boolean initiated;
     private byte[] iv = new byte[16];
@@ -63,7 +64,7 @@ public class StandardDecryption {
 
     /** Creates a new instance of StandardDecryption */
     public StandardDecryption(byte key[], int off, int len, int revision) {
-        aes = revision == AES_128;
+    	aes = revision == AES_128 || revision == AES_256_V3;
         if (aes) {
             this.key = new byte[len];
             System.arraycopy(key, off, this.key, 0, len);

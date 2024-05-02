@@ -136,10 +136,10 @@
 		<version.Integra.utils>2.2.4_000</version.Integra.utils>
 		<version.Integra.ws>2.2.4_000</version.Integra.ws>
 		
-		<version.afirma.itext>2.3</version.afirma.itext>
+		<version.afirma.itext>2.4</version.afirma.itext>
 		
 		<version.axis2>1.8.2</version.axis2>
-		<version.bouncycastle>1.76</version.bouncycastle>
+		<version.bouncycastle>1.78</version.bouncycastle>
 		<version.commons.codec>1.15</version.commons.codec>
 		<version.commons.fileupload>1.5</version.commons.fileupload>
 		<version.commons.io>2.11.0</version.commons.io>
