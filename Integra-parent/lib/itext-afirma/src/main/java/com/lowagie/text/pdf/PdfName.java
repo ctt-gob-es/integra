@@ -125,6 +125,14 @@ public class PdfName extends PdfObject implements Comparable{
     public static final PdfName ADOBE_PPKMS = new PdfName("Adobe.PPKMS");
     /** A name */
     public static final PdfName AESV2 = new PdfName("AESV2");
+    /**
+     * (PDF 2.0) The application shall ask the security handler for the file encryption key and shall implicitly decrypt
+     * data with 7.6.3.2, "Algorithm 1.A: Encryption of data using the AES algorithms", using the AES-256 algorithm in
+     * Cipher Block Chaining (CBC)with padding mode with a 16-byte block size and an initialization vector that is
+     * randomly generated and placed as the first 16 bytes in the stream or string. The key size (Length)shall be 256
+     * bits.
+     */
+    public static final PdfName AESV3 = new PdfName("AESV3");
     /** A name */
     public static final PdfName AIS = new PdfName("AIS");
     /** A name */
@@ -1571,6 +1579,10 @@ public class PdfName extends PdfObject implements Comparable{
     public static final PdfName TYPE3 = new PdfName("Type3");
     /** A name of an attribute. */
     public static final PdfName U = new PdfName("U");
+    /** A name of an attribute. */
+    public static final PdfName UE = new PdfName("UE");
+    /** A name of an attribute. */
+    public static final PdfName OE = new PdfName("OE");
     /** A name of an attribute. */
     public static final PdfName UF = new PdfName("UF");
     /** A name of an attribute. */
