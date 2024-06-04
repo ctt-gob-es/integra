@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,6 +41,7 @@ import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.tsp.MessageImprint;
 import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
@@ -91,20 +93,29 @@ public final class UtilsTimestampPdfBc {
 		    // certificados dentro del sello de tiempo y el certificado de firma de ella
 		    try {
 		    	Store<X509CertificateHolder> store = tst.getCertificates();
-		    	Collection<X509Certificate> collectionSigningCertificate = store.getMatches(tst.getSID()); 
-
+		    	Collection<X509CertificateHolder> collectionSigningCertificate = store.getMatches(tst.getSID()); 
 
 				if (collectionSigningCertificate.size() != 1) {
 					String errorMsg = Language.getResIntegra(ILogConstantKeys.TSU_LOG015);
 					LOGGER.error(errorMsg);
 					throw new SigningException(errorMsg);
 				}
-				return collectionSigningCertificate.iterator().next();
-		    } catch (StoreException e) {
+				
+				X509CertificateHolder certHolder = collectionSigningCertificate.iterator().next();
+				return new JcaX509CertificateConverter()
+						.setProvider(BouncyCastleProvider.PROVIDER_NAME)
+						.getCertificate(certHolder);
+		    }
+		    catch (StoreException e) {
 				String errorMsg = Language.getResIntegra(ILogConstantKeys.TSU_LOG122);
 				LOGGER.error(errorMsg);
 				throw new SigningException(errorMsg, e);
 			}
+		    catch (CertificateException e) {
+		    	String errorMsg = Language.getResIntegra(ILogConstantKeys.TSU_LOG123);
+				LOGGER.error(errorMsg);
+				throw new SigningException(errorMsg, e);
+		    }
 		} finally {
 			LOGGER.info(Language.getResIntegra(ILogConstantKeys.TSU_LOG039));
 		}

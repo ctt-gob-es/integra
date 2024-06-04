@@ -2769,6 +2769,11 @@ public interface ILogConstantKeys {
     String TSU_LOG122 = "TSU122";
     
     /**
+     * Constant attribute that represents the name of the property <code>TSU123</code> belonging to the file integra_xx_YY.properties.
+     */
+    String TSU_LOG123 = "TSU123";
+    
+    /**
      * Constant attribute that represents the name of the property <code>US001</code> belonging to the file integra_xx_YY.properties.
      */
     String US_LOG001 = "US001";
