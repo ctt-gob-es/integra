@@ -78,8 +78,6 @@ import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.CMSAttributes;
-import org.bouncycastle.asn1.cms.ContentInfo;
-import org.bouncycastle.asn1.cms.SignedData;
 import org.bouncycastle.asn1.esf.ESFAttributes;
 import org.bouncycastle.asn1.ess.ESSCertID;
 import org.bouncycastle.asn1.ess.ESSCertIDv2;
@@ -262,6 +260,26 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      */
     private static final String OID_SIGN_ALGORITHM_SHA512WITHRSA = "1.2.840.113549.1.1.13";
     
+    /**
+     * Constant that represents the OID of the SHA1withECDSA algorithm.
+     */
+    private static final String OID_SIGN_ALGORITHM_SHA1WITHECDSA = "1.2.840.113549.1.1.5";
+
+    /**
+     * Constant that represents the OID of the SHA256withECDSA algorithm.
+     */
+    private static final String OID_SIGN_ALGORITHM_SHA256WITHECDSA = "1.2.840.113549.1.1.11";
+
+    /**
+     * Constant that represents the OID of the SHA384withECDSA algorithm.
+     */
+    private static final String OID_SIGN_ALGORITHM_SHA384WITHECDSA = "1.2.840.113549.1.1.12";
+
+    /**
+     * Constant that represents the OID of the SHA512withRSA algorithm.
+     */
+    private static final String OID_SIGN_ALGORITHM_SHA512WITHECDSA = "1.2.840.113549.1.1.13";
+    
     
     /**
      * Constructor method for the class SignatureUtils.java.
@@ -276,23 +294,23 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param isTimestampCertificate Parameter that indicates if the certificate is the signing certificate of a time-stamp (true) or not (false).
      * @throws SigningException If the certificate fails on one of the check points.
      */
-    private static void validateKeyUsageTimestampCertificate(X509Certificate certificate, boolean isTimestampCertificate) throws SigningException {
+    private static void validateKeyUsageTimestampCertificate(final X509Certificate certificate, final boolean isTimestampCertificate) throws SigningException {
 	// Comprobamos si el certificado firmante del sello de tiempo incluye la
 	// extensión id-kp-timestamping
 	try {
 	    if (isTimestampCertificate) {
 		TSPUtil.validateCertificate(new X509CertificateHolder(certificate.getEncoded()));
 	    }
-	} catch (TSPValidationException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG238);
+	} catch (final TSPValidationException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG238);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (CertificateEncodingException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG259);
+	} catch (final CertificateEncodingException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG259);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (IOException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG260);
+	} catch (final IOException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG260);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	}
@@ -310,7 +328,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param isTimestampCertificate Parameter that indicates if the certificate is the signing certificate of a time-stamp (true) or not (false).
      * @throws SigningException If the certificate isn't valid or the method fails.
      */
-    public static void validateCertificate(X509Certificate certificate, Date validationDate, boolean isUpgradeOperation, String idClient, boolean isTimestampCertificate) throws SigningException {
+    public static void validateCertificate(final X509Certificate certificate, final Date validationDate, final boolean isUpgradeOperation, final String idClient, final boolean isTimestampCertificate) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG042));
 	try {
 	    // Comprobamos que el certificado no es nulo
@@ -318,9 +336,9 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 	    String validationLevelStr = null;
 
-	    String propertiesName = IIntegraConstants.PROPERTIES_FILE;
+	    final String propertiesName = IIntegraConstants.PROPERTIES_FILE;
 
-	    Properties integraProperties = new IntegraProperties().getIntegraProperties(idClient);
+	    final Properties integraProperties = new IntegraProperties().getIntegraProperties(idClient);
 	    // Rescatamos del archivo de propiedades el
 	    // nivel de validación para el certificado.
 	    validationLevelStr = (String) integraProperties.get(IntegraFacadeConstants.KEY_CERTIFICATE_VALIDATION_LEVEL);
@@ -328,7 +346,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // Si no se ha indicado nivel de validación
 	    // en el archivo de propiedades, lanzamos una excepción
 	    if (validationLevelStr == null || validationLevelStr.isEmpty()) {
-		String msg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG001, new Object[ ] { propertiesName });
+		final String msg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG001, new Object[ ] { propertiesName });
 		LOGGER.error(msg);
 		throw new SigningException(msg);
 	    }
@@ -337,8 +355,8 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    int validationLevel = IUtilsSignature.VALIDATION_LEVEL_SIMPLE;
 	    try {
 		validationLevel = Integer.parseInt(validationLevelStr);
-	    } catch (NumberFormatException e) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG003, new Object[ ] { validationLevelStr, propertiesName });
+	    } catch (final NumberFormatException e) {
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG003, new Object[ ] { validationLevelStr, propertiesName });
 		LOGGER.error(errorMsg, e);
 		throw new SigningException(errorMsg, e);
 	    }
@@ -416,7 +434,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // Si se ha indicado el modo de validación no reconocido
 	    else {
 		// Lanzamos una excepción
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG003, new Object[ ] { validationLevelStr, propertiesName });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG003, new Object[ ] { validationLevelStr, propertiesName });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -430,7 +448,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param reader Parameter that represents the reader for the PDF document.
      * @return the signature dictionary with major review.
      */
-    public static PDFSignatureDictionary obtainLatestSignatureFromPDF(PdfReader reader) {
+    public static PDFSignatureDictionary obtainLatestSignatureFromPDF(final PdfReader reader) {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG044));
 	try {
 	    // Comprobamos que el parámetro de entrada no es nulo
@@ -441,28 +459,28 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // Instanciamos un contador de revisión
 	    int revision = -1;
 	    // Instanciamos un objeto para leer las firmas
-	    AcroFields af = reader.getAcroFields();
+	    final AcroFields af = reader.getAcroFields();
 	    // Obtenemos la lista de firmas del documento PDF
-	    List<String> listSignatures = af.getSignatureNames();
+	    final List<String> listSignatures = af.getSignatureNames();
 	    // Recorremos la lista de firmas obtenidas
 	    for (int i = 0; i < listSignatures.size(); i++) {
 		// Metemos en una variable el nombre de la firma
-		String signatureName = listSignatures.get(i);
+		final String signatureName = listSignatures.get(i);
 		// Obtenemos el diccionario de firma asociado
-		PdfDictionary signatureDictionary = af.getSignatureDictionary(signatureName);
+		final PdfDictionary signatureDictionary = af.getSignatureDictionary(signatureName);
 		// Determinamos el tipo de diccionario obtenido
 		String pdfType = null;
 		if (signatureDictionary.get(PdfName.TYPE) != null) {
 		    pdfType = signatureDictionary.get(PdfName.TYPE).toString();
 		}
-		String pdfSubFilter = signatureDictionary.get(PdfName.SUBFILTER).toString();
+		final String pdfSubFilter = signatureDictionary.get(PdfName.SUBFILTER).toString();
 		// Si el tipo de diccionario obtenido es un diccionario de firma
 		// y
 		// no un diccionario de tipo Document Time-stamp
 		if (!pdfSubFilter.equalsIgnoreCase(new PdfName("ETSI.RFC3161").toString()) && (pdfType == null || pdfType.equalsIgnoreCase(PdfName.SIG.toString()))) {
 		    // Comparamos el número de revisión de la firma con el que
 		    // tenemos, si es mayor, actualizamos variables
-		    int actuallyRevision = af.getRevision(signatureName);
+		    final int actuallyRevision = af.getRevision(signatureName);
 		    if (actuallyRevision > revision) {
 			revision = actuallyRevision;
 			dictionary = new PDFSignatureDictionary(actuallyRevision, signatureDictionary, signatureName);
@@ -483,10 +501,10 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return a boolean that indicates whether a signature dictionary refers to a PDF or PAdES-Basic signature (true) or to a PAdES-BES or PAdES-EPES
      * signature (false).
      */
-    public static boolean isNotPAdESEnhancedPDF(PdfDictionary pdfDic) {
+    public static boolean isNotPAdESEnhancedPDF(final PdfDictionary pdfDic) {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG046));
 	try {
-	    PdfName subFilterValue = (PdfName) pdfDic.get(PdfName.SUBFILTER);
+	    final PdfName subFilterValue = (PdfName) pdfDic.get(PdfName.SUBFILTER);
 	    if (!subFilterValue.equals(CADES_SUBFILTER_VALUE)) {
 		return true;
 	    }
@@ -502,7 +520,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return an object that represents the <code>SignedData</code>.
      * @throws SigningException If the method fails.
      */
-    public static CMSSignedData getCMSSignature(PDFSignatureDictionary signatureDictionary) throws SigningException {
+    public static CMSSignedData getCMSSignature(final PDFSignatureDictionary signatureDictionary) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG048));
 	try {
 	    // Comprobamos que los parámetros de entrada no son nulos
@@ -511,21 +529,21 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // Metemos en una variable el contenido de la clave
 	    // /Contents, o
 	    // lo que es lo mismo, la firma
-	    byte[ ] contents = signatureDictionary.getDictionary().getAsString(PdfName.CONTENTS).getOriginalBytes();
+	    final byte[ ] contents = signatureDictionary.getDictionary().getAsString(PdfName.CONTENTS).getOriginalBytes();
 	    try {
 		// Obtenemos los datos firmados
-		CMSSignedData signedData = new CMSSignedData(contents);
+		final CMSSignedData signedData = new CMSSignedData(contents);
 
 		// Comprobamos que la firma tiene al menos un firmante
 		if (signedData.getSignerInfos().getSigners().size() == 0) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG015, new Object[ ] { signatureDictionary.getName() });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG015, new Object[ ] { signatureDictionary.getName() });
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
 		// Devolvemos los datos firmados
 		return signedData;
-	    } catch (CMSException e) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG009, new Object[ ] { signatureDictionary.getName() });
+	    } catch (final CMSException e) {
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG009, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg, e);
 		throw new SigningException(errorMsg, e);
 	    }
@@ -539,7 +557,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param cmsSignedData Parameter that represents the pkcs7-signature message.
      * @return a boolean that indicates whether the signature includes the original document (true) or not (false).
      */
-    public static boolean isImplicit(CMSSignedData cmsSignedData) {
+    public static boolean isImplicit(final CMSSignedData cmsSignedData) {
 	/*
 	 * Firma explícita: El documento original no se incluye en la firma.
 	 * Firma implícita: El documento original está incluído en la firma.
@@ -570,7 +588,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param hashSignature Parameter that represents the second bytes array to compare.
      * @return a boolean that indicates if the hash of each is equals (true) or not (false).
      */
-    public static boolean equalsHash(PdfArray pdfArrayByteRange, MessageDigest messageDigestSignature, byte[ ] pdfDocument, byte[ ] hashSignature) {
+    public static boolean equalsHash(final PdfArray pdfArrayByteRange, final MessageDigest messageDigestSignature, final byte[ ] pdfDocument, final byte[ ] hashSignature) {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG052));
 	boolean res = false;
 	int i0, i1;
@@ -581,7 +599,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	f1 = pdfArrayByteRange.getAsNumber(NumberConstants.INT_3).intValue();
 	messageDigestSignature.update(pdfDocument, i0, i1);
 	messageDigestSignature.update(pdfDocument, f0, f1);
-	byte[ ] hashDocument = messageDigestSignature.digest();
+	final byte[ ] hashDocument = messageDigestSignature.digest();
 	if (Arrays.equals(hashDocument, hashSignature)) {
 	    res = true;
 	}
@@ -602,14 +620,14 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signedData Parameter that represents the signed data.
      * @throws SigningException If one of the conditiones isn't valid.
      */
-    public static void checkSubFilterConditionsISO320001(PDFSignatureDictionary dictionarySignature, CMSSignedData signedData) throws SigningException {
+    public static void checkSubFilterConditionsISO320001(final PDFSignatureDictionary dictionarySignature, final CMSSignedData signedData) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG054));
 	try {
 	    // Inicialmente se considera que no cumple las condiciones.
 	    boolean result = false;
 
 	    // Determinamos el contenido de la clave /SubFilter.
-	    String subFilter = dictionarySignature.getDictionary().get(PdfName.SUBFILTER).toString();
+	    final String subFilter = dictionarySignature.getDictionary().get(PdfName.SUBFILTER).toString();
 
 	    // Si el subfilter es adbe.pkcs7.detached.
 	    if (subFilter.equals(PdfName.ADBE_PKCS7_DETACHED.toString())) {
@@ -617,11 +635,11 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		// Si el subfilter es adbe.pkcs7.sha1.
 	    } else if (subFilter.equals(PdfName.ADBE_PKCS7_SHA1.toString())) {
 		// Accedemos al firmante
-		SignerInformation signerInformation = ((List<SignerInformation>) signedData.getSignerInfos().getSigners()).iterator().next();
+		final SignerInformation signerInformation = ((List<SignerInformation>) signedData.getSignerInfos().getSigners()).iterator().next();
 		result = signedData.getSignedContentTypeOID().equals(PKCSObjectIdentifiers.data.toString()) && signerInformation.getDigestAlgOID().equals(OIWObjectIdentifiers.idSHA1.toString());
 	    }
 	    if (!result) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG035, new Object[ ] { dictionarySignature.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG035, new Object[ ] { dictionarySignature.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -640,7 +658,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signedData Parameter that represents the signed data.
      * @throws SigningException If the validation fails.
      */
-    public static void validatePAdESEnhancedMandatoryAttributes(PDFSignatureDictionary signatureDictionary, CMSSignedData signedData) throws SigningException {
+    public static void validatePAdESEnhancedMandatoryAttributes(final PDFSignatureDictionary signatureDictionary, final CMSSignedData signedData) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG058));
 	try {
 	    // Comprobamos que los parámetros de entrada no son nulos
@@ -651,16 +669,16 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	     * Validación 1: La firma debe ser explícita.
 	     */
 	    if (isImplicit(signedData)) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG108, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG108, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 
 	    // Accedemos al firmante
-	    SignerInformation signerInformation = ((List<SignerInformation>) signedData.getSignerInfos().getSigners()).iterator().next();
+	    final SignerInformation signerInformation = ((List<SignerInformation>) signedData.getSignerInfos().getSigners()).iterator().next();
 
 	    // Obtenemos el conjunto de atributos firmados
-	    AttributeTable signedAttr = signerInformation.getSignedAttributes();
+	    final AttributeTable signedAttr = signerInformation.getSignedAttributes();
 
 	    // Validación 2: El atributo content-type debe estar y tener el
 	    // valor
@@ -671,7 +689,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // estar
 	    // presente
 	    if (signatureDictionary.getDictionary().getAsName(PdfName.CERT) != null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG018, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG018, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -690,18 +708,18 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param unsignedAttr Parameter that represents the unsigned attributes of the signature.
      * @throws SigningException If the validation fails.
      */
-    private static void validatePAdESEnhancedOptionalUnsignedAttributes(PDFSignatureDictionary signatureDictionary, AttributeTable unsignedAttr) throws SigningException {
+    private static void validatePAdESEnhancedOptionalUnsignedAttributes(final PDFSignatureDictionary signatureDictionary, final AttributeTable unsignedAttr) throws SigningException {
 	// Si existen atributos no firmados
 	if (unsignedAttr != null) {
 	    // Validación 1: El atributo counter-signature no debe usarse
 	    if (unsignedAttr.get(PKCSObjectIdentifiers.pkcs_9_at_counterSignature) != null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG020, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG020, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 	    // Validación 2: El atributo content-reference no debe usarse
 	    if (unsignedAttr.get(PKCSObjectIdentifiers.id_aa_contentReference) != null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG021, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG021, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -726,7 +744,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param isEPES Parameter that indicates if the signature has PAdES-EPES profile (true) or PAdES-BES profile (false).
      * @throws SigningException If the validation fails.
      */
-    private static void validatePAdESEnhancedOptionalAttributes(PDFSignatureDictionary signatureDictionary, AttributeTable signedAttr, AttributeTable unsignedAttr, boolean isEPES) throws SigningException {
+    private static void validatePAdESEnhancedOptionalAttributes(final PDFSignatureDictionary signatureDictionary, final AttributeTable signedAttr, final AttributeTable unsignedAttr, final boolean isEPES) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG060));
 	try {
 	    // Validamos los atributos no firmados
@@ -734,7 +752,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 	    // Validación 3: El atributo content-identifier no debe usarse
 	    if (signedAttr.get(PKCSObjectIdentifiers.id_aa_contentIdentifier) != null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG022, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG022, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -743,36 +761,32 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		// Validación 4: La clave /Reason no debe estar presente para
 		// PAdES-EPES
 		if (signatureDictionary.getDictionary().getAsName(PdfName.REASON) != null) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG023, new Object[ ] { signatureDictionary.getName() });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG023, new Object[ ] { signatureDictionary.getName() });
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
-	    }
-	    // Si la firma es PAdES-BES
-	    else {
-		// Validación 4: El atributo commitment-type-indication no debe
+	    } else // Validación 4: El atributo commitment-type-indication no debe
 		// usarse para PAdES-BES
 		if (signedAttr.get(PKCSObjectIdentifiers.id_aa_ets_commitmentType) != null) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG024, new Object[ ] { signatureDictionary.getName() });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG024, new Object[ ] { signatureDictionary.getName() });
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
-	    }
 	    // Validación 5: El atributo signer-location no debe usarse
 	    if (signedAttr.get(PKCSObjectIdentifiers.id_aa_ets_signerLocation) != null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG025, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG025, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 	    // Validación 6: El atributo firmado signing-time no debe usarse
 	    if (signedAttr.get(PKCSObjectIdentifiers.pkcs_9_at_signingTime) != null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG026, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG026, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 	    // Validación 7: El atributo firmado content-hints no debe usarse
 	    if (signedAttr.get(PKCSObjectIdentifiers.id_aa_contentHint) != null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG027, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG027, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -801,7 +815,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param isBasic Parameter that indicates if the signature has PAdES-Basic profile (true) or PAdES Enhanced profile (false).
      * @throws SigningException If the validation fails.
      */
-    public static void validatePAdESOptionalAttributes(PDFSignatureDictionary signatureDictionary, CMSSignedData signedData, boolean isEPES, boolean isBasic) throws SigningException {
+    public static void validatePAdESOptionalAttributes(final PDFSignatureDictionary signatureDictionary, final CMSSignedData signedData, final boolean isEPES, final boolean isBasic) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG062));
 	try {
 	    // Comprobamos que los parámetros de entrada no son nulos
@@ -809,13 +823,13 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    GenericUtilsCommons.checkInputParameterIsNotNull(signedData, Language.getResIntegra(ILogConstantKeys.US_LOG019));
 
 	    // Accedemos al firmante
-	    SignerInformation signerInformation = ((List<SignerInformation>) signedData.getSignerInfos().getSigners()).iterator().next();
+	    final SignerInformation signerInformation = ((List<SignerInformation>) signedData.getSignerInfos().getSigners()).iterator().next();
 
 	    // Obtenemos el conjunto de atributos firmados
-	    AttributeTable signedAttr = signerInformation.getSignedAttributes();
+	    final AttributeTable signedAttr = signerInformation.getSignedAttributes();
 
 	    // Obtenemos el conjunto de atributos no firmados
-	    AttributeTable unsignedAttr = signerInformation.getUnsignedAttributes();
+	    final AttributeTable unsignedAttr = signerInformation.getUnsignedAttributes();
 
 	    // Si la firma no es PAdES-Basic
 	    if (!isBasic) {
@@ -828,21 +842,21 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // según PDF Reference, sección 3.8.3 (Dates), así como que la fecha
 	    // contenida no sea futura
 	    if (signatureDictionary.getDictionary().get(PdfName.M) != null) {
-		String mTimeStr = signatureDictionary.getDictionary().getAsString(PdfName.M).toString();
-		Date mTime = parseToPDFDate(mTimeStr);
+		final String mTimeStr = signatureDictionary.getDictionary().getAsString(PdfName.M).toString();
+		final Date mTime = parseToPDFDate(mTimeStr);
 		// Si la fecha contenida en la entrada /M no tiene el formato
 		// adecuado
 		if (mTime == null) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG028, new Object[ ] { signatureDictionary.getName() });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG028, new Object[ ] { signatureDictionary.getName() });
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
 		// Si la fecha contenida en la entrada /M es posterior a la
 		// fecha
 		// actual
-		Calendar cal = Calendar.getInstance();
+		final Calendar cal = Calendar.getInstance();
 		if (mTime.after(cal.getTime())) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG029, new Object[ ] { signatureDictionary.getName() });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG029, new Object[ ] { signatureDictionary.getName() });
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
@@ -859,7 +873,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return a wellformed Date if the input param is valid, or null in another case.
      */
     // CHECKSTYLE:OFF Cyclomatic complexity needed
-    private static Date parseToPDFDate(String value) {
+    private static Date parseToPDFDate(final String value) {
 	// CHECKSTYLE:ON
 	// Inicializamos variables
 	int year = 0;
@@ -1050,19 +1064,15 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 		// Mes con 28 o 29 días
 		if (month == 2) {
-		    GregorianCalendar gc = new GregorianCalendar();
+		    final GregorianCalendar gc = new GregorianCalendar();
 		    // Año bisiesto
 		    if (gc.isLeapYear(year)) {
 			if (day > NumberConstants.INT_29) {
 			    return null;
 			}
-		    }
-		    // Año no bisiesto
-		    else {
-			if (day > NumberConstants.INT_28) {
+		    } else if (day > NumberConstants.INT_28) {
 			    return null;
 			}
-		    }
 		}
 		// Meses con 30 días
 		// CHECKSTYLE:OFF Bolean complexity needed
@@ -1080,7 +1090,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	// Si se produce alguna excepción durante el proceso de asignación de
 	// fechas entendemos que la fecha no está bien formada
 	// y por tanto no es correcta.
-	catch (Exception e) {
+	catch (final Exception e) {
 	    return null;
 	}
 	// Construimos el objeto TimeZone que representará la zona horaria si se
@@ -1091,13 +1101,13 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		tzStr += "+0000";
 	    } else {
 		tzStr += timezonechar;
-		NumberFormat nfmt = NumberFormat.getInstance();
+		final NumberFormat nfmt = NumberFormat.getInstance();
 		nfmt.setMinimumIntegerDigits(2);
 		nfmt.setMaximumIntegerDigits(2);
 		tzStr += nfmt.format(timezonehour);
 		tzStr += nfmt.format(timezoneminute);
 	    }
-	    TimeZone tz = TimeZone.getTimeZone(tzStr);
+	    final TimeZone tz = TimeZone.getTimeZone(tzStr);
 
 	    // Usamos el objeto TimeZone para crear un objeto Calendar con la
 	    // fecha teniendo en cuenta que los meses en Java comienzan en 0.
@@ -1121,10 +1131,10 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signerId Parameter that represents the identifier of the signer used to find the certificate.
      * @return an object that represents the structure of the certificate.
      */
-    public static X509CertificateHolder getX509CertificateHolderBySignerId(Store certificatesStore, SignerId signerId) {
+    public static X509CertificateHolder getX509CertificateHolderBySignerId(final Store certificatesStore, final SignerId signerId) {
 	if (certificatesStore != null && certificatesStore.getMatches(null) != null && signerId != null) {
-	    for (Iterator<?> iterator = certificatesStore.getMatches(null).iterator(); iterator.hasNext();) {
-		X509CertificateHolder cert = (X509CertificateHolder) iterator.next();
+	    for (final Iterator<?> iterator = certificatesStore.getMatches(null).iterator(); iterator.hasNext();) {
+		final X509CertificateHolder cert = (X509CertificateHolder) iterator.next();
 		if (signerId.match(cert)) {
 		    return cert;
 		}
@@ -1143,7 +1153,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param idClient Parameter that represents the client application identifier.
      * @throws SigningException If the validation fails.
      */
-    public static void validatePDFSigner(CMSSignedData signedData, SignerInformation signerInformation, PdfDictionary pdfSignatureDictionary, Date validationDate, String idClient) throws SigningException {
+    public static void validatePDFSigner(final CMSSignedData signedData, final SignerInformation signerInformation, final PdfDictionary pdfSignatureDictionary, final Date validationDate, final String idClient) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG064));
 	Date vd = validationDate;
 	try {
@@ -1152,9 +1162,9 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    GenericUtilsCommons.checkInputParameterIsNotNull(signerInformation, Language.getResIntegra(ILogConstantKeys.US_LOG032));
 
 	    // Obtenemos la estructura del certificado firmante
-	    X509CertificateHolder x509CertificateHolder = getX509CertificateHolderBySignerId(signedData.getCertificates(), signerInformation.getSID());
+	    final X509CertificateHolder x509CertificateHolder = getX509CertificateHolderBySignerId(signedData.getCertificates(), signerInformation.getSID());
 	    if (x509CertificateHolder == null) {
-		String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG031);
+		final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG031);
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -1166,7 +1176,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 	    // Obtenemos el sello de tiempo (en caso de que la firma
 	    // contenga sello de tiempo)
-	    TimeStampToken tst = UtilsTimestampPdfBc.getTimeStampToken(signerInformation);
+	    final TimeStampToken tst = UtilsTimestampPdfBc.getTimeStampToken(signerInformation);
 
 	    // Si la firma contiene sello de tiempo
 	    if (tst != null) {
@@ -1185,7 +1195,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG031);
 		// Validamos el certificado firmante
 		validateCertificate(new JcaX509CertificateConverter().setProvider(BouncyCastleProvider.PROVIDER_NAME).getCertificate(x509CertificateHolder), vd, false, idClient, false);
-	    } catch (CertificateException e) {
+	    } catch (final CertificateException e) {
 		LOGGER.error(errorMsg, e);
 		throw new SigningException(errorMsg, e);
 	    }
@@ -1195,7 +1205,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		// Validamos la política de firma asociada al firmante
 		try {
 		    SignaturePolicyManager.validatePAdESEPESSignature(signerInformation, pdfSignatureDictionary, null, idClient);
-		} catch (SignaturePolicyException e) {
+		} catch (final SignaturePolicyException e) {
 		    errorMsg = e.getMessage();
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg, e);
@@ -1211,23 +1221,23 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signedData Parameter that represents the signed data.
      * @return a list with the principal information related to the signers of a CAdES signature.
      */
-    public static List<CAdESSignerInfo> getCAdESListSigners(CMSSignedData signedData) {
+    public static List<CAdESSignerInfo> getCAdESListSigners(final CMSSignedData signedData) {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG068));
 	try {
 	    // Comprobamos que se han indicado parámetros de entrada
 	    GenericUtilsCommons.checkInputParameterIsNotNull(signedData, Language.getResIntegra(ILogConstantKeys.US_LOG019));
 
 	    // Instanciamos la variable a devolver
-	    List<CAdESSignerInfo> listResult = new ArrayList<CAdESSignerInfo>();
+	    final List<CAdESSignerInfo> listResult = new ArrayList<CAdESSignerInfo>();
 
 	    // Obtenemos la lista con todos los firmantes contenidos en la firma
-	    SignerInformationStore signerInformationStore = signedData.getSignerInfos();
+	    final SignerInformationStore signerInformationStore = signedData.getSignerInfos();
 	    if (signerInformationStore != null) {
-		List<SignerInformation> listSignersSignature = (List<SignerInformation>) signerInformationStore.getSigners();
+		final List<SignerInformation> listSignersSignature = (List<SignerInformation>) signerInformationStore.getSigners();
 		if (listSignersSignature != null) {
 		    // Recorremos la lista de firmantes
-		    for (SignerInformation signerInformation: listSignersSignature) {
-			CAdESSignerInfo signerInfo = new CAdESSignerInfo();
+		    for (final SignerInformation signerInformation: listSignersSignature) {
+			final CAdESSignerInfo signerInfo = new CAdESSignerInfo();
 			listResult.add(signerInfo);
 			processCAdESSignerInfos(signedData, signerInformation, signerInfo);
 		    }
@@ -1245,7 +1255,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param si Parameter that represents the signer of the CAdES signature.
      * @param signerInfo Parameter that represents the principal information related to the signer to fill.
      */
-    private static void processCAdESSignerInfos(CMSSignedData signedData, SignerInformation si, CAdESSignerInfo signerInfo) {
+    private static void processCAdESSignerInfos(final CMSSignedData signedData, final SignerInformation si, final CAdESSignerInfo signerInfo) {
 	// Asociamos los datos del firmante
 	signerInfo.setSignerInformation(si);
 
@@ -1253,18 +1263,18 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	X509Certificate signingCertificate = null;
 	try {
 	    signingCertificate = getSigningCertificate(signedData, si);
-	} catch (SigningException e) {
+	} catch (final SigningException e) {
 	    signerInfo.setErrorMsg(e.getMessage());
 	}
 
 	try {
 	    // Accedemos al conjunto de atributos no firmados del firmante
-	    AttributeTable unsignedAttrs = signerInfo.getSignerInformation().getUnsignedAttributes();
+	    final AttributeTable unsignedAttrs = signerInfo.getSignerInformation().getUnsignedAttributes();
 
 	    // Si el firmante tiene atributos no firmados
 	    if (unsignedAttrs != null) {
 		// Accedemos a todos los atributos signature-time-stamp
-		ASN1EncodableVector signatureTimeStampattributes = unsignedAttrs.getAll(PKCSObjectIdentifiers.id_aa_signatureTimeStampToken);
+		final ASN1EncodableVector signatureTimeStampattributes = unsignedAttrs.getAll(PKCSObjectIdentifiers.id_aa_signatureTimeStampToken);
 
 		// Si el firmante incluye algún atributo signature-time-stamp
 		if (signatureTimeStampattributes.size() > 0) {
@@ -1276,7 +1286,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		}
 
 	    }
-	} catch (SigningException e) {
+	} catch (final SigningException e) {
 	    signerInfo.setErrorMsg(e.getMessage());
 	}
 
@@ -1284,15 +1294,15 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	signerInfo.setSigningCertificate(signingCertificate);
 
 	// Obtenemos el conjunto de contra-firmas
-	SignerInformationStore sis = si.getCounterSignatures();
+	final SignerInformationStore sis = si.getCounterSignatures();
 	if (sis != null) {
-	    Iterator<SignerInformation> siIt = sis.getSigners().iterator();
+	    final Iterator<SignerInformation> siIt = sis.getSigners().iterator();
 	    // Recorremos la lista de contra-firmas
 	    while (siIt.hasNext()) {
 		// Procesamos el conjunto de contra-firmas
-		SignerInformation siCounter = siIt.next();
-		CAdESSignerInfo signerInfoCounter = new CAdESSignerInfo();
-		List<CAdESSignerInfo> listCounterSigners = signerInfo.getListCounterSigners() != null ? signerInfo.getListCounterSigners() : new ArrayList<CAdESSignerInfo>();
+		final SignerInformation siCounter = siIt.next();
+		final CAdESSignerInfo signerInfoCounter = new CAdESSignerInfo();
+		final List<CAdESSignerInfo> listCounterSigners = signerInfo.getListCounterSigners() != null ? signerInfo.getListCounterSigners() : new ArrayList<CAdESSignerInfo>();
 		signerInfo.setListCounterSigners(listCounterSigners);
 		listCounterSigners.add(signerInfoCounter);
 		processCAdESSignerInfos(signedData, siCounter, signerInfoCounter);
@@ -1308,19 +1318,19 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return an object that represents the signing certificate.
      * @throws SigningException If the certificate hasn't could be retrieved.
      */
-    public static X509Certificate getSigningCertificate(CMSSignedData signedData, SignerInformation signerInformation) throws SigningException {
+    public static X509Certificate getSigningCertificate(final CMSSignedData signedData, final SignerInformation signerInformation) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG074));
 	try {
 	    // Obtenemos el conjunto de certificados de la firma
-	    Store store = signedData.getCertificates();
+	    final Store store = signedData.getCertificates();
 
 	    // Obtenemos el certificado firmante
-	    Collection<X509CertificateHolder> certCollection = store.getMatches(signerInformation.getSID());
-	    Iterator<X509CertificateHolder> certIt = certCollection.iterator();
-	    X509CertificateHolder certHolder = certIt.next();
+	    final Collection<X509CertificateHolder> certCollection = store.getMatches(signerInformation.getSID());
+	    final Iterator<X509CertificateHolder> certIt = certCollection.iterator();
+	    final X509CertificateHolder certHolder = certIt.next();
 	    return new JcaX509CertificateConverter().getCertificate(certHolder);
-	} catch (CertificateException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG031);
+	} catch (final CertificateException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG031);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	} finally {
@@ -1334,7 +1344,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return an input stream that represents the revision, or <code>null</code> if the PDF document doesn't contain any signature dictionary.
      * @throws SigningException If cannot access to some revision.
      */
-    public static PdfReader obtainLatestRevision(PdfReader reader) throws SigningException {
+    public static PdfReader obtainLatestRevision(final PdfReader reader) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG044));
 	String signatureName = null;
 	// Instanciamos la variable a devolver
@@ -1346,35 +1356,35 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // Instanciamos un contador de revisiones
 	    int revision = -1;
 	    // Instanciamos un objeto para leer las firmas
-	    AcroFields af = reader.getAcroFields();
+	    final AcroFields af = reader.getAcroFields();
 	    // Obtenemos la lista de firmas del documento PDF
-	    List<String> listSignatures = af.getSignatureNames();
+	    final List<String> listSignatures = af.getSignatureNames();
 	    // Recorremos la lista de firmas obtenidas
 	    for (int i = 0; i < listSignatures.size(); i++) {
 		// Metemos en una variable el nombre de la firma
 		signatureName = listSignatures.get(i);
 		// Obtenemos el diccionario de firma asociado
-		PdfDictionary signatureDictionary = af.getSignatureDictionary(signatureName);
+		final PdfDictionary signatureDictionary = af.getSignatureDictionary(signatureName);
 		// Determinamos el tipo de diccionario obtenido
 		String pdfType = null;
 		if (signatureDictionary.get(PdfName.TYPE) != null) {
 		    pdfType = signatureDictionary.get(PdfName.TYPE).toString();
 		}
-		String pdfSubFilter = signatureDictionary.get(PdfName.SUBFILTER).toString();
+		final String pdfSubFilter = signatureDictionary.get(PdfName.SUBFILTER).toString();
 		// Si el tipo de diccionario obtenido es un diccionario de firma
 		// y
 		// no un diccionario de tipo Document Time-stamp
 		if (!pdfSubFilter.equalsIgnoreCase(new PdfName("ETSI.RFC3161").toString()) && (pdfType == null || pdfType.equalsIgnoreCase(PdfName.SIG.toString()))) {
 		    // Comparamos el número de revisión de la firma con el que
 		    // tenemos, si es mayor, actualizamos variables
-		    int actuallyRevision = af.getRevision(signatureName);
+		    final int actuallyRevision = af.getRevision(signatureName);
 		    if (actuallyRevision > revision) {
 			revision = actuallyRevision;
 			latestRevision = new PdfReader(af.extractRevision(signatureName));
 		    }
 		}
 	    }
-	} catch (IOException e) {
+	} catch (final IOException e) {
 	    throw new SigningException(Language.getFormatResIntegra(ILogConstantKeys.US_LOG081, new Object[ ] { signatureName }), e);
 	} finally {
 	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG045));
@@ -1388,7 +1398,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * is the revision number, and the value is the revision.
      * @throws SigningException If the method fails or some approval signature was added to a PDF document after that it was defined as certified.
      */
-    public static void checkPDFCertificationLevel(Map<Integer, InputStream> mapRevisions) throws SigningException {
+    public static void checkPDFCertificationLevel(final Map<Integer, InputStream> mapRevisions) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG080));
 	try {
 	    // Comprobamos que los parámetros de entrada son válidos
@@ -1399,12 +1409,12 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    boolean isCertified = false;
 
 	    // Recorremos el mapa de revisiones ordenado ascendentemente
-	    Iterator<InputStream> it = mapRevisions.values().iterator();
+	    final Iterator<InputStream> it = mapRevisions.values().iterator();
 	    while (it.hasNext()) {
-		InputStream is = it.next();
+		final InputStream is = it.next();
 
 		// Accedemos a la revisión
-		PdfReader revision = new PdfReader(is);
+		final PdfReader revision = new PdfReader(is);
 
 		// Si para la revisión anterior se definió el documento PDF como
 		// certified, entonces, esta revisión no debería haberse
@@ -1419,7 +1429,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		    isCertified = true;
 		}
 	    }
-	} catch (IOException e) {
+	} catch (final IOException e) {
 	    throw new SigningException(Language.getResIntegra(ILogConstantKeys.US_LOG004), e);
 	} finally {
 	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG079));
@@ -1431,7 +1441,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param doc Parameter that represents the XML document.
      * @return a list with the principal information related to the signers of a XAdES signature.
      */
-    public static List<XAdESSignerInfo> getXAdESListSigners(Document doc) {
+    public static List<XAdESSignerInfo> getXAdESListSigners(final Document doc) {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG066));
 	try {
 	    // Comprobamos que se han indicado parámetros de entrada
@@ -1439,25 +1449,25 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    GenericUtilsCommons.checkInputParameterIsNotNull(doc, Language.getResIntegra(ILogConstantKeys.US_LOG037));
 
 	    // Instanciamos la variable a devolver
-	    List<XAdESSignerInfo> listResult = new ArrayList<XAdESSignerInfo>();
+	    final List<XAdESSignerInfo> listResult = new ArrayList<XAdESSignerInfo>();
 
 	    // Obtenemos la lista de firmas contenidas en el documento XML
-	    NodeList nlSignature = doc.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_SIGNATURE);
+	    final NodeList nlSignature = doc.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_SIGNATURE);
 	    if (nlSignature != null) {
 		// Recorremos la lista de firmantes
 		for (int i = 0; i < nlSignature.getLength(); i++) {
-		    Element signatureNode = (Element) nlSignature.item(i);
+		    final Element signatureNode = (Element) nlSignature.item(i);
 		    if (signatureNode.getParentNode() == null || !IXMLConstants.ELEMENT_COUNTER_SIGNATURE.equals(signatureNode.getParentNode().getLocalName()) && !IXMLConstants.ELEMENT_XML_TIMESTAMP.equals(signatureNode.getParentNode().getLocalName()) && !IXMLConstants.ELEMENT_TIMESTAMP.equals(signatureNode.getParentNode().getLocalName())) {
-			XAdESSignerInfo signerInfo = new XAdESSignerInfo();
+			final XAdESSignerInfo signerInfo = new XAdESSignerInfo();
 			listResult.add(signerInfo);
 			try {
 			    signerInfo.setSignature(new org.apache.xml.security.signature.XMLSignature(signatureNode, ""));
 			    signerInfo.setElementSignature(signatureNode);
 			    signerInfo.setId(signatureNode.getAttribute(IXMLConstants.ATTRIBUTE_ID));
 			    processXMLSignature(signerInfo, signatureNode);
-			} catch (org.apache.xml.security.signature.XMLSignatureException e) {
+			} catch (final org.apache.xml.security.signature.XMLSignatureException e) {
 			    signerInfo.setErrorMsg(Language.getResIntegra(ILogConstantKeys.US_LOG040));
-			} catch (org.apache.xml.security.exceptions.XMLSecurityException e) {
+			} catch (final org.apache.xml.security.exceptions.XMLSecurityException e) {
 			    signerInfo.setErrorMsg(Language.getResIntegra(ILogConstantKeys.US_LOG040));
 			}
 		    }
@@ -1475,11 +1485,11 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param doc Parameter that represents the XML document.
      * @return a list with the <code>ds:Signature</code> elements.
      */
-    public static List<Element> getListSignatures(Document doc) {
+    public static List<Element> getListSignatures(final Document doc) {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG093));
 
 	// Instanciamos la lista a devolver
-	List<Element> listSignatureElements = new ArrayList<Element>();
+	final List<Element> listSignatureElements = new ArrayList<Element>();
 
 	try {
 	    // Comprobamos que se han indicado los parámetros de entrada
@@ -1488,11 +1498,11 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 	    // Obtenemos la lista de elementos ds:Signature contenidos en el
 	    // documento XML
-	    NodeList nlSignature = doc.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_SIGNATURE);
+	    final NodeList nlSignature = doc.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_SIGNATURE);
 	    if (nlSignature != null) {
 		// Recorremos la lista de elementos ds:Signature
 		for (int i = 0; i < nlSignature.getLength(); i++) {
-		    Element signatureNode = (Element) nlSignature.item(i);
+		    final Element signatureNode = (Element) nlSignature.item(i);
 		    // Comprobamos que el elemento ds:Signature no haga
 		    // referencia a un sello de tiempo XML
 		    if (signatureNode.getParentNode() == null || !IXMLConstants.ELEMENT_XML_TIMESTAMP.equals(signatureNode.getParentNode().getLocalName()) && !IXMLConstants.ELEMENT_TIMESTAMP.equals(signatureNode.getParentNode().getLocalName())) {
@@ -1513,7 +1523,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param qualifyingProperties Parameter that represents the QualifyingProperties element of the XAdES signature.
      * @param signerInfo Parameter that represents the information about the signer of the XAdES signature.
      */
-    private static void setHasArchiveTimeStamp(Node qualifyingProperties, XAdESSignerInfo signerInfo) {
+    private static void setHasArchiveTimeStamp(final Node qualifyingProperties, final XAdESSignerInfo signerInfo) {
 	NodeList archiveTimeStamps = ((Element) qualifyingProperties).getElementsByTagNameNS(IXMLConstants.XADES_1_4_1_NAMESPACE, IXMLConstants.ELEMENT_ARCHIVE_TIMESTAMP);
 	if (archiveTimeStamps != null && archiveTimeStamps.getLength() > 0) {
 	    signerInfo.setHasArchiveTimeStampElement(true);
@@ -1530,47 +1540,47 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param qualifyingProperties Parameter that represents the QualifyingProperties element of the XAdES signature.
      * @param signerInfo Parameter that represents the information about the signer of the XAdES signature.
      */
-    private static void setTimestamps(Node qualifyingProperties, XAdESSignerInfo signerInfo) {
+    private static void setTimestamps(final Node qualifyingProperties, final XAdESSignerInfo signerInfo) {
 	try {
 	    // Recorremos la lista de elementos hijos del elemento
 	    // xades:QualifyingProperties buscando el elemento
 	    // xades:UnsignedProperties
-	    Element unsignedPropertiesElement = UtilsXML.getChildElement((Element) qualifyingProperties, IXMLConstants.ELEMENT_UNSIGNED_PROPERTIES, signerInfo.getId(), false);
+	    final Element unsignedPropertiesElement = UtilsXML.getChildElement((Element) qualifyingProperties, IXMLConstants.ELEMENT_UNSIGNED_PROPERTIES, signerInfo.getId(), false);
 
 	    // Si hemos encontrado el elemento xades:UnsignedProperties
 	    if (unsignedPropertiesElement != null) {
 		// Recorremos la lista de elementos hijos del elemento
 		// xades:UnsignedProperties buscando el elemento
 		// xades:UnsignedSignatureProperties
-		Element unsignedSignaturePropertiesElement = UtilsXML.getChildElement(unsignedPropertiesElement, IXMLConstants.ELEMENT_UNSIGNED_SIGNATURE_PROPERTIES, signerInfo.getId(), false);
+		final Element unsignedSignaturePropertiesElement = UtilsXML.getChildElement(unsignedPropertiesElement, IXMLConstants.ELEMENT_UNSIGNED_SIGNATURE_PROPERTIES, signerInfo.getId(), false);
 
 		// Si hemos encontrado el elemento
 		// xades:UnsignedSignatureProperties
 		if (unsignedSignaturePropertiesElement != null) {
 		    // Obtenemos la lista de elementos hijos
 		    // xades:SignatureTimeStamp
-		    List<Element> listSignatureTimeStampElements = UtilsXML.getChildElements(unsignedSignaturePropertiesElement, IXMLConstants.ELEMENT_SIGNATURE_TIMESTAMP);
+		    final List<Element> listSignatureTimeStampElements = UtilsXML.getChildElements(unsignedSignaturePropertiesElement, IXMLConstants.ELEMENT_SIGNATURE_TIMESTAMP);
 
 		    // Definimos una lista donde ubicar la información asociada
 		    // a
 		    // los sellos de tiempo contenidos en los elementos
 		    // xades:SignatureTimeStamp
-		    List<XAdESTimeStampType> listSignatureTimeStamps = new ArrayList<XAdESTimeStampType>();
+		    final List<XAdESTimeStampType> listSignatureTimeStamps = new ArrayList<XAdESTimeStampType>();
 
 		    // Recorremos la lista de elementos xades:SignatureTimeStamp
 		    for (int i = 0; i < listSignatureTimeStampElements.size() && signerInfo.getErrorMsg() == null; i++) {
 			// Accedemos al elemento xades:SignatureTimeStamp
-			Element signatureTimeStampElement = (Element) listSignatureTimeStampElements.get(i);
+			final Element signatureTimeStampElement = listSignatureTimeStampElements.get(i);
 
 			// Accedemos al atributo Id del elemento
 			// xades:SignatureTimeStamp
-			String signatureTimeStampId = signatureTimeStampElement.getAttribute(IXMLConstants.ATTRIBUTE_ID);
+			final String signatureTimeStampId = signatureTimeStampElement.getAttribute(IXMLConstants.ATTRIBUTE_ID);
 
 			// Comprobamos de qué tipo es el sello de tiempo
 			// contenido
 			if (signatureTimeStampElement.getElementsByTagNameNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_ENCAPSULATED_TIMESTAMP).item(0) != null) {
 			    // Sello de tiempo ASN.1
-			    String encodedTST = signatureTimeStampElement.getElementsByTagNameNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_ENCAPSULATED_TIMESTAMP).item(0).getTextContent();
+			    final String encodedTST = signatureTimeStampElement.getElementsByTagNameNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_ENCAPSULATED_TIMESTAMP).item(0).getTextContent();
 
 			    // Obtenemos el sello de tiempo
 			    TimeStampToken timestamp = null;
@@ -1580,20 +1590,20 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 				// Añadimos a la información del firmante la
 				// información relacionada con el sello de
 				// tiempo
-				XAdESTimeStampType xadesTimeStampType = new XAdESTimeStampType();
+				final XAdESTimeStampType xadesTimeStampType = new XAdESTimeStampType();
 				xadesTimeStampType.setId(signatureTimeStampId);
 				xadesTimeStampType.setTimestampGenerationDate(timestamp.getTimeStampInfo().getGenTime());
 				xadesTimeStampType.setTstCertificate(UtilsTimestampPdfBc.getSigningCertificate(timestamp));
 				xadesTimeStampType.setAsn1Timestamp(timestamp);
 				xadesTimeStampType.setCanonicalizationAlgorithm(getCanonicalizationMethod(signatureTimeStampElement));
 				listSignatureTimeStamps.add(xadesTimeStampType);
-			    } catch (Exception e) {
+			    } catch (final Exception e) {
 				// Sello de tiempo ASN.1 incorrecto
 				signerInfo.setErrorMsg(Language.getFormatResIntegra(ILogConstantKeys.US_LOG176, new Object[ ] { signatureTimeStampId }));
 			    }
 			} else if (signatureTimeStampElement.getElementsByTagNameNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_XML_TIMESTAMP).item(0) != null) {
 			    // Sello de tiempo XML
-			    Element timeStampElement = (Element) signatureTimeStampElement.getElementsByTagNameNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_XML_TIMESTAMP).item(0);
+			    final Element timeStampElement = (Element) signatureTimeStampElement.getElementsByTagNameNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_XML_TIMESTAMP).item(0);
 
 			    // Accedemos al elemento dss:Timestamp
 			    // Element timeStampElement = (Element)
@@ -1609,14 +1619,14 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 				// Añadimos a la información del firmante la
 				// información relacionada con el sello de
 				// tiempo
-				XAdESTimeStampType xadesTimeStampType = new XAdESTimeStampType();
+				final XAdESTimeStampType xadesTimeStampType = new XAdESTimeStampType();
 				xadesTimeStampType.setId(signatureTimeStampId);
 				xadesTimeStampType.setTimestampGenerationDate(UtilsTimestampXML.getGenTimeXMLTimestamp((Element) UtilsXML.getChildNodesByLocalNames(timeStampElement, "Timestamp").item(0)));
 				xadesTimeStampType.setTstCertificate(UtilsTimestampXML.getCertificateFromXMLTimestamp(timeStampElement));
 				xadesTimeStampType.setXmlTimestamp(timeStampElement);
 				xadesTimeStampType.setCanonicalizationAlgorithm(getCanonicalizationMethod(signatureTimeStampElement));
 				listSignatureTimeStamps.add(xadesTimeStampType);
-			    } catch (Exception e) {
+			    } catch (final Exception e) {
 				// Sello de tiempo mal formado
 				signerInfo.setErrorMsg(Language.getFormatResIntegra(ILogConstantKeys.US_LOG177, new Object[ ] { signatureTimeStampId }));
 			    }
@@ -1638,7 +1648,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		    }
 		}
 	    }
-	} catch (SigningException e) {
+	} catch (final SigningException e) {
 	    // Esta excepción nunca se lanzará
 	}
     }
@@ -1648,12 +1658,12 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signatureTimeStampElement Parameter that represents <code>SignatureTimeStamp</code> element.
      * @return the canonicalization algorithm or <code>null</code> if <code>ds:CanonicalizationMethod</code> element doesn't exist.
      */
-    private static String getCanonicalizationMethod(Element signatureTimeStampElement) {
+    private static String getCanonicalizationMethod(final Element signatureTimeStampElement) {
 	String canonicalizationAlgorithm = null;
-	NodeList childNodes = signatureTimeStampElement.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_CANONICALIZATION_METHOD);
+	final NodeList childNodes = signatureTimeStampElement.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_CANONICALIZATION_METHOD);
 	int i = 0;
 	while (i < childNodes.getLength() && canonicalizationAlgorithm == null) {
-	    Node currentNode = childNodes.item(i);
+	    final Node currentNode = childNodes.item(i);
 	    if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
 		// Accedemos al algoritmo de canonicalización
 		canonicalizationAlgorithm = ((Element) currentNode).getAttributeNode(IXMLConstants.ATTRIBUTE_ALGORITHM).getNodeValue();
@@ -1668,24 +1678,24 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      *@param qualifyingProperties Parameter that represents the QualifyingProperties element of the XAdES signature.
      * @param signerInfo Parameter that represents the signer of the XAdES signature.
      */
-    private static void processXMLCounterSigners(Node qualifyingProperties, XAdESSignerInfo signerInfo) {
+    private static void processXMLCounterSigners(final Node qualifyingProperties, final XAdESSignerInfo signerInfo) {
 	// Obtenemos el conjunto de contrafirmas
-	NodeList counterNodes = ((Element) qualifyingProperties).getElementsByTagNameNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_COUNTER_SIGNATURE);
+	final NodeList counterNodes = ((Element) qualifyingProperties).getElementsByTagNameNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_COUNTER_SIGNATURE);
 	if (counterNodes != null && counterNodes.getLength() > 0) {
-	    List<XAdESSignerInfo> listCounterSigners = new ArrayList<XAdESSignerInfo>();
+	    final List<XAdESSignerInfo> listCounterSigners = new ArrayList<XAdESSignerInfo>();
 	    signerInfo.setListCounterSigners(listCounterSigners);
 	    for (int i = 0; i < counterNodes.getLength(); i++) {
-		NodeList counterSigNodeList = counterNodes.item(i).getChildNodes();
+		final NodeList counterSigNodeList = counterNodes.item(i).getChildNodes();
 		for (int j = 0; j < counterSigNodeList.getLength(); j++) {
 		    if (counterSigNodeList.item(j).getNodeType() == Node.ELEMENT_NODE) {
-			Element signatureNode = (Element) counterSigNodeList.item(j);
-			XAdESSignerInfo signerInfoCounter = new XAdESSignerInfo();
+			final Element signatureNode = (Element) counterSigNodeList.item(j);
+			final XAdESSignerInfo signerInfoCounter = new XAdESSignerInfo();
 			listCounterSigners.add(signerInfoCounter);
 			try {
 			    signerInfoCounter.setSignature(new org.apache.xml.security.signature.XMLSignature(signatureNode, ""));
 			    signerInfoCounter.setElementSignature(signatureNode);
 			    signerInfoCounter.setId(signatureNode.getAttribute(IXMLConstants.ATTRIBUTE_ID));
-			} catch (Exception e) {
+			} catch (final Exception e) {
 			    signerInfo.setErrorMsg(Language.getResIntegra(ILogConstantKeys.US_LOG040));
 			}
 			processXMLSignature(signerInfoCounter, signatureNode);
@@ -1700,20 +1710,20 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signerInfo Parameter that represents the signer of the XAdES signature.
      * @param signatureNode Parameter that represents the signature node.
      */
-    private static void processXMLSignature(XAdESSignerInfo signerInfo, Element signatureNode) {
+    private static void processXMLSignature(final XAdESSignerInfo signerInfo, final Element signatureNode) {
 	// Accedemos al conjunto de nodos hijos del nodo Signature
-	NodeList nl = signatureNode.getChildNodes();
+	final NodeList nl = signatureNode.getChildNodes();
 
 	// Instanciamos variables
 	Element qualifyingProperties = null;
 
 	// Recorremos la lista de nodos hijos del nodo Signature
 	for (int i = 0; i < nl.getLength(); i++) {
-	    Node child = nl.item(i);
+	    final Node child = nl.item(i);
 	    // Comprobamos que el elemento hijo sea un nodo y que no sea el
 	    // elemento KeyInfo
 	    if (child.getNodeType() == Node.ELEMENT_NODE && child.getLocalName().equals(IXMLConstants.ELEMENT_OBJECT)) {
-		NodeList childsObject = child.getChildNodes();
+		final NodeList childsObject = child.getChildNodes();
 		int j = 0;
 		while (qualifyingProperties == null && j < childsObject.getLength()) {
 		    if (childsObject.item(j).getNodeType() == Node.ELEMENT_NODE && childsObject.item(j).getLocalName().equals(IXMLConstants.ELEMENT_QUALIFIYING_PROPERTIES)) {
@@ -1732,11 +1742,11 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		// Recorremos la lista de elementos hijos del elemento
 		// xades:QualifyingProperties buscando el elemento
 		// obligatorio xades:SignedProperties
-		Element signedPropertiesElement = UtilsXML.getChildElement(signerInfo.getQualifyingPropertiesElement(), IXMLConstants.ELEMENT_SIGNED_PROPERTIES, signerInfo.getId(), true);
+		final Element signedPropertiesElement = UtilsXML.getChildElement(signerInfo.getQualifyingPropertiesElement(), IXMLConstants.ELEMENT_SIGNED_PROPERTIES, signerInfo.getId(), true);
 
 		// Recuperamos el elemento obligatorio
 		// xades:SignedSignatureProperties
-		Element signedSignaturePropertiesElement = UtilsXML.getChildElement(signedPropertiesElement, IXMLConstants.ELEMENT_SIGNED_SIGNATURE_PROPERTIES, signerInfo.getId(), true);
+		final Element signedSignaturePropertiesElement = UtilsXML.getChildElement(signedPropertiesElement, IXMLConstants.ELEMENT_SIGNED_SIGNATURE_PROPERTIES, signerInfo.getId(), true);
 
 		// Recuperamos el certificado firmante y lo asociamos a la
 		// información del firmante
@@ -1753,7 +1763,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 		// Procesamos el conjunto de contrafirmas
 		processXMLCounterSigners(qualifyingProperties, signerInfo);
-	    } catch (Exception e) {
+	    } catch (final Exception e) {
 		// Sello de tiempo ASN.1 incorrecto
 		signerInfo.setErrorMsg(e.getMessage());
 	    }
@@ -1777,7 +1787,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param idClient Parameter that represents the client application identifier.
      * @throws SigningException If the validation fails.
      */
-    public static void validateXAdESSigner(org.apache.xml.security.signature.XMLSignature xmlSignature, X509Certificate signingCertificate, TimeStampToken tst, Element xmlTst, String signingMode, byte[ ] signedFile, String signedFileName, String idClient) throws SigningException {
+    public static void validateXAdESSigner(final org.apache.xml.security.signature.XMLSignature xmlSignature, final X509Certificate signingCertificate, final TimeStampToken tst, final Element xmlTst, final String signingMode, final byte[ ] signedFile, final String signedFileName, final String idClient) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG070));
 	try {
 	    // Comprobamos que se ha indicado la firma XML
@@ -1814,7 +1824,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    validateCertificate(signingCertificate, validationDate, false, idClient, false);
 
 	    // Accedemos al elemento KeyInfo
-	    KeyInfo keyInfo = xmlSignature.getKeyInfo();
+	    final KeyInfo keyInfo = xmlSignature.getKeyInfo();
 
 	    if (keyInfo != null) {
 		try {
@@ -1824,34 +1834,34 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		    // procesar
 		    // ese fichero firmado que no está incluido en la firma
 		    if (signedFile != null && signedFileName != null) {
-			ExternalFileURIDereferencer ext = new ExternalFileURIDereferencer(signedFile, signedFileName);
+			final ExternalFileURIDereferencer ext = new ExternalFileURIDereferencer(signedFile, signedFileName);
 			xmlSignature.addResourceResolver(ext);
 		    }
 		    // Validamos la firma usando el certificado firmante
 		    if (!xmlSignature.checkSignatureValue(signingCertificate)) {
-			String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG030);
+			final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG030);
 			LOGGER.error(errorMsg);
 			throw new SigningException(errorMsg);
 		    }
-		} catch (org.apache.xml.security.signature.XMLSignatureException e) {
-		    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG033);
+		} catch (final org.apache.xml.security.signature.XMLSignatureException e) {
+		    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG033);
 		    LOGGER.error(errorMsg, e);
 		    throw new SigningException(errorMsg, e);
 		}
 	    } else {
-		String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG040);
+		final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG040);
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 	    // Comprobamos si la firma es EPES, es decir, si tiene el elemento
 	    // firmado SignaturePolicyIdentifier
-	    Element dsSignature = xmlSignature.getElement();
+	    final Element dsSignature = xmlSignature.getElement();
 	    if (SignatureFormatDetectorXades.hasSignaturePolicyIdentifier(dsSignature)) {
 		// Validamos la política de firma asociada al firmante
 		try {
 		    SignaturePolicyManager.validateXAdESEPESSignature(dsSignature, null, signingMode, idClient);
-		} catch (SignaturePolicyException e) {
-		    String errorMsg = e.getMessage();
+		} catch (final SignaturePolicyException e) {
+		    final String errorMsg = e.getMessage();
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg, e);
 		}
@@ -1869,7 +1879,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return the upgraded certificates store.
      * @throws SigningException If the method fails.
      */
-    public static Store<X509CertificateHolder> addCertificateToStore(Store<X509CertificateHolder> certificates, X509Certificate certificate) throws SigningException {
+    public static Store<X509CertificateHolder> addCertificateToStore(final Store<X509CertificateHolder> certificates, final X509Certificate certificate) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG095));
 	try {
 	    // Comprobamos que se ha indicado el almacén de certificados
@@ -1878,11 +1888,11 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // Comprobamos que se ha indicado el certificado que añadir
 	    GenericUtilsCommons.checkInputParameterIsNotNull(certificate, Language.getResIntegra(ILogConstantKeys.US_LOG002));
 
-	    Collection<X509CertificateHolder> certAuxCol = certificates.getMatches(null);
+	    final Collection<X509CertificateHolder> certAuxCol = certificates.getMatches(null);
 	    certAuxCol.add(new X509CertificateHolder(certificate.getEncoded()));
 	    return new JcaCertStore(certAuxCol);
-	} catch (Exception e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG098);
+	} catch (final Exception e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG098);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	} finally {
@@ -1896,15 +1906,15 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return an object that represents the CAdES structure.
      * @throws SigningException If the method fails.
      */
-    public static CMSSignedData getCMSSignedData(byte[ ] signature) throws SigningException {
+    public static CMSSignedData getCMSSignedData(final byte[ ] signature) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG100));
 	try {
 	    // Comprobamos que se ha indicado la firma
 	    GenericUtilsCommons.checkInputParameterIsNotNull(signature, Language.getResIntegra(ILogConstantKeys.US_LOG039));
 
 	    return new CMSSignedData(signature);
-	} catch (CMSException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG099);
+	} catch (final CMSException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG099);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	} finally {
@@ -1918,7 +1928,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param subFilter Parameter that represents the value of /SubFilter entry.
      * @return a boolean that indicates whether a pdf dictionary is a document Time-stamp dictionary (true) or not (false).
      */
-    public static boolean isDocumentTimeStampDictionary(String pdfType, String subFilter) {
+    public static boolean isDocumentTimeStampDictionary(final String pdfType, final String subFilter) {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG102));
 	try {
 	    if (subFilter.equals(TST_SUBFILTER_VALUE.toString()) && (pdfType == null || pdfType != null && pdfType.equals(DOC_TIME_STAMP_DICTIONARY_NAME.toString()))) {
@@ -1936,7 +1946,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param subFilter Parameter that represents the value of /SubFilter entry.
      * @return a boolean that indicates whether a pdf dictionary is a signature dictionary (true) or not (false).
      */
-    public static boolean isSignatureDictionary(String pdfType, String subFilter) {
+    public static boolean isSignatureDictionary(final String pdfType, final String subFilter) {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG104));
 	try {
 	    if ((pdfType == null || pdfType != null && pdfType.equals(PdfName.SIG.toString())) && !subFilter.equals(TST_SUBFILTER_VALUE.toString())) {
@@ -1954,14 +1964,14 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signatureName Parameter that represents the name of the signature dictionary.
      * @throws SigningException If the validation fails.
      */
-    private static void checkContentTypeAttributeForPAdESSignature(AttributeTable signedAttr, String signatureName) throws SigningException {
-	Attribute contentTypeAttribute = signedAttr.get(PKCSObjectIdentifiers.pkcs_9_at_contentType);
+    private static void checkContentTypeAttributeForPAdESSignature(final AttributeTable signedAttr, final String signatureName) throws SigningException {
+	final Attribute contentTypeAttribute = signedAttr.get(PKCSObjectIdentifiers.pkcs_9_at_contentType);
 	if (contentTypeAttribute == null) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG016, new Object[ ] { signatureName });
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG016, new Object[ ] { signatureName });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	} else if (!contentTypeAttribute.getAttrValues().getObjectAt(0).toASN1Primitive().equals(PKCSObjectIdentifiers.data)) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG017, new Object[ ] { signatureName });
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG017, new Object[ ] { signatureName });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
@@ -1980,7 +1990,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param validationDate Parameter that represents the date defined for validating the signature. If this values is <code>null</code> the validation date will be the current date.
      * @throws SigningException If the validation fails.
      */
-    public static void validatePAdESBaselineMandatoryAttributes(PDFSignatureDictionary signatureDictionary, CMSSignedData signedData, Date validationDate) throws SigningException {
+    public static void validatePAdESBaselineMandatoryAttributes(final PDFSignatureDictionary signatureDictionary, final CMSSignedData signedData, final Date validationDate) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG106));
 	try {
 	    // Comprobamos que se han indicado los datos del diccionario de
@@ -1999,16 +2009,16 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	     * Validación 1: La firma debe ser explícita.
 	     */
 	    if (isImplicit(signedData)) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG108, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG108, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 
 	    // Accedemos al firmante
-	    SignerInformation signerInformation = ((List<SignerInformation>) signedData.getSignerInfos().getSigners()).iterator().next();
+	    final SignerInformation signerInformation = ((List<SignerInformation>) signedData.getSignerInfos().getSigners()).iterator().next();
 
 	    // Obtenemos el conjunto de atributos firmados
-	    AttributeTable signedAttr = signerInformation.getSignedAttributes();
+	    final AttributeTable signedAttr = signerInformation.getSignedAttributes();
 
 	    /*
 	     * Validación 2: El atributo content-type no puede ser nulo y debe tener el valor "id-data".
@@ -2019,7 +2029,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	     * Validación 3: La clave /Cert del diccionario de firma no debe usarse.
 	     */
 	    if (signatureDictionary.getDictionary().getAsName(PdfName.CERT) != null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG018, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG018, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -2028,27 +2038,27 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	     * Validación 4: La clave /M del diccionario de firma no puede ser nula y debe contener la fecha de firma en formato UTC.
 	     */
 	    if (signatureDictionary.getDictionary().get(PdfName.M) == null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG109, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG109, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    } else {
 		// Accedemos al contenido de la clave /M
-		String mTimeStr = signatureDictionary.getDictionary().getAsString(PdfName.M).toString();
+		final String mTimeStr = signatureDictionary.getDictionary().getAsString(PdfName.M).toString();
 
 		// Comprobamos que el formato de la fecha es correcto
-		Date mTime = parseToPDFDate(mTimeStr);
+		final Date mTime = parseToPDFDate(mTimeStr);
 		if (mTime == null) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG110, new Object[ ] { signatureDictionary.getName() });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG110, new Object[ ] { signatureDictionary.getName() });
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
 		// Comprobamos que la fecha contenida en la clave /M es anterior
 		// a
 		// la fecha de validación
-		Calendar cal = Calendar.getInstance();
+		final Calendar cal = Calendar.getInstance();
 		cal.setTime(vDate);
 		if (mTime.after(vDate)) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG110, new Object[ ] { signatureDictionary.getName() });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG110, new Object[ ] { signatureDictionary.getName() });
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
@@ -2070,16 +2080,16 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signatureName Parameter that represents the name of the signature dictionary.
      * @throws SigningException If the validation fails.
      */
-    private static void validatePAdESBaselineOptionalUnsignedAttributes(SignerInformation signerInformation, String signatureName) throws SigningException {
+    private static void validatePAdESBaselineOptionalUnsignedAttributes(final SignerInformation signerInformation, final String signatureName) throws SigningException {
 	// Obtenemos el conjunto de atributos no firmados
-	AttributeTable unsignedAttr = signerInformation.getUnsignedAttributes();
+	final AttributeTable unsignedAttr = signerInformation.getUnsignedAttributes();
 
 	if (unsignedAttr != null) {
 	    /*
 	     * Validación 1: El atributo counter-signature no debe usarse.
 	     */
 	    if (unsignedAttr.get(PKCSObjectIdentifiers.pkcs_9_at_counterSignature) != null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG020, new Object[ ] { signatureName });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG020, new Object[ ] { signatureName });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -2088,7 +2098,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	     * Validación 2: El atributo content-reference no debe usarse.
 	     */
 	    if (unsignedAttr.get(PKCSObjectIdentifiers.id_aa_contentReference) != null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG021, new Object[ ] { signatureName });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG021, new Object[ ] { signatureName });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -2110,7 +2120,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signedData Parameter that represents the signed data.
      * @throws SigningException If the validation fails.
      */
-    public static void validatePAdESBaselineOptionalAttributes(PDFSignatureDictionary signatureDictionary, CMSSignedData signedData) throws SigningException {
+    public static void validatePAdESBaselineOptionalAttributes(final PDFSignatureDictionary signatureDictionary, final CMSSignedData signedData) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG112));
 	try {
 	    // Comprobamos que se han indicado los datos del diccionario de
@@ -2119,20 +2129,20 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    GenericUtilsCommons.checkInputParameterIsNotNull(signedData, Language.getResIntegra(ILogConstantKeys.US_LOG019));
 
 	    // Accedemos al firmante
-	    SignerInformation signerInformation = ((List<SignerInformation>) signedData.getSignerInfos().getSigners()).iterator().next();
+	    final SignerInformation signerInformation = ((List<SignerInformation>) signedData.getSignerInfos().getSigners()).iterator().next();
 
 	    // Validamos los atributos no firmados, esto es, que los atributos
 	    // counter-signature y content-reference no se usen
 	    validatePAdESBaselineOptionalUnsignedAttributes(signerInformation, signatureDictionary.getName());
 
 	    // Obtenemos el conjunto de atributos firmados
-	    AttributeTable signedAttr = signerInformation.getSignedAttributes();
+	    final AttributeTable signedAttr = signerInformation.getSignedAttributes();
 
 	    /*
 	     * Validación 1: El atributo signing-time no debe usarse.
 	     */
 	    if (signedAttr.get(PKCSObjectIdentifiers.pkcs_9_at_signingTime) != null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG026, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG026, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -2141,7 +2151,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	     * Validación 2: El atributo content-identifier no debe usarse.
 	     */
 	    if (signedAttr.get(PKCSObjectIdentifiers.id_aa_contentIdentifier) != null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG022, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG022, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -2150,7 +2160,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	     * Validación 3: El atributo content-hints no debe usarse.
 	     */
 	    if (signedAttr.get(PKCSObjectIdentifiers.id_aa_contentHint) != null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG027, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG027, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -2159,7 +2169,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	     * Validación 4: El atributo commitment-type-indication no debe usarse si la firma no contiene el atributo signature-policy-id.
 	     */
 	    if (signedAttr.get(PKCSObjectIdentifiers.id_aa_ets_sigPolicyId) == null && signedAttr.get(PKCSObjectIdentifiers.id_aa_ets_commitmentType) != null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG024, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG024, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -2168,7 +2178,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	     * Validación 5: El atributo signer-location no debe usarse.
 	     */
 	    if (signedAttr.get(PKCSObjectIdentifiers.id_aa_ets_signerLocation) != null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG025, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG025, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -2185,7 +2195,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return an objects that represents the <code>Signature</code> element, or <code>null</code>.
      * @throws SigningException If the element is <code>null</code>.
      */
-    public static Element getXMLSignatureById(Document document, String signatureId) throws SigningException {
+    public static Element getXMLSignatureById(final Document document, final String signatureId) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG114));
 
 	try {
@@ -2197,7 +2207,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // obtener
 	    GenericUtilsCommons.checkInputParameterIsNotNull(signatureId, Language.getResIntegra(ILogConstantKeys.US_LOG116));
 
-	    NodeList listSignatures = document.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_SIGNATURE);
+	    final NodeList listSignatures = document.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_SIGNATURE);
 	    Element dsSignature = null;
 	    int i = 0;
 	    while (dsSignature == null && i < listSignatures.getLength()) {
@@ -2225,14 +2235,14 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * </ul>
      * @throws SigningException If the method fails.
      */
-    public static String getTypeOfXMLSignature(Document xmlDocument) throws SigningException {
+    public static String getTypeOfXMLSignature(final Document xmlDocument) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG117));
 	try {
 	    // Comprobamos que se ha indicado el documento XML firmado
 	    GenericUtilsCommons.checkInputParameterIsNotNull(xmlDocument, Language.getResIntegra(ILogConstantKeys.US_LOG037));
 
 	    // Accedemos al nodo raíz
-	    String rootName = xmlDocument.getDocumentElement().getNodeName();
+	    final String rootName = xmlDocument.getDocumentElement().getNodeName();
 
 	    // Si el nodo raíz es ds:Signature, entonces es una firma
 	    // XAdES Enveloping
@@ -2242,31 +2252,31 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		// Si contiene un nodo <ds:Manifest> es una firma XAdES
 		// Externally
 		// Detached
-		NodeList signatureNodeLs = xmlDocument.getElementsByTagName(IXMLConstants.MANIFEST_TAG_NAME);
+		final NodeList signatureNodeLs = xmlDocument.getElementsByTagName(IXMLConstants.MANIFEST_TAG_NAME);
 		if (signatureNodeLs.getLength() > 0) {
 		    return SignatureConstants.SIGN_FORMAT_XADES_EXTERNALLY_DETACHED;
 		}
 
-		NodeList signsList = xmlDocument.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_SIGNATURE);
+		final NodeList signsList = xmlDocument.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_SIGNATURE);
 		if (signsList.getLength() == 0) {
-		    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG119);
+		    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG119);
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
 		// Si contiene alguna referencia con la URI "" se trata de una
 		// firma
 		// XAdES Enveloped
-		Node signatureNode = signsList.item(0);
+		final Node signatureNode = signsList.item(0);
 		XMLSignature xmlSignature;
 		try {
 		    xmlSignature = new XMLSignatureElement((Element) signatureNode).getXMLSignature();
-		} catch (MarshalException e) {
-		    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG120);
+		} catch (final MarshalException e) {
+		    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG120);
 		    LOGGER.error(errorMsg, e);
 		    throw new SigningException(errorMsg, e);
 		}
 		// Tomamos las referencias de la firma
-		List<Reference> references = xmlSignature.getSignedInfo().getReferences();
+		final List<Reference> references = xmlSignature.getSignedInfo().getReferences();
 
 		// Buscamos la referencia con URI=""
 		for (int i = 0; i < references.size(); i++) {
@@ -2287,7 +2297,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return the original unsigned data.
      * @throws SigningException If the method fails.
      */
-    public static byte[ ] getOriginalDataFromSignedXMLDocument(Document xmlDocument) throws SigningException {
+    public static byte[ ] getOriginalDataFromSignedXMLDocument(final Document xmlDocument) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG121));
 	try {
 	    // Comprobamos que se ha indicado el documento XML firmado
@@ -2296,55 +2306,55 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    byte[ ] result = null;
 	    // Obtención de cualquiera de las firmas para obtener el documento
 	    // original.
-	    NodeList signNodeList = xmlDocument.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_SIGNATURE);
+	    final NodeList signNodeList = xmlDocument.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_SIGNATURE);
 	    if (signNodeList.getLength() == 0) {
-		String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG119);
+		final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG119);
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 	    // Se selecciona la primera firma.
-	    Element signatureNode = (Element) signNodeList.item(0);
+	    final Element signatureNode = (Element) signNodeList.item(0);
 	    // registro de los id de los nodos
 	    IdRegister.registerElements(signatureNode);
 
 	    XMLSignature xmlSign;
 	    try {
-		xmlSign = new XMLSignatureElement((Element) signatureNode).getXMLSignature();
-	    } catch (MarshalException e) {
-		String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG123);
+		xmlSign = new XMLSignatureElement(signatureNode).getXMLSignature();
+	    } catch (final MarshalException e) {
+		final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG123);
 		LOGGER.error(errorMsg, e);
 		throw new SigningException(errorMsg, e);
 	    }
 
 	    // Obtención de la referencia del documento original.
-	    List<?> references = xmlSign.getSignedInfo().getReferences();
+	    final List<?> references = xmlSign.getSignedInfo().getReferences();
 	    XMLSignatureInput xmlObjectInput = null;
-	    for (Object tmp: references) {
+	    for (final Object tmp: references) {
 //		Reference ref = (Reference) tmp;
 //		Attr uriAttr = (Attr) ((DOMReference) ref).getHere();
-		javax.xml.crypto.dsig.Reference ref = (javax.xml.crypto.dsig.Reference) tmp;
-		Attr uriAttr = (Attr) ((DOMReference) ref).getHere();
+		final javax.xml.crypto.dsig.Reference ref = (javax.xml.crypto.dsig.Reference) tmp;
+		final Attr uriAttr = (Attr) ((DOMReference) ref).getHere();
 		
 //		ResourceResolver res;
 		try {
 //		    res = ResourceResolver.getInstance(uriAttr, null);
 //		    xmlObjectInput = res.resolve(uriAttr, null);
 		    xmlObjectInput = ResourceResolver.resolve(new ResourceResolverContext(uriAttr, null, true));
-		} catch (ResourceResolverException e) {
+		} catch (final ResourceResolverException e) {
 		    continue;
 		}
 
-		Node dsObject = xmlObjectInput.getSubNode();
+		final Node dsObject = xmlObjectInput.getSubNode();
 		if ("ds:Object".equals(dsObject.getNodeName()) && !IXMLConstants.ELEMENT_QUALIFIYING_PROPERTIES.equals(dsObject.getFirstChild().getLocalName())) {
-		    NodeList nodeListObject = dsObject.getChildNodes();
+		    final NodeList nodeListObject = dsObject.getChildNodes();
 		    if (nodeListObject.getLength() == 1) {
-			Node children = dsObject.getFirstChild();
+			final Node children = dsObject.getFirstChild();
 			result = transformNode(children);
 		    } else {
-			StringBuffer buffer = new StringBuffer();
+			final StringBuffer buffer = new StringBuffer();
 			for (int i = 0; i < nodeListObject.getLength(); i++) {
-			    Node children = nodeListObject.item(i);
-			    byte[ ] nodeValue = transformNode(children);
+			    final Node children = nodeListObject.item(i);
+			    final byte[ ] nodeValue = transformNode(children);
 			    if (nodeValue != null) {
 				buffer.append(new String(nodeValue));
 			    }
@@ -2369,18 +2379,18 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return the content of a node as a String.
      * @throws SigningException If the method fails.
      */
-    private static byte[ ] transformNode(Node node) throws SigningException {
+    private static byte[ ] transformNode(final Node node) throws SigningException {
 	try {
 	    if (node.getNodeType() == Node.TEXT_NODE || node.getNodeType() == Node.CDATA_SECTION_NODE) {
-		String textValue = ((Text) node).getData();
+		final String textValue = ((Text) node).getData();
 		return textValue == null ? null : textValue.getBytes();
 	    } else if (node.getNodeType() == Node.ELEMENT_NODE) {
 		return UtilsXML.transformDOMtoString((Element) node, true).getBytes();
 	    } else {
 		return null;
 	    }
-	} catch (TransformersException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG123);
+	} catch (final TransformersException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG123);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	}
@@ -2395,7 +2405,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return a XML document with the root node &lt;ROOT_COSIGNATURES&gt; and the signature as a children node.
      * @throws SigningException If the method fails.
      */
-    public static Document composeCoSignaturesDocument(Document xmlDocument, DocumentBuilderFactory dBFactory) throws SigningException {
+    public static Document composeCoSignaturesDocument(final Document xmlDocument, final DocumentBuilderFactory dBFactory) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG126));
 	try {
 	    // Comprobamos que se ha indicado la factoría de documentos XML
@@ -2407,23 +2417,23 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		    return xmlDocument;
 		}
 		newDocument = dBFactory.newDocumentBuilder().parse(new ByteArrayInputStream(new String("<" + IXMLConstants.ROOT_COSIGNATURES_TAG + "/>").getBytes()));
-		Node tempNode = newDocument.importNode(xmlDocument.getFirstChild(), true);
+		final Node tempNode = newDocument.importNode(xmlDocument.getFirstChild(), true);
 		newDocument.getFirstChild().appendChild(tempNode);
 	    } else {
 		newDocument = dBFactory.newDocumentBuilder().parse(new ByteArrayInputStream(new String("<" + IXMLConstants.ROOT_COSIGNATURES_TAG + "/>").getBytes()));
 	    }
 
 	    return newDocument;
-	} catch (SAXException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG129);
+	} catch (final SAXException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG129);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (IOException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG129);
+	} catch (final IOException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG129);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (ParserConfigurationException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG129);
+	} catch (final ParserConfigurationException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG129);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	}
@@ -2439,7 +2449,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param documentToAppend Parameter that represents the XML document to append to the signed XML document.
      * @throws SigningException If the method fails.
      */
-    public static void appendXMLDocument(Document xmlDocument, Document documentToAppend) throws SigningException {
+    public static void appendXMLDocument(final Document xmlDocument, final Document documentToAppend) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG130));
 	try {
 	    // Comprobamos que se ha indicado el documento XML firmado
@@ -2447,11 +2457,11 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 	    // Si se ha indicado el documento XML que añadir
 	    if (documentToAppend != null) {
-		Node tempNode = xmlDocument.importNode(documentToAppend.getFirstChild(), true);
+		final Node tempNode = xmlDocument.importNode(documentToAppend.getFirstChild(), true);
 		xmlDocument.getFirstChild().appendChild(tempNode);
 	    }
-	} catch (DOMException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG129);
+	} catch (final DOMException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG129);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	} finally {
@@ -2467,26 +2477,26 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * (wrapper signed on enveloped mode).
      * @throws SigningException If the method fails.
      */
-    public static String getSignedElementIdValue(Document xmlDocument) throws SigningException {
+    public static String getSignedElementIdValue(final Document xmlDocument) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG132));
 	try {
 	    // Comprobamos que se ha indicado el documento XML firmado
 	    GenericUtilsCommons.checkInputParameterIsNotNull(xmlDocument, Language.getResIntegra(ILogConstantKeys.US_LOG037));
 
-	    NodeList nodes = xmlDocument.getElementsByTagName(IXMLConstants.CONTENT_TAG);
+	    final NodeList nodes = xmlDocument.getElementsByTagName(IXMLConstants.CONTENT_TAG);
 	    if (nodes.getLength() != 1) {
-		String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG134);
+		final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG134);
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
-	    NamedNodeMap attributes = nodes.item(0).getAttributes();
+	    final NamedNodeMap attributes = nodes.item(0).getAttributes();
 	    for (int i = 0; i < attributes.getLength(); i++) {
-		Node attribute = attributes.item(i);
+		final Node attribute = attributes.item(i);
 		if (IXMLConstants.ATTRIBUTE_ID.equalsIgnoreCase(attribute.getNodeName())) {
 		    return attribute.getNodeValue();
 		}
 	    }
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG135);
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG135);
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	} finally {
@@ -2501,7 +2511,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return the updated signed XML document.
      * @throws SigningException If the method fails.
      */
-    public static Document insertAfirmaRootNode(Document xmlDocument, DocumentBuilderFactory dBFactory) throws SigningException {
+    public static Document insertAfirmaRootNode(final Document xmlDocument, final DocumentBuilderFactory dBFactory) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG136));
 	try {
 	    // Comprobamos que se ha indicado el documento XML firmado
@@ -2511,16 +2521,16 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    GenericUtilsCommons.checkInputParameterIsNotNull(dBFactory, Language.getResIntegra(ILogConstantKeys.US_LOG128));
 
 	    // Crea un nuevo documento con la raiz "AFIRMA"
-	    Document docAfirma = dBFactory.newDocumentBuilder().newDocument();
-	    Element rootAfirma = docAfirma.createElement(IXMLConstants.AFIRMA_TAG);
+	    final Document docAfirma = dBFactory.newDocumentBuilder().newDocument();
+	    final Element rootAfirma = docAfirma.createElement(IXMLConstants.AFIRMA_TAG);
 
 	    // Inserta el documento pasado por parametro en el nuevo documento
 	    rootAfirma.appendChild(docAfirma.adoptNode(xmlDocument.getDocumentElement()));
 	    docAfirma.appendChild(rootAfirma);
 
 	    return docAfirma;
-	} catch (ParserConfigurationException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG129);
+	} catch (final ParserConfigurationException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG129);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	} finally {
@@ -2534,7 +2544,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param rootElement Parameter that represents the root element of the XML document.
      * @return a list with the <code>ds:Signature</code> elements to add <code>xades:CounterSignature</code> element.
      */
-    public static List<Element> getListSignaturesToCounterSign(Element rootElement) {
+    public static List<Element> getListSignaturesToCounterSign(final Element rootElement) {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG138));
 	try {
 	    // Comprobamos que se ha indicado el elemento raíz
@@ -2544,20 +2554,20 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // contengan
 	    // contrafirmas o subnodos de firma y que además no sean sellos de
 	    // tiempo
-	    List<Element> listSignaturesToCounterSign = new ArrayList<Element>();
+	    final List<Element> listSignaturesToCounterSign = new ArrayList<Element>();
 
 	    // Obtenemos el conjunto de firmas
-	    NodeList signList = rootElement.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_SIGNATURE);
+	    final NodeList signList = rootElement.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_SIGNATURE);
 	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.XS_LOG052, new Object[ ] { signList.getLength() }));
 	    for (int i = 0; i < signList.getLength(); i++) {
-		Element signElement = (Element) signList.item(i);
+		final Element signElement = (Element) signList.item(i);
 
 		// Comprobamos que la firma no haga referencia a la firma de un
 		// sello de tiempo XML
 		if (!IXMLConstants.ELEMENT_XML_TIMESTAMP.equals(signElement.getParentNode().getLocalName()) && !IXMLConstants.ELEMENT_TIMESTAMP.equals(signElement.getParentNode().getLocalName())) {
 		    // Obtenemos el conjunto de firmas contenidas dentro de la
 		    // firma
-		    NodeList childSignatures = signElement.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_SIGNATURE);
+		    final NodeList childSignatures = signElement.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_SIGNATURE);
 
 		    // Si el elemento ds:Signature no tiene a su vez más nodos
 		    // ds:Signature hijos, o bien, si tiene elementos
@@ -2573,7 +2583,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 			boolean enc = false;
 			int j = 0;
 			while (!enc && j < childSignatures.getLength()) {
-			    Element signatureNode = (Element) childSignatures.item(j);
+			    final Element signatureNode = (Element) childSignatures.item(j);
 			    if (!IXMLConstants.ELEMENT_XML_TIMESTAMP.equals(signatureNode.getParentNode().getLocalName()) && !IXMLConstants.ELEMENT_TIMESTAMP.equals(signatureNode.getParentNode().getLocalName())) {
 				enc = true;
 			    }
@@ -2604,7 +2614,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return an object that represents the XML element.
      * @throws SigningException If the XML document doesn't contain the required element.
      */
-    public static Element retrieveNode(Element parentNode, String nodeName, String namespaceURI, boolean isRequired) throws SigningException {
+    public static Element retrieveNode(final Element parentNode, final String nodeName, final String namespaceURI, final boolean isRequired) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG141));
 	try {
 	    // Comprobamos que se ha indicado el elemento padre
@@ -2618,10 +2628,10 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    GenericUtilsCommons.checkInputParameterIsNotNull(namespaceURI, Language.getResIntegra(ILogConstantKeys.US_LOG145));
 
 	    Element element = null;
-	    NodeList nodeList = parentNode.getElementsByTagNameNS(namespaceURI, nodeName);
+	    final NodeList nodeList = parentNode.getElementsByTagNameNS(namespaceURI, nodeName);
 	    if (nodeList.getLength() == 0) {
 		if (isRequired) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG146, new Object[ ] { nodeName });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG146, new Object[ ] { nodeName });
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
@@ -2639,8 +2649,8 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param eSignature Parameter that represents the XML signature.
      * @return a boolean that indicates if the signature is an XMLTimeStamp element by the OASIS-DSS specifications (true) or not (false).
      */
-    public static boolean isDSSTimestamp(Node eSignature) {
-	Node parent = eSignature.getParentNode();
+    public static boolean isDSSTimestamp(final Node eSignature) {
+	final Node parent = eSignature.getParentNode();
 	if (parent != null) {
 	    return parent.getNodeName().substring(parent.getNodeName().indexOf(":") + 1).equals("XMLTimeStamp");
 	}
@@ -2654,15 +2664,15 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return an input stream that represents the revision, or <code>null</code> if the PDF document doesn't contain any signature dictionary.
      * @throws SigningException exception if any error
      */
-    public static byte[ ] obtainFirstRevision(byte[ ] pdfDocument) throws SigningException {
+    public static byte[ ] obtainFirstRevision(final byte[ ] pdfDocument) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG149));
 	String signatureName = null;
 	byte[ ] buffer = null;
 	try {
 
-	    PdfReader reader = new PdfReader(pdfDocument);
+	    final PdfReader reader = new PdfReader(pdfDocument);
 	    // Instanciamos un objeto para leer las firmas
-	    AcroFields af = reader.getAcroFields();
+	    final AcroFields af = reader.getAcroFields();
 
 	    // Se obtiene el número total de revisiones
 	    int totalRevisions = af.getTotalRevisions();
@@ -2675,19 +2685,19 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		// si el número de revisiones es mayor que 1, existen varias
 		// firmas
 		// Obtenemos la lista de firmas obtenidas.
-		List<String> listSignatures = af.getSignatureNames();
+		final List<String> listSignatures = af.getSignatureNames();
 		// recorremos la lista de firmas obtenidas
 		for (int i = 0; i < listSignatures.size(); i++) {
 		    // se guarda en una variable el nombre de la firma
 		    signatureName = listSignatures.get(i);
 		    // Se obtiene el diccionario de firma asociado
-		    PdfDictionary signatureDictionary = af.getSignatureDictionary(signatureName);
+		    final PdfDictionary signatureDictionary = af.getSignatureDictionary(signatureName);
 		    // Se determina el tipo de diccionario obtenido
 		    String pdfType = null;
 		    if (signatureDictionary.get(PdfName.TYPE) != null) {
 			pdfType = signatureDictionary.get(PdfName.TYPE).toString();
 		    }
-		    String pdfSubFilter = signatureDictionary.get(PdfName.SUBFILTER).toString();
+		    final String pdfSubFilter = signatureDictionary.get(PdfName.SUBFILTER).toString();
 		    // si el tipo de diccionario obtenido es un diccionario de
 		    // firma
 		    // y no un diccionario de tipo Document Time-Stamp
@@ -2695,7 +2705,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 			// se compara el número de revisión de la firma con el
 			// que
 			// tenemos, si es menor, actualizamos las variables
-			int actuallyRevision = af.getRevision(signatureName);
+			final int actuallyRevision = af.getRevision(signatureName);
 			if (actuallyRevision < totalRevisions) {
 			    totalRevisions = actuallyRevision;
 
@@ -2710,7 +2720,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		    }
 		}
 	    }
-	} catch (IOException e) {
+	} catch (final IOException e) {
 	    throw new SigningException(Language.getFormatResIntegra(ILogConstantKeys.US_LOG081, new Object[ ] { signatureName }), e);
 	} finally {
 	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG150));
@@ -2726,18 +2736,18 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return byte array containing the previous document
      * @throws IOException if fails reading th document
      */
-    private static byte[ ] getPreviousRevisionByTrailer(byte[ ] signedDocument) throws IOException {
+    private static byte[ ] getPreviousRevisionByTrailer(final byte[ ] signedDocument) throws IOException {
 	byte buffer[] = null;
 	// Utilizamos el PRTokeniser que nos permitirá posicionarnos y leer del
 	// fichero
-	PRTokeniser rFile = new PRTokeniser(signedDocument);
-	PdfReader reader = new PdfReader(signedDocument);
+	final PRTokeniser rFile = new PRTokeniser(signedDocument);
+	final PdfReader reader = new PdfReader(signedDocument);
 	// Obtenemos la sección Trailer
-	PdfDictionary trailer = reader.getTrailer();
+	final PdfDictionary trailer = reader.getTrailer();
 	// En la sección Trailer buscamos una entrada /Prev que nos indicará
 	// la localización exacta de la Sección Cross-reference anterior
 	if (trailer.getAsNumber(PdfName.PREV) != null) {
-	    int pos = trailer.getAsNumber(PdfName.PREV).intValue();
+	    final int pos = trailer.getAsNumber(PdfName.PREV).intValue();
 	    // En posFinal almacenamos el la posición final del Trailer original
 	    int posFinal = 0;
 	    // Nos colocamos en la Sección Cross-reference anterior para buscar
@@ -2749,7 +2759,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		j = rFile.read();
 		// El final del Trailer viene delimitado por la cadena %%EOF
 		if (j == '%') {
-		    StringBuffer outBuf = new StringBuffer();
+		    final StringBuffer outBuf = new StringBuffer();
 		    outBuf.append((char) j);
 		    for (int n = 0; n < NumberConstants.INT_4; n++) {
 			j = rFile.read();
@@ -2784,13 +2794,13 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return Array of Bytes containing the revision
      * @throws IOException throws if fails extracting or reading the document
      */
-    private static byte[ ] getRevisionBySignature(AcroFields fields, String signatureName) throws IOException {
+    private static byte[ ] getRevisionBySignature(final AcroFields fields, final String signatureName) throws IOException {
 	byte buffer[] = null;
 	ByteArrayOutputStream baos = null;
 	InputStream ip = null;
 	try {
 	    ip = fields.extractRevision(signatureName);
-	    byte[ ] tempBuf = new byte[NumberConstants.INT_2048];
+	    final byte[ ] tempBuf = new byte[NumberConstants.INT_2048];
 	    baos = new ByteArrayOutputStream();
 	    int num = 0;
 	    while ((num = ip.read(tempBuf)) > 0) {
@@ -2801,24 +2811,22 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    baos.close();
 
 	    return buffer;
-	} catch (IOException e) {
+	} catch (final IOException e) {
 	    throw e;
 	} finally {
 	    if (baos != null) {
 		try {
 		    baos.close();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 		    throw e;
 		} finally {
 		    if (ip != null) {
 			ip.close();
 		    }
 		}
-	    } else {
-		if (ip != null) {
+	    } else if (ip != null) {
 		    ip.close();
 		}
-	    }
 	}
     }
 
@@ -2828,25 +2836,23 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param externalParams Represents the optional input parameters.
      * @return boolean true if the signature includes rubric.
      */
-    public static boolean checkExtraParamsSignWithRubric(Properties externalParams) {
+    public static boolean checkExtraParamsSignWithRubric(final Properties externalParams) {
 	boolean rubric = false;
 	byte[ ] image = null;
-	String imageB64 = externalParams.getProperty(SignatureProperties.PADES_IMAGE);
+	final String imageB64 = externalParams.getProperty(SignatureProperties.PADES_IMAGE);
 
 	if (!GenericUtilsCommons.assertStringValue(imageB64)) {
 	    // se comprueba si la imagen viene dada como byte[]
 	    image = (byte[ ]) externalParams.get(SignatureProperties.PADES_IMAGE);
 	}
 
-	String imagePage = externalParams.getProperty(SignatureProperties.PADES_IMAGE_PAGE);
-	String lowerLeftX = externalParams.getProperty(SignatureProperties.PADES_LOWER_LEFT_X);
-	String lowerLeftY = externalParams.getProperty(SignatureProperties.PADES_LOWER_LEFT_Y);
-	String upperRightX = externalParams.getProperty(SignatureProperties.PADES_UPPER_RIGHT_X);
-	String upperRightY = externalParams.getProperty(SignatureProperties.PADES_UPPER_RIGHT_Y);
+	final String imagePage = externalParams.getProperty(SignatureProperties.PADES_IMAGE_PAGE);
+	final String lowerLeftX = externalParams.getProperty(SignatureProperties.PADES_LOWER_LEFT_X);
+	final String lowerLeftY = externalParams.getProperty(SignatureProperties.PADES_LOWER_LEFT_Y);
+	final String upperRightX = externalParams.getProperty(SignatureProperties.PADES_UPPER_RIGHT_X);
+	final String upperRightY = externalParams.getProperty(SignatureProperties.PADES_UPPER_RIGHT_Y);
 	if (GenericUtilsCommons.assertStringValue(imagePage) && GenericUtilsCommons.assertStringValue(lowerLeftX) && GenericUtilsCommons.assertStringValue(lowerLeftY) && GenericUtilsCommons.assertStringValue(upperRightX) && GenericUtilsCommons.assertStringValue(upperRightY)) {
-	    if (image != null) {
-		rubric = true;
-	    } else if (GenericUtilsCommons.assertStringValue(imageB64)) {
+	    if ((image != null) || GenericUtilsCommons.assertStringValue(imageB64)) {
 		rubric = true;
 	    }
 	}
@@ -2860,32 +2866,32 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param externalParams Represents the optional input parameters.
      * @throws SigningException If the method fails.
      */
-    public static void insertRubric(PdfReader reader, PdfSignatureAppearance signatureAppearance, Properties externalParams) throws SigningException {
+    public static void insertRubric(final PdfReader reader, final PdfSignatureAppearance signatureAppearance, final Properties externalParams) throws SigningException {
 
 	try {
 	    byte[ ] image = null;
 	    // se obtiene los parametros relacionados con la rúbrica.
-	    String pathImage = externalParams.getProperty(SignatureProperties.PADES_IMAGE);
+	    final String pathImage = externalParams.getProperty(SignatureProperties.PADES_IMAGE);
 
 	    if (!GenericUtilsCommons.assertStringValue(pathImage)) {
 		// se comprueba si la imagen viene dada como byte[]
 		image = (byte[ ]) externalParams.get(SignatureProperties.PADES_IMAGE);
 	    }
 
-	    int imagePage = Integer.parseInt(externalParams.getProperty(SignatureProperties.PADES_IMAGE_PAGE));
-	    int lowerLeftX = Integer.parseInt(externalParams.getProperty(SignatureProperties.PADES_LOWER_LEFT_X));
-	    int lowerLeftY = Integer.parseInt(externalParams.getProperty(SignatureProperties.PADES_LOWER_LEFT_Y));
-	    int upperRightX = Integer.parseInt(externalParams.getProperty(SignatureProperties.PADES_UPPER_RIGHT_X));
-	    int upperRightY = Integer.parseInt(externalParams.getProperty(SignatureProperties.PADES_UPPER_RIGHT_Y));
+	    final int imagePage = Integer.parseInt(externalParams.getProperty(SignatureProperties.PADES_IMAGE_PAGE));
+	    final int lowerLeftX = Integer.parseInt(externalParams.getProperty(SignatureProperties.PADES_LOWER_LEFT_X));
+	    final int lowerLeftY = Integer.parseInt(externalParams.getProperty(SignatureProperties.PADES_LOWER_LEFT_Y));
+	    final int upperRightX = Integer.parseInt(externalParams.getProperty(SignatureProperties.PADES_UPPER_RIGHT_X));
+	    final int upperRightY = Integer.parseInt(externalParams.getProperty(SignatureProperties.PADES_UPPER_RIGHT_Y));
 
 	    // cargamos imagen dependiendo del cómo venga especificada (array de
 	    // byte o ruta donde se encuentra)
-	    Image img = obtainRubric(image, pathImage);
+	    final Image img = obtainRubric(image, pathImage);
 	    // Loading Signature Image in Signature Appearance
 	    signatureAppearance.setImage(img);
 
 	    // numero de páginas que tiene el documento
-	    int numPages = reader.getNumberOfPages();
+	    final int numPages = reader.getNumberOfPages();
 
 	    if (imagePage == -1) {
 		// se firma en la última página.
@@ -2894,12 +2900,12 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 		signatureAppearance.setVisibleSignature(new Rectangle(lowerLeftX, lowerLeftY, upperRightX, upperRightY), imagePage, null);
 	    } else {
-		String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG151);
+		final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG151);
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 
-	} catch (NumberFormatException e) {
+	} catch (final NumberFormatException e) {
 	    LOGGER.error(e);
 	    throw new SigningException(e);
 	}
@@ -2913,14 +2919,14 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return Image.
      * @throws SigningException If the method fails.
      */
-    private static Image obtainRubric(byte[ ] image, String imagePath) throws SigningException {
+    private static Image obtainRubric(final byte[ ] image, final String imagePath) throws SigningException {
 	Image img = null;
 	try {
 	    if (image != null) {
 		// comprobamos que el formato sea permitido
-		String mimetype = UtilsResourcesSignOperations.getMimeType(image).toUpperCase();
+		final String mimetype = UtilsResourcesSignOperations.getMimeType(image).toUpperCase();
 		if (!mimetype.contains("JPEG") && !mimetype.contains("PNG") && !mimetype.contains("GIF") && !mimetype.contains("BMP")) {
-		    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG152);
+		    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG152);
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
@@ -2929,21 +2935,21 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 	    } else {
 		// comprobamos que el formato sea el permitido
-		String pathImageB64 = new String(Base64.decode(imagePath)).toUpperCase();
+		final String pathImageB64 = new String(Base64.decode(imagePath)).toUpperCase();
 		if (!pathImageB64.endsWith("JPEG") && !pathImageB64.endsWith("PNG") && !pathImageB64.endsWith("GIF") && !pathImageB64.endsWith("BMP")) {
-		    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG152);
+		    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG152);
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
 		img = Image.getInstance(new String(Base64.decode(imagePath)));
 	    }
-	} catch (BadElementException e) {
+	} catch (final BadElementException e) {
 	    LOGGER.error(e);
 	    throw new SigningException(e);
-	} catch (MalformedURLException e) {
+	} catch (final MalformedURLException e) {
 	    LOGGER.error(e);
 	    throw new SigningException(e);
-	} catch (IOException e) {
+	} catch (final IOException e) {
 	    LOGGER.error(e);
 	    throw new SigningException(e);
 	}
@@ -2957,7 +2963,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param isPadesSignature Parameter that indicates if the signature is contained inside of a signature dictionary (true) or not (false).
      * @throws SigningException If the validation fails.
      */
-    public static void validateCAdESSignatureCore(SignerInformation signerInformation, X509Certificate signingCertificate, boolean isPadesSignature) throws SigningException {
+    public static void validateCAdESSignatureCore(final SignerInformation signerInformation, final X509Certificate signingCertificate, final boolean isPadesSignature) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG153));
 	try {
 	    // Comprobamos que se ha indicado la información asociada al
@@ -2972,14 +2978,14 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		try {
 		    // Validamos la información del firmante delegando en
 		    // Bouncycastle
-		    SignerInformationVerifier signerInformationVerifier = new JcaSimpleSignerInfoVerifierBuilder().build(signingCertificate);
+		    final SignerInformationVerifier signerInformationVerifier = new JcaSimpleSignerInfoVerifierBuilder().build(signingCertificate);
 		    signatureValid = signerInformation.verify(signerInformationVerifier);
-		} catch (OperatorCreationException e) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG073, new Object[ ] { signingCertificate.getSubjectDN().getName() });
+		} catch (final OperatorCreationException e) {
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG073, new Object[ ] { signingCertificate.getSubjectDN().getName() });
 		    LOGGER.error(errorMsg, e);
 		    throw new SigningException(errorMsg, e);
-		} catch (CMSException e) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG072, new Object[ ] { signingCertificate.getSubjectDN().getName() });
+		} catch (final CMSException e) {
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG072, new Object[ ] { signingCertificate.getSubjectDN().getName() });
 		    LOGGER.error(errorMsg, e);
 		    throw new SigningException(errorMsg, e);
 		}
@@ -2989,20 +2995,20 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		// Si el firmante no es válido según bouncycastle intentamos
 		// llevar a cabo la validación manual
 		if (!signatureValid) {
-		    ASN1EncodableVector vectorSignedAttributes = signerInformation.getSignedAttributes().toASN1EncodableVector();
-		    AlgorithmIdentifier signAlgorithmOID = getSignatureAlgorithm(signerInformation);
-		    Signature signatureValidator = Signature.getInstance(signAlgorithmOID.getAlgorithm().getId(), BouncyCastleProvider.PROVIDER_NAME);
+		    final ASN1EncodableVector vectorSignedAttributes = signerInformation.getSignedAttributes().toASN1EncodableVector();
+		    final AlgorithmIdentifier signAlgorithmOID = getSignatureAlgorithm(signerInformation);
+		    final Signature signatureValidator = Signature.getInstance(signAlgorithmOID.getAlgorithm().getId(), BouncyCastleProvider.PROVIDER_NAME);
 		    signatureValidator.initVerify(signingCertificate.getPublicKey());
 		    signatureValidator.update(new DERSet(vectorSignedAttributes).getEncoded(ASN1Encoding.DER));
 		    signatureValid = signatureValidator.verify(signerInformation.getSignature());
 		    if (!signatureValid) {
-			String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG072, new Object[ ] { signingCertificate.getSubjectDN().getName() });
+			final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG072, new Object[ ] { signingCertificate.getSubjectDN().getName() });
 			LOGGER.error(errorMsg);
 			throw new SigningException(errorMsg);
 		    }
 		}
-	    } catch (Exception e) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG072, new Object[ ] { signingCertificate.getSubjectDN().getName() });
+	    } catch (final Exception e) {
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG072, new Object[ ] { signingCertificate.getSubjectDN().getName() });
 		LOGGER.error(errorMsg, e);
 		throw new SigningException(errorMsg, e);
 	    }
@@ -3020,7 +3026,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signingCertificate Parameter that represents the signing certificate.
      * @throws SigningException If the validation fails.
      */
-    public static void validateCAdESPublicKeyInfo(CMSSignedData signedData, SignerInformation signerInformation, X509Certificate signingCertificate) throws SigningException {
+    public static void validateCAdESPublicKeyInfo(final CMSSignedData signedData, final SignerInformation signerInformation, final X509Certificate signingCertificate) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG156));
 	try {
 	    // Comprobamos que se han indicado los datos firmados
@@ -3033,7 +3039,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    GenericUtilsCommons.checkInputParameterIsNotNull(signingCertificate, Language.getResIntegra(ILogConstantKeys.US_LOG002));
 
 	    // Accedemos al conjunto de atributos firmados
-	    AttributeTable signedAttrs = signerInformation.getSignedAttributes();
+	    final AttributeTable signedAttrs = signerInformation.getSignedAttributes();
 
 	    // Conforme a la RFC 5035, el certificado firmante puede encontrarse en el se
 	    // atributo firmado SigningCertificateV2 y/o en el atributo firmado
@@ -3041,15 +3047,15 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // se diese el caso
 
 	    // Accedemos al atributo SigningCertificateV2
-	    Attribute attSigningCertificateV2 = signedAttrs.get(PKCSObjectIdentifiers.id_aa_signingCertificateV2);
+	    final Attribute attSigningCertificateV2 = signedAttrs.get(PKCSObjectIdentifiers.id_aa_signingCertificateV2);
 	    
 	    // Accedemos al atributo SigningCertificate
-	    Attribute attSigningCertificate = signedAttrs.get(PKCSObjectIdentifiers.id_aa_signingCertificate);
+	    final Attribute attSigningCertificate = signedAttrs.get(PKCSObjectIdentifiers.id_aa_signingCertificate);
 
 	    // Si el certificado firmante no se ha incluído en los atributos
 	    // firmados, devolvemos error
 	    if (attSigningCertificateV2 == null && attSigningCertificate == null) {
-		String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG159);
+		final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG159);
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -3059,21 +3065,21 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		LOGGER.info(Language.getFormatResIntegra(ILogConstantKeys.US_LOG164, new Object[ ] { signingCertificate.getSubjectDN().getName() }));
 
 		// Obtenemos el objeto SigningCertificateV2
-		SigningCertificateV2 signingCertificatev2 = SigningCertificateV2.getInstance(attSigningCertificateV2.getAttrValues().getObjectAt(0));
+		final SigningCertificateV2 signingCertificatev2 = SigningCertificateV2.getInstance(attSigningCertificateV2.getAttrValues().getObjectAt(0));
 
 		// Comprobamos que el certificado indicado en el atributo
 		// firmando SigningCertificateV2 coincide con el certificado
 		// firmante
-		ESSCertIDv2 essCertID = signingCertificatev2.getCerts()[0];
+		final ESSCertIDv2 essCertID = signingCertificatev2.getCerts()[0];
 
 		// Obtenemos el hash asociado al certificado incluído en
 		// el atributo firmado SigningCertificateV2
-		byte[ ] signingCertificateV2Hash = essCertID.getCertHash();
+		final byte[ ] signingCertificateV2Hash = essCertID.getCertHash();
 
 		// Obtenemos el algoritmo de hash utilizado en el atributo
 		// firmado SigningCertificateV2
-		AlgorithmIdentifier ai2 = essCertID.getHashAlgorithm();
-		String hashAlgorithm = CryptoUtilPdfBc.translateAlgorithmIdentifier(ai2);
+		final AlgorithmIdentifier ai2 = essCertID.getHashAlgorithm();
+		final String hashAlgorithm = CryptoUtilPdfBc.translateAlgorithmIdentifier(ai2);
 		
 		final String attrName = "SigningCertificateV2";
 		
@@ -3092,24 +3098,24 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		LOGGER.info(Language.getFormatResIntegra(ILogConstantKeys.US_LOG160, new Object[ ] { signingCertificate.getSubjectDN().getName() }));
 		
 		// Obtenemos el objeto SigningCertificate
-		SigningCertificate signingCertificatev1 = SigningCertificate.getInstance(attSigningCertificate.getAttrValues().getObjectAt(0));
+		final SigningCertificate signingCertificatev1 = SigningCertificate.getInstance(attSigningCertificate.getAttrValues().getObjectAt(0));
 
 		// Comprobamos que el algoritmo usado para codificar los
 		// datos haya sido SHA-1
 		if (signingCertificatev1.getCerts()[0].getCertHash().length != NumberConstants.INT_20) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG161, new Object[ ] { signingCertificate.getSubjectDN().getName() });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG161, new Object[ ] { signingCertificate.getSubjectDN().getName() });
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		} else {
 		    // Comprobamos que el certificado indicado en el
 		    // atributo firmando SigningCertificate coincide con el
 		    // certificado firmante
-		    ESSCertID essCertID = signingCertificatev1.getCerts()[0];
+		    final ESSCertID essCertID = signingCertificatev1.getCerts()[0];
 
 		    // Obtenemos el hash asociado al certificado
 		    // incluído en el atributo firmado
 		    // SigningCertificate
-		    byte[ ] signingCertificateV1Hash = essCertID.getCertHash();
+		    final byte[ ] signingCertificateV1Hash = essCertID.getCertHash();
 
 		    final String attrName = "SigningCertificate";
 		    
@@ -3124,16 +3130,16 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		}
 	    }
 
-	} catch (NoSuchAlgorithmException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG167);
+	} catch (final NoSuchAlgorithmException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG167);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (NoSuchProviderException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG167);
+	} catch (final NoSuchProviderException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG167);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (CertificateEncodingException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG167);
+	} catch (final CertificateEncodingException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG167);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	} finally {
@@ -3152,16 +3158,16 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @throws CertificateEncodingException If the certificate can not be decoded.
      * @throws SigningException If the validation fails.
      */
-    private static void validateCertificateHash(X509Certificate cert, byte[] hash, String hashAlgorithm, String attrName)
+    private static void validateCertificateHash(final X509Certificate cert, final byte[] hash, final String hashAlgorithm, final String attrName)
 	    throws NoSuchAlgorithmException, NoSuchProviderException, CertificateEncodingException, SigningException {
 
 	// Obtenemos el hash del certificado firmante
-	MessageDigest md = MessageDigest.getInstance(hashAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
-	byte[ ] signingCertificateHash = md.digest(cert.getEncoded());
+	final MessageDigest md = MessageDigest.getInstance(hashAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
+	final byte[ ] signingCertificateHash = md.digest(cert.getEncoded());
 
 	// Comprobamos que los hash coincidan
 	if (!Arrays.equals(hash, signingCertificateHash)) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG162, new Object[ ] { attrName, cert.getSubjectDN().getName() });
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG162, new Object[ ] { attrName, cert.getSubjectDN().getName() });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
@@ -3175,7 +3181,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @throws CertificateEncodingException If the certificate can't decoded.
      * @throws SigningException If the validation fails.
      */
-    private static void validateCertificateIssuerSerial(X509Certificate cert, IssuerSerial issuerSerial, String attrName)
+    private static void validateCertificateIssuerSerial(final X509Certificate cert, final IssuerSerial issuerSerial, final String attrName)
 	    throws CertificateEncodingException, SigningException {
 	
 	// Solo realizamos la validacion si se proporciona IssuerSerial
@@ -3183,14 +3189,14 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    
 	    // El numero de serie debe coincidir con el del certificado
 	    if (!issuerSerial.getSerial().getValue().equals(cert.getSerialNumber())) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG165, new Object[ ] { attrName, cert.getSubjectDN().getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG165, new Object[ ] { attrName, cert.getSubjectDN().getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 
 	    // El Principal indicado debe ser el del emisot del certificado
-	    GeneralName[]   names = issuerSerial.getIssuer().getNames();
-	    X509Principal   principal = PrincipalUtil.getIssuerX509Principal(cert);
+	    final GeneralName[]   names = issuerSerial.getIssuer().getNames();
+	    final X509Principal   principal = PrincipalUtil.getIssuerX509Principal(cert);
 	    boolean         found = false;
 	    for (int i = 0; i != names.length; i++) {
 		if (names[i].getTagNo() == 4 && new X509Principal(X509Name.getInstance(names[i].getName())).equals(principal)) {
@@ -3200,7 +3206,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    }
 
 	    if (!found) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG166, new Object[ ] { attrName, cert.getSubjectDN().getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG166, new Object[ ] { attrName, cert.getSubjectDN().getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -3216,7 +3222,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signingCertificate Parameter that represents the signing certificate.
      * @throws SigningException If the validation fails.
      */
-    public static void validateCAdESSigningTime(CMSSignedData signedData, SignerInformation signerInformation, boolean isRequired, Date validationDate, X509Certificate signingCertificate) throws SigningException {
+    public static void validateCAdESSigningTime(final CMSSignedData signedData, final SignerInformation signerInformation, final boolean isRequired, final Date validationDate, final X509Certificate signingCertificate) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG168));
 	try {
 	    // Comprobamos que se han indicado los datos firmados
@@ -3232,16 +3238,16 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    GenericUtilsCommons.checkInputParameterIsNotNull(signingCertificate, Language.getResIntegra(ILogConstantKeys.US_LOG002));
 
 	    // Accedemos al conjunto de atributos firmados
-	    AttributeTable signedAttrs = signerInformation.getSignedAttributes();
+	    final AttributeTable signedAttrs = signerInformation.getSignedAttributes();
 
 	    // Accedemos al atributo SigningTime
-	    Attribute attSigningTime = signedAttrs.get(PKCSObjectIdentifiers.pkcs_9_at_signingTime);
+	    final Attribute attSigningTime = signedAttrs.get(PKCSObjectIdentifiers.pkcs_9_at_signingTime);
 
 	    // Si el firmante carece del atributo SigningTime
 	    if (attSigningTime == null) {
 		// Si el atributo SigningTime es obligatorio
 		if (isRequired) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG170, new Object[ ] { signingCertificate.getSubjectDN().getName() });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG170, new Object[ ] { signingCertificate.getSubjectDN().getName() });
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
@@ -3270,30 +3276,30 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param validationDate Parameter that represents the validation date.
      * @throws SigningException If the validation fails.
      */
-    private static void checkSigningTime(Attribute attSigningTime, X509Certificate signingCertificate, Date validationDate) throws SigningException {
+    private static void checkSigningTime(final Attribute attSigningTime, final X509Certificate signingCertificate, final Date validationDate) throws SigningException {
 	try {
 	    Date signingTimeDate = null;
 	    // Accedemos a la fecha de generación de la firma
-	    ASN1Encodable signingTime = attSigningTime.getAttrValues().getObjectAt(0);
+	    final ASN1Encodable signingTime = attSigningTime.getAttrValues().getObjectAt(0);
 	    if (signingTime instanceof ASN1UTCTime) {
 		signingTimeDate = ((ASN1UTCTime) signingTime).getDate();
 	    } else if (signingTime instanceof ASN1GeneralizedTime) {
 		signingTimeDate = ((ASN1GeneralizedTime) signingTime).getDate();
 	    } else {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG171, new Object[ ] { signingTime.getClass().getName(), signingCertificate.getSubjectDN().getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG171, new Object[ ] { signingTime.getClass().getName(), signingCertificate.getSubjectDN().getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.US_LOG172, new Object[ ] { signingCertificate.getSubjectDN().getName(), signingTimeDate.toString() }));
 
 	    if (signingTimeDate.after(validationDate)) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG173, new Object[ ] { signingTimeDate.toString(), signingCertificate.getSubjectDN().getName(), validationDate.toString() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG173, new Object[ ] { signingTimeDate.toString(), signingCertificate.getSubjectDN().getName(), validationDate.toString() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 	    LOGGER.info(Language.getFormatResIntegra(ILogConstantKeys.US_LOG174, new Object[ ] { signingCertificate.getSubjectDN().getName() }));
-	} catch (ParseException e) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG175, new Object[ ] { signingCertificate.getSubjectDN().getName() });
+	} catch (final ParseException e) {
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG175, new Object[ ] { signingCertificate.getSubjectDN().getName() });
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	}
@@ -3314,7 +3320,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param isCounterSignature Parameter that indicates if the signature to validate is a countersignature (true) or not (false).
      * @throws SigningException If the validation fails.
      */
-    public static void validateXAdESSignatureCore(Element qualifyingPropertiesElement, String signatureId, Element signatureElement, org.apache.xml.security.signature.XMLSignature xmlSignature, byte[ ] signedFile, String signedFileName, X509Certificate signingCertificate, Element signedSignaturePropertiesElement, Element signedPropertiesElement, boolean isBaseline, boolean isCounterSignature) throws SigningException {
+    public static void validateXAdESSignatureCore(final Element qualifyingPropertiesElement, final String signatureId, final Element signatureElement, final org.apache.xml.security.signature.XMLSignature xmlSignature, final byte[ ] signedFile, final String signedFileName, final X509Certificate signingCertificate, final Element signedSignaturePropertiesElement, final Element signedPropertiesElement, final boolean isBaseline, final boolean isCounterSignature) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG179));
 	/*
 	 * Validación del Núcleo de Firma: Se realizarán las siguientes verificaciones (en el caso de que la firma no sea Baseline):
@@ -3361,14 +3367,14 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 	    // Comprobamos que el elemento xades:QualifiyingProperties posea el
 	    // atributo Target y que éste apunta hacia la firma
-	    String target = qualifyingPropertiesElement.getAttribute(IXMLConstants.ATTRIBUTE_TARGET);
+	    final String target = qualifyingPropertiesElement.getAttribute(IXMLConstants.ATTRIBUTE_TARGET);
 	    if (target == null || target.isEmpty()) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG181, new Object[ ] { signatureId });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG181, new Object[ ] { signatureId });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 	    if (!target.substring(1).equals(signatureId)) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG205, new Object[ ] { signatureId });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG205, new Object[ ] { signatureId });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -3405,22 +3411,22 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param isCounterSignature Parameter that indicates if the signature to validate is a countersignature (true) or not (false).
      * @throws SigningException If the validation fails.
      */
-    private static void checkDataObjectFormatStructure(String signatureId, Element signedPropertiesElement, org.apache.xml.security.signature.XMLSignature xmlSignature, boolean isCounterSignature) throws SigningException {
+    private static void checkDataObjectFormatStructure(final String signatureId, final Element signedPropertiesElement, final org.apache.xml.security.signature.XMLSignature xmlSignature, final boolean isCounterSignature) throws SigningException {
 	// Accedemos al elemento xades:SignedDataObjectProperties
-	Element signedDataObjectPropertiesElement = UtilsXML.getChildElement(signedPropertiesElement, IXMLConstants.ELEMENT_SIGNED_DATA_OBJECT_PROPERTIES, signatureId, true);
+	final Element signedDataObjectPropertiesElement = UtilsXML.getChildElement(signedPropertiesElement, IXMLConstants.ELEMENT_SIGNED_DATA_OBJECT_PROPERTIES, signatureId, true);
 
 	// Instanciamos la lista de elementos xades:DataObjectFormat
-	List<Element> listDataObjectFormatElements = new ArrayList<Element>();
+	final List<Element> listDataObjectFormatElements = new ArrayList<Element>();
 
 	// Obtenemos la lista de hijos del elemento
 	// xades:SignedDataObjectProperties
-	NodeList childNodes = signedDataObjectPropertiesElement.getChildNodes();
+	final NodeList childNodes = signedDataObjectPropertiesElement.getChildNodes();
 
 	// Recorremos la lista de hijos del elemento
 	// xades:SignedDataObjectProperties
 	for (int i = 0; i < childNodes.getLength(); i++) {
 	    // Accedemos al elemento hijo
-	    Node childElement = childNodes.item(i);
+	    final Node childElement = childNodes.item(i);
 
 	    // Si el elemento es xades:DataObjectFormat lo añadimos a la lista
 	    // asociada
@@ -3430,33 +3436,33 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	}
 	// Comprobamos que existe al menos un elemento xades:DataObjectFormat
 	if (listDataObjectFormatElements.isEmpty()) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG206, new Object[ ] { signatureId });
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG206, new Object[ ] { signatureId });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
 	// Recorremos la lista de elementos xades:DataObjectFormat
-	for (Element dataObjectFormatElement: listDataObjectFormatElements) {
+	for (final Element dataObjectFormatElement: listDataObjectFormatElements) {
 	    // Verificamos que el elemento xades:DataObjectFormat posee como
 	    // hijo un elemento xades:MimeType
-	    Element mimeTypeElement = UtilsXML.getChildElement(dataObjectFormatElement, IXMLConstants.ELEMENT_MIME_TYPE, signatureId, false);
+	    final Element mimeTypeElement = UtilsXML.getChildElement(dataObjectFormatElement, IXMLConstants.ELEMENT_MIME_TYPE, signatureId, false);
 	    if (mimeTypeElement == null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG207, new Object[ ] { signatureId });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG207, new Object[ ] { signatureId });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 
 	    // Accedemos al atributo ObjectReference que es obligatorio
-	    String objectReference = dataObjectFormatElement.getAttribute(IXMLConstants.ATTRIBUTE_OBJECT_REFERENCE);
+	    final String objectReference = dataObjectFormatElement.getAttribute(IXMLConstants.ATTRIBUTE_OBJECT_REFERENCE);
 
 	    if (objectReference == null || objectReference.isEmpty()) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG208, new Object[ ] { signatureId });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG208, new Object[ ] { signatureId });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 
 	    // Obtenemos el valor del atributo Id del elemento
 	    // xades:SignedProperties
-	    String idSignedProperties = signedPropertiesElement.getAttribute(IXMLConstants.ATTRIBUTE_ID);
+	    final String idSignedProperties = signedPropertiesElement.getAttribute(IXMLConstants.ATTRIBUTE_ID);
 
 	    // Recorremos la lista de referencias buscando aquella apuntada por
 	    // el atributo ObjectReference
@@ -3474,14 +3480,14 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param isCounterSignature parameter that indicates if the signature to validate is a countersignature (true) or not (false).
      * @throws SigningException If the validation fails.
      */
-    private static void findReferenceFromDataObjectFormat(org.apache.xml.security.signature.XMLSignature xmlSignature, String objectReference, String idSignedProperties, String signatureId, boolean isCounterSignature) throws SigningException {
+    private static void findReferenceFromDataObjectFormat(final org.apache.xml.security.signature.XMLSignature xmlSignature, final String objectReference, final String idSignedProperties, final String signatureId, final boolean isCounterSignature) throws SigningException {
 	try {
 	    // Recorremos la lista de referencias buscando aquella apuntada por
 	    // el atributo ObjectReference
 	    boolean found = false;
 	    for (int i = 0; !found && i < xmlSignature.getSignedInfo().getLength(); i++) {
 		// Accedemos a la referencia
-		org.apache.xml.security.signature.Reference ref = xmlSignature.getSignedInfo().item(i);
+		final org.apache.xml.security.signature.Reference ref = xmlSignature.getSignedInfo().item(i);
 
 		// Comprobamos si el Id de la referencia coincide con el valor
 		// del atributo ObjectReference del elemento
@@ -3496,7 +3502,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		    // del atributo Id
 		    // del elemento xades:SignedProperties
 		    if (ref.getURI() != null && !ref.getURI().isEmpty() && ref.getURI().substring(1).equals(idSignedProperties)) {
-			String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG209, new Object[ ] { signatureId });
+			final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG209, new Object[ ] { signatureId });
 			LOGGER.error(errorMsg);
 			throw new SigningException(errorMsg);
 		    }
@@ -3508,8 +3514,8 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		// reference del manifest.
 		findManifestReferenceFromDataObjectFormat(xmlSignature, objectReference, isCounterSignature);
 	    }
-	} catch (org.apache.xml.security.exceptions.XMLSecurityException e) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG188, new Object[ ] { signatureId });
+	} catch (final org.apache.xml.security.exceptions.XMLSecurityException e) {
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG188, new Object[ ] { signatureId });
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	}
@@ -3522,8 +3528,8 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param isCounterSignature Parameter that indicates if the signature to verify is a countersignature (true) or not (false).
      * @throws SigningException if there is not possible to find any manifest reference that matches with the data object format.
      */
-    private static void findManifestReferenceFromDataObjectFormat(org.apache.xml.security.signature.XMLSignature xmlSignature, String objectReference, boolean isCounterSignature) throws SigningException {
-	String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG210, new Object[ ] { xmlSignature.getId(), objectReference.substring(1) });
+    private static void findManifestReferenceFromDataObjectFormat(final org.apache.xml.security.signature.XMLSignature xmlSignature, final String objectReference, final boolean isCounterSignature) throws SigningException {
+	final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG210, new Object[ ] { xmlSignature.getId(), objectReference.substring(1) });
 
 	// Recuperamos el elemento Manifest de la firma.
 	Element object = UtilsXML.getChildElement(xmlSignature.getElement(), IXMLConstants.ELEMENT_OBJECT, null, false);
@@ -3548,7 +3554,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		throw new SigningException(errorMsg);
 	    }
 	}
-	Element manifestElem = (Element) object.getFirstChild();
+	final Element manifestElem = (Element) object.getFirstChild();
 
 	// Recorremos las referencias del manifest para poder acceder a sus
 	// identificadores.
@@ -3591,9 +3597,9 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signatureId Parameter that represents the value of <code>Id</code> attribute of <code>ds:Signature</code> element.
      * @throws SigningException If the validation fails.
      */
-    private static void checkXAdESSigner(org.apache.xml.security.signature.XMLSignature xmlSignature, byte[ ] signedFile, String signedFileName, X509Certificate signingCertificate, String signatureId) throws SigningException {
+    private static void checkXAdESSigner(final org.apache.xml.security.signature.XMLSignature xmlSignature, final byte[ ] signedFile, final String signedFileName, final X509Certificate signingCertificate, final String signatureId) throws SigningException {
 	// Accedemos al elemento KeyInfo
-	KeyInfo keyInfo = xmlSignature.getKeyInfo();
+	final KeyInfo keyInfo = xmlSignature.getKeyInfo();
 
 	if (keyInfo != null) {
 	    try {
@@ -3603,22 +3609,22 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		// procesar
 		// ese fichero firmado que no está incluido en la firma
 		if (signedFile != null && signedFileName != null) {
-		    ExternalFileURIDereferencer ext = new ExternalFileURIDereferencer(signedFile, signedFileName);
+		    final ExternalFileURIDereferencer ext = new ExternalFileURIDereferencer(signedFile, signedFileName);
 		    xmlSignature.addResourceResolver(ext);
 		}
 		// Validamos la firma usando el certificado firmante
 		if (!xmlSignature.checkSignatureValue(signingCertificate)) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG030, new Object[ ] { signatureId });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG030, new Object[ ] { signatureId });
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
-	    } catch (org.apache.xml.security.signature.XMLSignatureException e) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG033, new Object[ ] { signatureId });
+	    } catch (final org.apache.xml.security.signature.XMLSignatureException e) {
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG033, new Object[ ] { signatureId });
 		LOGGER.error(errorMsg, e);
 		throw new SigningException(errorMsg, e);
 	    }
 	} else {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG040, new Object[ ] { signatureId });
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG040, new Object[ ] { signatureId });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
@@ -3631,10 +3637,10 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signedPropertiesElement Parameter that represents <code>xades:SignedProperties</code> element.
      * @throws SigningException If the validation fails.
      */
-    private static void checkReferenceToSignedProperties(org.apache.xml.security.signature.XMLSignature xmlSignature, String signatureId, Element signedPropertiesElement) throws SigningException {
+    private static void checkReferenceToSignedProperties(final org.apache.xml.security.signature.XMLSignature xmlSignature, final String signatureId, final Element signedPropertiesElement) throws SigningException {
 	try {
 	    // Accedemos al atributo Id del elemento xades:SignedProperties
-	    String idSP = signedPropertiesElement.getAttribute(IXMLConstants.ATTRIBUTE_ID);
+	    final String idSP = signedPropertiesElement.getAttribute(IXMLConstants.ATTRIBUTE_ID);
 
 	    // Recorremos la lista de referencias buscando la que apunta al
 	    // elemento
@@ -3642,7 +3648,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    boolean finded = false;
 	    for (int index = 0; !finded && index < xmlSignature.getSignedInfo().getLength(); index++) {
 		// Accedemos a la referencia
-		org.apache.xml.security.signature.Reference ref = xmlSignature.getSignedInfo().item(index);
+		final org.apache.xml.security.signature.Reference ref = xmlSignature.getSignedInfo().item(index);
 
 		// Si el valor del atributo URI de la refefencia coincide con el
 		// valor del atributo Id del elemento xades:SignedProperties
@@ -3652,13 +3658,13 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		    finded = true;
 
 		    // Obtenemos el valor del atributo Type de la referencia
-		    String type = ref.getType();
+		    final String type = ref.getType();
 
 		    // Si el valor del atributo Type de la referencia no está
 		    // asociado al elemento xades:SignedProperties lanzamos una
 		    // excepción
 		    if (type == null || type.isEmpty() || !type.equals("http://uri.etsi.org/01903#SignedProperties")) {
-			String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG187, new Object[ ] { signatureId });
+			final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG187, new Object[ ] { signatureId });
 			LOGGER.error(errorMsg);
 			throw new SigningException(errorMsg);
 		    }
@@ -3668,12 +3674,12 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // Si no hemos encontrado la referencia hacia el elemento
 	    // xades:SignedProperties lanzamos una excepción
 	    if (!finded) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG186, new Object[ ] { idSP, signatureId });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG186, new Object[ ] { idSP, signatureId });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
-	} catch (org.apache.xml.security.exceptions.XMLSecurityException e) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG188, new Object[ ] { signatureId });
+	} catch (final org.apache.xml.security.exceptions.XMLSecurityException e) {
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG188, new Object[ ] { signatureId });
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	}
@@ -3686,7 +3692,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signatureElement Parameter that represents <code>ds:Signature</code> element.
      * @throws SigningException If the validation fails.
      */
-    private static void checkXAdESNamespace(String signatureId, Element signatureElement) throws SigningException {
+    private static void checkXAdESNamespace(final String signatureId, final Element signatureElement) throws SigningException {
 	// Por defecto, una firma XAdES tendrá como espacio de nombres el de
 	// XMLDSig
 	String namespace = XMLSignature.XMLNS;
@@ -3708,15 +3714,15 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		    namespace = extractXAdESNoV141Namespace(signatureElement);
 		}
 	    }
-	} catch (Exception e) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG185, new Object[ ] { signatureId });
+	} catch (final Exception e) {
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG185, new Object[ ] { signatureId });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg, e);
 	}
 	// Comprobamos que el espacio de nombres sea el de XAdES v1.3.2 o
 	// v.1.4.1
 	if (!namespace.equals(IXMLConstants.XADES_1_4_1_NAMESPACE) && !namespace.equals(IXMLConstants.XADES_1_3_2_NAMESPACE)) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG184, new Object[ ] { signatureId, namespace });
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG184, new Object[ ] { signatureId, namespace });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
@@ -3728,22 +3734,18 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return the associated namespace.
      * @throws XPathExpressionException If the method fails.
      */
-    private static String extractXAdESNoV141Namespace(Element signatureElement) throws XPathExpressionException {
+    private static String extractXAdESNoV141Namespace(final Element signatureElement) throws XPathExpressionException {
 	// Por defecto, una firma XAdES tendrá como espacio de nombres el de
 	// XMLDSig.
 	String ns = XMLSignature.XMLNS;
-	NodeList qp = UtilsXML.getChildNodesByLocalNames(signatureElement, "Object/QualifyingProperties");
+	final NodeList qp = UtilsXML.getChildNodesByLocalNames(signatureElement, "Object/QualifyingProperties");
 	if (qp.getLength() > 0) {
 	    ns = qp.item(0).getNamespaceURI();
 	    if (ns == null) {
-		NamedNodeMap nnm = qp.item(0).getAttributes();
+		final NamedNodeMap nnm = qp.item(0).getAttributes();
 		for (int i = 0; i < nnm.getLength(); i++) {
-		    String attrName = nnm.item(i).getNodeName();
-		    if (attrName.equals("xmlns")) {
-			ns = nnm.item(i).getNodeValue();
-		    } else if (attrName.equals("xmlns:xades")) {
-			ns = nnm.item(i).getNodeValue();
-		    } else if (attrName.equals("xmlns:xs")) {
+		    final String attrName = nnm.item(i).getNodeName();
+		    if (attrName.equals("xmlns") || attrName.equals("xmlns:xades") || attrName.equals("xmlns:xs")) {
 			ns = nnm.item(i).getNodeValue();
 		    }
 		}
@@ -3758,7 +3760,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signatureId Parameter that represents the value of <code>Id</code> attribute of <code>ds:Signature</code> element.
      * @throws SigningException If the validation fails.
      */
-    private static void checkSignedSignaturePropertiesElementsOrder(Element signedSignaturePropertiesElement, String signatureId) throws SigningException {
+    private static void checkSignedSignaturePropertiesElementsOrder(final Element signedSignaturePropertiesElement, final String signatureId) throws SigningException {
 	/*
 	 * Comprobamos que la estructura del elemento SignedSignatureProperties es la siguiente:
 	 * <xsd:complexType name="SignedSignaturePropertiesType">
@@ -3782,13 +3784,13 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	Integer signerRolePos = null;
 
 	// Accedemos a los hijos del elemento xades:SignedSignatureProperties
-	NodeList signedSignaturePropertiesNodeList = signedSignaturePropertiesElement.getChildNodes();
+	final NodeList signedSignaturePropertiesNodeList = signedSignaturePropertiesElement.getChildNodes();
 
 	// Almacenamos la posición de cada uno de
 	// los hijos dentro de la lista de hijos
 	for (int i = 0; i < signedSignaturePropertiesNodeList.getLength(); i++) {
-	    Element element = (Element) signedSignaturePropertiesNodeList.item(i);
-	    String elementName = element.getLocalName();
+	    final Element element = (Element) signedSignaturePropertiesNodeList.item(i);
+	    final String elementName = element.getLocalName();
 	    if (elementName.equals(IXMLConstants.ELEMENT_SIGNING_TIME)) {
 		signingTimePos = i;
 	    } else if (elementName.equals(IXMLConstants.ELEMENT_SIGNING_CERTIFICATE)) {
@@ -3805,7 +3807,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	// los elementos en el orden en que deberían
 	// encontrarse, sólo si dicho elemento
 	// no es nulo
-	List<Integer> listPositions = getPositionsList(signingTimePos, signingCertificatePos, signaturePolicyIdentiferPos, signatureProductionPlacePos, signerRolePos);
+	final List<Integer> listPositions = getPositionsList(signingTimePos, signingCertificatePos, signaturePolicyIdentiferPos, signatureProductionPlacePos, signerRolePos);
 	boolean correctOrder = true;
 	int i = 0;
 	Integer previousValue = -1;
@@ -3817,10 +3819,10 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	// mayor, entonces, el orden no es el
 	// correcto.
 	while (correctOrder && i < listPositions.size()) {
-	    Integer currentValue = listPositions.get(i);
+	    final Integer currentValue = listPositions.get(i);
 	    if (previousValue > currentValue) {
 		correctOrder = false;
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG183, new Object[ ] { signatureId });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG183, new Object[ ] { signatureId });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    } else {
@@ -3844,8 +3846,8 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * value will be <code>null</code>.
      * @return a list with the positions of each child elements of <code>xades:SignedSignatureProperties</code> element.
      */
-    private static List<Integer> getPositionsList(Integer signingTimePos, Integer signingCertificatePos, Integer signaturePolicyIdentiferPos, Integer signatureProductionPlacePos, Integer signerRolePos) {
-	List<Integer> listPositions = new ArrayList<Integer>();
+    private static List<Integer> getPositionsList(final Integer signingTimePos, final Integer signingCertificatePos, final Integer signaturePolicyIdentiferPos, final Integer signatureProductionPlacePos, final Integer signerRolePos) {
+	final List<Integer> listPositions = new ArrayList<Integer>();
 	if (signingTimePos != null) {
 	    listPositions.add(signingTimePos);
 	}
@@ -3872,7 +3874,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return an object that represents the signing certificate.
      * @throws SigningException If the method fails of the certificate cannot be retrieved.
      */
-    public static X509Certificate retrieveSigningCertificateOfXMLSigner(Element signedSignaturePropertiesElement, String signatureId, Element signatureElement) throws SigningException {
+    public static X509Certificate retrieveSigningCertificateOfXMLSigner(final Element signedSignaturePropertiesElement, final String signatureId, final Element signatureElement) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG239));
 	try {
 	    // Comprobamos que se ha indicado el elemento
@@ -3885,45 +3887,45 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // Recorremos la lista de elementos hijos del elemento
 	    // xades:SignedSignatureProperties buscando el elemento
 	    // xades:SigningCertificate
-	    Element signingCertificateElement = UtilsXML.getChildElement(signedSignaturePropertiesElement, IXMLConstants.ELEMENT_SIGNING_CERTIFICATE, signatureId, true);
+	    final Element signingCertificateElement = UtilsXML.getChildElement(signedSignaturePropertiesElement, IXMLConstants.ELEMENT_SIGNING_CERTIFICATE, signatureId, true);
 
 	    // Accedemos al elemento xades:Cert
-	    Element certElement = UtilsXML.getChildElement(signingCertificateElement, IXMLConstants.ELEMENT_CERT, signatureId, true);
+	    final Element certElement = UtilsXML.getChildElement(signingCertificateElement, IXMLConstants.ELEMENT_CERT, signatureId, true);
 
 	    // Accedemos al primer elemento xades:CertDigest
-	    Element certDigestElement = UtilsXML.getChildElement(certElement, IXMLConstants.ELEMENT_CERT_DIGEST, signatureId, true);
+	    final Element certDigestElement = UtilsXML.getChildElement(certElement, IXMLConstants.ELEMENT_CERT_DIGEST, signatureId, true);
 
 	    // Accedemos al elemento ds:DigestMethod
-	    Element digestMethodElement = UtilsXML.getChildElement(certDigestElement, IXMLConstants.ELEMENT_DIGEST_METHOD, signatureId, true);
+	    final Element digestMethodElement = UtilsXML.getChildElement(certDigestElement, IXMLConstants.ELEMENT_DIGEST_METHOD, signatureId, true);
 
 	    // Accedemos al atributo Algorithm del elemento ds:DigestMethod
-	    String xmlHashAlg = digestMethodElement.getAttribute(IXMLConstants.ATTRIBUTE_ALGORITHM);
+	    final String xmlHashAlg = digestMethodElement.getAttribute(IXMLConstants.ATTRIBUTE_ALGORITHM);
 	    if (xmlHashAlg == null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG189, new Object[ ] { signatureId });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG189, new Object[ ] { signatureId });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 	    // Establecemos el valor del algoritmo de hash
-	    String signingCertificateHashAlgorithm = CryptoUtilXML.translateXmlDigestAlgorithm(xmlHashAlg);
+	    final String signingCertificateHashAlgorithm = CryptoUtilXML.translateXmlDigestAlgorithm(xmlHashAlg);
 
 	    // Accedemos al elemento ds:DigestValue
-	    Element digestValueElement = UtilsXML.getChildElement(certDigestElement, IXMLConstants.ELEMENT_DIGEST_VALUE, signatureId, true);
+	    final Element digestValueElement = UtilsXML.getChildElement(certDigestElement, IXMLConstants.ELEMENT_DIGEST_VALUE, signatureId, true);
 
 	    // Obtenemos el valor del resumen del certificado firmante
-	    String signingCertificateDigest = digestValueElement.getTextContent();
+	    final String signingCertificateDigest = digestValueElement.getTextContent();
 
 	    // Accedemos al elemento ds:KeyInfo
-	    Element keyInfoElement = UtilsXML.getChildElement(signatureElement, IXMLConstants.ELEMENT_KEY_INFO, signatureId, true);
+	    final Element keyInfoElement = UtilsXML.getChildElement(signatureElement, IXMLConstants.ELEMENT_KEY_INFO, signatureId, true);
 
 	    // Accedemos al elemento ds:X509Data
-	    Element x509DataElement = UtilsXML.getChildElement(keyInfoElement, IXMLConstants.ELEMENT_X509_DATA, signatureId, true);
+	    final Element x509DataElement = UtilsXML.getChildElement(keyInfoElement, IXMLConstants.ELEMENT_X509_DATA, signatureId, true);
 
 	    // Accedemos a la lista de elementos ds:X509Certificate
-	    NodeList x509CertificateNodeList = x509DataElement.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_X509_CERTIFICATE);
+	    final NodeList x509CertificateNodeList = x509DataElement.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_X509_CERTIFICATE);
 
 	    // Comprobamos que existe al menos un certificado
 	    if (x509CertificateNodeList.getLength() == 0) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG192, new Object[ ] { signatureId });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG192, new Object[ ] { signatureId });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -3933,38 +3935,38 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // ds:KeyInfo/ds:X509Data. La clave será el resumen en Base64
 	    // del
 	    // certificado
-	    Map<String, X509Certificate> mapCertificatesIntoKeyInfo = new HashMap<String, X509Certificate>();
+	    final Map<String, X509Certificate> mapCertificatesIntoKeyInfo = new HashMap<String, X509Certificate>();
 
 	    try {
 		// Recorremos la lista de certificados
 		for (int i = 0; i < x509CertificateNodeList.getLength(); i++) {
 		    if (x509CertificateNodeList.item(i).getNodeType() == Node.ELEMENT_NODE) {
 			// Accedemos al elemento ds:X509Certificate
-			Element x509CertificateElement = (Element) x509CertificateNodeList.item(i);
+			final Element x509CertificateElement = (Element) x509CertificateNodeList.item(i);
 
 			// Obtenemos el certificado codificado en Base64
-			String encodedCert = x509CertificateElement.getTextContent();
+			final String encodedCert = x509CertificateElement.getTextContent();
 
 			// Obtenemos el certificado como tal
-			X509Certificate cert = UtilsCertificateCommons.generateCertificate(Base64.decode(encodedCert));
+			final X509Certificate cert = UtilsCertificateCommons.generateCertificate(Base64.decode(encodedCert));
 
 			// Añadimos al mapa una entrada
 			mapCertificatesIntoKeyInfo.put(new String(Base64.encode(CryptoUtilPdfBc.digest(signingCertificateHashAlgorithm, cert.getEncoded()))), cert);
 		    }
 		}
-	    } catch (Exception e) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG193, new Object[ ] { signatureId });
+	    } catch (final Exception e) {
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG193, new Object[ ] { signatureId });
 		LOGGER.error(errorMsg, e);
 		throw new SigningException(errorMsg, e);
 	    }
 	    // Extraemos del mapa aquél certificado cuyo resumen coincide
 	    // con el
 	    // resumen del certificado firmante
-	    X509Certificate signingCertificate = mapCertificatesIntoKeyInfo.remove(signingCertificateDigest);
+	    final X509Certificate signingCertificate = mapCertificatesIntoKeyInfo.remove(signingCertificateDigest);
 
 	    // Comprobamos que hemos encontrado el certificado firmante
 	    if (signingCertificate == null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG194, new Object[ ] { signatureId });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG194, new Object[ ] { signatureId });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -3983,7 +3985,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param isCounterSignature Parameter that indicates if the element to validate is a signer (false) or a counter-signer (true).
      * @throws SigningException If the validation fails.
      */
-    public static void validateXAdESPublicKeyInfo(String signatureId, Element signatureElement, org.apache.xml.security.signature.XMLSignature xmlSignature, boolean isBaseline, boolean isCounterSignature) throws SigningException {
+    public static void validateXAdESPublicKeyInfo(final String signatureId, final Element signatureElement, final org.apache.xml.security.signature.XMLSignature xmlSignature, final boolean isBaseline, final boolean isCounterSignature) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG156));
 	try {
 
@@ -3994,7 +3996,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    GenericUtilsCommons.checkInputParameterIsNotNull(xmlSignature, Language.getResIntegra(ILogConstantKeys.US_LOG039));
 
 	    // Accedemos al elemento ds:KeyInfo
-	    Element keyInfoElement = UtilsXML.getChildElement(signatureElement, IXMLConstants.ELEMENT_KEY_INFO, signatureId, true);
+	    final Element keyInfoElement = UtilsXML.getChildElement(signatureElement, IXMLConstants.ELEMENT_KEY_INFO, signatureId, true);
 
 	    // Comprobamos que existe una referencia al elemento ds:KeyInfo, si
 	    // la firma no es Baseline ni es una contra-firma
@@ -4015,14 +4017,14 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signatureId Parameter that represents the value of <code>Id</code> attribute of <code>ds:Signature</code> element.
      * @throws SigningException If the validation fails.
      */
-    private static void validateProtectionKeyInfo(org.apache.xml.security.signature.XMLSignature xmlSignature, Element keyInfoElement, String signatureId) throws SigningException {
+    private static void validateProtectionKeyInfo(final org.apache.xml.security.signature.XMLSignature xmlSignature, final Element keyInfoElement, final String signatureId) throws SigningException {
 	/*
 	 * Comprobamos que la información de clave pública del elemento KeyInfo haya sido protegida en el cálculo de la firma digital, esto es,
 	 * que exista un elemento Reference cuya URI apunte al elemento KeyInfo
 	 */
 	try {
 	    // Accedemos al atributo Id del elemento ds:KeyInfo
-	    String keyInfoIdAttribute = keyInfoElement.getAttribute(IXMLConstants.ATTRIBUTE_ID);
+	    final String keyInfoIdAttribute = keyInfoElement.getAttribute(IXMLConstants.ATTRIBUTE_ID);
 
 	    boolean found = false;
 
@@ -4032,7 +4034,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 		for (int index = 0; !found && index < xmlSignature.getSignedInfo().getLength(); index++) {
 		    // Accedemos a la referencia
-		    org.apache.xml.security.signature.Reference ref = xmlSignature.getSignedInfo().item(index);
+		    final org.apache.xml.security.signature.Reference ref = xmlSignature.getSignedInfo().item(index);
 
 		    // Obtenemos la URI de la referencia
 		    String uri = null;
@@ -4051,12 +4053,12 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    if (!found) {
 		// Si no hemos encontrado ninguna referencia al elemento
 		// ds:KeyInfo lanzamos una excepción
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG195, new Object[ ] { signatureId });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG195, new Object[ ] { signatureId });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
-	} catch (org.apache.xml.security.exceptions.XMLSecurityException e) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG188, new Object[ ] { signatureId });
+	} catch (final org.apache.xml.security.exceptions.XMLSecurityException e) {
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG188, new Object[ ] { signatureId });
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	}
@@ -4070,7 +4072,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param validationDate Parameter that represents the validation date.
      * @throws SigningException if the validation fails.
      */
-    public static void validateXAdESSigningTime(Element signedSignaturePropertiesElement, boolean isRequired, String signatureId, Date validationDate) throws SigningException {
+    public static void validateXAdESSigningTime(final Element signedSignaturePropertiesElement, final boolean isRequired, final String signatureId, final Date validationDate) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG168));
 	try {
 	    // Comprobamos que se ha indicado el elemento
@@ -4081,13 +4083,13 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    GenericUtilsCommons.checkInputParameterIsNotNull(validationDate, Language.getResIntegra(ILogConstantKeys.US_LOG204));
 
 	    // Accedemos al elemento xades:SigningTime
-	    Element signingTimeElement = UtilsXML.getChildElement(signedSignaturePropertiesElement, IXMLConstants.ELEMENT_SIGNING_TIME, signatureId, false);
+	    final Element signingTimeElement = UtilsXML.getChildElement(signedSignaturePropertiesElement, IXMLConstants.ELEMENT_SIGNING_TIME, signatureId, false);
 
 	    // Si el firmante carece del elemento xades:SigningTime
 	    if (signingTimeElement == null) {
 		// Si el elemento xades:SigningTime es obligatorio
 		if (isRequired) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG198, new Object[ ] { signatureId });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG198, new Object[ ] { signatureId });
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
@@ -4103,20 +4105,20 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		Date signingTimeDate = null;
 
 		// Accedemos a la fecha de generación de la firma
-		String signingTimeStr = signingTimeElement.getTextContent();
+		final String signingTimeStr = signingTimeElement.getTextContent();
 		try {
 		    signingTimeDate = getUTCDate(signingTimeStr);
 
 		    // Si la fecha de generación es posterior a la fecha
 		    // de validación
 		    if (signingTimeDate.after(validationDate)) {
-			String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG201, new Object[ ] { signingTimeStr, signatureId, validationDate.toString() });
+			final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG201, new Object[ ] { signingTimeStr, signatureId, validationDate.toString() });
 			LOGGER.error(errorMsg);
 			throw new SigningException(errorMsg);
 		    }
 		    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.US_LOG202, new Object[ ] { signatureId }));
-		} catch (ParseException e) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG203, new Object[ ] { signatureId, signingTimeStr });
+		} catch (final ParseException e) {
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG203, new Object[ ] { signatureId, signingTimeStr });
 		    LOGGER.error(errorMsg, e);
 		    throw new SigningException(errorMsg, e);
 		}
@@ -4133,8 +4135,8 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return the date.
      * @throws ParseException If the method fails.
      */
-    private static Date getUTCDate(String utcDate) throws ParseException {
-	String[ ] t = utcDate.split("T");
+    private static Date getUTCDate(final String utcDate) throws ParseException {
+	final String[ ] t = utcDate.split("T");
 	String pattern = "yyyy";
 	String dateStr = null;
 	dateStr = t[0].substring(0, NumberConstants.INT_4);
@@ -4183,7 +4185,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		}
 	    }
 	}
-	SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+	final SimpleDateFormat sdf = new SimpleDateFormat(pattern);
 	return sdf.parse(dateStr);
     }
 
@@ -4200,7 +4202,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signedData Parameter that represents the signature message.
      * @throws SigningException If the validation fails.
      */
-    public static void validatePAdESBasicStructurally(PDFSignatureDictionary signatureDictionary, byte[ ] pdfDocument, CMSSignedData signedData) throws SigningException {
+    public static void validatePAdESBasicStructurally(final PDFSignatureDictionary signatureDictionary, final byte[ ] pdfDocument, final CMSSignedData signedData) throws SigningException {
 	/*
 	 * Validación Estructural PAdES-Basic. Contemplará las siguientes verificaciones:
 	 * > La firma CMS que constituye el núcleo de firma sólo contiene un firmante.
@@ -4223,19 +4225,19 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 	    // Accedemos a la firma, que debe encontrarse dentro de la clave
 	    // /Contents del diccionario de firma
-	    byte[ ] signature = signatureDictionary.getDictionary().getAsString(PdfName.CONTENTS).getOriginalBytes();
+	    final byte[ ] signature = signatureDictionary.getDictionary().getAsString(PdfName.CONTENTS).getOriginalBytes();
 
 	    // Comprobamos que el contenido de la clave /Contents no es nulo
 	    if (signature == null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG010, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG010, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 
 	    // Comprobamos que la clave /ByteRange no es nula
-	    PdfArray pdfArrayByteRange = signatureDictionary.getDictionary().getAsArray(PdfName.BYTERANGE);
+	    final PdfArray pdfArrayByteRange = signatureDictionary.getDictionary().getAsArray(PdfName.BYTERANGE);
 	    if (pdfArrayByteRange == null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG011, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG011, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -4244,13 +4246,13 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    checkPAdESSignersNumber(signedData, signatureDictionary);
 
 	    // Accedemos al valor de la clave /SubFilter
-	    PdfName subFilterValue = (PdfName) signatureDictionary.getDictionary().get(PdfName.SUBFILTER);
+	    final PdfName subFilterValue = (PdfName) signatureDictionary.getDictionary().get(PdfName.SUBFILTER);
 
 	    // Si el valor de la clave /SubFilter es "adbe.pkcs7.detached"
 	    if (subFilterValue.equals(PdfName.ADBE_PKCS7_DETACHED)) {
 		// Comprobamos que la firma es explícita
 		if (isImplicit(signedData)) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG213, new Object[ ] { signatureDictionary.getName(), PdfName.ADBE_PKCS7_DETACHED.toString() });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG213, new Object[ ] { signatureDictionary.getName(), PdfName.ADBE_PKCS7_DETACHED.toString() });
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
@@ -4258,12 +4260,12 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // Si el valor de la clave /SubFilter es "adbe.pkcs7.sha1"
 	    else if (subFilterValue.equals(PdfName.ADBE_PKCS7_SHA1)) {
 		// Accedemos al firmante
-		SignerInformation signerInformation = ((List<SignerInformation>) signedData.getSignerInfos().getSigners()).iterator().next();
+		final SignerInformation signerInformation = ((List<SignerInformation>) signedData.getSignerInfos().getSigners()).iterator().next();
 
 		// Comprobamos que la firma incluye el resumen en SHA-1 de los
 		// datos firmados
 		if (!signedData.getSignedContentTypeOID().equals(PKCSObjectIdentifiers.data.toString()) && signerInformation.getDigestAlgOID().equals(OIWObjectIdentifiers.idSHA1.toString())) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG214, new Object[ ] { signatureDictionary.getName(), PdfName.ADBE_PKCS7_SHA1.toString() });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG214, new Object[ ] { signatureDictionary.getName(), PdfName.ADBE_PKCS7_SHA1.toString() });
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
@@ -4287,10 +4289,10 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signatureDictionary Parameter that represents the signature dictionary.
      * @throws SigningException If the signature contains more than one signer.
      */
-    private static void checkPAdESSignersNumber(CMSSignedData signedData, PDFSignatureDictionary signatureDictionary) throws SigningException {
+    private static void checkPAdESSignersNumber(final CMSSignedData signedData, final PDFSignatureDictionary signatureDictionary) throws SigningException {
 	// Verficicamos que la firma posee un único firmante
 	if (signedData.getSignerInfos().getSigners().size() > 1) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG012, new Object[ ] { signatureDictionary.getName() });
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG012, new Object[ ] { signatureDictionary.getName() });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
@@ -4305,22 +4307,22 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signedData Parameter that represents the signature message.
      * @throws SigningException If the digest of the signature doesn't match with the value included on /ByteRange entry of the signature dictionary.
      */
-    private static void checkSignatureDigesthMatchesByteRangeValue(PDFSignatureDictionary signatureDictionary, byte[ ] pdfDocument, PdfArray pdfArrayByteRange, CMSSignedData signedData) throws SigningException {
+    private static void checkSignatureDigesthMatchesByteRangeValue(final PDFSignatureDictionary signatureDictionary, final byte[ ] pdfDocument, final PdfArray pdfArrayByteRange, final CMSSignedData signedData) throws SigningException {
 	MessageDigest messageDigestSignature = null;
 	byte[ ] hashSignature = null;
 	try {
 	    // Accedemos al firmante
-	    SignerInformation signerInformation = ((List<SignerInformation>) signedData.getSignerInfos().getSigners()).iterator().next();
+	    final SignerInformation signerInformation = ((List<SignerInformation>) signedData.getSignerInfos().getSigners()).iterator().next();
 
 	    // Obtenemos el algoritmo de resumen usado para la
 	    // firma
-	    AlgorithmIdentifier hashAlgorithmSignature = signerInformation.getDigestAlgorithmID();
+	    final AlgorithmIdentifier hashAlgorithmSignature = signerInformation.getDigestAlgorithmID();
 
 	    // Obtenemos el MessageDigest asociado a la firma
-	    AttributeTable signedAttr = signerInformation.getSignedAttributes();
-	    Attribute attrMessageDigest = signedAttr.get(CMSAttributes.messageDigest);
+	    final AttributeTable signedAttr = signerInformation.getSignedAttributes();
+	    final Attribute attrMessageDigest = signedAttr.get(CMSAttributes.messageDigest);
 
-	    ASN1Primitive hashObj = attrMessageDigest.getAttrValues().getObjectAt(0).toASN1Primitive();
+	    final ASN1Primitive hashObj = attrMessageDigest.getAttrValues().getObjectAt(0).toASN1Primitive();
 	    hashSignature = ((ASN1OctetString) hashObj).getOctets();
 
 	    messageDigestSignature = MessageDigest.getInstance(hashAlgorithmSignature.getAlgorithm().getId(), BouncyCastleProvider.PROVIDER_NAME);
@@ -4330,14 +4332,14 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    if (isImplicit(signedData)) {
 		hashSignature = signedData.getEncoded();
 	    }
-	} catch (Exception e) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG215, new Object[ ] { signatureDictionary.getName() });
+	} catch (final Exception e) {
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG215, new Object[ ] { signatureDictionary.getName() });
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	}
 	// Comparamos ambos arrays de bytes
 	if (!equalsHash(pdfArrayByteRange, messageDigestSignature, pdfDocument, hashSignature)) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG013, new Object[ ] { signatureDictionary.getName() });
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG013, new Object[ ] { signatureDictionary.getName() });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
@@ -4349,7 +4351,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signingCertificate Parameter that represents the signing certificate.
      * @throws SigningException If the validation fails.
      */
-    public static void validateCMSPublicKeyInfo(SignerInformation signerInformation, X509Certificate signingCertificate) throws SigningException {
+    public static void validateCMSPublicKeyInfo(final SignerInformation signerInformation, final X509Certificate signingCertificate) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG156));
 	try {
 	    // Comprobamos que se ha indicado la información del firmante
@@ -4359,24 +4361,24 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    GenericUtilsCommons.checkInputParameterIsNotNull(signingCertificate, Language.getResIntegra(ILogConstantKeys.US_LOG002));
 
 	    // Accedemos al conjunto de atributos firmados
-	    AttributeTable signedAttrs = signerInformation.getSignedAttributes();
+	    final AttributeTable signedAttrs = signerInformation.getSignedAttributes();
 
 	    // Accedemos al atributo SerialNumber
-	    Attribute attSerialNumber = signedAttrs.get(BCStyle.SERIALNUMBER);
+	    final Attribute attSerialNumber = signedAttrs.get(BCStyle.SERIALNUMBER);
 
 	    // Si el firmante contiene el atributo SerialNumber
 	    if (attSerialNumber != null) {
 		// Obtenemos el valor del número de serie
-		String serialNumber = attSerialNumber.getAttrValues().getObjectAt(0).toString();
+		final String serialNumber = attSerialNumber.getAttrValues().getObjectAt(0).toString();
 
 		// Obtenemos el número de serie del certificado firmante
-		String signingCertificateSerialNumber = signingCertificate.getSerialNumber().toString();
+		final String signingCertificateSerialNumber = signingCertificate.getSerialNumber().toString();
 
 		// Comprobamos que coincidan
 		if (serialNumber.equals(signingCertificateSerialNumber)) {
 		    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.US_LOG217, new Object[ ] { signingCertificateSerialNumber, signingCertificate.getSubjectDN().getName() }));
 		} else {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG218, new Object[ ] { serialNumber, signingCertificateSerialNumber, signingCertificate.getSubjectDN().getName() });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG218, new Object[ ] { serialNumber, signingCertificateSerialNumber, signingCertificate.getSubjectDN().getName() });
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
@@ -4394,7 +4396,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signatureDictionary Parameter that represents the information about the signature dictionary.
      * @throws SigningException If the validation fails.
      */
-    public static void validatePAdESBasicSigningTime(SignerInformation signerInformation, Date validationDate, X509Certificate signingCertificate, PDFSignatureDictionary signatureDictionary) throws SigningException {
+    public static void validatePAdESBasicSigningTime(final SignerInformation signerInformation, final Date validationDate, final X509Certificate signingCertificate, final PDFSignatureDictionary signatureDictionary) throws SigningException {
 	/*
 	 * Validación del Instante de Firma: Si el primer firmante de la firma CMS contenida en el diccionario de firma incluye el atributo firmado signing-time se
 	 * comprobará que dicho atributo está bien formado y que la fecha contenida en el mismo es anterior a la fecha de validación. Igualmente,
@@ -4420,10 +4422,10 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    GenericUtilsCommons.checkInputParameterIsNotNull(signatureDictionary, Language.getResIntegra(ILogConstantKeys.US_LOG007));
 
 	    // Accedemos al conjunto de atributos firmados
-	    AttributeTable signedAttrs = signerInformation.getSignedAttributes();
+	    final AttributeTable signedAttrs = signerInformation.getSignedAttributes();
 
 	    // Accedemos al atributo SigningTime
-	    Attribute attSigningTime = signedAttrs.get(PKCSObjectIdentifiers.pkcs_9_at_signingTime);
+	    final Attribute attSigningTime = signedAttrs.get(PKCSObjectIdentifiers.pkcs_9_at_signingTime);
 
 	    // Si el firmante posee el atributo SigningTime
 	    if (attSigningTime != null) {
@@ -4435,19 +4437,19 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // según PDF Reference, sección 3.8.3 (Dates), así como que la fecha
 	    // contenida no sea futura
 	    if (signatureDictionary.getDictionary().get(PdfName.M) != null) {
-		String mTimeStr = signatureDictionary.getDictionary().getAsString(PdfName.M).toString();
-		Date mTime = parseToPDFDate(mTimeStr);
+		final String mTimeStr = signatureDictionary.getDictionary().getAsString(PdfName.M).toString();
+		final Date mTime = parseToPDFDate(mTimeStr);
 		// Si la fecha contenida en la entrada /M no tiene el formato
 		// adecuado
 		if (mTime == null) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG028, new Object[ ] { signatureDictionary.getName() });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG028, new Object[ ] { signatureDictionary.getName() });
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
 		// Si la fecha contenida en la entrada /M es posterior a la
 		// fecha de validación
 		if (mTime.after(validationDate)) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG029, new Object[ ] { signatureDictionary.getName() });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG029, new Object[ ] { signatureDictionary.getName() });
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
@@ -4466,7 +4468,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param isEPES Parameter that indicates if the signature dictionary represents a PAdES-EPES signature (true) or a PAdES-BES signature (false).
      * @throws SigningException If the validation fails.
      */
-    public static void validatePAdESEnhancedStructurally(PDFSignatureDictionary signatureDictionary, byte[ ] pdfDocument, CMSSignedData signedData, boolean isEPES) throws SigningException {
+    public static void validatePAdESEnhancedStructurally(final PDFSignatureDictionary signatureDictionary, final byte[ ] pdfDocument, final CMSSignedData signedData, final boolean isEPES) throws SigningException {
 	/*
 	 * Validación Estructural PAdES-BES. Contemplará las siguientes verificaciones:
 	 * > La clave /Contents del diccionario de firma deberá estar presente y su contenido corresponderse con una firma CAdES.
@@ -4509,19 +4511,19 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 	    // Accedemos a la firma, que debe encontrarse dentro de la clave
 	    // /Contents del diccionario de firma
-	    byte[ ] signature = signatureDictionary.getDictionary().getAsString(PdfName.CONTENTS).getOriginalBytes();
+	    final byte[ ] signature = signatureDictionary.getDictionary().getAsString(PdfName.CONTENTS).getOriginalBytes();
 
 	    // Comprobamos que el contenido de la clave /Contents no es nulo
 	    if (signature == null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG010, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG010, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 
 	    // Comprobamos que la clave /ByteRange no es nula
-	    PdfArray pdfArrayByteRange = signatureDictionary.getDictionary().getAsArray(PdfName.BYTERANGE);
+	    final PdfArray pdfArrayByteRange = signatureDictionary.getDictionary().getAsArray(PdfName.BYTERANGE);
 	    if (pdfArrayByteRange == null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG011, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG011, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -4530,20 +4532,20 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    checkPAdESSignersNumber(signedData, signatureDictionary);
 
 	    // Accedemos al valor de la clave /SubFilter
-	    PdfName subFilterValue = (PdfName) signatureDictionary.getDictionary().get(PdfName.SUBFILTER);
+	    final PdfName subFilterValue = (PdfName) signatureDictionary.getDictionary().get(PdfName.SUBFILTER);
 
 	    // Si el valor de la clave /SubFilter no es "ETSI.CAdES.detached"
 	    if (!subFilterValue.equals(CADES_SUBFILTER_VALUE)) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG224, new Object[ ] { signatureDictionary.getName(), subFilterValue.toString() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG224, new Object[ ] { signatureDictionary.getName(), subFilterValue.toString() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 
 	    // Accedemos al primer firmante
-	    SignerInformation signerInformation = ((List<SignerInformation>) signedData.getSignerInfos().getSigners()).iterator().next();
+	    final SignerInformation signerInformation = ((List<SignerInformation>) signedData.getSignerInfos().getSigners()).iterator().next();
 
 	    // Accedemos al conjunto de atributos no firmados
-	    AttributeTable unsignedAttrs = signerInformation.getUnsignedAttributes();
+	    final AttributeTable unsignedAttrs = signerInformation.getUnsignedAttributes();
 
 	    // Si el firmante presenta atributos no firmados
 	    if (unsignedAttrs != null) {
@@ -4557,17 +4559,17 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    }
 
 	    // Accedemos al conjunto de atributos firmados
-	    AttributeTable signedAttrs = signerInformation.getSignedAttributes();
+	    final AttributeTable signedAttrs = signerInformation.getSignedAttributes();
 
 	    // Comprobamos que el firmante contiene el atributo content-type y
 	    // que éste tiene el valor "id-data"
-	    Attribute contentTypeAttribute = signedAttrs.get(PKCSObjectIdentifiers.pkcs_9_at_contentType);
+	    final Attribute contentTypeAttribute = signedAttrs.get(PKCSObjectIdentifiers.pkcs_9_at_contentType);
 	    if (contentTypeAttribute == null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG016, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG016, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    } else if (!contentTypeAttribute.getAttrValues().getObjectAt(0).toASN1Primitive().equals(PKCSObjectIdentifiers.data)) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG017, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG017, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -4575,7 +4577,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // Comprobamos que el diccionario de firma no contiene la clave
 	    // /Cert
 	    if (signatureDictionary.getDictionary().getAsName(PdfName.CERT) != null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG018, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG018, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -4589,7 +4591,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		// Comprobamos que el diccionario de firma no contiene la clave
 		// /Reason
 		if (signatureDictionary.getDictionary().getAsName(PdfName.REASON) != null) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG023, new Object[ ] { signatureDictionary.getName() });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG023, new Object[ ] { signatureDictionary.getName() });
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
@@ -4625,9 +4627,9 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param attributeName Parameter that represents the name of the signed attribute to check.
      * @throws SigningException If the signed attributes isn't present.
      */
-    private static void checkPAdESSignedAttribute(AttributeTable signedAttrs, ASN1ObjectIdentifier attributeOID, String signatureDictionaryName, String attributeName) throws SigningException {
+    private static void checkPAdESSignedAttribute(final AttributeTable signedAttrs, final ASN1ObjectIdentifier attributeOID, final String signatureDictionaryName, final String attributeName) throws SigningException {
 	if (signedAttrs.get(attributeOID) != null) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG226, new Object[ ] { signatureDictionaryName, attributeName });
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG226, new Object[ ] { signatureDictionaryName, attributeName });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
@@ -4641,9 +4643,9 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param attributeName Parameter that represents the name of the unsigned attribute to check.
      * @throws SigningException If the signed attributes isn't present.
      */
-    private static void checkPAdESUnsignedAttribute(AttributeTable unsignedAttrs, ASN1ObjectIdentifier attributeOID, String signatureDictionaryName, String attributeName) throws SigningException {
+    private static void checkPAdESUnsignedAttribute(final AttributeTable unsignedAttrs, final ASN1ObjectIdentifier attributeOID, final String signatureDictionaryName, final String attributeName) throws SigningException {
 	if (unsignedAttrs.get(attributeOID) != null) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG225, new Object[ ] { signatureDictionaryName, attributeName });
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG225, new Object[ ] { signatureDictionaryName, attributeName });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
@@ -4657,7 +4659,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param isRequired Parameter that indicates if the /M is required for the signature dictionary (true) or not (false).
      * @throws SigningException If the validation fails.
      */
-    public static void validatePAdESSigningTime(PDFSignatureDictionary signatureDictionary, Date validationDate, boolean isRequired) throws SigningException {
+    public static void validatePAdESSigningTime(final PDFSignatureDictionary signatureDictionary, final Date validationDate, final boolean isRequired) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG228));
 	try {
 	    // Comprobamos que se ha indicado el diccionario de firma
@@ -4669,13 +4671,13 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // Si el diccionario de firma contiene la entrada /M
 	    if (signatureDictionary.getDictionary().get(PdfName.M) != null) {
 		// Accedemos a la fecha almacenada en la entrada /M
-		String mTimeStr = signatureDictionary.getDictionary().getAsString(PdfName.M).toString();
-		Date mTime = parseToPDFDate(mTimeStr);
+		final String mTimeStr = signatureDictionary.getDictionary().getAsString(PdfName.M).toString();
+		final Date mTime = parseToPDFDate(mTimeStr);
 
 		// Comprobamos que la fecha contenida en la entrada /M tiene el
 		// formato adecuado
 		if (mTime == null) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG028, new Object[ ] { signatureDictionary.getName() });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG028, new Object[ ] { signatureDictionary.getName() });
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
@@ -4683,7 +4685,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		// Comprobamos que la fecha contenida en la entrada /M es
 		// posterior a la fecha de validación
 		if (mTime.after(validationDate)) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG029, new Object[ ] { signatureDictionary.getName() });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG029, new Object[ ] { signatureDictionary.getName() });
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
@@ -4691,7 +4693,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // Si el diccionario de firma no contiene la entrada /M y es
 	    // requerida
 	    else if (isRequired) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG109, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG109, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -4718,7 +4720,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param pdfDocument Parameter that represents the PDF document.
      * @throws SigningException If the validation fails.
      */
-    public static void validateDocumentTimeStampDictionaryStructurally(PDFDocumentTimestampDictionary pdfDocumentTimestampDictionary, byte[ ] pdfDocument) throws SigningException {
+    public static void validateDocumentTimeStampDictionaryStructurally(final PDFDocumentTimestampDictionary pdfDocumentTimestampDictionary, final byte[ ] pdfDocument) throws SigningException {
 	/*
 	 * Validación Estructural Diccionario Document Time-stamp. Contemplará las siguientes verificaciones:
 	 * > La clave /ByteRange del diccionario de sello de tiempo deberá estar presente y su valor corresponderse con el valor del atributo message-imprint del sello de tiempo.
@@ -4770,14 +4772,14 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // Comprobamos que el diccionario de sello de tiempo contiene la
 	    // clave /V
 	    if (pdfDocumentTimestampDictionary.getDictionary().getAsName(PdfName.V) != null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG233, new Object[ ] { pdfDocumentTimestampDictionary.getName(), PdfName.V.toString() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG233, new Object[ ] { pdfDocumentTimestampDictionary.getName(), PdfName.V.toString() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 
 	    // Comprobamos que el valor asociado a la clave /V es 0
 	    if (!pdfDocumentTimestampDictionary.getDictionary().get(PdfName.V).toString().equalsIgnoreCase("0")) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG234, new Object[ ] { pdfDocumentTimestampDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG234, new Object[ ] { pdfDocumentTimestampDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -4797,38 +4799,38 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param pdfDocument Parameter that represents the PDF document.
      * @throws SigningException If the validation fails.
      */
-    private static void validateDocumentTimeStampDictionaryByteRangeKey(PDFDocumentTimestampDictionary pdfDocumentTimestampDictionary, byte[ ] pdfDocument) throws SigningException {
+    private static void validateDocumentTimeStampDictionaryByteRangeKey(final PDFDocumentTimestampDictionary pdfDocumentTimestampDictionary, final byte[ ] pdfDocument) throws SigningException {
 	try {
 	    // Accedemos al sello de tiempo contenido en el diccionario de sello
 	    // de tiempo
-	    TimeStampToken tst = pdfDocumentTimestampDictionary.getTimestamp();
+	    final TimeStampToken tst = pdfDocumentTimestampDictionary.getTimestamp();
 
 	    // Comprobamos que el diccionario de sello de tiempo contiene la
 	    // clave /ByteRange
-	    PdfArray pdfArrayByteRange = pdfDocumentTimestampDictionary.getDictionary().getAsArray(PdfName.BYTERANGE);
+	    final PdfArray pdfArrayByteRange = pdfDocumentTimestampDictionary.getDictionary().getAsArray(PdfName.BYTERANGE);
 	    if (pdfArrayByteRange == null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG233, new Object[ ] { pdfDocumentTimestampDictionary.getName(), PdfName.BYTERANGE.toString() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG233, new Object[ ] { pdfDocumentTimestampDictionary.getName(), PdfName.BYTERANGE.toString() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 
 	    // Obtenemos el algoritmo de hash usado para calcular el resumen del
 	    // sello de tiempo
-	    AlgorithmIdentifier hATST = tst.getTimeStampInfo().getHashAlgorithm();
+	    final AlgorithmIdentifier hATST = tst.getTimeStampInfo().getHashAlgorithm();
 
 	    // Obtenemos el MessageDigest asociado
-	    MessageDigest md = MessageDigest.getInstance(CryptoUtilPdfBc.translateAlgorithmIdentifier(hATST));
+	    final MessageDigest md = MessageDigest.getInstance(CryptoUtilPdfBc.translateAlgorithmIdentifier(hATST));
 
 	    // Comprobamos que el contenido de la clave /ByteRange se
 	    // corresponde con el valor del atributo message-imprint del sello
 	    // de tiempo
 	    if (!equalsHash(pdfArrayByteRange, md, pdfDocument, tst.getTimeStampInfo().getMessageImprintDigest())) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG235, new Object[ ] { pdfDocumentTimestampDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG235, new Object[ ] { pdfDocumentTimestampDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
-	} catch (NoSuchAlgorithmException e) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG056, new Object[ ] { pdfDocumentTimestampDictionary.getName() });
+	} catch (final NoSuchAlgorithmException e) {
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG056, new Object[ ] { pdfDocumentTimestampDictionary.getName() });
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	}
@@ -4840,9 +4842,9 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param keyName Parameter that represents the key to check.
      * @throws SigningException If the Document Time-stamp dictionary doesn't include the key.
      */
-    private static void checkKeyForDocumentTimeStampDictionary(PDFDocumentTimestampDictionary pdfDocumentTimestampDictionary, PdfName keyName) throws SigningException {
+    private static void checkKeyForDocumentTimeStampDictionary(final PDFDocumentTimestampDictionary pdfDocumentTimestampDictionary, final PdfName keyName) throws SigningException {
 	if (pdfDocumentTimestampDictionary.getDictionary().getAsName(keyName) != null) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG236, new Object[ ] { pdfDocumentTimestampDictionary.getName(), keyName.toString() });
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG236, new Object[ ] { pdfDocumentTimestampDictionary.getName(), keyName.toString() });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
@@ -4854,7 +4856,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param validationDate Parameter that represents the validation date.
      * @throws SigningException If the generation date of a time-stamp contained inside of a Document Time-stamp dictionary is after than the validation date.
      */
-    public static void validateDocumentTimeStampSigningTime(PDFDocumentTimestampDictionary pdfDocumentTimeStampDictionary, Date validationDate) throws SigningException {
+    public static void validateDocumentTimeStampSigningTime(final PDFDocumentTimestampDictionary pdfDocumentTimeStampDictionary, final Date validationDate) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG182));
 	try {
 	    // Comprobamos que se ha indicado el diccionario de sello de tiempo
@@ -4864,7 +4866,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    GenericUtilsCommons.checkInputParameterIsNotNull(validationDate, Language.getResIntegra(ILogConstantKeys.US_LOG204));
 
 	    if (pdfDocumentTimeStampDictionary.getTimestamp().getTimeStampInfo().getGenTime().after(validationDate)) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG147, new Object[ ] { pdfDocumentTimeStampDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG147, new Object[ ] { pdfDocumentTimeStampDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -4882,7 +4884,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * attribute (true) or not (false).
      * @throws SigningException If the validation fails.
      */
-    public static boolean validatePAdESBaselineStructurally(PDFSignatureDictionary signatureDictionary, byte[ ] pdfDocument, CMSSignedData signedData) throws SigningException {
+    public static boolean validatePAdESBaselineStructurally(final PDFSignatureDictionary signatureDictionary, final byte[ ] pdfDocument, final CMSSignedData signedData) throws SigningException {
 	boolean hasSignaturePolicyId = false;
 	/*
 	 * Validación Estructural PDF: Contemplará las siguientes verificaciones:
@@ -4912,19 +4914,19 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 	    // Accedemos a la firma, que debe encontrarse dentro de la clave
 	    // /Contents del diccionario de firma
-	    byte[ ] signature = signatureDictionary.getDictionary().getAsString(PdfName.CONTENTS).getOriginalBytes();
+	    final byte[ ] signature = signatureDictionary.getDictionary().getAsString(PdfName.CONTENTS).getOriginalBytes();
 
 	    // Comprobamos que el contenido de la clave /Contents no es nulo
 	    if (signature == null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG010, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG010, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 
 	    // Comprobamos que la clave /ByteRange no es nula
-	    PdfArray pdfArrayByteRange = signatureDictionary.getDictionary().getAsArray(PdfName.BYTERANGE);
+	    final PdfArray pdfArrayByteRange = signatureDictionary.getDictionary().getAsArray(PdfName.BYTERANGE);
 	    if (pdfArrayByteRange == null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG011, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG011, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -4933,20 +4935,20 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    checkPAdESSignersNumber(signedData, signatureDictionary);
 
 	    // Accedemos al valor de la clave /SubFilter
-	    PdfName subFilterValue = (PdfName) signatureDictionary.getDictionary().get(PdfName.SUBFILTER);
+	    final PdfName subFilterValue = (PdfName) signatureDictionary.getDictionary().get(PdfName.SUBFILTER);
 
 	    // Si el valor de la clave /SubFilter no es "ETSI.CAdES.detached"
 	    if (!subFilterValue.equals(CADES_SUBFILTER_VALUE)) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG224, new Object[ ] { signatureDictionary.getName(), subFilterValue.toString() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG224, new Object[ ] { signatureDictionary.getName(), subFilterValue.toString() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 
 	    // Accedemos al primer firmante
-	    SignerInformation signerInformation = ((List<SignerInformation>) signedData.getSignerInfos().getSigners()).iterator().next();
+	    final SignerInformation signerInformation = ((List<SignerInformation>) signedData.getSignerInfos().getSigners()).iterator().next();
 
 	    // Accedemos al conjunto de atributos firmados
-	    AttributeTable signedAttrs = signerInformation.getSignedAttributes();
+	    final AttributeTable signedAttrs = signerInformation.getSignedAttributes();
 
 	    // Comprobamos que el firmante no contiene el atributo signing-time
 	    checkPAdESSignedAttribute(signedAttrs, PKCSObjectIdentifiers.pkcs_9_at_signingTime, signatureDictionary.getName(), "signing-time");
@@ -4964,13 +4966,13 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 	    // Comprobamos que el firmante contiene el atributo content-type y
 	    // que éste tiene el valor "id-data"
-	    Attribute contentTypeAttribute = signedAttrs.get(PKCSObjectIdentifiers.pkcs_9_at_contentType);
+	    final Attribute contentTypeAttribute = signedAttrs.get(PKCSObjectIdentifiers.pkcs_9_at_contentType);
 	    if (contentTypeAttribute == null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG016, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG016, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    } else if (!contentTypeAttribute.getAttrValues().getObjectAt(0).toASN1Primitive().equals(PKCSObjectIdentifiers.data)) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG017, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG017, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -4988,7 +4990,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    }
 
 	    // Accedemos al conjunto de atributos no firmados
-	    AttributeTable unsignedAttrs = signerInformation.getUnsignedAttributes();
+	    final AttributeTable unsignedAttrs = signerInformation.getUnsignedAttributes();
 
 	    // Si el firmante presenta atributos no firmados
 	    if (unsignedAttrs != null) {
@@ -5004,7 +5006,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // Comprobamos que el diccionario de firma no contiene la clave
 	    // /Cert
 	    if (signatureDictionary.getDictionary().getAsName(PdfName.CERT) != null) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG018, new Object[ ] { signatureDictionary.getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG018, new Object[ ] { signatureDictionary.getName() });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -5024,11 +5026,11 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param currentDate The current closest expiration date.
      * @return the expiration date of the signature.
      */
-    public static Date calculateExpirationDateForValidations(SignerValidationResult signerValidationResult, Date currentDate) {
+    public static Date calculateExpirationDateForValidations(final SignerValidationResult signerValidationResult, final Date currentDate) {
 	Date date = currentDate;
 	boolean hasArchiveTimeStamp = false;
 	boolean hasTimeStamp = false;
-	X509Certificate archiveTimestampCert = signerValidationResult.getLastArchiveTst();
+	final X509Certificate archiveTimestampCert = signerValidationResult.getLastArchiveTst();
 
 	// Si el firmante está protegido por sellos de tiempo de tipo
 	// archiveTimeStamp, la caducidad vendrá definida por la fecha de
@@ -5042,7 +5044,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	// Si el firmante está protegido por sellos de tiempo, la caducidad
 	// vendrá definida por la fecha de expiración del certificado del último
 	// sello de tiempo.
-	List<TimestampValidationResult> timestamps = signerValidationResult.getListTimestampsValidations();
+	final List<TimestampValidationResult> timestamps = signerValidationResult.getListTimestampsValidations();
 	if (!hasArchiveTimeStamp && !checkIsNullOrEmpty(timestamps)) {
 	    date = closestExpirationDate(calculateExpirationDateTimestamps(timestamps), date);
 	    hasTimeStamp = true;
@@ -5050,16 +5052,16 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 	// Si no tiene sellos de tiempo, la caducidad vendrá determinada por la
 	// fecha de expiración del certificado firmante.
-	X509Certificate signerCert = signerValidationResult.getSigningCertificate();
+	final X509Certificate signerCert = signerValidationResult.getSigningCertificate();
 	if (!hasArchiveTimeStamp && !hasTimeStamp && signerCert != null) {
 	    date = closestExpirationDate(signerCert.getNotAfter(), date);
 	}
 
 	// Además, si el firmante no tiene sellos de tiempo archiveTimestamp y
 	// tiene contrafirmas, buscamos la caducidad de los contrafirmantes.
-	List<SignerValidationResult> counterSigners = signerValidationResult.getListCounterSignersValidationsResults();
+	final List<SignerValidationResult> counterSigners = signerValidationResult.getListCounterSignersValidationsResults();
 	if (!hasArchiveTimeStamp && !checkIsNullOrEmpty(counterSigners)) {
-	    for (SignerValidationResult counterSigner: counterSigners) {
+	    for (final SignerValidationResult counterSigner: counterSigners) {
 		date = closestExpirationDate(calculateExpirationDateForValidations(counterSigner, date), date);
 	    }
 	}
@@ -5074,7 +5076,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param date2 Date to compare.
      * @return the closest date to the current one.
      */
-    private static Date closestExpirationDate(Date date1, Date date2) {
+    private static Date closestExpirationDate(final Date date1, final Date date2) {
 	if (date1 == null && date2 != null) {
 	    return date2;
 	}
@@ -5092,7 +5094,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param timestamps List of timestamp validations to check.
      * @return The expiration date of the the timestamp with a the closest expiration date.
      */
-    private static Date calculateExpirationDateTimestamps(List<TimestampValidationResult> timestamps) {
+    private static Date calculateExpirationDateTimestamps(final List<TimestampValidationResult> timestamps) {
 	Date date = null;
 	if (timestamps != null && !timestamps.isEmpty()) {
 
@@ -5106,7 +5108,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // Si hay más de un sello de tiempo, nos quedamos con aquel que
 	    // tenga una fecha de expiración más próxima.
 	    if (timestamps.size() > 1) {
-		for (TimestampValidationResult timestamp: timestamps) {
+		for (final TimestampValidationResult timestamp: timestamps) {
 		    date = closestExpirationDate(timestamp.getSigningCertificate().getNotAfter(), date);
 		}
 	    }
@@ -5120,7 +5122,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return  The expiration date of the the timestamp with a the closest expiration date.
      * @throws SigningException if is not possible to calculate the expiration date of the timestamps.
      */
-    private static Date calculateExpirationDateTimestamps2(List<TimeStampToken> timestamps) throws SigningException {
+    private static Date calculateExpirationDateTimestamps2(final List<TimeStampToken> timestamps) throws SigningException {
 	Date date = null;
 	try {
 	    if (timestamps != null && !timestamps.isEmpty()) {
@@ -5135,12 +5137,12 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		// Si hay más de un sello de tiempo, nos quedamos con aquel que
 		// tenga una fecha de expiración más próxima.
 		if (timestamps.size() > 1) {
-		    for (TimeStampToken timestamp: timestamps) {
+		    for (final TimeStampToken timestamp: timestamps) {
 			date = closestExpirationDate(UtilsTimestampXML.getSigningCertificate(timestamp).getNotAfter(), date);
 		    }
 		}
 	    }
-	} catch (SigningException e) {
+	} catch (final SigningException e) {
 	    LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG244), e);
 	    throw e;
 	}
@@ -5152,7 +5154,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param unsignedAttributes Unsigned attributes of the signature.
      * @return the signing certificate if the last archive timestamp.
      */
-    public static X509Certificate obtainCertificateArchiveTimestamps(AttributeTable unsignedAttributes) {
+    public static X509Certificate obtainCertificateArchiveTimestamps(final AttributeTable unsignedAttributes) {
 	List<TimeStampToken> archiveTimestampsList = new ArrayList<>();
 	X509Certificate closestCert = null;
 
@@ -5160,14 +5162,14 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    try {
 
 		// Recuperamos la lista de sellos de tiempo archiveTimestamp.
-		ASN1EncodableVector archiveTrst = unsignedAttributes.getAll(ESFAttributes.archiveTimestamp);
+		final ASN1EncodableVector archiveTrst = unsignedAttributes.getAll(ESFAttributes.archiveTimestamp);
 		if (archiveTrst.size() > 0) {
 		    archiveTimestampsList = UtilsTimestampPdfBc.getOrderedTimeStampTokens(archiveTrst);
 
 		    // Nos quedamos con el último sello de tiempo de la lista,
 		    // ya que es éste quien determina la fecha de expiración del
 		    // conjunto de sellos de tiempo archivetimestamp.
-		    TimeStampToken lastTst = archiveTimestampsList.get(archiveTimestampsList.size() - 1);
+		    final TimeStampToken lastTst = archiveTimestampsList.get(archiveTimestampsList.size() - 1);
 
 		    // Obtenemos la fecha de expiración del certificado firmante
 		    // del último sello de tiempo.
@@ -5175,38 +5177,38 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		}
 
 		// Recuperamos la lista de sellos de tiempo archiveTimestamp V2.
-		ASN1EncodableVector archiveTrstV2 = unsignedAttributes.getAll(ESFAttributes.archiveTimestampV2);
+		final ASN1EncodableVector archiveTrstV2 = unsignedAttributes.getAll(ESFAttributes.archiveTimestampV2);
 		if (archiveTrstV2.size() > 0) {
 		    archiveTimestampsList = UtilsTimestampPdfBc.getOrderedTimeStampTokens(archiveTrstV2);
 
 		    // Nos quedamos con el último sello de tiempo de la lista,
 		    // ya que es éste quien determina la fecha de expiración del
 		    // conjunto de sellos de tiempo archivetimestamp.
-		    TimeStampToken lastTst = archiveTimestampsList.get(archiveTimestampsList.size() - 1);
+		    final TimeStampToken lastTst = archiveTimestampsList.get(archiveTimestampsList.size() - 1);
 
 		    // Obtenemos la fecha de expiración del certificado firmante
 		    // del último sello de tiempo.
-		    X509Certificate lastTstCert = UtilsTimestampPdfBc.getSigningCertificate(lastTst);
+		    final X509Certificate lastTstCert = UtilsTimestampPdfBc.getSigningCertificate(lastTst);
 		    closestCert = closestExpirationCertificate(lastTstCert, closestCert);
 		}
 
 		// Recuperamos la lista de sellos de tiempo archiveTimestamp V3.
-		ASN1EncodableVector archiveTrstV3 = unsignedAttributes.getAll(ID_ARCHIVE_TIME_STAMP_V3);
+		final ASN1EncodableVector archiveTrstV3 = unsignedAttributes.getAll(ID_ARCHIVE_TIME_STAMP_V3);
 		if (archiveTrstV3.size() > 0) {
 		    archiveTimestampsList = UtilsTimestampPdfBc.getOrderedTimeStampTokens(archiveTrstV3);
 
 		    // Nos quedamos con el último sello de tiempo de la lista,
 		    // ya que es éste quien determina la fecha de expiración del
 		    // conjunto de sellos de tiempo archivetimestamp.
-		    TimeStampToken lastTst = archiveTimestampsList.get(archiveTimestampsList.size() - 1);
+		    final TimeStampToken lastTst = archiveTimestampsList.get(archiveTimestampsList.size() - 1);
 
 		    // Obtenemos la fecha de expiración del certificado firmante
 		    // del último sello de tiempo.
-		    X509Certificate lastTstCert = UtilsTimestampPdfBc.getSigningCertificate(lastTst);
+		    final X509Certificate lastTstCert = UtilsTimestampPdfBc.getSigningCertificate(lastTst);
 		    closestCert = closestExpirationCertificate(lastTstCert, closestCert);
 		}
 
-	    } catch (SigningException e) {
+	    } catch (final SigningException e) {
 		LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG241), e);
 	    }
 	}
@@ -5219,7 +5221,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param cert2 Certificate to compare.
      * @return the certificarte with a closest expiration date of the certificates.
      */
-    private static X509Certificate closestExpirationCertificate(X509Certificate cert1, X509Certificate cert2) {
+    private static X509Certificate closestExpirationCertificate(final X509Certificate cert1, final X509Certificate cert2) {
 	if (cert1 == null && cert2 == null) {
 	    return null;
 	}
@@ -5237,23 +5239,23 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signature Signature to analyze.
      * @return the expiration date, that is, the date in which the signature will be invalid, or null if its not possible to determinate the date.
      */
-    public static Date getExpirationDate(byte[ ] signature) {
-	Date res = null;
+    public static Date getExpirationDate(final byte[ ] signature) {
+	final Date res = null;
 	if (signature != null) {
 	    try {
 		// Detectamos el formato de la firma.
-		String signatureFormat = SignatureFormatDetector.getSignatureFormat(signature);
+		final String signatureFormat = SignatureFormatDetector.getSignatureFormat(signature);
 
 		// Si el formato es CAdES.
 		if (isCAdES(signatureFormat)) {
 
 		    // Obtenemos la firma CAdES.
-		    CMSSignedData signedData = getCMSSignedData(signature);
+		    final CMSSignedData signedData = getCMSSignedData(signature);
 		    // Obtenemos la información del firmante.
-		    SignerInformationStore signerInformationStore = signedData.getSignerInfos();
+		    final SignerInformationStore signerInformationStore = signedData.getSignerInfos();
 		    // Obtenemos la lista con todos los firmantes contenidos en
 		    // la firma
-		    List<SignerInformation> listSignersSignature = (List<SignerInformation>) signerInformationStore.getSigners();
+		    final List<SignerInformation> listSignersSignature = (List<SignerInformation>) signerInformationStore.getSigners();
 		    // Calculamos la fecha de expiración de la firma.
 		    return calculateExpirationDate(signedData, listSignersSignature);
 		}
@@ -5262,9 +5264,9 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		if (isXAdES(signatureFormat)) {
 
 		    // Accedemos al documento XML firmado.
-		    Document doc = UtilsSignatureCommons.getDocumentFromXML(signature);
+		    final Document doc = UtilsSignatureCommons.getDocumentFromXML(signature);
 		    // Recuperamos la lista de firmantes.
-		    List<XAdESSignerInfo> signers = UtilsSignatureOp.getXAdESListSigners(doc);
+		    final List<XAdESSignerInfo> signers = UtilsSignatureOp.getXAdESListSigners(doc);
 		    return calculateExpirationDate(signers, null);
 		}
 
@@ -5272,13 +5274,13 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		if (isPAdES(signatureFormat)) {
 
 		    // Construimos el objeto para poder leer el PDF
-		    PdfReader reader = new PdfReader(signature);
+		    final PdfReader reader = new PdfReader(signature);
 		    // Instanciamos un objeto para consultar campos del PDF
-		    AcroFields af = reader.getAcroFields();
+		    final AcroFields af = reader.getAcroFields();
 		    // Inicializamos las listas donde se almacenarán los
 		    // diccionarios.
-		    List<PDFSignatureDictionary> signatureDictionaries = new ArrayList<>();
-		    List<PDFDocumentTimestampDictionary> timestampDictionaries = new ArrayList<>();
+		    final List<PDFSignatureDictionary> signatureDictionaries = new ArrayList<>();
+		    final List<PDFDocumentTimestampDictionary> timestampDictionaries = new ArrayList<>();
 		    // Recuperamos la lista de diccionarios de firma y
 		    // sellos de tiempo.
 		    obtainListOfDictionaries(reader, af, timestampDictionaries, signatureDictionaries);
@@ -5291,9 +5293,9 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		    // Procesamos la firma ASiC-S.
 		    return getASiCExpirationDate(signature);
 		}
-	    } catch (SigningException e) {
+	    } catch (final SigningException e) {
 		LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG245), e);
-	    } catch (IOException e) {
+	    } catch (final IOException e) {
 		LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG246));
 	    }
 	}
@@ -5307,16 +5309,16 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @throws IOException if there is some problem with the signature extraction from the ZIP.
      * @throws SigningException if there is some problem with the signature processing.
      */
-    private static Date getASiCExpirationDate(byte[ ] signature) throws IOException, SigningException {
+    private static Date getASiCExpirationDate(final byte[ ] signature) throws IOException, SigningException {
 	byte[ ] asn1Signature = null;
 	byte[ ] signedXML = null;
-	InputStream is = new ByteArrayInputStream(signature);
-	InputStream asicsInputStream = new ZipInputStream(is);
+	final InputStream is = new ByteArrayInputStream(signature);
+	final InputStream asicsInputStream = new ZipInputStream(is);
 
 	// Recorremos las entradas del fichero ZIP
 	for (ZipEntry entry = ((ZipInputStream) asicsInputStream).getNextEntry(); entry != null; entry = ((ZipInputStream) asicsInputStream).getNextEntry()) {
 	    // Accedemos al nombre de la entrada
-	    String entryName = entry.getName();
+	    final String entryName = entry.getName();
 
 	    // Si la entrada es la firma ASN.1
 	    if (SignatureFormatDetectorASiC.isCAdESEntry(entryName)) {
@@ -5335,13 +5337,13 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	// Si la firma es CAdES.
 	if (asn1Signature != null) {
 	    // Obtenemos la firma CAdES.
-	    CMSSignedData signedData = getCMSSignedData(asn1Signature);
+	    final CMSSignedData signedData = getCMSSignedData(asn1Signature);
 	    // Obtenemos la información del firmante.
-	    SignerInformationStore signerInformationStore = signedData.getSignerInfos();
+	    final SignerInformationStore signerInformationStore = signedData.getSignerInfos();
 	    // Obtenemos la lista con todos los firmantes contenidos
 	    // en
 	    // la firma
-	    List<SignerInformation> listSignersSignature = (List<SignerInformation>) signerInformationStore.getSigners();
+	    final List<SignerInformation> listSignersSignature = (List<SignerInformation>) signerInformationStore.getSigners();
 	    // Calculamos la fecha de expiración de la firma.
 	    date = calculateExpirationDate(signedData, listSignersSignature);
 	}
@@ -5349,9 +5351,9 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	// Si la firma es XAdES.
 	if (signedXML != null) {
 	    // Accedemos al documento XML firmado.
-	    Document doc = UtilsSignatureCommons.getDocumentFromXML(signedXML);
+	    final Document doc = UtilsSignatureCommons.getDocumentFromXML(signedXML);
 	    // Recuperamos la lista de firmantes.
-	    List<XAdESSignerInfo> signers = UtilsSignatureOp.getXAdESListSigners(doc);
+	    final List<XAdESSignerInfo> signers = UtilsSignatureOp.getXAdESListSigners(doc);
 	    date = closestExpirationDate(calculateExpirationDate(signers, null), date);
 	}
 	return date;
@@ -5363,7 +5365,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signatureFormat Signature format detected.
      * @return <i>True</i> if the signature format is PAdES, or <i>False</i> in other cases.
      */
-    private static boolean isPAdES(String signatureFormat) {
+    private static boolean isPAdES(final String signatureFormat) {
 	return isPAdESSignatureFormat(signatureFormat) || isPAdESBaselineSignatureFormat(signatureFormat);
     }
 
@@ -5372,7 +5374,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signatureFormat Signature format detected.
      * @return <i>True</i> if the signature format is XAdES, or <i>False</i> in other cases.
      */
-    private static boolean isXAdES(String signatureFormat) {
+    private static boolean isXAdES(final String signatureFormat) {
 	return isXAdESSignatureFormat(signatureFormat) || isXAdESBaselineSignatureFormat(signatureFormat);
     }
 
@@ -5381,7 +5383,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signatureFormat Signature format detected.
      * @return <i>True</i> if the signature format is CAdES, or <i>False</i> in other cases.
      */
-    private static boolean isCAdES(String signatureFormat) {
+    private static boolean isCAdES(final String signatureFormat) {
 	return isCAdESSignatureFormat(signatureFormat) || isCAdESBaselineSignatureFormat(signatureFormat);
     }
 
@@ -5390,22 +5392,10 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signatureFormat Parameter that represents the signature format to process.
      * @return a boolean that indicates if the format of a signature is related to CAdES signature format (true) or not (false).
      */
-    private static boolean isCAdESSignatureFormat(String signatureFormat) {
-	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_BES)) {
+    private static boolean isCAdESSignatureFormat(final String signatureFormat) {
+	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_BES) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_EPES) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_T) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_C)) {
 	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_EPES)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_T)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_C)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_X1)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_X2)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_XL1)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_XL2)) {
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_X1) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_X2) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_XL1) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_XL2)) {
 	    return true;
 	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_A)) {
 	    return true;
@@ -5418,14 +5408,8 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signatureFormat Parameter that represents the signature format to process.
      * @return a boolean that indicates if the format of a signature is related to CAdES Baseline signature format (true) or not (false).
      */
-    private static boolean isCAdESBaselineSignatureFormat(String signatureFormat) {
-	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_LEVEL)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_T_LEVEL)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_LT_LEVEL)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_LTA_LEVEL)) {
+    private static boolean isCAdESBaselineSignatureFormat(final String signatureFormat) {
+	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_B_LEVEL) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_T_LEVEL) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_LT_LEVEL) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_CADES_LTA_LEVEL)) {
 	    return true;
 	}
 	return false;
@@ -5436,22 +5420,10 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signatureFormat Parameter that represents the signature format to process.
      * @return a boolean that indicates if the format of a signature is related to XAdES signature format (true) or not (false).
      */
-    private static boolean isXAdESSignatureFormat(String signatureFormat) {
-	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_BES)) {
+    private static boolean isXAdESSignatureFormat(final String signatureFormat) {
+	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_BES) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_EPES) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_T) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_C)) {
 	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_EPES)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_T)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_C)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_X1)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_X2)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_XL1)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_XL2)) {
+	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_X1) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_X2) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_XL1) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_XL2)) {
 	    return true;
 	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_A)) {
 	    return true;
@@ -5464,14 +5436,8 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signatureFormat Parameter that represents the signature format to process.
      * @return a boolean that indicates if the format of a signature is related to XAdES Baseline signature format (true) or not (false).
      */
-    private static boolean isXAdESBaselineSignatureFormat(String signatureFormat) {
-	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_LEVEL)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_T_LEVEL)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_LT_LEVEL)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_LTA_LEVEL)) {
+    private static boolean isXAdESBaselineSignatureFormat(final String signatureFormat) {
+	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_LEVEL) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_T_LEVEL) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_LT_LEVEL) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_XADES_LTA_LEVEL)) {
 	    return true;
 	}
 	return false;
@@ -5482,14 +5448,8 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signatureFormat Parameter that represents the signature format to process.
      * @return a boolean that indicates if the format of a signature is related to PAdES signature format (true) or not (false).
      */
-    private static boolean isPAdESSignatureFormat(String signatureFormat) {
-	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_BASIC)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_BES)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_EPES)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_LTV)) {
+    private static boolean isPAdESSignatureFormat(final String signatureFormat) {
+	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_BASIC) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_BES) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_EPES) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_LTV)) {
 	    return true;
 	}
 	return false;
@@ -5500,14 +5460,8 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signatureFormat Parameter that represents the signature format to process.
      * @return a boolean that indicates if the format of a signature is related to PAdES Baseline signature format (true) or not (false).
      */
-    private static boolean isPAdESBaselineSignatureFormat(String signatureFormat) {
-	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_B_LEVEL)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_T_LEVEL)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_LT_LEVEL)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_LTA_LEVEL)) {
+    private static boolean isPAdESBaselineSignatureFormat(final String signatureFormat) {
+	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_B_LEVEL) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_T_LEVEL) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_LT_LEVEL) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_PADES_LTA_LEVEL)) {
 	    return true;
 	}
 	return false;
@@ -5518,14 +5472,8 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signatureFormat Parameter that represents the signature format to process.
      * @return a boolean that indicates if the format of a signature is related to ASiC-S Baseline signature format (true) or not (false).
      */
-    private static boolean isASiCSBaselineSignatureFormat(String signatureFormat) {
-	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_B_LEVEL)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_T_LEVEL)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_LT_LEVEL)) {
-	    return true;
-	} else if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_LTA_LEVEL)) {
+    private static boolean isASiCSBaselineSignatureFormat(final String signatureFormat) {
+	if (signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_B_LEVEL) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_T_LEVEL) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_LT_LEVEL) || signatureFormat.equals(ISignatureFormatDetector.FORMAT_ASIC_S_LTA_LEVEL)) {
 	    return true;
 	}
 	return false;
@@ -5537,7 +5485,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param listSignersSignature Signers information.
      * @return the expiration date of the signature.
      */
-    private static Date calculateExpirationDate(CMSSignedData signedData, List<SignerInformation> listSignersSignature) {
+    private static Date calculateExpirationDate(final CMSSignedData signedData, final List<SignerInformation> listSignersSignature) {
 	if (signedData == null) {
 	    return null;
 	}
@@ -5546,14 +5494,14 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	try {
 
 	    // Recorremos la lista de firmantes.
-	    for (SignerInformation signer: listSignersSignature) {
+	    for (final SignerInformation signer: listSignersSignature) {
 
 		// Comprobamos si tiene sellos de tiempo de tipo
 		// archiveTimestamp.
 		// Si tiene sellos de tiempo archiveTimestamp, la fecha de
 		// expiración será definida por la caducidad del certificado
 		// firmante del último sello de tiempo arcvhiveTimestamp.
-		X509Certificate lastArchiveTstCert = obtainCertificateArchiveTimestamps(signer.getUnsignedAttributes());
+		final X509Certificate lastArchiveTstCert = obtainCertificateArchiveTimestamps(signer.getUnsignedAttributes());
 		if (lastArchiveTstCert != null) {
 		    date = closestExpirationDate(lastArchiveTstCert.getNotAfter(), date);
 		    continue;
@@ -5564,7 +5512,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		// de caducidad del certificado firmante con una fecha de
 		// caducidad más próxima a la fecha actual.
 		boolean hasTimestamps = false;
-		List<TimeStampToken> timestamps = obtainCertificateTimestamps(signer.getUnsignedAttributes());
+		final List<TimeStampToken> timestamps = obtainCertificateTimestamps(signer.getUnsignedAttributes());
 		if (!checkIsNullOrEmpty(timestamps)) {
 		    date = closestExpirationDate(calculateExpirationDateTimestamps2(timestamps), date);
 		    hasTimestamps = true;
@@ -5572,7 +5520,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 		// Si la firma no tiene sellos de tiempo, la fecha de caducidad
 		// puede venir definida por el certificado firmante.
-		X509Certificate signingCert = getSigningCertificate(signedData, signer);
+		final X509Certificate signingCert = getSigningCertificate(signedData, signer);
 		if (!hasTimestamps && signingCert != null) {
 		    date = closestExpirationDate(signingCert.getNotAfter(), date);
 		}
@@ -5582,17 +5530,17 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		// algún contrafirmante es más próxima que la del firmante
 		// principal. En ese caso, actualizamos la fecha de expiración
 		// global.
-		SignerInformationStore counterSignatures = signer.getCounterSignatures();
+		final SignerInformationStore counterSignatures = signer.getCounterSignatures();
 		if (!checkIsNullOrEmpty(counterSignatures)) {
-		    Iterator<?> it = counterSignatures.getSigners().iterator();
+		    final Iterator<?> it = counterSignatures.getSigners().iterator();
 		    while (it.hasNext()) {
-			SignerInformation counterSigner = (SignerInformation) it.next();
+			final SignerInformation counterSigner = (SignerInformation) it.next();
 			date = closestExpirationDate(calculateExpirationDate(signedData, Arrays.asList(counterSigner)), date);
 		    }
 
 		}
 	    }
-	} catch (SigningException e) {
+	} catch (final SigningException e) {
 	    LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG243));
 	}
 	return date;
@@ -5604,7 +5552,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param currentDate Current closest expiration date.
      * @return the closest expiration date of the signature.
      */
-    private static Date calculateExpirationDate(List<XAdESSignerInfo> signers, Date currentDate) {
+    private static Date calculateExpirationDate(final List<XAdESSignerInfo> signers, final Date currentDate) {
 	Date date = currentDate;
 	if (!checkIsNullOrEmpty(signers)) {
 
@@ -5612,7 +5560,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    X509Certificate archiveTstCert = null;
 	    List<XAdESTimeStampType> tstList = null;
 	    List<XAdESSignerInfo> counterSigners = null;
-	    for (XAdESSignerInfo signer: signers) {
+	    for (final XAdESSignerInfo signer: signers) {
 		// Recuperamos los sellos de tiempo archiveTimestamp (en caso de
 		// que tenga).
 		archiveTstCert = obtainCertificateArchiveTimestampsXAdES(signer);
@@ -5654,12 +5602,12 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return a list with the timestamp of the signature.
      * @throws SigningException if it is not possible to obtain the timestamps.
      */
-    private static List<TimeStampToken> obtainCertificateTimestamps(AttributeTable unsignedAttributes) throws SigningException {
+    private static List<TimeStampToken> obtainCertificateTimestamps(final AttributeTable unsignedAttributes) throws SigningException {
 	List<TimeStampToken> res = null;
 	try {
 	    if (unsignedAttributes != null) {
 		// Accedemos a todos los atributos signature-time-stamp
-		ASN1EncodableVector signatureTimeStampattributes = unsignedAttributes.getAll(PKCSObjectIdentifiers.id_aa_signatureTimeStampToken);
+		final ASN1EncodableVector signatureTimeStampattributes = unsignedAttributes.getAll(PKCSObjectIdentifiers.id_aa_signatureTimeStampToken);
 
 		// Si el firmante incluye algún atributo signature-time-stamp
 		if (signatureTimeStampattributes.size() > 0) {
@@ -5670,7 +5618,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		    res = UtilsTimestampPdfBc.getOrderedTimeStampTokens(signatureTimeStampattributes);
 		}
 	    }
-	} catch (SigningException e) {
+	} catch (final SigningException e) {
 	    LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG242), e);
 	    throw e;
 	}
@@ -5682,7 +5630,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param value List to check.
      * @return <i>True</i> if the list is null or empty, and <i>False</i> if not.
      */
-    private static boolean checkIsNullOrEmpty(List<?> value) {
+    private static boolean checkIsNullOrEmpty(final List<?> value) {
 	return value == null || value.isEmpty() ? true : false;
     }
 
@@ -5691,7 +5639,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param value Object to check.
      * @return <i>True</i> if the signer information store is null or empty, and <i>False</i> if not.
      */
-    private static boolean checkIsNullOrEmpty(SignerInformationStore value) {
+    private static boolean checkIsNullOrEmpty(final SignerInformationStore value) {
 	return value == null || value.size() < 1 ? true : false;
     }
 
@@ -5700,7 +5648,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param value NodeList to check.
      * @return <i>True</i> if the object is null or empty, and <i>False</i> if not.
      */
-    private static boolean checkIsNullOrEmpty(NodeList value) {
+    private static boolean checkIsNullOrEmpty(final NodeList value) {
 	return value == null || value.getLength() < 1;
     }
 
@@ -5709,7 +5657,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param signerInfo Unsigned properties element of the signer.
      * @return the X509Certificate of the last archiveTimestamp or null of there is not one archiveTimestamp.
      */
-    public static X509Certificate obtainCertificateArchiveTimestampsXAdES(XAdESSignerInfo signerInfo) {
+    public static X509Certificate obtainCertificateArchiveTimestampsXAdES(final XAdESSignerInfo signerInfo) {
 	X509Certificate cert = null;
 
 	// Si hemos encontrado el elemento xades:UnsignedProperties
@@ -5718,12 +5666,12 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    try {
 
 		// Obtenemos el elemento unsignedPropertiesElement.
-		Element unsignedPropertiesElement = UtilsXML.getChildElement((Element) signerInfo.getQualifyingPropertiesElement(), IXMLConstants.ELEMENT_UNSIGNED_PROPERTIES, signerInfo.getId(), false);
+		final Element unsignedPropertiesElement = UtilsXML.getChildElement(signerInfo.getQualifyingPropertiesElement(), IXMLConstants.ELEMENT_UNSIGNED_PROPERTIES, signerInfo.getId(), false);
 
 		if (unsignedPropertiesElement != null) {
 
 		    // Obtenemos el elemento unsignedSignaturePropertiesElement.
-		    Element unsignedSignaturePropertiesElement = UtilsXML.getChildElement(unsignedPropertiesElement, IXMLConstants.ELEMENT_UNSIGNED_SIGNATURE_PROPERTIES, signerInfo.getId(), false);
+		    final Element unsignedSignaturePropertiesElement = UtilsXML.getChildElement(unsignedPropertiesElement, IXMLConstants.ELEMENT_UNSIGNED_SIGNATURE_PROPERTIES, signerInfo.getId(), false);
 
 		    // Buscamos si existen archiveTimestamps v1.4.1 o v1.3.2.
 		    NodeList archiveTimeStamps = unsignedSignaturePropertiesElement.getElementsByTagNameNS(IXMLConstants.XADES_1_4_1_NAMESPACE, IXMLConstants.ELEMENT_ARCHIVE_TIMESTAMP);
@@ -5733,7 +5681,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		    if (!checkIsNullOrEmpty(archiveTimeStamps)) {
 			// Recuperamos el último archiveTimeStamp.
 			X509Certificate signingCert = null;
-			Node archiveTst = obtainLastArchiveTimestampNode(archiveTimeStamps);
+			final Node archiveTst = obtainLastArchiveTimestampNode(archiveTimeStamps);
 			// Recuperamos el certificado firmante del último sello
 			// de tiempo archiveTimestamp.
 			if (archiveTst != null) {
@@ -5744,7 +5692,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 			}
 		    }
 		}
-	    } catch (SigningException e) {
+	    } catch (final SigningException e) {
 		LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG247), e);
 	    }
 	}
@@ -5757,13 +5705,13 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param archiveTimeStampsNodeList List of archiveTimestamp nodes to analyze.
      * @return a node that represents the last archiveTimestamp.
      */
-    private static Node obtainLastArchiveTimestampNode(NodeList archiveTimeStampsNodeList) {
+    private static Node obtainLastArchiveTimestampNode(final NodeList archiveTimeStampsNodeList) {
 	Node res = null;
 	if (!checkIsNullOrEmpty(archiveTimeStampsNodeList)) {
 	    Node archiveTstNode = null;
-	    Node tstNode = null;
-	    TimeStampToken tst = null;
-	    Date xmlTstDate = null;
+	    final Node tstNode = null;
+	    final TimeStampToken tst = null;
+	    final Date xmlTstDate = null;
 
 	    try {
 		// recorremos la lista de archiveTimestamp.
@@ -5774,11 +5722,11 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		}
 	    } catch (TSPException | IOException e) {
 		LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG248), e);
-	    } catch (CMSException e) {
+	    } catch (final CMSException e) {
 		LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG249), e);
-	    } catch (XPathExpressionException e) {
+	    } catch (final XPathExpressionException e) {
 		LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG250), e);
-	    } catch (ParseException e) {
+	    } catch (final ParseException e) {
 		LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG251), e);
 	    }
 	}
@@ -5799,7 +5747,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @throws XPathExpressionException  if it is not possible to find  the creation time element of the archiveTimestamp.
      * @throws ParseException if it is not possible to parse the creation date of the timestamp.  
      */
-    private static Node obtainLastArchiveTimestampNodeAux(Node archiveTstNode, Node tstNode, TimeStampToken tst, Node res, Date xmlTstDate) throws TSPException, IOException, CMSException, XPathExpressionException, ParseException {
+    private static Node obtainLastArchiveTimestampNodeAux(final Node archiveTstNode, final Node tstNode, final TimeStampToken tst, final Node res, final Date xmlTstDate) throws TSPException, IOException, CMSException, XPathExpressionException, ParseException {
 	Node result = res;
 	Node tstNodeAux = tstNode;
 	TimeStampToken tstAux = tst;
@@ -5810,9 +5758,9 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 	    // Si el sello de tiempo es de tipo ASN.1...
 	    if (tstNodeAux.getLocalName().equals(LOCAL_NAME_ARCHIVE_TIMESTAMP_ASN1)) {
-		String nodeValBase64 = tstNodeAux.getTextContent();
+		final String nodeValBase64 = tstNodeAux.getTextContent();
 		// Recuperamos el sello de tiempo ASN.1.
-		TimeStampToken localTst = new TimeStampToken(new CMSSignedData(Base64.decode(nodeValBase64)));
+		final TimeStampToken localTst = new TimeStampToken(new CMSSignedData(Base64.decode(nodeValBase64)));
 
 		// Si el sello de tiempo recuperado tiene una fecha
 		// de generación anterior al sello de tiempo
@@ -5823,10 +5771,10 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		}
 		break;
 	    } else if (tstNodeAux.getLocalName().equals(LOCAL_NAME_ARCHIVE_TIMESTAMP_XML)) {
-		NodeList creationTimeNode = UtilsXML.getChildNodesByLocalNames(tstNodeAux, "Timestamp/Signature/Object/TstInfo/CreationTime");
+		final NodeList creationTimeNode = UtilsXML.getChildNodesByLocalNames(tstNodeAux, "Timestamp/Signature/Object/TstInfo/CreationTime");
 		if (creationTimeNode != null) {
-		    String creationDateTst = creationTimeNode.item(0).getTextContent();
-		    Date localDate = new SimpleDateFormat("yyyy-mm-dd'T'hh:mm:ss.SSSXXX").parse(creationDateTst);
+		    final String creationDateTst = creationTimeNode.item(0).getTextContent();
+		    final Date localDate = new SimpleDateFormat("yyyy-mm-dd'T'hh:mm:ss.SSSXXX").parse(creationDateTst);
 		    if (xmlTstDateAux == null || localDate.before(xmlTstDateAux)) {
 			xmlTstDateAux = localDate;
 			result = archiveTstNode;
@@ -5843,20 +5791,20 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param node ArchiveTimestamp node of the XML signature.
      * @return the signing certificate of the archiveTimestamp node.
      */
-    private static X509Certificate getTstSigningCertificateFromNode(Node node) {
+    private static X509Certificate getTstSigningCertificateFromNode(final Node node) {
 	X509Certificate res = null;
 
 	if (node != null) {
 	    try {
 
-		NodeList children = node.getChildNodes();
+		final NodeList children = node.getChildNodes();
 		Node child = null;
 		for (int i = 0; i < children.getLength(); i++) {
 		    child = children.item(i);
 		    TimeStampToken tst = null;
 		    // Si es un sello de tiempo de tipo ASN.1...
 		    if (child.getLocalName().equals(LOCAL_NAME_ARCHIVE_TIMESTAMP_ASN1)) {
-			String nodeValBase64 = child.getTextContent();
+			final String nodeValBase64 = child.getTextContent();
 			// Recuperamos el sello de tiempo ASN.1.
 			tst = new TimeStampToken(new CMSSignedData(Base64.decode(nodeValBase64)));
 			res = UtilsTimestampXML.getSigningCertificate(tst);
@@ -5866,16 +5814,16 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		    else if (child.getLocalName().equals(LOCAL_NAME_ARCHIVE_TIMESTAMP_XML)) {
 			// Accedemos al elemento X509Certificate del sello de
 			// tiempo XML.
-			NodeList x509CertNodeList = UtilsXML.getChildNodesByLocalNames(child, "Timestamp/Signature/KeyInfo/X509Data/X509Certificate");
+			final NodeList x509CertNodeList = UtilsXML.getChildNodesByLocalNames(child, "Timestamp/Signature/KeyInfo/X509Data/X509Certificate");
 
 			// Si se ha recuperado correctamente el elemento,
 			// transformamos el valor del nodo en un certificado
 			// X509Certificate.
 			if (!checkIsNullOrEmpty(x509CertNodeList)) {
-			    String certBase64 = x509CertNodeList.item(0).getTextContent();
-			    byte encodedCert[] = Base64.decode(certBase64);
-			    ByteArrayInputStream inputStream = new ByteArrayInputStream(encodedCert);
-			    CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+			    final String certBase64 = x509CertNodeList.item(0).getTextContent();
+			    final byte encodedCert[] = Base64.decode(certBase64);
+			    final ByteArrayInputStream inputStream = new ByteArrayInputStream(encodedCert);
+			    final CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
 			    res = (X509Certificate) certFactory.generateCertificate(inputStream);
 			    break;
 			}
@@ -5897,7 +5845,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param timestampDictionaries Timestamp dictionaries from the PAdES signature.
      * @return the expiration date of the signature.
      */
-    public static Date calculateExpirationDate(List<PDFSignatureDictionary> signatureDictionaries, List<PDFDocumentTimestampDictionary> timestampDictionaries) {
+    public static Date calculateExpirationDate(final List<PDFSignatureDictionary> signatureDictionaries, final List<PDFDocumentTimestampDictionary> timestampDictionaries) {
 	Date expirationDate = null;
 	PDFSignatureDictionary lastSignatureDictionary = null;
 	PDFDocumentTimestampDictionary lastTimestampDictionary = null;
@@ -5918,7 +5866,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 	    // Nos quedamos con el diccionario que haya sido generado más
 	    // recientemente.
-	    Object lastDictionary = getLastDictionary(lastSignatureDictionary, lastTimestampDictionary);
+	    final Object lastDictionary = getLastDictionary(lastSignatureDictionary, lastTimestampDictionary);
 
 	    // Si el diccionario es de firma, comprobamos si la firma tiene
 	    // sellos de tiempo, en caso de tenerlos, la fecha de expiración
@@ -5926,17 +5874,17 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // firmante del último sello de tiempo, sino, la fecha la
 	    // determinará la fecha de expiración del certificado firmante.
 	    if (lastDictionary instanceof PDFSignatureDictionary) {
-		CMSSignedData signature = getCMSSignature((PDFSignatureDictionary) lastDictionary);
+		final CMSSignedData signature = getCMSSignature((PDFSignatureDictionary) lastDictionary);
 		expirationDate = calculateExpirationDate(signature, (List<SignerInformation>) signature.getSignerInfos().getSigners());
 	    }
 	    // Si el diccionario es de sello de tiempo, la fecha de expiración
 	    // vendrá determinada por el certificado firmante del sello de
 	    // tiempo.
 	    else if (lastDictionary instanceof PDFDocumentTimestampDictionary) {
-		PDFDocumentTimestampDictionary tstDic = (PDFDocumentTimestampDictionary) lastDictionary;
+		final PDFDocumentTimestampDictionary tstDic = (PDFDocumentTimestampDictionary) lastDictionary;
 		expirationDate = tstDic.getCertificate().getNotAfter();
 	    }
-	} catch (SigningException e) {
+	} catch (final SigningException e) {
 	    LOGGER.error(Language.getResIntegra(ILogConstantKeys.US_LOG254), e);
 	}
 
@@ -5952,7 +5900,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * the last timestamp signature if the parameter is a list of timestamp dictionaries or 
      * null if the list is null, empty or it's not a valid dictionary list.
      */
-    private static Object getLastDictionary(List<?> dictionariesList) {
+    private static Object getLastDictionary(final List<?> dictionariesList) {
 	// Si la lista no es nula ni está vacía, procesamos los diccionarios
 	// recibidos.
 	if (!checkIsNullOrEmpty(dictionariesList)) {
@@ -5960,10 +5908,10 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // Si la lista de diccionarios es de firma...
 	    if (dictionariesList.get(0) instanceof PDFSignatureDictionary) {
 		PDFSignatureDictionary res = null;
-		List<PDFSignatureDictionary> signatureDictionaries = (List<PDFSignatureDictionary>) dictionariesList;
+		final List<PDFSignatureDictionary> signatureDictionaries = (List<PDFSignatureDictionary>) dictionariesList;
 		// Recorremos la lista de diccionarios y nos quedamos con aquel
 		// que tenga una revisión mayor.
-		for (PDFSignatureDictionary signatureDictionary: signatureDictionaries) {
+		for (final PDFSignatureDictionary signatureDictionary: signatureDictionaries) {
 		    if (res == null) {
 			res = signatureDictionary;
 		    } else {
@@ -5975,10 +5923,10 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		// Si la lista de diccionarios es de sellos de tiempo...
 	    } else if (dictionariesList.get(0) instanceof PDFDocumentTimestampDictionary) {
 		PDFDocumentTimestampDictionary res = null;
-		List<PDFDocumentTimestampDictionary> timestampDictionaries = (List<PDFDocumentTimestampDictionary>) dictionariesList;
+		final List<PDFDocumentTimestampDictionary> timestampDictionaries = (List<PDFDocumentTimestampDictionary>) dictionariesList;
 		// Recorremos la lista de diccionarios y nos quedamos con aquel
 		// que tenga una revisión mayor.
-		for (PDFDocumentTimestampDictionary timestampDictionary: timestampDictionaries) {
+		for (final PDFDocumentTimestampDictionary timestampDictionary: timestampDictionaries) {
 		    if (res == null) {
 			res = timestampDictionary;
 		    } else {
@@ -5998,7 +5946,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param timestampDictionary Timestamp PDF dictionary.
      * @return a dictionary which is the older of both.
      */
-    private static Object getLastDictionary(PDFSignatureDictionary signatureDictionary, PDFDocumentTimestampDictionary timestampDictionary) {
+    private static Object getLastDictionary(final PDFSignatureDictionary signatureDictionary, final PDFDocumentTimestampDictionary timestampDictionary) {
 	if (signatureDictionary != null && timestampDictionary == null) {
 	    return signatureDictionary;
 	}
@@ -6019,13 +5967,13 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param listSignatureDictionaries List where the signature dictionaries will be stored.
      * @throws SigningException if it's not possible to access to the timestamp of a timestamp dictionary.
      */
-    private static void obtainListOfDictionaries(PdfReader reader, AcroFields af, List<PDFDocumentTimestampDictionary> listTimestampDictionaries, List<PDFSignatureDictionary> listSignatureDictionaries) throws SigningException {
-	List<String> names = af.getSignatureNames();
+    private static void obtainListOfDictionaries(final PdfReader reader, final AcroFields af, final List<PDFDocumentTimestampDictionary> listTimestampDictionaries, final List<PDFSignatureDictionary> listSignatureDictionaries) throws SigningException {
+	final List<String> names = af.getSignatureNames();
 	// Recorremos las firmas
-	for (String signatureName: names) {
+	for (final String signatureName: names) {
 
 	    // Obtenemos el diccionario
-	    PdfDictionary signatureDictionary = af.getSignatureDictionary(signatureName);
+	    final PdfDictionary signatureDictionary = af.getSignatureDictionary(signatureName);
 
 	    // Determinamos el tipo de diccionario obtenido
 	    String pdfType = null;
@@ -6034,12 +5982,12 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    }
 
 	    // Determinamos el contenido de la clave SubFilter
-	    String subFilter = signatureDictionary.get(PdfName.SUBFILTER).toString();
+	    final String subFilter = signatureDictionary.get(PdfName.SUBFILTER).toString();
 
 	    // Es TST
 	    if (UtilsSignatureOp.isDocumentTimeStampDictionary(pdfType, subFilter)) {
 		// Accedemos al contenido de la clave /Contents
-		byte[ ] arrayTST = signatureDictionary.getAsString(PdfName.CONTENTS).getOriginalBytes();
+		final byte[ ] arrayTST = signatureDictionary.getAsString(PdfName.CONTENTS).getOriginalBytes();
 		TimeStampToken tst = null;
 		X509Certificate tstCertificate = null;
 		// Si la clave /Contents no es nula
@@ -6050,8 +5998,8 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 			// Accedemos al certificado firmante del sello de tiempo
 			tstCertificate = UtilsTimestampPdfBc.getSigningCertificate(tst);
-		    } catch (Exception e) {
-			String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.PS_LOG011, new Object[ ] { signatureName });
+		    } catch (final Exception e) {
+			final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.PS_LOG011, new Object[ ] { signatureName });
 			LOGGER.error(errorMsg, e);
 			throw new SigningException(errorMsg, e);
 		    }
@@ -6083,11 +6031,11 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @return a list with the elements data parse into a list of reference data baseline objects.
      * @throws SigningException if the signature is invalid, that is, the elements has a invalid structure or the data are not correct.
      */
-    public static List<ReferenceDataBaseline> fromNodeListToReferenceDataBaselineList(Node manifestNode, Node signedDataObjectPropertiesNode) throws SigningException {
+    public static List<ReferenceDataBaseline> fromNodeListToReferenceDataBaselineList(final Node manifestNode, final Node signedDataObjectPropertiesNode) throws SigningException {
 	// Instanciamos las listas que necesitaremos para realizar la operación.
-	List<ReferenceDataBaseline> res = new ArrayList<ReferenceDataBaseline>();
-	List<ReferenceData> manifestReferencesList = new ArrayList<ReferenceData>();
-	List<DataObjectFormat> dataObjectFormatList = new ArrayList<DataObjectFormat>();
+	final List<ReferenceDataBaseline> res = new ArrayList<ReferenceDataBaseline>();
+	final List<ReferenceData> manifestReferencesList = new ArrayList<ReferenceData>();
+	final List<DataObjectFormat> dataObjectFormatList = new ArrayList<DataObjectFormat>();
 	// Accedemos a los primeros elementos necesarios.
 	Element referenceNode = (Element) manifestNode.getFirstChild();
 	Element dataObjectFormatNode = (Element) signedDataObjectPropertiesNode.getFirstChild();
@@ -6101,9 +6049,9 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    uri = referenceNode.getAttribute(IXMLConstants.ATTRIBUTE_URI);
 	    digestAlgorithm = UtilsXML.getChildElement(referenceNode, IXMLConstants.ELEMENT_DIGEST_METHOD, null, true).getAttribute(IXMLConstants.ATTRIBUTE_ALGORITHM);
 	    digestValue = UtilsXML.getChildElement(referenceNode, IXMLConstants.ELEMENT_DIGEST_VALUE, null, true).getTextContent();
-	    List<TransformData> transforms = getTransformsElementsFromManifestReference(referenceNode);
+	    final List<TransformData> transforms = getTransformsElementsFromManifestReference(referenceNode);
 	    // Creamos una nueva instancia de ReferenceData.
-	    ReferenceData reference = new ReferenceData(digestAlgorithm, digestValue);
+	    final ReferenceData reference = new ReferenceData(digestAlgorithm, digestValue);
 	    reference.setId(id);
 	    reference.setType(type);
 	    reference.setUri(uri);
@@ -6132,10 +6080,10 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    encoding = temp != null ? temp.getTextContent() : null;
 	    temp = UtilsXML.getChildElement(dataObjectFormatNode, IXMLConstants.ELEMENT_MIME_TYPE, null, true);
 	    mimetype = temp != null ? temp.getTextContent() : null;
-	    ObjectIdentifier objIdentifier = parseObjectIdentifier(dataObjectFormatNode);
+	    final ObjectIdentifier objIdentifier = parseObjectIdentifier(dataObjectFormatNode);
 
 	    // Creamos una nueva instancia de DataObjectFormat.
-	    DataObjectFormat dataObj = new DataObjectFormatImpl(description, objIdentifier, mimetype, encoding, reference);
+	    final DataObjectFormat dataObj = new DataObjectFormatImpl(description, objIdentifier, mimetype, encoding, reference);
 
 	    // Añadimos a la lista el nuevo dataObjectFormat.
 	    dataObjectFormatList.add(dataObj);
@@ -6162,20 +6110,20 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param res List where the new references will be stored.
      * @throws SigningException if the signature is invalid, that is, if there exists some manifest reference without a data object format associated.
      */
-    private static void matchManifestAndDataObjectsLists(List<ReferenceData> manifestReferencesList, List<DataObjectFormat> dataObjectFormatList, List<ReferenceDataBaseline> res) throws SigningException {
+    private static void matchManifestAndDataObjectsLists(final List<ReferenceData> manifestReferencesList, final List<DataObjectFormat> dataObjectFormatList, final List<ReferenceDataBaseline> res) throws SigningException {
 	if (!checkIsNullOrEmpty(manifestReferencesList) && !checkIsNullOrEmpty(dataObjectFormatList)) {
 	    String id = null;
-	    for (ReferenceData rd: manifestReferencesList) {
+	    for (final ReferenceData rd: manifestReferencesList) {
 		DataObjectFormat dataObjectFormat = null;
 		id = rd.getId();
-		for (DataObjectFormat dof: dataObjectFormatList) {
+		for (final DataObjectFormat dof: dataObjectFormatList) {
 		    if (id.equals(dof.getObjectReference().substring(1))) {
 			dataObjectFormat = dof;
 			break;
 		    }
 		}
 		if (dataObjectFormat != null) {
-		    ReferenceDataBaseline rdb = new ReferenceDataBaseline(rd.getDigestMethodAlg(), rd.getDigestValue());
+		    final ReferenceDataBaseline rdb = new ReferenceDataBaseline(rd.getDigestMethodAlg(), rd.getDigestValue());
 		    rdb.setId(id);
 		    rdb.setTransforms(rd.getTransforms());
 		    rdb.setType(rd.getType());
@@ -6185,7 +6133,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		    rdb.setDataFormatMimeType(dataObjectFormat.getMimeType());
 		    res.add(rdb);
 		} else {
-		    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG257);
+		    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG257);
 		    LOGGER.error(errorMsg);
 		    throw new SigningException(errorMsg);
 		}
@@ -6199,7 +6147,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param dataObjectFormatNode Element that represents the objectIdentifier.
      * @return a new object that represents the objectIdentifier element or null if the element doesn't exist.
      */
-    private static ObjectIdentifier parseObjectIdentifier(Element dataObjectFormatNode) {
+    private static ObjectIdentifier parseObjectIdentifier(final Element dataObjectFormatNode) {
 	ObjectIdentifier objIdentifier = null;
 	if (dataObjectFormatNode != null) {
 	    Element objectIdentifierNode;
@@ -6231,11 +6179,11 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 			// Asignamos el valor del ObjectIdentifier.
 			objIdentifier = new ObjectIdentifierImpl("OIDAsURI", identifier, description, documentationReferences);
-		    } catch (SigningException e) {
+		    } catch (final SigningException e) {
 			LOGGER.info(Language.getResIntegra(ILogConstantKeys.US_LOG256));
 		    }
 		}
-	    } catch (SigningException e) {
+	    } catch (final SigningException e) {
 		LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.US_LOG255, new Object[ ] { IXMLConstants.ELEMENT_OBJECT_IDENTIFIER, dataObjectFormatNode.getLocalName() }));
 	    }
 	}
@@ -6248,11 +6196,11 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param referenceNode Manifest reference element.
      * @return a list with the TransformData object found in the reference element or null if there is no one.
      */
-    private static List<TransformData> getTransformsElementsFromManifestReference(Element referenceNode) {
+    private static List<TransformData> getTransformsElementsFromManifestReference(final Element referenceNode) {
 	List<TransformData> res = null;
 	try {
 	    if (referenceNode != null) {
-		Element transforms = UtilsXML.getChildElement(referenceNode, IXMLConstants.ELEMENT_TRANSFORMS, null, false);
+		final Element transforms = UtilsXML.getChildElement(referenceNode, IXMLConstants.ELEMENT_TRANSFORMS, null, false);
 		if (transforms != null && transforms.getFirstChild() != null) {
 		    Element transform = (Element) transforms.getFirstChild();
 		    String algorithm = null;
@@ -6261,7 +6209,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		    while (transform != null) {
 			algorithm = transform.getAttribute(IXMLConstants.ATTRIBUTE_ALGORITHM);
 			xpaths = UtilsXML.getChildElements(transform, IXMLConstants.ELEMENT_XPATH);
-			TransformData transformObj = new TransformData(algorithm, parseXPathElements(xpaths));
+			final TransformData transformObj = new TransformData(algorithm, parseXPathElements(xpaths));
 			res.add(transformObj);
 			if (transform.getNextSibling() != null) {
 			    transform = (Element) transform.getNextSibling();
@@ -6271,7 +6219,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		    }
 		}
 	    }
-	} catch (SigningException e) {
+	} catch (final SigningException e) {
 	    LOGGER.warn(Language.getFormatResIntegra(ILogConstantKeys.US_LOG255, new Object[ ] { IXMLConstants.ELEMENT_TRANSFORMS, referenceNode.getLocalName() }));
 	}
 	return res;
@@ -6282,11 +6230,11 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @param xPaths list of XPath elements.
      * @return a list with the xpath element values or null if the list is null or empty.
      */
-    private static List<String> parseXPathElements(List<Element> xPaths) {
+    private static List<String> parseXPathElements(final List<Element> xPaths) {
 	List<String> res = null;
 	if (xPaths != null && !xPaths.isEmpty()) {
 	    res = new ArrayList<String>();
-	    for (Element xPath: xPaths) {
+	    for (final Element xPath: xPaths) {
 		res.add(xPath.getTextContent());
 	    }
 	}
@@ -6303,14 +6251,14 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @throws SignaturePolicyException Cuando no se puede identificar el algoritmo de firma a
      * trav&eacute;s del de encriptaci&oacute;n y huella.
      */
-    public static AlgorithmIdentifier getSignatureAlgorithm(SignerInformation signerInformation)
+    public static AlgorithmIdentifier getSignatureAlgorithm(final SignerInformation signerInformation)
 	    throws SignaturePolicyException {
 
 	// Obtenemos el algoritmo declarado, que puede ser el de encriptacion o el de firma
-	String encryptionAlgOid = signerInformation.getEncryptionAlgOID();
+	final String encryptionAlgOid = signerInformation.getEncryptionAlgOID();
 
 	// Obtenemos el algoritmo de huella
-	String hashAlgOid = signerInformation.getDigestAlgOID();
+	final String hashAlgOid = signerInformation.getDigestAlgOID();
 
 	// Componemos el algoritmo de firma
 	return getSignatureAlgorithm(encryptionAlgOid, hashAlgOid);
@@ -6329,7 +6277,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * correspondiente a utilizar el algoritmo de encriptaci&oacute;n y el algoritmo
      * de hash indicados.
      */
-    public static AlgorithmIdentifier getSignatureAlgorithm(String encryptionAlgOid, String hashAlgOid)
+    public static AlgorithmIdentifier getSignatureAlgorithm(final String encryptionAlgOid, final String hashAlgOid)
 	    throws SignaturePolicyException {
 
 	String signatureAlgOid;

@@ -23,8 +23,10 @@ package es.gob.afirma.signature;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.xml.crypto.dsig.DigestMethod;
 
@@ -170,6 +172,26 @@ public final class SignatureConstants {
      * Constant attribute that represents SHA512withRSA algorithm.
      */
     public static final String SIGN_ALGORITHM_SHA512WITHRSA = "SHA512withRSA";
+    
+    /**
+     * Constant attribute that represents SHA1withECDSA algorithm.
+     */
+    public static final String SIGN_ALGORITHM_SHA1WITHECDSA = "SHA1withECDSA";
+
+    /**
+     * Constant attribute that represents SHA256withECDSA algorithm.
+     */
+    public static final String SIGN_ALGORITHM_SHA256WITHECDSA = "SHA256withECDSA";
+
+    /**
+     * Constant attribute that represents SHA384withECDSA algorithm.
+     */
+    public static final String SIGN_ALGORITHM_SHA384WITHECDSA = "SHA384withECDSA";
+    
+    /**
+     * Constant attribute that represents SHA512withECDSA algorithm.
+     */
+    public static final String SIGN_ALGORITHM_SHA512WITHECDSA = "SHA512withECDSA";
 
     /**
      * Constant attribute that represents the URI of allowed signature algorithms to use with XADES signatures.
@@ -186,6 +208,10 @@ public final class SignatureConstants {
 	    put(SIGN_ALGORITHM_SHA256WITHRSA, "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256");
 	    put(SIGN_ALGORITHM_SHA384WITHRSA, "http://www.w3.org/2001/04/xmldsig-more#rsa-sha384");
 	    put(SIGN_ALGORITHM_SHA512WITHRSA, "http://www.w3.org/2001/04/xmldsig-more#rsa-sha512");
+	    put(SIGN_ALGORITHM_SHA1WITHECDSA, "http://www.w3.org/2001/04/xmldsig#ecdsa-sha1");
+	    put(SIGN_ALGORITHM_SHA256WITHECDSA, "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256");
+	    put(SIGN_ALGORITHM_SHA384WITHECDSA, "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha384");
+	    put(SIGN_ALGORITHM_SHA512WITHECDSA, "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha512");
 	}
     };
 
@@ -200,10 +226,10 @@ public final class SignatureConstants {
 	private static final long serialVersionUID = 74770910568121154L;
 
 	{
-	    put(CryptoUtilCommons.HASH_ALGORITHM_SHA1, SIGN_ALGORITHM_SHA1WITHRSA);
-	    put(CryptoUtilCommons.HASH_ALGORITHM_SHA256, SIGN_ALGORITHM_SHA256WITHRSA);
-	    put(CryptoUtilCommons.HASH_ALGORITHM_SHA384, SIGN_ALGORITHM_SHA384WITHRSA);
-	    put(CryptoUtilCommons.HASH_ALGORITHM_SHA512, SIGN_ALGORITHM_SHA512WITHRSA);
+	    put(CryptoUtilCommons.HASH_ALGORITHM_SHA1, CryptoUtilCommons.HASH_ALGORITHM_SHA1);
+	    put(CryptoUtilCommons.HASH_ALGORITHM_SHA256, CryptoUtilCommons.HASH_ALGORITHM_SHA256);
+	    put(CryptoUtilCommons.HASH_ALGORITHM_SHA384, CryptoUtilCommons.HASH_ALGORITHM_SHA384);
+	    put(CryptoUtilCommons.HASH_ALGORITHM_SHA512, CryptoUtilCommons.HASH_ALGORITHM_SHA512);
 	}
     };
 
@@ -222,6 +248,10 @@ public final class SignatureConstants {
 	    put(SIGN_ALGORITHM_SHA256WITHRSA, DigestMethod.SHA256);
 	    put(SIGN_ALGORITHM_SHA384WITHRSA, "http://www.w3.org/2001/04/xmldsig-more#sha384");
 	    put(SIGN_ALGORITHM_SHA512WITHRSA, DigestMethod.SHA512);
+	    put(SIGN_ALGORITHM_SHA1WITHECDSA, DigestMethod.SHA1);
+	    put(SIGN_ALGORITHM_SHA256WITHECDSA, DigestMethod.SHA256);
+	    put(SIGN_ALGORITHM_SHA384WITHECDSA, "http://www.w3.org/2001/04/xmldsig-more#sha384");
+	    put(SIGN_ALGORITHM_SHA512WITHECDSA, DigestMethod.SHA512);
 	}
     };
 
@@ -240,6 +270,10 @@ public final class SignatureConstants {
 	    put(SIGN_ALGORITHM_SHA256WITHRSA, CryptoUtilCommons.HASH_ALGORITHM_SHA256);
 	    put(SIGN_ALGORITHM_SHA384WITHRSA, CryptoUtilCommons.HASH_ALGORITHM_SHA384);
 	    put(SIGN_ALGORITHM_SHA512WITHRSA, CryptoUtilCommons.HASH_ALGORITHM_SHA512);
+	    put(SIGN_ALGORITHM_SHA1WITHECDSA, CryptoUtilCommons.HASH_ALGORITHM_SHA1);
+	    put(SIGN_ALGORITHM_SHA256WITHECDSA, CryptoUtilCommons.HASH_ALGORITHM_SHA256);
+	    put(SIGN_ALGORITHM_SHA384WITHECDSA, CryptoUtilCommons.HASH_ALGORITHM_SHA384);
+	    put(SIGN_ALGORITHM_SHA512WITHECDSA, CryptoUtilCommons.HASH_ALGORITHM_SHA512);
 	}
     };
 
@@ -281,4 +315,108 @@ public final class SignatureConstants {
      * Constant attribute that represents the property mimetype of data object format.
      */
     public static final String XADES_DATA_FORMAT_MIME_PROP_DEFAULT = "application/xml";
+    
+	/**
+	 * Compone el nombre del algoritmo de firma que utiliza un algoritmo de huella concreto y emplea un determinado tipo
+	 * de clave de cifrado. El algoritmo de huella se extrae del algoritmo proporcionado, que puede ser de huella, de firma
+	 * o una referencia al algoritmo (OID o URL).
+	 * @param algorithm Algoritmo de huella digital o firma.
+	 * @param keyType Tipo de clave de firma.
+	 * @return Nombre del algoritmo de firma. */
+	public static String composeSignatureAlgorithmName(final String algorithm, final String keyType) {
+		if (algorithm == null) {
+			throw new IllegalArgumentException(
+					"El nombre del algoritmo no puede ser nulo"); //$NON-NLS-1$
+		}
+		if (keyType == null) {
+			throw new IllegalArgumentException(
+					"El tipo de clave de certificado no puede ser nulo"); //$NON-NLS-1$
+		}
+
+		// Limpiamos el nombre del algorithm de huella
+		final String digestAlgorithm = getDigestAlgorithmName(algorithm).replace("-", ""); //$NON-NLS-1$ //$NON-NLS-2$
+
+		// Agregamos el algoritmo de cifrado correspondiente al tipo de clave del certificado
+		String suffix;
+		if (keyType.equals("RSA")) { //$NON-NLS-1$
+			suffix = "withRSA"; //$NON-NLS-1$
+		} else if (keyType.equals("DSA")) { //$NON-NLS-1$
+			suffix = "withDSA"; //$NON-NLS-1$
+		} else if (keyType.startsWith("EC")) { //$NON-NLS-1$
+			suffix = "withECDSA"; //$NON-NLS-1$
+		} else {
+			throw new IllegalArgumentException("Tipo de clave de firma no soportado: " + keyType); //$NON-NLS-1$
+		}
+		return digestAlgorithm + suffix;
+	}
+    
+	/** Obtiene el nombre de un algoritmo de huella digital a partir de una de
+	 * las variantes de este.
+	 * @param pseudoName Nombre o variante del nombre del algoritmo de huella digital.
+	 * @return Nombre del algoritmo de huella digital. */
+	public static String getDigestAlgorithmName(final String pseudoName) {
+		if (pseudoName == null) {
+			throw new IllegalArgumentException(
+				"El nombre del algoritmo de huella digital no puede ser nulo" //$NON-NLS-1$
+			);
+		}
+		final String upperPseudoName = pseudoName.toUpperCase(Locale.US);
+		if (upperPseudoName.equals("SHA")  //$NON-NLS-1$
+				|| upperPseudoName.equals("http://www.w3.org/2000/09/xmldsig#sha1".toUpperCase(Locale.US)) //$NON-NLS-1$
+				|| upperPseudoName.equals("1.3.14.3.2.26") //$NON-NLS-1$
+				|| upperPseudoName.startsWith("SHA1") //$NON-NLS-1$
+				|| upperPseudoName.startsWith("SHA-1")) //$NON-NLS-1$
+		{
+			return "SHA1"; //$NON-NLS-1$
+		}
+
+		if (upperPseudoName.equals("http://www.w3.org/2001/04/xmlenc#sha256".toUpperCase(Locale.US))  //$NON-NLS-1$
+				|| upperPseudoName.equals("2.16.840.1.101.3.4.2.1") //$NON-NLS-1$
+				|| upperPseudoName.startsWith("SHA256") //$NON-NLS-1$
+				|| upperPseudoName.startsWith("SHA-256")) { //$NON-NLS-1$
+			return "SHA-256"; //$NON-NLS-1$
+		}
+
+		if (upperPseudoName.startsWith("SHA384") //$NON-NLS-1$
+				|| upperPseudoName.equals("2.16.840.1.101.3.4.2.2") //$NON-NLS-1$
+				|| upperPseudoName.startsWith("SHA-384")) { //$NON-NLS-1$
+			return "SHA-384"; //$NON-NLS-1$
+		}
+
+		if (upperPseudoName.equals("http://www.w3.org/2001/04/xmlenc#sha512".toUpperCase(Locale.US))  //$NON-NLS-1$
+				|| upperPseudoName.equals("2.16.840.1.101.3.4.2.3") //$NON-NLS-1$
+				|| upperPseudoName.startsWith("SHA512") //$NON-NLS-1$
+				|| upperPseudoName.startsWith("SHA-512")) { //$NON-NLS-1$
+			return "SHA-512"; //$NON-NLS-1$
+		}
+
+		if (upperPseudoName.equals("http://www.w3.org/2001/04/xmlenc#ripemd160".toUpperCase(Locale.US))  //$NON-NLS-1$
+				|| upperPseudoName.startsWith("RIPEMD160") //$NON-NLS-1$
+				|| upperPseudoName.startsWith("RIPEMD-160")) { //$NON-NLS-1$
+			return "RIPEMD160"; //$NON-NLS-1$
+		}
+
+		// Comprobamos si el nombre del algoritmo tiene un formato conocido de algoritmo de firma
+		// e intentamos obtener el nombre del algoritmo de huella del mismo
+
+		// Nombre estandar de algoritmo de firma
+		if (pseudoName.contains("with")) { //$NON-NLS-1$
+			final String subname = pseudoName.substring(0, pseudoName.indexOf("with")); //$NON-NLS-1$
+			return getDigestAlgorithmName(subname);
+		}
+		// Algoritmo de firma XML
+		else if (pseudoName.startsWith("http://www.w3.org/2001/04/xmldsig-more#") //$NON-NLS-1$
+				|| pseudoName.startsWith("http://www.w3.org/2000/09/xmldsig#") //$NON-NLS-1$
+				|| pseudoName.startsWith("http://www.w3.org/2009/xmldsig11#")) { //$NON-NLS-1$
+			final String subname = pseudoName.substring(pseudoName.lastIndexOf('-') + 1);
+			return getDigestAlgorithmName(subname);
+		}
+
+		// No se ha podido extraer el nombre del algoritmo
+		Logger.getLogger("es.gob.afirma").warning( //$NON-NLS-1$
+			"Algoritmo de huella desconocido, no se normalizara su nombre: " + pseudoName //$NON-NLS-1$
+		);
+
+		return pseudoName;
+	}
 }

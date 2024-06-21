@@ -37,25 +37,18 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
-import org.bouncycastle.asn1.ASN1BitString;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Encoding;
-import org.bouncycastle.asn1.ASN1External;
 import org.bouncycastle.asn1.ASN1InputStream;
-import org.bouncycastle.asn1.ASN1Integer;
-import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1OctetString;
-import org.bouncycastle.asn1.ASN1OutputStream;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.ASN1Set;
@@ -65,7 +58,6 @@ import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.DERUTCTime;
-import org.bouncycastle.asn1.OIDTokenizer;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.CMSAttributes;
@@ -74,7 +66,6 @@ import org.bouncycastle.asn1.cms.IssuerAndSerialNumber;
 import org.bouncycastle.asn1.cms.SignedData;
 import org.bouncycastle.asn1.cms.SignerIdentifier;
 import org.bouncycastle.asn1.cms.SignerInfo;
-import org.bouncycastle.asn1.dvcs.Data;
 import org.bouncycastle.asn1.esf.ESFAttributes;
 import org.bouncycastle.asn1.ess.ContentHints;
 import org.bouncycastle.asn1.ess.ESSCertID;
@@ -84,28 +75,21 @@ import org.bouncycastle.asn1.ess.SigningCertificateV2;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
-import org.bouncycastle.asn1.x509.Certificate;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.GeneralNames;
 import org.bouncycastle.asn1.x509.IssuerSerial;
 import org.bouncycastle.asn1.x509.TBSCertificateStructure;
 import org.bouncycastle.asn1.x509.X509CertificateStructure;
-import org.bouncycastle.cert.X509CRLHolder;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSSignedDataGenerator;
-import org.bouncycastle.cms.CMSSignedGenerator;
-import org.bouncycastle.cms.CMSTypedData;
 import org.bouncycastle.cms.SignerId;
-import org.bouncycastle.cms.SignerInfoGeneratorBuilder;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.DefaultSignatureAlgorithmIdentifierFinder;
-import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.bouncycastle.util.Store;
 import org.ietf.jgss.Oid;
@@ -179,21 +163,21 @@ public final class CMSBuilder {
      * @return an object that represents the ContentInfo.
      * @throws SigningException If the method fails.
      */
-    private ContentInfo createContentInto(boolean includeContent, Oid dataType, P7ContentSignerParameters parameters) throws SigningException {
+    private ContentInfo createContentInto(final boolean includeContent, final Oid dataType, final P7ContentSignerParameters parameters) throws SigningException {
 	ContentInfo encInfo = null;
-	ASN1ObjectIdentifier contentTypeOID = new ASN1ObjectIdentifier(dataType.toString());
+	final ASN1ObjectIdentifier contentTypeOID = new ASN1ObjectIdentifier(dataType.toString());
 
 	if (includeContent) {
 	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.CMSB_LOG003));
-	    OutputStream bOut = new ByteArrayOutputStream();
-	    byte[ ] content2 = parameters.getContent();
-	    CMSProcessable msg = new CMSProcessableByteArray(content2);
+	    final OutputStream bOut = new ByteArrayOutputStream();
+	    final byte[ ] content2 = parameters.getContent();
+	    final CMSProcessable msg = new CMSProcessableByteArray(content2);
 	    try {
 		msg.write(bOut);
 		encInfo = new ContentInfo(contentTypeOID, new DEROctetString(((ByteArrayOutputStream) bOut).toByteArray()));
-	    } catch (IOException ex) {
+	    } catch (final IOException ex) {
 		throw new SigningException(Language.getResIntegra(ILogConstantKeys.CMSB_LOG004), ex);
-	    } catch (CMSException e) {
+	    } catch (final CMSException e) {
 		throw new SigningException(Language.getResIntegra(ILogConstantKeys.CMSB_LOG004), e);
 	    } finally {
 		UtilsResourcesCommons.safeCloseOutputStream(bOut);
@@ -246,7 +230,7 @@ public final class CMSBuilder {
      * @throws SigningException in error case.
      */
     @SuppressWarnings("restriction")
-    public byte[ ] generateSignedData(final P7ContentSignerParameters parameters, final boolean includeContent, final Oid dataType, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID, String idClient) throws SigningException {
+    public byte[ ] generateSignedData(final P7ContentSignerParameters parameters, final boolean includeContent, final Oid dataType, final Properties extraParams, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID, final String idClient) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.CMSB_LOG001));
 	if (GenericUtilsCommons.checkNullValues(parameters, dataType)) {
 	    throw new IllegalArgumentException(Language.getResIntegra(ILogConstantKeys.CMSB_LOG002));
@@ -266,7 +250,7 @@ public final class CMSBuilder {
 
 	    final ASN1EncodableVector digestAlgs = new ASN1EncodableVector();
 
-	    String digestAlgorithm = SignatureConstants.SIGN_ALGORITHMS_SUPPORT_CADES.get(parameters.getSignatureAlgorithm());
+	    final String digestAlgorithm = SignatureConstants.getDigestAlgorithmName(parameters.getSignatureAlgorithm());
 
 	    final sun.security.x509.AlgorithmId digestAlgorithmId = sun.security.x509.AlgorithmId.get(digestAlgorithm);
 
@@ -277,34 +261,38 @@ public final class CMSBuilder {
 	    // 3. CONTENTINFO
 	    // si se introduce el contenido o no
 
-	    ContentInfo encInfo = createContentInto(includeContent, dataType, parameters);
+	    final ContentInfo encInfo = createContentInto(includeContent, dataType, parameters);
 
 	    // 4. CERTIFICADOS
 	    // obtenemos la lista de certificados e incluimos el certificado
 	    // firmante
 
-	    X509Certificate signerCertificate = (X509Certificate) parameters.getPrivateKey().getCertificate();
-	    ASN1Set certificates = createBerSetFromList(X509CertificateStructure.getInstance(ASN1Primitive.fromByteArray(signerCertificate.getEncoded())));
+	    final X509Certificate signerCertificate = (X509Certificate) parameters.getPrivateKey().getCertificate();
+	    final ASN1Set certificates = createBerSetFromList(X509CertificateStructure.getInstance(ASN1Primitive.fromByteArray(signerCertificate.getEncoded())));
 
-	    ASN1Set certrevlist = null;
+	    final ASN1Set certrevlist = null;
 
 	    // 5. SIGNERINFO
 	    // raiz de la secuencia de SignerInfo
-	    ASN1EncodableVector signerInfos = new ASN1EncodableVector();
+	    final ASN1EncodableVector signerInfos = new ASN1EncodableVector();
 
-	    TBSCertificateStructure tbs = TBSCertificateStructure.getInstance(ASN1Primitive.fromByteArray(signerCertificate.getTBSCertificate()));
-	    IssuerAndSerialNumber encSid = new IssuerAndSerialNumber(X500Name.getInstance(tbs.getIssuer()), tbs.getSerialNumber().getValue());
+	    final TBSCertificateStructure tbs = TBSCertificateStructure.getInstance(ASN1Primitive.fromByteArray(signerCertificate.getTBSCertificate()));
+	    final IssuerAndSerialNumber encSid = new IssuerAndSerialNumber(X500Name.getInstance(tbs.getIssuer()), tbs.getSerialNumber().getValue());
 
-	    SignerIdentifier identifier = new SignerIdentifier(encSid);
+	    final SignerIdentifier identifier = new SignerIdentifier(encSid);
 
 	    // AlgorithmIdentifier
 	    digAlgId = new AlgorithmIdentifier(new ASN1ObjectIdentifier(digestAlgorithmId.getOID().toString()), DERNull.INSTANCE);
 
 	    // Atributos firmados
-	    ASN1Set signedAttr = generateSignedAttr(parameters, digestAlgorithmId, digAlgId, digestAlgorithm, dataType, optionalParams, signatureForm, signaturePolicyID, includeContent, idClient);
+	    final ASN1Set signedAttr = generateSignedAttr(parameters, digestAlgorithmId, digAlgId, digestAlgorithm, dataType, optionalParams, signatureForm, signaturePolicyID, includeContent, idClient);
 
+	    final String keyType = signerCertificate.getPublicKey().getAlgorithm();
+	    
+	    final String signAlgorithm = SignatureConstants.composeSignatureAlgorithmName(digestAlgorithm, keyType);
+	    
 	    // Generamos la firma
-	    ASN1OctetString sign2 = sign(parameters.getSignatureAlgorithm(), parameters.getPrivateKey(), signedAttr);
+	    final ASN1OctetString sign2 = sign(signAlgorithm, parameters.getPrivateKey(), signedAttr);
 
 	    // Atributos no firmados
 	    ASN1Set unsignedAttr = null;
@@ -312,7 +300,7 @@ public final class CMSBuilder {
 	    // Comprobamos si se ha indicado añadir sello de tiempo
 	    if (includeTimestamp) {
 		// Obtenemos el sello de tiempo de TS@
-		TimeStampToken tst = generateTimestamp(sign2.getOctets(), idClient);
+		final TimeStampToken tst = generateTimestamp(sign2.getOctets(), idClient);
 
 		// Llevamos a cabo la validación del sello de tiempo
 		UtilsTimestampPdfBc.validateASN1Timestamp(tst);
@@ -326,13 +314,13 @@ public final class CMSBuilder {
 		InputStream is = null;
 		try {
 		    is = new ASN1InputStream(tst.getEncoded());
-		    ASN1Primitive derObject = ((ASN1InputStream) is).readObject();
-		    DERSet derSet = new DERSet(derObject);
-		    Attribute unsignAtt = new Attribute(PKCSObjectIdentifiers.id_aa_signatureTimeStampToken, derSet);
-		    Map<ASN1ObjectIdentifier, Attribute> hashtable = new Hashtable<ASN1ObjectIdentifier, Attribute>();
+		    final ASN1Primitive derObject = ((ASN1InputStream) is).readObject();
+		    final DERSet derSet = new DERSet(derObject);
+		    final Attribute unsignAtt = new Attribute(PKCSObjectIdentifiers.id_aa_signatureTimeStampToken, derSet);
+		    final Map<ASN1ObjectIdentifier, Attribute> hashtable = new Hashtable<ASN1ObjectIdentifier, Attribute>();
 		    hashtable.put(PKCSObjectIdentifiers.id_aa_signatureTimeStampToken, unsignAtt);
 
-		    AttributeTable unsignedAtts = new AttributeTable((Hashtable<ASN1ObjectIdentifier, Attribute>) hashtable);
+		    final AttributeTable unsignedAtts = new AttributeTable((Hashtable<ASN1ObjectIdentifier, Attribute>) hashtable);
 		    unsignedAttr = getAttributeSet(unsignedAtts);
 		} finally {
 		    UtilsResourcesCommons.safeCloseInputStream(is);
@@ -343,17 +331,17 @@ public final class CMSBuilder {
 	    }
 
 	    // digEncryptionAlgorithm
-	    AlgorithmIdentifier encAlgId = new DefaultSignatureAlgorithmIdentifierFinder().find(parameters.getSignatureAlgorithm());
+	    final AlgorithmIdentifier encAlgId = new DefaultSignatureAlgorithmIdentifierFinder().find(signAlgorithm);
 
-	    SignerInfo signerInfo = new SignerInfo(identifier, digAlgId, signedAttr, encAlgId, sign2, unsignedAttr);
+	    final SignerInfo signerInfo = new SignerInfo(identifier, digAlgId, signedAttr, encAlgId, sign2, unsignedAttr);
 
 	    // Comprobamos que la firma generada cumple con las características
 	    // de
 	    // la política de sello de tiempo, en el caso de ser EPES
-	    if (isEPES) {
+	    if (this.isEPES) {
 		try {
-		    SignaturePolicyManager.validateGeneratedCAdESEPESSignature(signerInfo, policyID, null, false, idClient);
-		} catch (SignaturePolicyException e) {
+		    SignaturePolicyManager.validateGeneratedCAdESEPESSignature(signerInfo, this.policyID, null, false, idClient);
+		} catch (final SignaturePolicyException e) {
 		    throw new SigningException(Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG034, new Object[ ] { e.getMessage() }), e);
 		}
 	    }
@@ -361,11 +349,11 @@ public final class CMSBuilder {
 
 	    // construimos el Signed Data y lo devolvemos
 	    return new ContentInfo(PKCSObjectIdentifiers.signedData, new SignedData(new DERSet(digestAlgs), encInfo, certificates, certrevlist, new DERSet(signerInfos))).getEncoded(ASN1Encoding.DER);
-	} catch (CertificateException e) {
+	} catch (final CertificateException e) {
 	    throw new SigningException(Language.getResIntegra(ILogConstantKeys.CMSB_LOG006), e);
-	} catch (NoSuchAlgorithmException e) {
+	} catch (final NoSuchAlgorithmException e) {
 	    throw new SigningException(Language.getResIntegra(ILogConstantKeys.CMSB_LOG007), e);
-	} catch (IOException e) {
+	} catch (final IOException e) {
 	    throw new SigningException(Language.getResIntegra(ILogConstantKeys.CMSB_LOG008), e);
 	}
 
@@ -409,7 +397,7 @@ public final class CMSBuilder {
      * signature policies.
      * @throws SigningException in error case.
      */
-    public byte[ ] generateSignedData(final P7ContentSignerParameters parameters, final boolean includeContent, final Oid dataType, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID) throws SigningException {
+    public byte[ ] generateSignedData(final P7ContentSignerParameters parameters, final boolean includeContent, final Oid dataType, final Properties extraParams, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID) throws SigningException {
 	return generateSignedData(parameters, includeContent, dataType, extraParams, includeTimestamp, signatureForm, signaturePolicyID, null);
 
     }
@@ -420,7 +408,7 @@ public final class CMSBuilder {
      * @return an object that represents the timestamp.
      * @throws SigningException If the method fails.
      */
-    public TimeStampToken generateTimestamp(byte[ ] dataToStamp) throws SigningException {
+    public TimeStampToken generateTimestamp(final byte[ ] dataToStamp) throws SigningException {
 	// Devolvemos el sello de tiempo
 	return generateTimestamp(dataToStamp, null);
     }
@@ -432,13 +420,13 @@ public final class CMSBuilder {
      * @return an object that represents the timestamp.
      * @throws SigningException If the method fails.
      */
-    public TimeStampToken generateTimestamp(byte[ ] dataToStamp, String idClient) throws SigningException {
+    public TimeStampToken generateTimestamp(final byte[ ] dataToStamp, final String idClient) throws SigningException {
 	TimeStampToken tst = null;
 
 	String tsaCommunicationMode = null;
 	String applicationID = null;
 
-	Properties integraProperties = new IntegraProperties().getIntegraProperties(idClient);
+	final Properties integraProperties = new IntegraProperties().getIntegraProperties(idClient);
 	// Rescatamos del archivo de propiedades el modo en que
 	// vamos a solicitar el sello de tiempo
 	tsaCommunicationMode = (String) integraProperties.get(IntegraFacadeConstants.KEY_TSA_COMMUNICATION_TYPE);
@@ -450,8 +438,8 @@ public final class CMSBuilder {
 	// Comprobamos que se ha indicado el identificador de la aplicación
 	// cliente para la comunicación con TS@
 	if (tsaCommunicationMode == null || tsaCommunicationMode.trim().isEmpty()) {
-	    String propertiesName = IIntegraConstants.PROPERTIES_FILE;
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG041, new Object[ ] { propertiesName });
+	    final String propertiesName = IIntegraConstants.PROPERTIES_FILE;
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG041, new Object[ ] { propertiesName });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
@@ -459,8 +447,8 @@ public final class CMSBuilder {
 	// Comprobamos que se ha indicado el tipo de comunicación a usar para
 	// obtener el sello de tiempo de TS@
 	if (applicationID == null || applicationID.trim().isEmpty()) {
-	    String propertiesName = IIntegraConstants.PROPERTIES_FILE;
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG040, new Object[ ] { propertiesName });
+	    final String propertiesName = IIntegraConstants.PROPERTIES_FILE;
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG040, new Object[ ] { propertiesName });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
@@ -520,16 +508,16 @@ public final class CMSBuilder {
      * @throws SigningException throws in error case.
      */
     @SuppressWarnings("restriction")
-    private ASN1Set generateSignedAttr(P7ContentSignerParameters parameters, sun.security.x509.AlgorithmId digestAlgorithmId, AlgorithmIdentifier algId, String digestAlgorithm, Oid dataType, Properties extraParams, String signatureForm, String signaturePolicyID, boolean includeContent, String idClient) throws SigningException {
+    private ASN1Set generateSignedAttr(final P7ContentSignerParameters parameters, final sun.security.x509.AlgorithmId digestAlgorithmId, final AlgorithmIdentifier algId, final String digestAlgorithm, final Oid dataType, final Properties extraParams, final String signatureForm, final String signaturePolicyID, final boolean includeContent, final String idClient) throws SigningException {
 
 	try {
-	    boolean isPadesSigner = extraParams.get(SignatureConstants.SIGN_FORMAT_PADES) == null ? false : true;
-	    X509Certificate cert = (X509Certificate) parameters.getPrivateKey().getCertificate();
+	    final boolean isPadesSigner = extraParams.get(SignatureConstants.SIGN_FORMAT_PADES) == null ? false : true;
+	    final X509Certificate cert = (X509Certificate) parameters.getPrivateKey().getCertificate();
 
 	    // // ATRIBUTOS
 
 	    // authenticatedAttributes
-	    ASN1EncodableVector contexExpecific = new ASN1EncodableVector();
+	    final ASN1EncodableVector contexExpecific = new ASN1EncodableVector();
 
 	    // tipo de contenido
 	    contexExpecific.add(new Attribute(CMSAttributes.contentType, new DERSet(new ASN1ObjectIdentifier(dataType.toString()))));
@@ -538,8 +526,10 @@ public final class CMSBuilder {
 	    if (!isPadesSigner) {
 		contexExpecific.add(new Attribute(CMSAttributes.signingTime, new DERSet(new DERUTCTime(Calendar.getInstance().getTime()))));
 	    }
+	    
+	    final String signAlgorithm = SignatureConstants.composeSignatureAlgorithmName(digestAlgorithm, parameters.getPrivateKey().getPrivateKey().getAlgorithm());
 
-	    AlgorithmIdentifier signAlgorithmId = new DefaultSignatureAlgorithmIdentifierFinder().find(parameters.getSignatureAlgorithm());
+	    final AlgorithmIdentifier signAlgorithmId = new DefaultSignatureAlgorithmIdentifierFinder().find(signAlgorithm);
 
 	    // Política de la firma --> elemento SignaturePolicyId
 	    addPolicy(contexExpecific, extraParams, isPadesSigner, signatureForm, signaturePolicyID, signAlgorithmId, algId, includeContent, idClient);
@@ -568,11 +558,11 @@ public final class CMSBuilder {
 		     *
 		     */
 
-		    TBSCertificateStructure tbs = TBSCertificateStructure.getInstance(ASN1Primitive.fromByteArray(cert.getTBSCertificate()));
-		    GeneralName gn = new GeneralName(tbs.getIssuer());
-		    GeneralNames gns = new GeneralNames(gn);
+		    final TBSCertificateStructure tbs = TBSCertificateStructure.getInstance(ASN1Primitive.fromByteArray(cert.getTBSCertificate()));
+		    final GeneralName gn = new GeneralName(tbs.getIssuer());
+		    final GeneralNames gns = new GeneralNames(gn);
 
-		    IssuerSerial isuerSerial = new IssuerSerial(gns, tbs.getSerialNumber());
+		    final IssuerSerial isuerSerial = new IssuerSerial(gns, tbs.getSerialNumber());
 
 		    /**
 		     * ESSCertIDv2 ::=  SEQUENCE {
@@ -584,9 +574,9 @@ public final class CMSBuilder {
 		     *   Hash ::= OCTET STRING
 		     */
 
-		    MessageDigest md = MessageDigest.getInstance(CryptoUtilPdfBc.getDigestAlgorithmName(digestAlgorithmId.getName()));
-		    byte[ ] certHash = md.digest(cert.getEncoded());
-		    ESSCertIDv2[ ] essCertIDv2 = { new ESSCertIDv2(algId, certHash, isuerSerial) };
+		    final MessageDigest md = MessageDigest.getInstance(CryptoUtilPdfBc.getDigestAlgorithmName(digestAlgorithmId.getName()));
+		    final byte[ ] certHash = md.digest(cert.getEncoded());
+		    final ESSCertIDv2[ ] essCertIDv2 = { new ESSCertIDv2(algId, certHash, isuerSerial) };
 
 		    /**
 		     * PolicyInformation ::= SEQUENCE {
@@ -602,7 +592,7 @@ public final class CMSBuilder {
 		     *
 		     */
 
-		    SigningCertificateV2 scv2 = new SigningCertificateV2(essCertIDv2); // Sin
+		    final SigningCertificateV2 scv2 = new SigningCertificateV2(essCertIDv2); // Sin
 
 		    // Secuencia con singningCertificate
 		    contexExpecific.add(new Attribute(PKCSObjectIdentifiers.id_aa_signingCertificateV2, new DERSet(scv2)));
@@ -620,11 +610,11 @@ public final class CMSBuilder {
 		     *	}
 		     */
 
-		    TBSCertificateStructure tbs = TBSCertificateStructure.getInstance(ASN1Primitive.fromByteArray(cert.getTBSCertificate()));
-		    GeneralName gn = new GeneralName(tbs.getIssuer());
-		    GeneralNames gns = new GeneralNames(gn);
+		    final TBSCertificateStructure tbs = TBSCertificateStructure.getInstance(ASN1Primitive.fromByteArray(cert.getTBSCertificate()));
+		    final GeneralName gn = new GeneralName(tbs.getIssuer());
+		    final GeneralNames gns = new GeneralNames(gn);
 
-		    IssuerSerial isuerSerial = new IssuerSerial(gns, tbs.getSerialNumber());
+		    final IssuerSerial isuerSerial = new IssuerSerial(gns, tbs.getSerialNumber());
 
 		    /**
 		     *	ESSCertID ::=  SEQUENCE {
@@ -635,10 +625,10 @@ public final class CMSBuilder {
 		     *	Hash ::= OCTET STRING -- SHA1 hash of entire certificate
 		     */
 		    // MessageDigest
-		    String digestAlgorithmName = CryptoUtilPdfBc.getDigestAlgorithmName(digestAlgorithmId.getName());
-		    MessageDigest md = MessageDigest.getInstance(digestAlgorithmName);
-		    byte[ ] certHash = md.digest(cert.getEncoded());
-		    ESSCertID essCertID = new ESSCertID(certHash, isuerSerial);
+		    final String digestAlgorithmName = CryptoUtilPdfBc.getDigestAlgorithmName(digestAlgorithmId.getName());
+		    final MessageDigest md = MessageDigest.getInstance(digestAlgorithmName);
+		    final byte[ ] certHash = md.digest(cert.getEncoded());
+		    final ESSCertID essCertID = new ESSCertID(certHash, isuerSerial);
 
 		    /**
 		     * PolicyInformation ::= SEQUENCE {
@@ -654,7 +644,7 @@ public final class CMSBuilder {
 		     *
 		     */
 
-		    SigningCertificate scv = new SigningCertificate(essCertID); // Sin
+		    final SigningCertificate scv = new SigningCertificate(essCertID); // Sin
 		    // politica
 
 		    /**
@@ -667,11 +657,11 @@ public final class CMSBuilder {
 		}
 	    }
 	    return getAttributeSet(new AttributeTable(contexExpecific));
-	} catch (CertificateException e) {
+	} catch (final CertificateException e) {
 	    throw new SigningException(Language.getResIntegra(ILogConstantKeys.CMSB_LOG006), e);
-	} catch (NoSuchAlgorithmException e) {
+	} catch (final NoSuchAlgorithmException e) {
 	    throw new SigningException(Language.getResIntegra(ILogConstantKeys.CMSB_LOG007), e);
-	} catch (IOException e) {
+	} catch (final IOException e) {
 	    throw new SigningException(Language.getResIntegra(ILogConstantKeys.CMSB_LOG008), e);
 	}
     }
@@ -691,8 +681,8 @@ public final class CMSBuilder {
      * @param idClient Parameter that represents the client application identifier.
      * @throws SigningException If the method fails.
      */
-    private void addPolicyToCAdESSignature(ASN1EncodableVector contexExpecific, Properties extraParams, String signaturePolicyID, Properties policyProperties, AlgorithmIdentifier signAlgorithmId, AlgorithmIdentifier digestAlgorithmId, boolean includeContent, String idClient) throws SigningException {
-	isEPES = true;
+    private void addPolicyToCAdESSignature(final ASN1EncodableVector contexExpecific, final Properties extraParams, final String signaturePolicyID, final Properties policyProperties, final AlgorithmIdentifier signAlgorithmId, final AlgorithmIdentifier digestAlgorithmId, final boolean includeContent, final String idClient) throws SigningException {
+	this.isEPES = true;
 
 	// Comprobamos si se ha indicado un identificador de política de
 	// firma
@@ -700,55 +690,53 @@ public final class CMSBuilder {
 	    // Rescatamos del archivo con las propiedades asociadas a las
 	    // políticas de firma el identificador de la política de firma
 	    // asociada a las firmas ASN.1
-	    policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_ASN1_POLICY_ID);
+	    this.policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_ASN1_POLICY_ID);
 	    // Comprobamos que el identificador de la política de firma no
 	    // sea nulo ni vacío
-	    if (!GenericUtilsCommons.assertStringValue(policyID)) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG023, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+	    if (!GenericUtilsCommons.assertStringValue(this.policyID)) {
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG023, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE });
 		LOGGER.warn(errorMsg);
-		isEPES = false;
+		this.isEPES = false;
 	    } else {
-		LOGGER.info(Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG025, new Object[ ] { policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE }));
+		LOGGER.info(Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG025, new Object[ ] { this.policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE }));
 	    }
+	} else // Buscamos en el archivo con las propiedades asociadas a las
+	// políticas de firma si existe la política de firma para el
+	// identificador indicado
+	if (policyProperties.get(signaturePolicyID + ISignPolicyConstants.KEY_IDENTIFIER_ASN1) != null) {
+	LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG026, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE, signaturePolicyID }));
+	this.policyID = signaturePolicyID;
 	} else {
-	    // Buscamos en el archivo con las propiedades asociadas a las
-	    // políticas de firma si existe la política de firma para el
-	    // identificador indicado
-	    if (policyProperties.get(signaturePolicyID + ISignPolicyConstants.KEY_IDENTIFIER_ASN1) != null) {
-		LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG026, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE, signaturePolicyID }));
-		policyID = signaturePolicyID;
-	    } else {
-		// Rescatamos del archivo con las propiedades asociadas a
-		// las políticas de firma el identificador de la política de
-		// firma
-		// asociada a las firmas ASN.1
-		policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_ASN1_POLICY_ID);
-		// Comprobamos que el identificador de la política de firma
-		// no sea nulo ni vacío
-		if (!GenericUtilsCommons.assertStringValue(policyID)) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG027, new Object[ ] { signaturePolicyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
-		    LOGGER.warn(errorMsg);
-		    isEPES = false;
-		} else {
-		    LOGGER.info(Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG029, new Object[ ] { signaturePolicyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE, policyID }));
-		}
-	    }
+	// Rescatamos del archivo con las propiedades asociadas a
+	// las políticas de firma el identificador de la política de
+	// firma
+	// asociada a las firmas ASN.1
+	this.policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_ASN1_POLICY_ID);
+	// Comprobamos que el identificador de la política de firma
+	// no sea nulo ni vacío
+	if (!GenericUtilsCommons.assertStringValue(this.policyID)) {
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG027, new Object[ ] { signaturePolicyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+	    LOGGER.warn(errorMsg);
+	    this.isEPES = false;
+	} else {
+	    LOGGER.info(Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG029, new Object[ ] { signaturePolicyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE, this.policyID }));
 	}
-	if (isEPES) {
+	}
+	if (this.isEPES) {
 	    checkEPESParams(policyProperties, signAlgorithmId, digestAlgorithmId, includeContent, idClient);
 
 	    // Accedemos a la propiedad con el valor del
 	    // elemento SigPolicyQualifier
-	    String qualifier = extraParams.getProperty(SignatureProperties.CADES_POLICY_QUALIFIER_PROP);
+	    final String qualifier = extraParams.getProperty(SignatureProperties.CADES_POLICY_QUALIFIER_PROP);
 
 	    // Procesamos los parámetros asociados a la política de firma
 	    // que utilizar
 	    try {
-		SignaturePolicyManager.addASN1SignPolicy(contexExpecific, qualifier, policyID, policyProperties, false, idClient);
+		SignaturePolicyManager.addASN1SignPolicy(contexExpecific, qualifier, this.policyID, policyProperties, false, idClient);
 		// Incluimos el atributo content-hints
 		contexExpecific.add(new Attribute(CMSAttributes.contentHint, new DERSet(new ContentHints(PKCSObjectIdentifiers.data))));
-	    } catch (SignaturePolicyException e) {
-		String errorMsg = Language.getResIntegra(ILogConstantKeys.CMSB_LOG033);
+	    } catch (final SignaturePolicyException e) {
+		final String errorMsg = Language.getResIntegra(ILogConstantKeys.CMSB_LOG033);
 		LOGGER.error(errorMsg, e);
 		throw new SigningException(errorMsg, e);
 	    }
@@ -770,29 +758,29 @@ public final class CMSBuilder {
      * @param idClient Parameter that represents the client application identifier.
      * @throws SigningException If the validation fails.
      */
-    private void checkEPESParams(Properties policyProperties, AlgorithmIdentifier signAlgorithmId, AlgorithmIdentifier digestAlgorithmId, boolean includeContent, String idClient) throws SigningException {
+    private void checkEPESParams(final Properties policyProperties, final AlgorithmIdentifier signAlgorithmId, final AlgorithmIdentifier digestAlgorithmId, final boolean includeContent, final String idClient) throws SigningException {
 	// Comprobamos si el algoritmo de firma está soportado por la
 	// política de firma
-	if (!SignaturePolicyManager.isValidASN1SignAlgorithmByPolicy(signAlgorithmId, policyID, policyProperties, idClient)) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG031, new Object[ ] { signAlgorithmId, policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+	if (!SignaturePolicyManager.isValidASN1SignAlgorithmByPolicy(signAlgorithmId, this.policyID, policyProperties, idClient)) {
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG031, new Object[ ] { signAlgorithmId, this.policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
 	// Comprobamos si el algoritmo de hash está soportado por la
 	// política de firma
-	if (!SignaturePolicyManager.isValidASN1HashAlgorithmByPolicy(digestAlgorithmId, policyID, policyProperties, idClient)) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG032, new Object[ ] { digestAlgorithmId, policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+	if (!SignaturePolicyManager.isValidASN1HashAlgorithmByPolicy(digestAlgorithmId, this.policyID, policyProperties, idClient)) {
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG032, new Object[ ] { digestAlgorithmId, this.policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
 	// Comprobamos si el modo de firma está soportado por la política de
 	// firma
-	if (!SignaturePolicyManager.isValidASN1SigningModeByPolicy(includeContent, policyID, policyProperties, idClient)) {
+	if (!SignaturePolicyManager.isValidASN1SigningModeByPolicy(includeContent, this.policyID, policyProperties, idClient)) {
 	    String signingMode = IUtilsSignature.IMPLICIT_SIGNATURE_MODE;
 	    if (!includeContent) {
 		signingMode = IUtilsSignature.EXPLICIT_SIGNATURE_MODE;
 	    }
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG035, new Object[ ] { signingMode, policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG035, new Object[ ] { signingMode, this.policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
@@ -812,8 +800,8 @@ public final class CMSBuilder {
      * @param idClient Parameter that represents the client application identifier.
      * @throws SigningException If the method fails.
      */
-    private void addPolicyToPAdESSignature(ASN1EncodableVector contexExpecific, Properties extraParams, String signaturePolicyID, Properties policyProperties, AlgorithmIdentifier signAlgorithmId, AlgorithmIdentifier digestAlgorithmId, String idClient) throws SigningException {
-	isEPES = true;
+    private void addPolicyToPAdESSignature(final ASN1EncodableVector contexExpecific, final Properties extraParams, final String signaturePolicyID, final Properties policyProperties, final AlgorithmIdentifier signAlgorithmId, final AlgorithmIdentifier digestAlgorithmId, final String idClient) throws SigningException {
+	this.isEPES = true;
 
 	// Comprobamos si se ha indicado un identificador de política de
 	// firma
@@ -821,65 +809,63 @@ public final class CMSBuilder {
 	    // Rescatamos del archivo con las propiedades asociadas a las
 	    // políticas de firma el identificador de la política de firma
 	    // asociada a las firmas PDF
-	    policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_PDF_POLICY_ID);
+	    this.policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_PDF_POLICY_ID);
 	    // Comprobamos que el identificador de la política de firma no
 	    // sea nulo ni vacío
-	    if (!GenericUtilsCommons.assertStringValue(policyID)) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG024, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+	    if (!GenericUtilsCommons.assertStringValue(this.policyID)) {
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG024, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE });
 		LOGGER.warn(errorMsg);
-		isEPES = false;
+		this.isEPES = false;
 	    } else {
-		LOGGER.info(Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG025, new Object[ ] { policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE }));
+		LOGGER.info(Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG025, new Object[ ] { this.policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE }));
 	    }
+	} else // Buscamos en el archivo con las propiedades asociadas a las
+	// políticas de firma si existe la política de firma para el
+	// identificador indicado
+	if (policyProperties.get(signaturePolicyID + ISignPolicyConstants.KEY_IDENTIFIER_PDF) != null) {
+	LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG026, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE, signaturePolicyID }));
+	this.policyID = signaturePolicyID;
 	} else {
-	    // Buscamos en el archivo con las propiedades asociadas a las
-	    // políticas de firma si existe la política de firma para el
-	    // identificador indicado
-	    if (policyProperties.get(signaturePolicyID + ISignPolicyConstants.KEY_IDENTIFIER_PDF) != null) {
-		LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG026, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE, signaturePolicyID }));
-		policyID = signaturePolicyID;
-	    } else {
-		// Rescatamos del archivo con las propiedades asociadas a
-		// las políticas de firma el identificador de la política de
-		// firma
-		// asociada a las firmas PDF
-		policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_PDF_POLICY_ID);
-		// Comprobamos que el identificador de la política de firma
-		// no sea nulo ni vacío
-		if (!GenericUtilsCommons.assertStringValue(policyID)) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG028, new Object[ ] { signaturePolicyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
-		    LOGGER.warn(errorMsg);
-		    isEPES = false;
-		} else {
-		    LOGGER.info(Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG030, new Object[ ] { signaturePolicyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE, policyID }));
-		}
-	    }
+	// Rescatamos del archivo con las propiedades asociadas a
+	// las políticas de firma el identificador de la política de
+	// firma
+	// asociada a las firmas PDF
+	this.policyID = (String) policyProperties.get(ISignPolicyConstants.KEY_PDF_POLICY_ID);
+	// Comprobamos que el identificador de la política de firma
+	// no sea nulo ni vacío
+	if (!GenericUtilsCommons.assertStringValue(this.policyID)) {
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG028, new Object[ ] { signaturePolicyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+	    LOGGER.warn(errorMsg);
+	    this.isEPES = false;
+	} else {
+	    LOGGER.info(Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG030, new Object[ ] { signaturePolicyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE, this.policyID }));
 	}
-	if (isEPES) {
+	}
+	if (this.isEPES) {
 	    // Comprobamos si el algoritmo de firma está soportado por la
 	    // política de firma
-	    if (!SignaturePolicyManager.isValidASN1SignAlgorithmByPolicy(signAlgorithmId, policyID, policyProperties, idClient)) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG031, new Object[ ] { signAlgorithmId, policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+	    if (!SignaturePolicyManager.isValidASN1SignAlgorithmByPolicy(signAlgorithmId, this.policyID, policyProperties, idClient)) {
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG031, new Object[ ] { signAlgorithmId, this.policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 	    // Comprobamos si el algoritmo de hash está soportado por la
 	    // política de firma
-	    if (!SignaturePolicyManager.isValidASN1HashAlgorithmByPolicy(digestAlgorithmId, policyID, policyProperties, idClient)) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG032, new Object[ ] { digestAlgorithmId, policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+	    if (!SignaturePolicyManager.isValidASN1HashAlgorithmByPolicy(digestAlgorithmId, this.policyID, policyProperties, idClient)) {
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG032, new Object[ ] { digestAlgorithmId, this.policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 	    // Accedemos a la propiedad con el valor del
 	    // elemento SigPolicyQualifier
-	    String qualifier = extraParams.getProperty(SignatureProperties.CADES_POLICY_QUALIFIER_PROP);
+	    final String qualifier = extraParams.getProperty(SignatureProperties.CADES_POLICY_QUALIFIER_PROP);
 
 	    // Procesamos los parámetros asociados a la política de firma
 	    // que utilizar
 	    try {
-		SignaturePolicyManager.addASN1SignPolicy(contexExpecific, qualifier, policyID, policyProperties, true, idClient);
-	    } catch (SignaturePolicyException e) {
-		String errorMsg = Language.getResIntegra(ILogConstantKeys.CMSB_LOG033);
+		SignaturePolicyManager.addASN1SignPolicy(contexExpecific, qualifier, this.policyID, policyProperties, true, idClient);
+	    } catch (final SignaturePolicyException e) {
+		final String errorMsg = Language.getResIntegra(ILogConstantKeys.CMSB_LOG033);
 		LOGGER.error(errorMsg, e);
 		throw new SigningException(errorMsg, e);
 	    }
@@ -911,16 +897,16 @@ public final class CMSBuilder {
      * @param idClient Parameter that represents the client application identifier.
      * @throws SigningException If the method fails.
      */
-    private void addPolicy(ASN1EncodableVector contexExpecific, Properties extraParams, boolean isPadesSigner, String signatureForm, String signaturePolicyID, AlgorithmIdentifier signAlgorithmId, AlgorithmIdentifier digestAlgorithmId, boolean includeContent, String idClient) throws SigningException {
+    private void addPolicy(final ASN1EncodableVector contexExpecific, final Properties extraParams, final boolean isPadesSigner, final String signatureForm, final String signaturePolicyID, final AlgorithmIdentifier signAlgorithmId, final AlgorithmIdentifier digestAlgorithmId, final boolean includeContent, final String idClient) throws SigningException {
 
 	// Comprobamos si la firma a realizar debe ser BES o EPES
-	isEPES = signatureForm.equals(ISignatureFormatDetector.FORMAT_CADES_EPES) || signatureForm.equals(ISignatureFormatDetector.FORMAT_PADES_EPES) || (signatureForm.equals(ISignatureFormatDetector.FORMAT_CADES_B_LEVEL) || signatureForm.equals(ISignatureFormatDetector.FORMAT_PADES_B_LEVEL)) && signaturePolicyID != null;
+	this.isEPES = signatureForm.equals(ISignatureFormatDetector.FORMAT_CADES_EPES) || signatureForm.equals(ISignatureFormatDetector.FORMAT_PADES_EPES) || (signatureForm.equals(ISignatureFormatDetector.FORMAT_CADES_B_LEVEL) || signatureForm.equals(ISignatureFormatDetector.FORMAT_PADES_B_LEVEL)) && signaturePolicyID != null;
 
 	// Si la firma a realizar es EPES
-	if (isEPES) {
+	if (this.isEPES) {
 	    // Accedemos al archivo con las propiedades asociadas a las
 	    // políticas de firma
-	    Properties policyProperties = new IntegraProperties().getIntegraProperties(idClient);
+	    final Properties policyProperties = new IntegraProperties().getIntegraProperties(idClient);
 	    if (!isPadesSigner) {
 		addPolicyToCAdESSignature(contexExpecific, extraParams, signaturePolicyID, policyProperties, signAlgorithmId, digestAlgorithmId, includeContent, idClient);
 	    }
@@ -939,12 +925,12 @@ public final class CMSBuilder {
      * @return signature in ASN1OctetString format.
      * @throws SigningException in error case.
      */
-    private ASN1OctetString sign(String signatureAlgorithm, PrivateKeyEntry keyEntry, ASN1Set signedAttributes) throws SigningException {
+    private ASN1OctetString sign(final String signatureAlgorithm, final PrivateKeyEntry keyEntry, final ASN1Set signedAttributes) throws SigningException {
 
 	Signature sig = null;
 	try {
 	    sig = Signature.getInstance(signatureAlgorithm);
-	} catch (Exception e) {
+	} catch (final Exception e) {
 	    throw new SigningException(Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG011, new Object[ ] { signatureAlgorithm }), e);
 	}
 
@@ -952,7 +938,7 @@ public final class CMSBuilder {
 
 	try {
 	    tmp = signedAttributes.getEncoded(ASN1Encoding.DER);
-	} catch (IOException ex) {
+	} catch (final IOException ex) {
 	    LOGGER.error(ex);
 	    throw new SigningException(Language.getResIntegra(ILogConstantKeys.CMSB_LOG012), ex);
 	}
@@ -960,14 +946,14 @@ public final class CMSBuilder {
 	// Indicar clave privada para la firma
 	try {
 	    sig.initSign(keyEntry.getPrivateKey());
-	} catch (InvalidKeyException e) {
+	} catch (final InvalidKeyException e) {
 	    throw new SigningException(Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG013, new Object[ ] { signatureAlgorithm }), e);
 	}
 
 	// Actualizamos la configuracion de firma
 	try {
 	    sig.update(tmp);
-	} catch (SignatureException e) {
+	} catch (final SignatureException e) {
 	    throw new SigningException(Language.getResIntegra(ILogConstantKeys.CMSB_LOG014), e);
 	}
 
@@ -975,11 +961,11 @@ public final class CMSBuilder {
 	byte[ ] realSig = null;
 	try {
 	    realSig = sig.sign();
-	} catch (SignatureException e) {
+	} catch (final SignatureException e) {
 	    throw new SigningException(Language.getResIntegra(ILogConstantKeys.CMSB_LOG015), e);
 	}
 
-	ASN1OctetString encDigest = new DEROctetString(realSig);
+	final ASN1OctetString encDigest = new DEROctetString(realSig);
 
 	return encDigest;
 
@@ -1036,25 +1022,25 @@ public final class CMSBuilder {
      * @return a new {@link SignerInfo} instance.
      * @throws SigningException in error case.
      */
-    public SignerInfo generateSignerInfo(P7ContentSignerParameters parameters, SignerInfoTypes signType, boolean includeTimestamp, String signatureForm, String signaturePolicyID, boolean includeContent, String idClient) throws SigningException {
+    public SignerInfo generateSignerInfo(final P7ContentSignerParameters parameters, final SignerInfoTypes signType, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID, final boolean includeContent, final String idClient) throws SigningException {
 	try {
 	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.CMSB_LOG016));
 	    // obtención del certificado firmante
-	    PrivateKeyEntry privateKey = parameters.getPrivateKey();
-	    X509Certificate signerCertificate = (X509Certificate) privateKey.getCertificate();
-	    X509CertificateHolder cert = new X509CertificateHolder(signerCertificate.getEncoded());
-	    IssuerAndSerialNumber issuerAndSerial = new IssuerAndSerialNumber(cert.getIssuer(), cert.getSerialNumber());
+	    final PrivateKeyEntry privateKey = parameters.getPrivateKey();
+	    final X509Certificate signerCertificate = (X509Certificate) privateKey.getCertificate();
+	    final X509CertificateHolder cert = new X509CertificateHolder(signerCertificate.getEncoded());
+	    final IssuerAndSerialNumber issuerAndSerial = new IssuerAndSerialNumber(cert.getIssuer(), cert.getSerialNumber());
 
 	    // SignerIdentifier
-	    SignerIdentifier signerIdentifier = new SignerIdentifier(issuerAndSerial);
+	    final SignerIdentifier signerIdentifier = new SignerIdentifier(issuerAndSerial);
 
 	    // DigestAlgorithmIdentifier
-	    String digestAlgorithm = SignatureConstants.SIGN_ALGORITHMS_SUPPORT_CADES.get(parameters.getSignatureAlgorithm());
-	    AlgorithmIdentifier digestAlgorithmId = makeDigestAlgorithmId(digestAlgorithm);
+	    final String digestAlgorithm = SignatureConstants.SIGN_ALGORITHMS_SUPPORT_CADES.get(parameters.getSignatureAlgorithm());
+	    final AlgorithmIdentifier digestAlgorithmId = makeDigestAlgorithmId(digestAlgorithm);
 
 	    // ATRIBUTOS FIRMADOS
 	    // =====================================================================================
-	    ASN1EncodableVector signedAttributes = new ASN1EncodableVector();
+	    final ASN1EncodableVector signedAttributes = new ASN1EncodableVector();
 
 	    // ContentType (no se incluye en counterSignature CMS por
 	    // especificación de RFC 3852)
@@ -1064,8 +1050,12 @@ public final class CMSBuilder {
 	    // SigningTime (fecha de firma)
 	    signedAttributes.add(new Attribute(CMSAttributes.signingTime, new DERSet(new DERUTCTime(Calendar.getInstance().getTime()))));
 
+	    final String keyType = signerCertificate.getPublicKey().getAlgorithm();
+	    
+	    final String algorithmName = SignatureConstants.composeSignatureAlgorithmName(digestAlgorithm, keyType);
+	    
 	    // SignatureAlgorithmIdentifier
-	    AlgorithmIdentifier signAlgorithmId = new DefaultSignatureAlgorithmIdentifierFinder().find(parameters.getSignatureAlgorithm());
+	    final AlgorithmIdentifier signAlgorithmId = new DefaultSignatureAlgorithmIdentifierFinder().find(algorithmName);
 
 	    // Política de la firma --> elemento SignaturePolicyId
 	    addPolicy(signedAttributes, parameters.getOptionalParams(), false, signatureForm, signaturePolicyID, signAlgorithmId, digestAlgorithmId, includeContent, idClient);
@@ -1075,17 +1065,17 @@ public final class CMSBuilder {
 	    // signatureValue del SignerInfo padre.
 	    // si es cosign el digest se crea a partir del contenido pasado como
 	    // argumento.
-	    byte[ ] messageDigest = CryptoUtilPdfBc.digest(digestAlgorithm, parameters.getContent());
+	    final byte[ ] messageDigest = CryptoUtilPdfBc.digest(digestAlgorithm, parameters.getContent());
 	    signedAttributes.add(new Attribute(CMSAttributes.messageDigest, new DERSet(new DEROctetString(messageDigest))));
 
 	    // Signing Certificate Attributes
 	    signedAttributes.add(generateSigningCertAttr(cert, digestAlgorithm, digestAlgorithmId));
 
-	    ASN1Set signedAttrSet = getAttributeSet(new AttributeTable(signedAttributes));
+	    final ASN1Set signedAttrSet = getAttributeSet(new AttributeTable(signedAttributes));
 	    // ========================================================================================================
 
 	    // SignatureValue (cálculo de la firma de los atributos firmados)
-	    ASN1OctetString signatureValue = sign(parameters.getSignatureAlgorithm(), privateKey, signedAttrSet);
+	    final ASN1OctetString signatureValue = sign(algorithmName, privateKey, signedAttrSet);
 
 	    // Atributos no firmados
 	    ASN1Set unsignedAttr = null;
@@ -1093,7 +1083,7 @@ public final class CMSBuilder {
 	    // Comprobamos si se ha indicado añadir sello de tiempo
 	    if (includeTimestamp) {
 		// Obtenemos el sello de tiempo de TS@
-		TimeStampToken tst = generateTimestamp(signatureValue.getOctets(), idClient);
+		final TimeStampToken tst = generateTimestamp(signatureValue.getOctets(), idClient);
 
 		// Validamos el sello de tiempo
 		UtilsTimestampPdfBc.validateASN1Timestamp(tst);
@@ -1107,13 +1097,13 @@ public final class CMSBuilder {
 		InputStream is = null;
 		try {
 		    is = new ASN1InputStream(tst.getEncoded());
-		    ASN1Primitive derObject = ((ASN1InputStream) is).readObject();
-		    DERSet derSet = new DERSet(derObject);
-		    Attribute unsignAtt = new Attribute(PKCSObjectIdentifiers.id_aa_signatureTimeStampToken, derSet);
-		    Map<ASN1ObjectIdentifier, Attribute> hashtable = new Hashtable<ASN1ObjectIdentifier, Attribute>();
+		    final ASN1Primitive derObject = ((ASN1InputStream) is).readObject();
+		    final DERSet derSet = new DERSet(derObject);
+		    final Attribute unsignAtt = new Attribute(PKCSObjectIdentifiers.id_aa_signatureTimeStampToken, derSet);
+		    final Map<ASN1ObjectIdentifier, Attribute> hashtable = new Hashtable<ASN1ObjectIdentifier, Attribute>();
 		    hashtable.put(PKCSObjectIdentifiers.id_aa_signatureTimeStampToken, unsignAtt);
 
-		    AttributeTable unsignedAtts = new AttributeTable((Hashtable<ASN1ObjectIdentifier, Attribute>) hashtable);
+		    final AttributeTable unsignedAtts = new AttributeTable((Hashtable<ASN1ObjectIdentifier, Attribute>) hashtable);
 		    unsignedAttr = getAttributeSet(unsignedAtts);
 		} finally {
 		    UtilsResourcesCommons.safeCloseInputStream(is);
@@ -1124,22 +1114,22 @@ public final class CMSBuilder {
 	    }
 
 	    // Generamos el objeto SignerInfo
-	    SignerInfo signerInfo = new SignerInfo(signerIdentifier, digestAlgorithmId, signedAttrSet, signAlgorithmId, signatureValue, unsignedAttr);
+	    final SignerInfo signerInfo = new SignerInfo(signerIdentifier, digestAlgorithmId, signedAttrSet, signAlgorithmId, signatureValue, unsignedAttr);
 
 	    // Comprobamos que la firma generada cumple con las características
 	    // de
 	    // la política de sello de tiempo, en el caso de ser EPES
-	    if (isEPES) {
+	    if (this.isEPES) {
 		try {
-		    SignaturePolicyManager.validateGeneratedCAdESEPESSignature(signerInfo, policyID, null, signType.equals(SignerInfoTypes.COUNTERSIGNATURE), idClient);
-		} catch (SignaturePolicyException e) {
+		    SignaturePolicyManager.validateGeneratedCAdESEPESSignature(signerInfo, this.policyID, null, signType.equals(SignerInfoTypes.COUNTERSIGNATURE), idClient);
+		} catch (final SignaturePolicyException e) {
 		    throw new SigningException(Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG034, new Object[ ] { e.getMessage() }), e);
 		}
 	    }
 	    return signerInfo;
-	} catch (CertificateException e) {
+	} catch (final CertificateException e) {
 	    throw new SigningException(Language.getResIntegra(ILogConstantKeys.CMSB_LOG006), e);
-	} catch (IOException e) {
+	} catch (final IOException e) {
 	    throw new SigningException(Language.getResIntegra(ILogConstantKeys.CMSB_LOG008), e);
 	}
     }
@@ -1194,7 +1184,7 @@ public final class CMSBuilder {
      * @return a new {@link SignerInfo} instance.
      * @throws SigningException in error case.
      */
-    public SignerInfo generateSignerInfo(P7ContentSignerParameters parameters, SignerInfoTypes signType, boolean includeTimestamp, String signatureForm, String signaturePolicyID, boolean includeContent) throws SigningException {
+    public SignerInfo generateSignerInfo(final P7ContentSignerParameters parameters, final SignerInfoTypes signType, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID, final boolean includeContent) throws SigningException {
 	return generateSignerInfo(parameters, signType, includeTimestamp, signatureForm, signaturePolicyID, includeContent, null);
     }
 
@@ -1203,7 +1193,7 @@ public final class CMSBuilder {
      * @param unsignedAttributes Parameter that represents the unsigned attributes of a signer.
      * @return a boolean that indicates whether a timestamp can be added to the unsigned attributes of a signer (true), or not (false).
      */
-    private static boolean checkAddTimestamp(AttributeTable unsignedAttributes) {
+    private static boolean checkAddTimestamp(final AttributeTable unsignedAttributes) {
 	if (unsignedAttributes == null || unsignedAttributes.get(PKCSObjectIdentifiers.id_aa_signatureTimeStampToken) == null && unsignedAttributes.get(ESFAttributes.archiveTimestamp) == null && unsignedAttributes.get(ESFAttributes.archiveTimestampV2) == null) {
 	    return true;
 	}
@@ -1216,7 +1206,7 @@ public final class CMSBuilder {
      * @param listCertificates Parameter that represents the list with the certificates of the signers to upgrade.
      * @return a boolean that indicates whether to add a timestamp to a signer of a signature (true) or not (false).
      */
-    private static boolean checkUpgradeSignature(SignerInformation signerInformation, List<X509Certificate> listCertificates) {
+    private static boolean checkUpgradeSignature(final SignerInformation signerInformation, final List<X509Certificate> listCertificates) {
 	boolean upgrade = false;
 	/*
 	 * Comprobamos si hay que actualizar el firmante, esto se hará si se cumple alguna de las siguientes condiciones:
@@ -1231,13 +1221,13 @@ public final class CMSBuilder {
 	    upgrade = checkAddTimestamp(signerInformation.getUnsignedAttributes());
 	} else {
 	    // Obtenemos la información del firmante
-	    SignerId signerID = signerInformation.getSID();
+	    final SignerId signerID = signerInformation.getSID();
 	    int i = 0;
 	    boolean enc = false;
 	    // Recorremos la lista de certificados indicados para
 	    // actualizar
 	    while (!enc && i < listCertificates.size()) {
-		X509Certificate certificateToUpgrade = listCertificates.get(i);
+		final X509Certificate certificateToUpgrade = listCertificates.get(i);
 		// Comprobamos si el certificado del firmante contenido
 		// en la firma coincide con el certificado indicado para
 		// actualizar
@@ -1265,12 +1255,12 @@ public final class CMSBuilder {
      * @throws SigningException If the method fails.
      */
     @SuppressWarnings("unchecked")
-    public List<SignerInformation> upgradeSignersWithTimestamp(CMSSignedData signedData, List<X509Certificate> listCertificates, List<SignerInformation> listSignersSignature, String idClient) throws SigningException {
+    public List<SignerInformation> upgradeSignersWithTimestamp(final CMSSignedData signedData, final List<X509Certificate> listCertificates, final List<SignerInformation> listSignersSignature, final String idClient) throws SigningException {
 	try {
 
 	    // Definimos una lista con todos los firmantes que tendrá la firma
 	    // actualizada
-	    List<SignerInformation> listNewSigners = new ArrayList<SignerInformation>();
+	    final List<SignerInformation> listNewSigners = new ArrayList<SignerInformation>();
 
 	    // Recorremos la lista de firmantes contenidos en la firma
 	    for (SignerInformation signerInformation: listSignersSignature) {
@@ -1282,26 +1272,26 @@ public final class CMSBuilder {
 		 * 2- El certificado del firmante coincide con alguno de los indicados como parámetro no posee un sello de tiempo previo ni posee
 		 * como atributo no firmado id-aa-ets-archiveTimeStamp o id-aa-ets-archiveTimestampV2.
 		 */
-		boolean upgrade = checkUpgradeSignature(signerInformation, listCertificates);
+		final boolean upgrade = checkUpgradeSignature(signerInformation, listCertificates);
 
 		// Si se debe actualizar el firmante comprobamos si ya tiene un
 		// sello de tiempo
 		// asociado. En dicho caso, no se le añade otro.
-		String issuer = signerInformation.getSID().getIssuer().toString();
-		BigInteger serialNumber = signerInformation.getSID().getSerialNumber();
+		final String issuer = signerInformation.getSID().getIssuer().toString();
+		final BigInteger serialNumber = signerInformation.getSID().getSerialNumber();
 
 		if (upgrade) {
 		    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG022, new Object[ ] { issuer, serialNumber }));
 		    AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
 
 		    // Generamos el sello de tiempo
-		    TimeStampToken tst = generateTimestamp(signerInformation.getSignature(), idClient);
+		    final TimeStampToken tst = generateTimestamp(signerInformation.getSignature(), idClient);
 
 		    // Llevamos a cabo la validación del sello de tiempo
 		    UtilsTimestampPdfBc.validateASN1Timestamp(tst);
 
 		    // Obtenemos el certificado firmante
-		    X509Certificate signingCertificate = UtilsSignatureOp.getSigningCertificate(signedData, signerInformation);
+		    final X509Certificate signingCertificate = UtilsSignatureOp.getSigningCertificate(signedData, signerInformation);
 
 		    // Validamos el certificado firmante respecto a la fecha del
 		    // sello de tiempo
@@ -1315,17 +1305,17 @@ public final class CMSBuilder {
 		    // Añadimos el sello de tiempo al conjunto de atributos
 		    // no
 		    // firmados
-		    InputStream is = null;
+		    final InputStream is = null;
 		    try {
 			unsignedAttributes = unsignedAttributes.add(PKCSObjectIdentifiers.id_aa_signatureTimeStampToken, ASN1Sequence.getInstance(tst.getEncoded()));
 
 			// Accedemos al conjunto de contrafirmas del firmante,
 			// en caso de tener
-			SignerInformationStore signerInformationStore = signerInformation.getCounterSignatures();
-			List<SignerInformation> listCounterSignatures = (List<SignerInformation>) signerInformationStore.getSigners();
+			final SignerInformationStore signerInformationStore = signerInformation.getCounterSignatures();
+			final List<SignerInformation> listCounterSignatures = (List<SignerInformation>) signerInformationStore.getSigners();
 			if (!listCounterSignatures.isEmpty()) {
 			    // Actualizamos los firmantes de las contrafirmas
-			    List<SignerInformation> listUpdatedCounterSignatures = upgradeSignersWithTimestamp(signedData, listCertificates, listCounterSignatures, idClient);
+			    final List<SignerInformation> listUpdatedCounterSignatures = upgradeSignersWithTimestamp(signedData, listCertificates, listCounterSignatures, idClient);
 
 			    // Eliminamos las contrafirmas del firmante
 			    unsignedAttributes = unsignedAttributes.remove(PKCSObjectIdentifiers.pkcs_9_at_counterSignature);
@@ -1350,8 +1340,8 @@ public final class CMSBuilder {
 		listNewSigners.add(signerInformation);
 	    }
 	    return listNewSigners;
-	} catch (IOException e) {
-	    String msg = Language.getResIntegra(ILogConstantKeys.CMSB_LOG020);
+	} catch (final IOException e) {
+	    final String msg = Language.getResIntegra(ILogConstantKeys.CMSB_LOG020);
 	    LOGGER.error(msg, e);
 	    throw new SigningException(msg, e);
 	}
@@ -1391,10 +1381,10 @@ public final class CMSBuilder {
      * @throws SigningException in error case.
      * @throws IOException if cetificate is wrong.
      */
-    private Attribute generateSigningCertAttr(X509CertificateHolder cert, String digestAlgorithm, AlgorithmIdentifier digestAlgorithmId) throws SigningException, IOException {
+    private Attribute generateSigningCertAttr(final X509CertificateHolder cert, final String digestAlgorithm, final AlgorithmIdentifier digestAlgorithmId) throws SigningException, IOException {
 
-	X500Name x500Name = cert.getIssuer();
-	BigInteger serialNumber = cert.getSerialNumber();
+	final X500Name x500Name = cert.getIssuer();
+	final BigInteger serialNumber = cert.getSerialNumber();
 
 	/**
 	 IssuerSerial ::= SEQUENCE {
@@ -1402,9 +1392,9 @@ public final class CMSBuilder {
 	        serialNumber             CertificateSerialNumber
 	   }
 	 */
-	IssuerSerial issuerSerial = new IssuerSerial(new GeneralNames(new GeneralName(x500Name)), serialNumber);
+	final IssuerSerial issuerSerial = new IssuerSerial(new GeneralNames(new GeneralName(x500Name)), serialNumber);
 
-	byte[ ] certHash = CryptoUtilPdfBc.digest(digestAlgorithm, cert.getEncoded());
+	final byte[ ] certHash = CryptoUtilPdfBc.digest(digestAlgorithm, cert.getEncoded());
 
 	// Comprobación si se emplea SigningCertificate ó
 	// SigningCertificate-V2 (sha1 o demás sha2 respectivamente)
@@ -1424,9 +1414,9 @@ public final class CMSBuilder {
 	     */
 
 	    // creación objeto ESSCertID
-	    ESSCertID essCertID = new ESSCertID(certHash, issuerSerial);
+	    final ESSCertID essCertID = new ESSCertID(certHash, issuerSerial);
 	    // creación objeto SigningCertificate
-	    SigningCertificate scv = new SigningCertificate(essCertID); // SigningCertificate
+	    final SigningCertificate scv = new SigningCertificate(essCertID); // SigningCertificate
 	    // sin
 	    // politica.
 
@@ -1449,9 +1439,9 @@ public final class CMSBuilder {
 	    	Hash ::= OCTET STRING
 	    
 	     */
-	    ESSCertIDv2[ ] essCertIDv2 = { new ESSCertIDv2(digestAlgorithmId, certHash, issuerSerial) };
+	    final ESSCertIDv2[ ] essCertIDv2 = { new ESSCertIDv2(digestAlgorithmId, certHash, issuerSerial) };
 
-	    SigningCertificateV2 scv2 = new SigningCertificateV2(essCertIDv2); // SigningCertificateV2
+	    final SigningCertificateV2 scv2 = new SigningCertificateV2(essCertIDv2); // SigningCertificateV2
 	    // sin
 	    // política
 
@@ -1467,13 +1457,13 @@ public final class CMSBuilder {
      * @return a new CMSData instance.
      * @throws SigningException in error case.
      */
-    CMSSignedData generateCMSData(CMSSignedData oldSignedData, Store certificates, SignerInformationStore signerInfos) throws SigningException {
+    CMSSignedData generateCMSData(final CMSSignedData oldSignedData, final Store certificates, final SignerInformationStore signerInfos) throws SigningException {
 	try {
-	    CMSSignedDataGenerator cmsGenerator = new CMSSignedDataGenerator();
+	    final CMSSignedDataGenerator cmsGenerator = new CMSSignedDataGenerator();
 	    cmsGenerator.addCertificates(certificates);
 	    cmsGenerator.addSigners(signerInfos);
 	    return cmsGenerator.generate(oldSignedData.getSignedContent());
-	} catch (CMSException e) {
+	} catch (final CMSException e) {
 	    LOGGER.error(e);
 	    throw new SigningException(e);
 	}
@@ -1567,17 +1557,17 @@ public final class CMSBuilder {
      * @return a DER byte array of signature object (SignedData object).
      * @throws SigningException if happens a error in the
      */
-    byte[ ] generateSignedData(CMSSignedData cmsSignedData, AlgorithmIdentifier digestAlgId, Store certificates, ASN1Set signerInfos) throws SigningException {
+    byte[ ] generateSignedData(final CMSSignedData cmsSignedData, final AlgorithmIdentifier digestAlgId, final Store certificates, final ASN1Set signerInfos) throws SigningException {
     	// Obtención del contentInfo de la firma original.
-    	SignedData originalSignedData = SignedData.getInstance(cmsSignedData.toASN1Structure().getContent());
+    	final SignedData originalSignedData = SignedData.getInstance(cmsSignedData.toASN1Structure().getContent());
     	ASN1Set digestAlgorithms = originalSignedData.getDigestAlgorithms();
     	digestAlgorithms = addElementToASN1Set(digestAlgorithms, digestAlgId.toASN1Primitive());
-    	SignedData newSignedData = new SignedData(digestAlgorithms, originalSignedData.getEncapContentInfo(), convertCertStoreToASN1Set(certificates), null, signerInfos);
+    	final SignedData newSignedData = new SignedData(digestAlgorithms, originalSignedData.getEncapContentInfo(), convertCertStoreToASN1Set(certificates), null, signerInfos);
     	
     	byte[] signedData;
     	try {
 			signedData = new ContentInfo(PKCSObjectIdentifiers.signedData, newSignedData).getEncoded(ASN1Encoding.DER);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 		    LOGGER.error(e);
 		    throw new SigningException(e);
 		}
@@ -1589,9 +1579,9 @@ public final class CMSBuilder {
      * @param signerInfos store with a collection of SignatureInformation objects.
      * @return a set of {@link SignerInfo} objects.
      */
-    ASN1Set convertToASN1Set(SignerInformationStore signerInfos) {
-	ASN1EncodableVector result = new ASN1EncodableVector();
-	for (Object signerInformation: signerInfos.getSigners()) {
+    ASN1Set convertToASN1Set(final SignerInformationStore signerInfos) {
+	final ASN1EncodableVector result = new ASN1EncodableVector();
+	for (final Object signerInformation: signerInfos.getSigners()) {
 	    result.add(((SignerInformation) signerInformation).toASN1Structure());
 	}
 	return new DERSet(result);
@@ -1602,9 +1592,9 @@ public final class CMSBuilder {
      * @param store store with a collection of {@link X509CertificateHolder}
      * @return a ASN1Set with a collection of certificates(X509CertificateStructure objects).
      */
-    ASN1Set convertCertStoreToASN1Set(Store store) {
-	ASN1EncodableVector asn1Vector = new ASN1EncodableVector();
-	for (Object element: store.getMatches(null)) {
+    ASN1Set convertCertStoreToASN1Set(final Store store) {
+	final ASN1EncodableVector asn1Vector = new ASN1EncodableVector();
+	for (final Object element: store.getMatches(null)) {
 	    if (element instanceof X509CertificateHolder) {
 		asn1Vector.add(((X509CertificateHolder) element).toASN1Structure());
 	    }
@@ -1618,9 +1608,9 @@ public final class CMSBuilder {
      * @param element ASN1Encodable object to add.
      * @return a new ASN1Set with element included.
      */
-    ASN1Set addElementToASN1Set(ASN1Set set, ASN1Encodable element) {
-	ASN1Encodable[ ] arrayTmp = set.toArray();
-	ASN1Encodable[ ] newArray = new ASN1Encodable[arrayTmp.length + 1];
+    ASN1Set addElementToASN1Set(final ASN1Set set, final ASN1Encodable element) {
+	final ASN1Encodable[ ] arrayTmp = set.toArray();
+	final ASN1Encodable[ ] newArray = new ASN1Encodable[arrayTmp.length + 1];
 	System.arraycopy(arrayTmp, 0, newArray, 0, arrayTmp.length);
 	newArray[newArray.length - 1] = element;
 	return new DERSet(newArray);
@@ -1633,13 +1623,13 @@ public final class CMSBuilder {
      * @throws SigningException if algorithm given is wrong.
      */
     @SuppressWarnings("restriction")
-    AlgorithmIdentifier makeDigestAlgorithmId(String digestAlg) throws SigningException {
+    AlgorithmIdentifier makeDigestAlgorithmId(final String digestAlg) throws SigningException {
 	try {
-	    sun.security.x509.AlgorithmId digestAlgorithmId = sun.security.x509.AlgorithmId.get(digestAlg);
+	    final sun.security.x509.AlgorithmId digestAlgorithmId = sun.security.x509.AlgorithmId.get(digestAlg);
 	    return makeAlgId(digestAlgorithmId.getOID().toString(), digestAlgorithmId.getEncodedParams());
-	} catch (NoSuchAlgorithmException e) {
+	} catch (final NoSuchAlgorithmException e) {
 	    throw new SigningException(Language.getResIntegra(ILogConstantKeys.CMSB_LOG007), e);
-	} catch (IOException e) {
+	} catch (final IOException e) {
 	    throw new SigningException(Language.getResIntegra(ILogConstantKeys.CMSB_LOG007), e);
 	}
     }
@@ -1651,7 +1641,7 @@ public final class CMSBuilder {
      * @return the found identifier.
      * @throws IOException If the method fails.
      */
-    private AlgorithmIdentifier makeAlgId(String oid, byte[ ] params) throws IOException {
+    private AlgorithmIdentifier makeAlgId(final String oid, final byte[ ] params) throws IOException {
 	if (params != null) {
 	    return new AlgorithmIdentifier(new ASN1ObjectIdentifier(oid), makeObj(params));
 	}
@@ -1665,7 +1655,7 @@ public final class CMSBuilder {
      * @throws IOException If the method fails.
      */
     @SuppressWarnings("resource")
-    private ASN1Primitive makeObj(byte[ ] encoding) throws IOException {
+    private ASN1Primitive makeObj(final byte[ ] encoding) throws IOException {
 	if (encoding == null) {
 	    LOGGER.warn(Language.getResIntegra(ILogConstantKeys.CMSB_LOG017));
 	    return null;
@@ -1678,7 +1668,7 @@ public final class CMSBuilder {
      * @param attr Parameter that represents the table of attributes.
      * @return the generated element.
      */
-    private ASN1Set getAttributeSet(AttributeTable attr) {
+    private ASN1Set getAttributeSet(final AttributeTable attr) {
 	if (attr != null) {
 	    return new DERSet(attr.toASN1EncodableVector());
 	}
@@ -1691,8 +1681,8 @@ public final class CMSBuilder {
      * @param derObject Parameter that represents the DER element.
      * @return the generated element.
      */
-    private ASN1Set createBerSetFromList(ASN1Encodable derObject) {
-	ASN1EncodableVector v = new ASN1EncodableVector();
+    private ASN1Set createBerSetFromList(final ASN1Encodable derObject) {
+	final ASN1EncodableVector v = new ASN1EncodableVector();
 	v.add(derObject);
 	return new BERSet(v);
     }
@@ -1702,7 +1692,7 @@ public final class CMSBuilder {
      * @return the value of the attribute {@link #isEPES}.
      */
     public boolean isEPES() {
-	return isEPES;
+	return this.isEPES;
     }
 
     /**
@@ -1710,7 +1700,7 @@ public final class CMSBuilder {
      * @return the value of the attribute {@link #policyID}.
      */
     public String getPolicyID() {
-	return policyID;
+	return this.policyID;
     }
 
     /**
@@ -1732,13 +1722,13 @@ public final class CMSBuilder {
      * @return a store with all instance of SignerInformation signed.
      * @throws SigningException If the method fails.
      */
-    public SignerInformationStore counterSignLeaf(SignerInformationStore signerInfos, P7ContentSignerParameters parameters, boolean includeTimestamp, String signatureForm, String signaturePolicyID, boolean includeContent, String idClient) throws SigningException {
-	List<SignerInformation> newSignerInfos = new ArrayList<SignerInformation>();
+    public SignerInformationStore counterSignLeaf(final SignerInformationStore signerInfos, final P7ContentSignerParameters parameters, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID, final boolean includeContent, final String idClient) throws SigningException {
+	final List<SignerInformation> newSignerInfos = new ArrayList<SignerInformation>();
 	LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG036, new Object[ ] { signerInfos.getSigners().size() }));
 	// se busca el último firmante o contrafirmante para realizar la
 	// contrafirma
-	for (Iterator<?> iterator = signerInfos.getSigners().iterator(); iterator.hasNext();) {
-	    SignerInformation signerInfoOld = (SignerInformation) iterator.next();
+	for (final Iterator<?> iterator = signerInfos.getSigners().iterator(); iterator.hasNext();) {
+	    final SignerInformation signerInfoOld = (SignerInformation) iterator.next();
 	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG037, new Object[ ] { signerInfoOld.getSID().getIssuer(), signerInfoOld.getSID().getSerialNumber() }));
 
 	    // Accedemos al conjunto de atributos no firmados
@@ -1752,7 +1742,7 @@ public final class CMSBuilder {
 		asn1EncodableVector = unsignedAtts.toASN1EncodableVector();
 	    }
 	    // Accedemos a los contra-firmantes que pudiera tener el firmante
-	    SignerInformationStore counterSignsStore = signerInfoOld.getCounterSignatures();
+	    final SignerInformationStore counterSignsStore = signerInfoOld.getCounterSignatures();
 
 	    // Si no posee contra-firmantes
 	    if (counterSignsStore.getSigners().isEmpty()) {
@@ -1763,7 +1753,7 @@ public final class CMSBuilder {
 		parameters.setContent(signerInfoOld.toASN1Structure().getEncryptedDigest().getOctets());
 
 		// Creamos un objeto countersignature (de tipo signerInfo)
-		SignerInfo counterSignature = generateSignerInfo(parameters, SignerInfoTypes.COUNTERSIGNATURE, includeTimestamp, signatureForm, signaturePolicyID, includeContent, idClient);
+		final SignerInfo counterSignature = generateSignerInfo(parameters, SignerInfoTypes.COUNTERSIGNATURE, includeTimestamp, signatureForm, signaturePolicyID, includeContent, idClient);
 
 		// Añadimos el atributo no firmado counter-signature
 		unsignedAtts = unsignedAtts.add(CMSAttributes.counterSignature, counterSignature);
@@ -1771,7 +1761,7 @@ public final class CMSBuilder {
 		// creamos un nuevo signerInfo con los datos originales pero
 		// incluyendo como atributo no firmado, el/los ojeto/s
 		// countersignature/s.
-		SignerInformation newSignerInfo = SignerInformation.replaceUnsignedAttributes(signerInfoOld, unsignedAtts);
+		final SignerInformation newSignerInfo = SignerInformation.replaceUnsignedAttributes(signerInfoOld, unsignedAtts);
 		// newSignerInfo =
 		// newSignerInfo(signerInfoOld.toASN1Structure(),
 		// counterAttributes);
@@ -1781,12 +1771,12 @@ public final class CMSBuilder {
 	    // (última firma/contrafirma)
 	    else {
 		LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.CMSB_LOG039, new Object[ ] { counterSignsStore.size() }));
-		SignerInformationStore counterSignatures = counterSignLeaf(counterSignsStore, parameters, includeTimestamp, signatureForm, signaturePolicyID, includeContent, idClient);
+		final SignerInformationStore counterSignatures = counterSignLeaf(counterSignsStore, parameters, includeTimestamp, signatureForm, signaturePolicyID, includeContent, idClient);
 
 		// creamos un nuevo signerInfo con los datos originales pero
 		// incluyendo como atributo no firmado, el/los ojeto/s
 		// countersignature/s.
-		SignerInformation newSignerInfo = SignerInformation.addCounterSigners(signerInfoOld, counterSignatures);
+		final SignerInformation newSignerInfo = SignerInformation.addCounterSigners(signerInfoOld, counterSignatures);
 		newSignerInfos.add(newSignerInfo);
 	    }
 	}
@@ -1811,7 +1801,7 @@ public final class CMSBuilder {
      * @return a store with all instance of SignerInformation signed.
      * @throws SigningException If the method fails.
      */
-    public SignerInformationStore counterSignLeaf(SignerInformationStore signerInfos, P7ContentSignerParameters parameters, boolean includeTimestamp, String signatureForm, String signaturePolicyID, boolean includeContent) throws SigningException {
+    public SignerInformationStore counterSignLeaf(final SignerInformationStore signerInfos, final P7ContentSignerParameters parameters, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID, final boolean includeContent) throws SigningException {
 
 	return counterSignLeaf(signerInfos, parameters, includeTimestamp, signatureForm, signaturePolicyID, includeContent, null);
     }

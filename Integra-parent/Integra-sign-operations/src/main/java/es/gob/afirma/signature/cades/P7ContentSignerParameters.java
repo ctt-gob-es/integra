@@ -43,12 +43,12 @@ public final class P7ContentSignerParameters {
 	/**
 	 * Attribute that represents the signature algorithm.
 	 */
-	private String signAlgorithm;
+	private final String signAlgorithm;
 
 	/**
 	 * Attribute that represents the private key used to generate the signature.
 	 */
-	private PrivateKeyEntry privateKey;
+	private final PrivateKeyEntry privateKey;
 
 	/**
 	 * Attribute that represents the signature value.
@@ -71,18 +71,18 @@ public final class P7ContentSignerParameters {
 	 * @param signatureAlgorithm Parameter that represents the signature algorithm.
 	 * @param keyEntry Parameter that represents the private key used to generate the signature.
 	 */
-	public P7ContentSignerParameters(final byte[ ] content, String signatureAlgorithm, PrivateKeyEntry keyEntry) {
+	public P7ContentSignerParameters(final byte[ ] content, final String signatureAlgorithm, final PrivateKeyEntry keyEntry) {
 		if (content != null) {
-			data = content.clone();
+			this.data = content.clone();
 		}
 
 		if (signatureAlgorithm == null || signatureAlgorithm.length() < 1) {
 			throw new IllegalArgumentException(Language.getResIntegra(ILogConstantKeys.PCSP_LOG001));
 		}
 		GenericUtilsCommons.checkInputParameterIsNotNull(keyEntry, Language.getResIntegra(ILogConstantKeys.PCSP_LOG002));
-		signAlgorithm = signatureAlgorithm;
-		privateKey = keyEntry;
-		signatureValue = new byte[0];
+		this.signAlgorithm = signatureAlgorithm;
+		this.privateKey = keyEntry;
+		this.signatureValue = new byte[0];
 
 	}
 
@@ -93,7 +93,7 @@ public final class P7ContentSignerParameters {
 	 * @param keyEntry Parameter that represents the private key used to generate the signature.
 	 * @param optionalParameters Optional parameters used in the signing process.
 	 */
-	public P7ContentSignerParameters(byte[ ] content, String signatureAlgorithm, PrivateKeyEntry keyEntry, Properties optionalParameters) {
+	public P7ContentSignerParameters(final byte[ ] content, final String signatureAlgorithm, final PrivateKeyEntry keyEntry, final Properties optionalParameters) {
 		super();
 		this.data = content == null ? content : content.clone();
 		this.signAlgorithm = signatureAlgorithm;
@@ -107,7 +107,7 @@ public final class P7ContentSignerParameters {
 	 * @param keyEntry Parameter that represents the private key used to generate the signature.
 	 * @param optionalParameters Optional parameters used in the signing process.
 	 */
-	public P7ContentSignerParameters(String signatureAlgorithm, PrivateKeyEntry keyEntry, Properties optionalParameters) {
+	public P7ContentSignerParameters(final String signatureAlgorithm, final PrivateKeyEntry keyEntry, final Properties optionalParameters) {
 		super();
 		this.signAlgorithm = signatureAlgorithm;
 		this.privateKey = keyEntry;
@@ -119,7 +119,7 @@ public final class P7ContentSignerParameters {
 	 * @return the value of the attribute {@link #data}.
 	 */
 	public byte[ ] getContent() {
-		return data;
+		return this.data;
 	}
 
 	/**
@@ -127,7 +127,7 @@ public final class P7ContentSignerParameters {
 	 * @return the value of the attribute {@link #signAlgorithm}.
 	 */
 	public String getSignatureAlgorithm() {
-		return signAlgorithm;
+		return this.signAlgorithm;
 	}
 
 	/**
@@ -135,7 +135,7 @@ public final class P7ContentSignerParameters {
 	 * @return the value of the attribute {@link #privateKey}.
 	 */
 	public PrivateKeyEntry getPrivateKey() {
-		return privateKey;
+		return this.privateKey;
 	}
 
 	/**
@@ -143,14 +143,14 @@ public final class P7ContentSignerParameters {
 	 * @return the value of the attribute {@link #digestValue}.
 	 */
 	public byte[ ] getDigestValue() {
-		return digestValue;
+		return this.digestValue;
 	}
 
 	/**
 	 * Sets the value of the attribute {@link #digestValue}.
 	 * @param digestValueParam The value for the attribute {@link #digestValue}.
 	 */
-	public void setDigestValue(byte[ ] digestValueParam) {
+	public void setDigestValue(final byte[ ] digestValueParam) {
 		if (digestValueParam != null) {
 			this.digestValue = digestValueParam.clone();
 		}
@@ -160,7 +160,7 @@ public final class P7ContentSignerParameters {
 	 * Sets the value of the attribute {@link #optionalParams}.
 	 * @param optionalParameters The value for the attribute {@link #optionalParams}.
 	 */
-	public void setOptionalParams(Properties optionalParameters) {
+	public void setOptionalParams(final Properties optionalParameters) {
 		this.optionalParams = optionalParameters;
 	}
 
@@ -169,7 +169,7 @@ public final class P7ContentSignerParameters {
 	 * @return the value of the attribute {@link #optionalParams}.
 	 */
 	public Properties getOptionalParams() {
-		return optionalParams;
+		return this.optionalParams;
 	}
 
 	/**
@@ -177,14 +177,14 @@ public final class P7ContentSignerParameters {
 	 * @return the value of the attribute {@link #signatureValue}.
 	 */
 	public byte[ ] getSignatureValue() {
-		return signatureValue;
+		return this.signatureValue;
 	}
 
 	/**
 	 * Sets the value of the attribute {@link #signatureValue}.
 	 * @param signValue The value for the attribute {@link #signatureValue}.
 	 */
-	public void setSignatureValue(byte[ ] signValue) {
+	public void setSignatureValue(final byte[ ] signValue) {
 		if (signValue != null) {
 			this.signatureValue = signValue.clone();
 		}
@@ -194,7 +194,7 @@ public final class P7ContentSignerParameters {
 	 * Sets the value of the attribute {@link #data}.
 	 * @param content The value for the attribute {@link #data}.
 	 */
-	public void setContent(byte[ ] content) {
+	public void setContent(final byte[ ] content) {
 		if (content != null) {
 			this.data = content.clone();
 		}
