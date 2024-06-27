@@ -114,6 +114,26 @@ public final class SignatureConstants {
      * Constant attribute that represents implicit signature mode.
      */
     public static final String SIGN_MODE_IMPLICIT = "implicit mode";
+    
+    /**
+     * Constant attribute that represents SHA1 algorithm.
+     */
+    public static final String SIGN_ALGORITHM_SHA1 = "SHA1";
+
+    /**
+     * Constant attribute that represents SHA256 algorithm.
+     */
+    public static final String SIGN_ALGORITHM_SHA256 = "SHA256";
+
+    /**
+     * Constant attribute that represents SHA384 algorithm.
+     */
+    public static final String SIGN_ALGORITHM_SHA384 = "SHA384";
+    
+    /**
+     * Constant attribute that represents SHA512 algorithm.
+     */
+    public static final String SIGN_ALGORITHM_SHA512 = "SHA512";
 
     /**
      * Constant attribute that represents default signature mode.
@@ -204,11 +224,15 @@ public final class SignatureConstants {
 	private static final long serialVersionUID = -3091842386857850550L;
 
 	{
+	    put(SIGN_ALGORITHM_SHA1, "http://www.w3.org/2000/09/xmldsig#rsa-sha1");
+	    put(SIGN_ALGORITHM_SHA256, "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256");
+	    put(SIGN_ALGORITHM_SHA384, "http://www.w3.org/2001/04/xmldsig-more#rsa-sha384");
+	    put(SIGN_ALGORITHM_SHA512, "http://www.w3.org/2001/04/xmldsig-more#rsa-sha512");
 	    put(SIGN_ALGORITHM_SHA1WITHRSA, "http://www.w3.org/2000/09/xmldsig#rsa-sha1");
 	    put(SIGN_ALGORITHM_SHA256WITHRSA, "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256");
 	    put(SIGN_ALGORITHM_SHA384WITHRSA, "http://www.w3.org/2001/04/xmldsig-more#rsa-sha384");
 	    put(SIGN_ALGORITHM_SHA512WITHRSA, "http://www.w3.org/2001/04/xmldsig-more#rsa-sha512");
-	    put(SIGN_ALGORITHM_SHA1WITHECDSA, "http://www.w3.org/2001/04/xmldsig#ecdsa-sha1");
+	    put(SIGN_ALGORITHM_SHA1WITHECDSA, "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha1");
 	    put(SIGN_ALGORITHM_SHA256WITHECDSA, "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256");
 	    put(SIGN_ALGORITHM_SHA384WITHECDSA, "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha384");
 	    put(SIGN_ALGORITHM_SHA512WITHECDSA, "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha512");
@@ -226,10 +250,22 @@ public final class SignatureConstants {
 	private static final long serialVersionUID = 74770910568121154L;
 
 	{
+	    put(SIGN_ALGORITHM_SHA1, CryptoUtilCommons.HASH_ALGORITHM_SHA1);
+	    put(SIGN_ALGORITHM_SHA256, CryptoUtilCommons.HASH_ALGORITHM_SHA256);
+	    put(SIGN_ALGORITHM_SHA384, CryptoUtilCommons.HASH_ALGORITHM_SHA384);
+	    put(SIGN_ALGORITHM_SHA512, CryptoUtilCommons.HASH_ALGORITHM_SHA512);
 	    put(CryptoUtilCommons.HASH_ALGORITHM_SHA1, CryptoUtilCommons.HASH_ALGORITHM_SHA1);
 	    put(CryptoUtilCommons.HASH_ALGORITHM_SHA256, CryptoUtilCommons.HASH_ALGORITHM_SHA256);
 	    put(CryptoUtilCommons.HASH_ALGORITHM_SHA384, CryptoUtilCommons.HASH_ALGORITHM_SHA384);
 	    put(CryptoUtilCommons.HASH_ALGORITHM_SHA512, CryptoUtilCommons.HASH_ALGORITHM_SHA512);
+	    put(SIGN_ALGORITHM_SHA1WITHRSA, CryptoUtilCommons.HASH_ALGORITHM_SHA1);
+	    put(SIGN_ALGORITHM_SHA256WITHRSA, CryptoUtilCommons.HASH_ALGORITHM_SHA256);
+	    put(SIGN_ALGORITHM_SHA384WITHRSA, CryptoUtilCommons.HASH_ALGORITHM_SHA384);
+	    put(SIGN_ALGORITHM_SHA512WITHRSA, CryptoUtilCommons.HASH_ALGORITHM_SHA512);
+	    put(SIGN_ALGORITHM_SHA1WITHECDSA, CryptoUtilCommons.HASH_ALGORITHM_SHA1);
+	    put(SIGN_ALGORITHM_SHA256WITHECDSA, CryptoUtilCommons.HASH_ALGORITHM_SHA256);
+	    put(SIGN_ALGORITHM_SHA384WITHECDSA, CryptoUtilCommons.HASH_ALGORITHM_SHA384);
+	    put(SIGN_ALGORITHM_SHA512WITHECDSA, CryptoUtilCommons.HASH_ALGORITHM_SHA512);
 	}
     };
 
@@ -244,6 +280,10 @@ public final class SignatureConstants {
 	private static final long serialVersionUID = -3091842386857850550L;
 
 	{
+	    put(SIGN_ALGORITHM_SHA1, DigestMethod.SHA1);
+	    put(SIGN_ALGORITHM_SHA256, DigestMethod.SHA256);
+	    put(SIGN_ALGORITHM_SHA384, "http://www.w3.org/2001/04/xmldsig-more#sha384");
+	    put(SIGN_ALGORITHM_SHA512, DigestMethod.SHA512);
 	    put(SIGN_ALGORITHM_SHA1WITHRSA, DigestMethod.SHA1);
 	    put(SIGN_ALGORITHM_SHA256WITHRSA, DigestMethod.SHA256);
 	    put(SIGN_ALGORITHM_SHA384WITHRSA, "http://www.w3.org/2001/04/xmldsig-more#sha384");
@@ -266,6 +306,10 @@ public final class SignatureConstants {
 	private static final long serialVersionUID = -3091842386857850550L;
 
 	{
+	    put(SIGN_ALGORITHM_SHA1, CryptoUtilCommons.HASH_ALGORITHM_SHA1);
+	    put(SIGN_ALGORITHM_SHA256, CryptoUtilCommons.HASH_ALGORITHM_SHA256);
+	    put(SIGN_ALGORITHM_SHA384, CryptoUtilCommons.HASH_ALGORITHM_SHA384);
+	    put(SIGN_ALGORITHM_SHA512, CryptoUtilCommons.HASH_ALGORITHM_SHA512);
 	    put(SIGN_ALGORITHM_SHA1WITHRSA, CryptoUtilCommons.HASH_ALGORITHM_SHA1);
 	    put(SIGN_ALGORITHM_SHA256WITHRSA, CryptoUtilCommons.HASH_ALGORITHM_SHA256);
 	    put(SIGN_ALGORITHM_SHA384WITHRSA, CryptoUtilCommons.HASH_ALGORITHM_SHA384);

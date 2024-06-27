@@ -31,11 +31,10 @@ import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-import junit.framework.TestCase;
-
 import org.junit.Ignore;
 
 import es.gob.afirma.utils.UtilsFileSystemCommons;
+import junit.framework.TestCase;
 
 /** 
  * <p>Class that defines common methods used by tests defined for classes stored into <code>es.gob.afirma.signature</code> package.</p>
@@ -89,11 +88,21 @@ public class AbstractSignatureTest extends TestCase {
      * Attribute that represents the private key used for tests. 
      */
     private static PrivateKeyEntry certificatePrivateKey;
+    
+    /**
+     * Attribute that represents the private key used for tests. 
+     */
+    private static PrivateKeyEntry certificateECCPrivateKey;
 
     /**
      * Attribute that represents the certificate used for tests. 
      */
     private static X509Certificate certificate;
+    
+    /**
+     * Attribute that represents the certificate used for tests. 
+     */
+    private static X509Certificate certificateECC;
 
     /**
      * Constant attribute that represents the XML file defined for tests. 
@@ -144,20 +153,20 @@ public class AbstractSignatureTest extends TestCase {
 	if (certificatePrivateKey == null) {
 	    KeyStore.Entry key = null;
 	    try {
-		InputStream is = new FileInputStream(ClassLoader.getSystemResource("keyStoreJCEKS.jks").getFile());
-		KeyStore ks = KeyStore.getInstance("JCEKS");
-		char[ ] password = "12345".toCharArray();
+		final InputStream is = new FileInputStream(ClassLoader.getSystemResource("keyStoreJCEKS.jks").getFile());
+		final KeyStore ks = KeyStore.getInstance("JCEKS");
+		final char[ ] password = "12345".toCharArray();
 		ks.load(is, password);
 		key = ks.getEntry("raul conde", new KeyStore.PasswordProtection(password));
-	    } catch (NoSuchAlgorithmException e) {
+	    } catch (final NoSuchAlgorithmException e) {
 		e.printStackTrace();
-	    } catch (CertificateException e) {
+	    } catch (final CertificateException e) {
 		e.printStackTrace();
-	    } catch (IOException e) {
+	    } catch (final IOException e) {
 		e.printStackTrace();
-	    } catch (KeyStoreException e) {
+	    } catch (final KeyStoreException e) {
 		e.printStackTrace();
-	    } catch (UnrecoverableEntryException e) {
+	    } catch (final UnrecoverableEntryException e) {
 		e.printStackTrace();
 	    }
 	    certificatePrivateKey = (KeyStore.PrivateKeyEntry) key;
@@ -172,22 +181,76 @@ public class AbstractSignatureTest extends TestCase {
     protected X509Certificate getCertificate() {
 	if (certificate == null) {
 	    try {
-		InputStream is = new FileInputStream(ClassLoader.getSystemResource("keyStoreJCEKS.jks").getFile());
-		KeyStore ks = KeyStore.getInstance("JCEKS");
-		char[ ] password = "12345".toCharArray();
+		final InputStream is = new FileInputStream(ClassLoader.getSystemResource("keyStoreJCEKS.jks").getFile());
+		final KeyStore ks = KeyStore.getInstance("JCEKS");
+		final char[ ] password = "12345".toCharArray();
 		ks.load(is, password);
 		certificate = (X509Certificate) ks.getCertificate("raul conde");
-	    } catch (NoSuchAlgorithmException e) {
+	    } catch (final NoSuchAlgorithmException e) {
 		e.printStackTrace();
-	    } catch (CertificateException e) {
+	    } catch (final CertificateException e) {
 		e.printStackTrace();
-	    } catch (IOException e) {
+	    } catch (final IOException e) {
 		e.printStackTrace();
-	    } catch (KeyStoreException e) {
+	    } catch (final KeyStoreException e) {
 		e.printStackTrace();
 	    }
 	}
 	return certificate;
+    }
+    
+    /**
+     * Method that obtains the private key used for tests.
+     * @return an object that represents the private key.
+     */
+    protected PrivateKeyEntry getCertificateECCPrivateKey() {
+	if (certificateECCPrivateKey == null) {
+	    KeyStore.Entry key = null;
+	    try {
+		final InputStream is = new FileInputStream(ClassLoader.getSystemResource("ECC_Signer.p12").getFile());
+		final KeyStore ks = KeyStore.getInstance("PKCS12");
+		final char[ ] password = "ciudadanosw_ecc_2023v1".toCharArray();
+		ks.load(is, password);
+		key = ks.getEntry("MANUELA BLANCO VIDAL - NIF:10000322Z", new KeyStore.PasswordProtection(password));
+	    } catch (final NoSuchAlgorithmException e) {
+		e.printStackTrace();
+	    } catch (final CertificateException e) {
+		e.printStackTrace();
+	    } catch (final IOException e) {
+		e.printStackTrace();
+	    } catch (final KeyStoreException e) {
+		e.printStackTrace();
+	    } catch (final UnrecoverableEntryException e) {
+		e.printStackTrace();
+	    }
+	    certificateECCPrivateKey = (KeyStore.PrivateKeyEntry) key;
+	}
+	return certificateECCPrivateKey;
+    }
+
+    /**
+     * Method that obtains the certificate used for tests.
+     * @return an object that represents the certificate.
+     */
+    protected X509Certificate getCertificateECC() {
+	if (certificateECC == null) {
+	    try {
+		final InputStream is = new FileInputStream(ClassLoader.getSystemResource("ECC_Signer.p12").getFile());
+		final KeyStore ks = KeyStore.getInstance("PKCS12");
+		final char[ ] password = "ciudadanosw_ecc_2023v1".toCharArray();
+		ks.load(is, password);
+		certificateECC = (X509Certificate) ks.getCertificate("MANUELA BLANCO VIDAL - NIF:10000322Z");
+	    } catch (final NoSuchAlgorithmException e) {
+		e.printStackTrace();
+	    } catch (final CertificateException e) {
+		e.printStackTrace();
+	    } catch (final IOException e) {
+		e.printStackTrace();
+	    } catch (final KeyStoreException e) {
+		e.printStackTrace();
+	    }
+	}
+	return certificateECC;
     }
 
     /**

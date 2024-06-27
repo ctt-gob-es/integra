@@ -159,7 +159,7 @@ public final class ASiCSBaselineSigner implements Signer {
      * @see es.gob.afirma.signature.Signer#sign(byte[], java.lang.String, java.lang.String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public byte[ ] sign(byte[ ] data, String algorithm, String signatureFormat, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID, String idClient) throws SigningException {
+    public byte[ ] sign(final byte[ ] data, final String algorithm, final String signatureFormat, final PrivateKeyEntry privateKey, final Properties extraParams, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID, final String idClient) throws SigningException {
 	LOGGER.info(Language.getResIntegra(ILogConstantKeys.ASBS_LOG038));
 	OutputStream baos = null;
 	OutputStream outZip = null;
@@ -185,7 +185,7 @@ public final class ASiCSBaselineSigner implements Signer {
 	    outZip = new ZipOutputStream(baos);
 
 	    // Se añade el fichero que se corresponde con los datos firmados
-	    String fileToSignName = addFileToSign(data, outZip);
+	    final String fileToSignName = addFileToSign(data, outZip);
 
 	    // Se añade el fichero mimetype
 	    addMimetypeFile(outZip);
@@ -217,7 +217,7 @@ public final class ASiCSBaselineSigner implements Signer {
 		}
 		generateSignatureASiCSBaselineXAdES(data, algorithm, SignatureConstants.SIGN_FORMAT_XADES_DETACHED, privateKey, extraParams, includeTimestamp, signatureForm, signaturePolicyID, outZip, fileToSignName);
 	    } else {
-		String msg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG045, new Object[ ] { signatureForm });
+		final String msg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG045, new Object[ ] { signatureForm });
 		LOGGER.error(msg);
 		throw new IllegalArgumentException(msg);
 	    }
@@ -227,8 +227,8 @@ public final class ASiCSBaselineSigner implements Signer {
 	    result = ((ByteArrayOutputStream) baos).toByteArray();
 	    // Devolvemos la firma generada
 	    return result;
-	} catch (IOException e) {
-	    String msg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG046);
+	} catch (final IOException e) {
+	    final String msg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG046);
 	    LOGGER.error(msg);
 	    throw new IllegalArgumentException(msg, e);
 	} finally {
@@ -243,7 +243,7 @@ public final class ASiCSBaselineSigner implements Signer {
      * @see es.gob.afirma.signature.Signer#coSign(byte[], byte[], java.lang.String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public byte[ ] coSign(byte[ ] signature, byte[ ] document, String algorithm, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID, String idClient) throws SigningException {
+    public byte[ ] coSign(final byte[ ] signature, final byte[ ] document, final String algorithm, final PrivateKeyEntry privateKey, final Properties extraParams, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID, final String idClient) throws SigningException {
 	throw new SigningException(Language.getResIntegra(ILogConstantKeys.ASBS_LOG002));
     }
 
@@ -252,7 +252,7 @@ public final class ASiCSBaselineSigner implements Signer {
      * @see es.gob.afirma.signature.Signer#counterSign(byte[], java.lang.String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public byte[ ] counterSign(byte[ ] signature, String algorithm, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID, String idClient) throws SigningException {
+    public byte[ ] counterSign(final byte[ ] signature, final String algorithm, final PrivateKeyEntry privateKey, final Properties extraParams, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID, final String idClient) throws SigningException {
 	throw new SigningException(Language.getResIntegra(ILogConstantKeys.ASBS_LOG003));
     }
 
@@ -261,7 +261,7 @@ public final class ASiCSBaselineSigner implements Signer {
      * @see es.gob.afirma.signature.Signer#sign(byte[], java.lang.String, java.lang.String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, java.lang.String, java.lang.String)
      */
     @Override
-    public byte[ ] sign(byte[ ] data, String algorithm, String signatureFormat, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID) throws SigningException {
+    public byte[ ] sign(final byte[ ] data, final String algorithm, final String signatureFormat, final PrivateKeyEntry privateKey, final Properties extraParams, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID) throws SigningException {
 	return sign(data, algorithm, signatureFormat, privateKey, extraParams, includeTimestamp, signatureForm, signaturePolicyID, null);
     }
 
@@ -270,7 +270,7 @@ public final class ASiCSBaselineSigner implements Signer {
      * @see es.gob.afirma.signature.Signer#coSign(byte[], byte[], java.lang.String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, java.lang.String, java.lang.String)
      */
     @Override
-    public byte[ ] coSign(byte[ ] signature, byte[ ] document, String algorithm, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID) throws SigningException {
+    public byte[ ] coSign(final byte[ ] signature, final byte[ ] document, final String algorithm, final PrivateKeyEntry privateKey, final Properties extraParams, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID) throws SigningException {
 	return coSign(signature, document, algorithm, privateKey, extraParams, includeTimestamp, signatureForm, signaturePolicyID, null);
     }
 
@@ -279,7 +279,7 @@ public final class ASiCSBaselineSigner implements Signer {
      * @see es.gob.afirma.signature.Signer#counterSign(byte[], java.lang.String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, java.lang.String, java.lang.String)
      */
     @Override
-    public byte[ ] counterSign(byte[ ] signature, String algorithm, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID) throws SigningException {
+    public byte[ ] counterSign(final byte[ ] signature, final String algorithm, final PrivateKeyEntry privateKey, final Properties extraParams, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID) throws SigningException {
 	return counterSign(signature, algorithm, privateKey, extraParams, includeTimestamp, signatureForm, signaturePolicyID, null);
     }
 
@@ -288,7 +288,7 @@ public final class ASiCSBaselineSigner implements Signer {
      * @see es.gob.afirma.signature.Signer#upgrade(byte[], java.util.List, java.lang.String)
      */
     @Override
-    public byte[ ] upgrade(byte[ ] signature, List<X509Certificate> listSigners, String idClient) throws SigningException {
+    public byte[ ] upgrade(final byte[ ] signature, final List<X509Certificate> listSigners, final String idClient) throws SigningException {
 	LOGGER.info(Language.getResIntegra(ILogConstantKeys.ASBS_LOG004));
 
 	InputStream is = null;
@@ -307,7 +307,7 @@ public final class ASiCSBaselineSigner implements Signer {
 	    // Recorremos las entradas del fichero ZIP
 	    for (ZipEntry entry = ((ZipInputStream) asicsInputStream).getNextEntry(); entry != null; entry = ((ZipInputStream) asicsInputStream).getNextEntry()) {
 		// Accedemos al nombre de la entrada
-		String entryName = entry.getName();
+		final String entryName = entry.getName();
 
 		// Si la entrada es una firma ASN.1
 		if (SignatureFormatDetectorASiC.isCAdESEntry(entryName)) {
@@ -323,8 +323,8 @@ public final class ASiCSBaselineSigner implements Signer {
 	    // Actualizamos la firma XML o ASN.1 contenida y devolvemos la firma
 	    // ASiC-S completa
 	    return upgradeASiCSSignature(noXMLSignature, xmlSignature, signature, listSigners);
-	} catch (IOException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG011);
+	} catch (final IOException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG011);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	} finally {
@@ -340,7 +340,7 @@ public final class ASiCSBaselineSigner implements Signer {
      * @see es.gob.afirma.signature.Signer#upgrade(byte[], java.util.List)
      */
     @Override
-    public byte[ ] upgrade(byte[ ] signature, List<X509Certificate> listSigners) throws SigningException {
+    public byte[ ] upgrade(final byte[ ] signature, final List<X509Certificate> listSigners) throws SigningException {
 	return upgrade(signature, listSigners, null);
     }
 
@@ -353,12 +353,12 @@ public final class ASiCSBaselineSigner implements Signer {
      * @return the upgraded ASiC-S signature.
      * @throws SigningException If the method fails.
      */
-    private byte[ ] upgradeASiCSSignature(byte[ ] noXMLSignature, byte[ ] xmlSignature, byte[ ] asicSSignature, List<X509Certificate> listSigners) throws SigningException {
+    private byte[ ] upgradeASiCSSignature(final byte[ ] noXMLSignature, final byte[ ] xmlSignature, final byte[ ] asicSSignature, final List<X509Certificate> listSigners) throws SigningException {
 	byte[ ] upgradedASiCSignature = null;
 	// Si no hemos encontrado ninguna firma dentro lanzamos una
 	// excepción
 	if (noXMLSignature == null && xmlSignature == null) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG007);
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG007);
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
@@ -366,17 +366,17 @@ public final class ASiCSBaselineSigner implements Signer {
 	// Si hemos encontrado una firma ASN.1 y XML dentro lanzamos una
 	// excepción
 	else if (noXMLSignature != null && xmlSignature != null) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG008);
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG008);
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
 	// Si hemos encontrado una firma ASN.1
 	else if (noXMLSignature != null) {
 	    // Instanciamos la clase que maneja firmas CAdES Baseline
-	    CAdESBaselineSigner cadesSigner = new CAdESBaselineSigner();
+	    final CAdESBaselineSigner cadesSigner = new CAdESBaselineSigner();
 
 	    // Actualizamos la firma ASN.1
-	    byte[ ] upgradedASN1Signature = cadesSigner.upgrade(noXMLSignature, listSigners);
+	    final byte[ ] upgradedASN1Signature = cadesSigner.upgrade(noXMLSignature, listSigners);
 
 	    // Sustituimos en el fichero ZIP la antigua firma por la nueva
 	    // actualizada
@@ -386,10 +386,10 @@ public final class ASiCSBaselineSigner implements Signer {
 	// Si hemos encontrado una firma XML
 	else if (xmlSignature != null) {
 	    // Instanciamos la clase que maneja firmas XAdES Baseline
-	    XAdESBaselineSigner xadesSigner = new XAdESBaselineSigner();
+	    final XAdESBaselineSigner xadesSigner = new XAdESBaselineSigner();
 
 	    // Actualizamos la firma XML
-	    byte[ ] upgradedXMLSignature = xadesSigner.upgrade(xmlSignature, listSigners);
+	    final byte[ ] upgradedXMLSignature = xadesSigner.upgrade(xmlSignature, listSigners);
 
 	    // Sustituimos en el fichero ZIP la antigua firma por la nueva
 	    // actualizada
@@ -405,9 +405,9 @@ public final class ASiCSBaselineSigner implements Signer {
      * @return the updated ZIP file.
      * @throws SigningException If the method fails.
      */
-    private byte[ ] replaceXMLSignature(byte[ ] asicSSignature, byte[ ] xmlSignature) throws SigningException {
+    private byte[ ] replaceXMLSignature(final byte[ ] asicSSignature, final byte[ ] xmlSignature) throws SigningException {
 	OutputStream outZip = null;
-	OutputStream out = new ByteArrayOutputStream();
+	final OutputStream out = new ByteArrayOutputStream();
 	InputStream is = null;
 	InputStream asicsInputStream = null;
 	try {
@@ -422,7 +422,7 @@ public final class ASiCSBaselineSigner implements Signer {
 	    // Recorremos las entradas del fichero ZIP
 	    for (ZipEntry entry = ((ZipInputStream) asicsInputStream).getNextEntry(); entry != null; entry = ((ZipInputStream) asicsInputStream).getNextEntry()) {
 		// Accedemos al nombre de la entrada
-		String entryName = entry.getName();
+		final String entryName = entry.getName();
 
 		// Añadimos una entrada con el mismo nombre al nuevo fichero ZIP
 		((ZipOutputStream) outZip).putNextEntry(new ZipEntry(entryName));
@@ -437,7 +437,7 @@ public final class ASiCSBaselineSigner implements Signer {
 		else if (!entry.isDirectory()) {
 		    // Obtenemos el array de bytes que se corresponde con el
 		    // contenido de la entrada
-		    byte[ ] entryBytes = GenericUtilsCommons.getDataFromInputStream(asicsInputStream);
+		    final byte[ ] entryBytes = GenericUtilsCommons.getDataFromInputStream(asicsInputStream);
 
 		    // Añadimos la entrada al nuevo fichero ZIP
 		    addEntryToZip(entryBytes, outZip);
@@ -446,8 +446,8 @@ public final class ASiCSBaselineSigner implements Signer {
 		((ZipOutputStream) outZip).closeEntry();
 	    }
 	    ((ZipOutputStream) outZip).finish();
-	} catch (IOException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG010);
+	} catch (final IOException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG010);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	} finally {
@@ -469,9 +469,9 @@ public final class ASiCSBaselineSigner implements Signer {
      * @return the updated ZIP file.
      * @throws SigningException If the method fails.
      */
-    private byte[ ] replaceASN1Signature(byte[ ] asicSSignature, byte[ ] noXMLSignature) throws SigningException {
+    private byte[ ] replaceASN1Signature(final byte[ ] asicSSignature, final byte[ ] noXMLSignature) throws SigningException {
 	OutputStream outZip = null;
-	OutputStream out = new ByteArrayOutputStream();
+	final OutputStream out = new ByteArrayOutputStream();
 	InputStream is = null;
 	InputStream asicsInputStream = null;
 	try {
@@ -486,7 +486,7 @@ public final class ASiCSBaselineSigner implements Signer {
 	    // Recorremos las entradas del fichero ZIP
 	    for (ZipEntry entry = ((ZipInputStream) asicsInputStream).getNextEntry(); entry != null; entry = ((ZipInputStream) asicsInputStream).getNextEntry()) {
 		// Accedemos al nombre de la entrada
-		String entryName = entry.getName();
+		final String entryName = entry.getName();
 
 		// Añadimos una entrada con el mismo nombre al nuevo fichero ZIP
 		((ZipOutputStream) outZip).putNextEntry(new ZipEntry(entryName));
@@ -501,7 +501,7 @@ public final class ASiCSBaselineSigner implements Signer {
 		else if (!entry.isDirectory()) {
 		    // Obtenemos el array de bytes que se corresponde con el
 		    // contenido de la entrada
-		    byte[ ] entryBytes = GenericUtilsCommons.getDataFromInputStream(asicsInputStream);
+		    final byte[ ] entryBytes = GenericUtilsCommons.getDataFromInputStream(asicsInputStream);
 
 		    // Añadimos la entrada al nuevo fichero ZIP
 		    addEntryToZip(entryBytes, outZip);
@@ -509,8 +509,8 @@ public final class ASiCSBaselineSigner implements Signer {
 		}
 	    }
 	    ((ZipOutputStream) outZip).finish();
-	} catch (IOException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG009);
+	} catch (final IOException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG009);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	} finally {
@@ -533,9 +533,9 @@ public final class ASiCSBaselineSigner implements Signer {
      * @throws SigningException If the validation fails.
      */
     @SuppressWarnings("unchecked")
-    private void checkSignedModeAndReferencesOfXMLSignature(XMLSignature signature, String signatureId, ValidationResult validationResult) throws SigningException {
+    private void checkSignedModeAndReferencesOfXMLSignature(final XMLSignature signature, final String signatureId, final ValidationResult validationResult) throws SigningException {
 	// Obtenemos la lista de referencias de la firma
-	List<Reference> listReferences = signature.getSignedInfo().getReferences();
+	final List<Reference> listReferences = signature.getSignedInfo().getReferences();
 
 	// Instanciamos una variable para indicar si hemos encontrado una
 	// referencia a los datos firmados
@@ -543,15 +543,15 @@ public final class ASiCSBaselineSigner implements Signer {
 
 	// Instanciamos una lista con los identificadores de los elementos a los
 	// que apuntan las referencias
-	List<String> ids = new ArrayList<String>();
+	final List<String> ids = new ArrayList<String>();
 
 	// Recorremos la lista de referencias
 	for (int i = 0; i < listReferences.size(); i++) {
 	    // Accedemos a la referencia
-	    Reference reference = listReferences.get(i);
+	    final Reference reference = listReferences.get(i);
 
 	    // Accedemos al valor del atributo URI de la referencia
-	    String uri = reference.getURI();
+	    final String uri = reference.getURI();
 
 	    // Si la referencia posee atributo URI, incluímos su valor en la
 	    // lista con los identificadores de los elementos a los que apuntan
@@ -568,18 +568,18 @@ public final class ASiCSBaselineSigner implements Signer {
 	    }
 
 	    // Obtenemos las transformadas asociadas a la referencia
-	    List<Transform> transforms = reference.getTransforms();
+	    final List<Transform> transforms = reference.getTransforms();
 
 	    // Recorremos la lista de transformadas asociadas a la referencia
 	    for (int j = 0; j < transforms.size(); j++) {
 		// Accedemos a la transformada
-		Transform transform = transforms.get(j);
+		final Transform transform = transforms.get(j);
 
 		// Si el algoritmo de la transformada es el asociado a firmas
 		// Enveloped
 		if (transform.getAlgorithm().equals(Transform.ENVELOPED)) {
 		    // Lanzamos excepción
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG024, new Object[ ] { signatureId });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG024, new Object[ ] { signatureId });
 		    LOGGER.error(errorMsg);
 		    validationResult.setIntegrallyCorrect(false);
 		    validationResult.setErrorMsg(errorMsg);
@@ -588,17 +588,17 @@ public final class ASiCSBaselineSigner implements Signer {
 	    }
 
 	    // Obtenemos la lista de objetos contenidos en la firma
-	    List<XMLObject> xmlObjects = signature.getObjects();
+	    final List<XMLObject> xmlObjects = signature.getObjects();
 
 	    // Recorremos la lista de objetos contenidos en la firma
 	    for (int k = 0; k < xmlObjects.size(); k++) {
-		XMLObject xmlObject = xmlObjects.get(k);
+		final XMLObject xmlObject = xmlObjects.get(k);
 		// Si existe un identificador de los elementos a los que apuntan
 		// las referencias que coincide con el identificador de un
 		// objeto contenido en la firma
 		if (ids.contains(xmlObject.getId())) {
 		    // Lanzamos excepción
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG025, new Object[ ] { signatureId });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG025, new Object[ ] { signatureId });
 		    LOGGER.error(errorMsg);
 		    validationResult.setIntegrallyCorrect(false);
 		    validationResult.setErrorMsg(errorMsg);
@@ -609,7 +609,7 @@ public final class ASiCSBaselineSigner implements Signer {
 	// Si no hemos encontrado una referencia a los datos firmados lanzamos
 	// una excepción
 	if (!hasReferenceToSignedData) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG026, new Object[ ] { signatureId });
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG026, new Object[ ] { signatureId });
 	    LOGGER.error(errorMsg);
 	    validationResult.setIntegrallyCorrect(false);
 	    validationResult.setErrorMsg(errorMsg);
@@ -624,21 +624,21 @@ public final class ASiCSBaselineSigner implements Signer {
      * @throws SigningException If the method fails.
      */
     @SuppressWarnings("unchecked")
-    private boolean checkReferenceToSignedData(Reference reference) throws SigningException {
+    private boolean checkReferenceToSignedData(final Reference reference) throws SigningException {
 	// Obtenemos el algoritmo de resumen usado para calcular la referencia
-	DigestMethod digestMethod = reference.getDigestMethod();
-	String hashAlgorithm = CryptoUtilXML.translateXmlDigestAlgorithm(digestMethod.getAlgorithm());
+	final DigestMethod digestMethod = reference.getDigestMethod();
+	final String hashAlgorithm = CryptoUtilXML.translateXmlDigestAlgorithm(digestMethod.getAlgorithm());
 
 	// Obtenemos las transformadas usadas para calcular la referencia
-	List<Transform> listTransforms = reference.getTransforms();
+	final List<Transform> listTransforms = reference.getTransforms();
 	try {
-	    byte[ ] canonicalizedSignedData = signedFile;
+	    byte[ ] canonicalizedSignedData = this.signedFile;
 	    // Recorremos la lista de transformadas usadas para calcular la
 	    // referencia
 	    if (listTransforms != null) {
-		for (Transform transform: listTransforms) {
+		for (final Transform transform: listTransforms) {
 		    // Canonicalizamos los datos firmados
-		    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		    Canonicalizer.getInstance(transform.getAlgorithm()).canonicalize(canonicalizedSignedData, baos, true);
 		    canonicalizedSignedData = baos.toByteArray();
 		}
@@ -646,12 +646,12 @@ public final class ASiCSBaselineSigner implements Signer {
 	    // Calculamos el resumen de los datos firmados (y canonicalizados)
 	    // usando el algoritmo
 	    // indicado en la referencia
-	    byte[ ] signedDataDigest = CryptoUtilPdfBc.digest(hashAlgorithm, canonicalizedSignedData);
+	    final byte[ ] signedDataDigest = CryptoUtilPdfBc.digest(hashAlgorithm, canonicalizedSignedData);
 
 	    // Comparamos los arrays de bytes
 	    return Arrays.equals(signedDataDigest, reference.getDigestValue());
-	} catch (Exception e) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG027, new Object[ ] { null });
+	} catch (final Exception e) {
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG027, new Object[ ] { null });
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	}
@@ -664,7 +664,7 @@ public final class ASiCSBaselineSigner implements Signer {
      * @param validationResult Parameter that represents the information about the validation of the ASiC-S signature.
      * @throws SigningException If the method fails.
      */
-    private void validateMimetypeFile(byte[ ] mimeTypeFile, ValidationResult validationResult) throws SigningException {
+    private void validateMimetypeFile(final byte[ ] mimeTypeFile, final ValidationResult validationResult) throws SigningException {
 	InputStream is = null;
 
 	try {
@@ -672,11 +672,11 @@ public final class ASiCSBaselineSigner implements Signer {
 	    if (mimeTypeFile != null) {
 		// Accedemos al contenido del fichero mimetype
 		is = new ByteArrayInputStream(mimeTypeFile);
-		List<String> lines = IOUtils.readLines(is);
+		final List<String> lines = IOUtils.readLines(is);
 
 		// Comprobamos que el fichero mimetype contiene una única línea
 		if (lines.size() > 1) {
-		    String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG017);
+		    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG017);
 		    LOGGER.error(errorMsg);
 		    validationResult.setIntegrallyCorrect(false);
 		    validationResult.setErrorMsg(errorMsg);
@@ -684,7 +684,7 @@ public final class ASiCSBaselineSigner implements Signer {
 		}
 
 		// Accedemos al valor del mimetype
-		String mimetype = lines.get(0);
+		final String mimetype = lines.get(0);
 
 		// Comprobamos si el valor del mimetype es el asociado a firmas
 		// ASiC-S, esto es, 'application/vnd.etsi.asic-s+zip'. Si no
@@ -692,11 +692,11 @@ public final class ASiCSBaselineSigner implements Signer {
 		// datos firmados
 		if (!mimetype.trim().equals(SignatureFormatDetectorASiC.ASIC_S_MIME_TYPE)) {
 		    // Obtenemos el mimetype de los datos firmados
-		    String signedDataMimetype = UtilsResourcesSignOperations.getMimeType(signedFile);
+		    final String signedDataMimetype = UtilsResourcesSignOperations.getMimeType(this.signedFile);
 
 		    // Comprobamos que los mimetype coinciden
 		    if (!mimetype.equals(signedDataMimetype)) {
-			String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG018, new Object[ ] { mimetype, signedDataMimetype });
+			final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG018, new Object[ ] { mimetype, signedDataMimetype });
 			LOGGER.error(errorMsg);
 			validationResult.setIntegrallyCorrect(false);
 			validationResult.setErrorMsg(errorMsg);
@@ -704,8 +704,8 @@ public final class ASiCSBaselineSigner implements Signer {
 		    }
 		}
 	    }
-	} catch (IOException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG019);
+	} catch (final IOException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG019);
 	    LOGGER.error(errorMsg, e);
 	    validationResult.setIntegrallyCorrect(false);
 	    validationResult.setErrorMsg(errorMsg);
@@ -721,11 +721,11 @@ public final class ASiCSBaselineSigner implements Signer {
      * @param validationResult Parameter that represents the information about the validation of the ASiC-S signature.
      * @throws SigningException If the validation fails.
      */
-    private void checkZIPRequiredContent(ValidationResult validationResult) throws SigningException {
+    private void checkZIPRequiredContent(final ValidationResult validationResult) throws SigningException {
 	// Comprobamos que hemos encontrado la firma ASN.1 o la firma XAdES
 	// dentro del fichero.
-	if (asn1Signature == null && signedXML == null) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG015);
+	if (this.asn1Signature == null && this.signedXML == null) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG015);
 	    LOGGER.error(errorMsg);
 	    validationResult.setIntegrallyCorrect(false);
 	    validationResult.setErrorMsg(errorMsg);
@@ -734,8 +734,8 @@ public final class ASiCSBaselineSigner implements Signer {
 
 	// Comprobamos que hemos encontrado los datos firmados dentro del
 	// fichero
-	if (signedFile == null) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG016);
+	if (this.signedFile == null) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG016);
 	    LOGGER.error(errorMsg);
 	    validationResult.setIntegrallyCorrect(false);
 	    validationResult.setErrorMsg(errorMsg);
@@ -749,13 +749,13 @@ public final class ASiCSBaselineSigner implements Signer {
      * @param validationResult Parameter that represents the information about the validation of the ASiC-S signature.
      * @throws SigningException If the validation fails.
      */
-    private void checkHeaderZIPFile(byte[ ] asicSSignature, ValidationResult validationResult) throws SigningException {
+    private void checkHeaderZIPFile(final byte[ ] asicSSignature, final ValidationResult validationResult) throws SigningException {
 	// Transformamos los octetos de la firma ASiC-S en hexadecimal
-	String zipHeaderHex = Hex.encodeHexString(asicSSignature).toUpperCase();
+	final String zipHeaderHex = Hex.encodeHexString(asicSSignature).toUpperCase();
 
 	// Comprobamos que los 4 primeros octetos tienen el valor '504B0304'
 	if (!zipHeaderHex.startsWith(ZIP_HEADER_HEX)) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG014, new Object[ ] { ZIP_HEADER_HEX });
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG014, new Object[ ] { ZIP_HEADER_HEX });
 	    LOGGER.error(errorMsg);
 
 	    // Establecemos en la información asociada a la validación
@@ -772,13 +772,13 @@ public final class ASiCSBaselineSigner implements Signer {
      * Method that checks if the input signature algorithm is <code>null</code> and is allowed to use.
      * @param signatureAlgorithm Parameter that represents the signature algorithm.
      */
-    private void checkInputSignatureAlgorithm(String signatureAlgorithm) {
+    private void checkInputSignatureAlgorithm(final String signatureAlgorithm) {
 	// Comprobamos que el algoritmo de firma no es nulo
 	GenericUtilsCommons.checkInputParameterIsNotNull(signatureAlgorithm, Language.getResIntegra(ILogConstantKeys.ASBS_LOG040));
 
 	// Comprobamos que el algoritmo de firma está soportado
 	if (!SignatureConstants.SIGN_ALGORITHMS_SUPPORT_CADES.containsKey(signatureAlgorithm)) {
-	    String msg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG041, new Object[ ] { signatureAlgorithm });
+	    final String msg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG041, new Object[ ] { signatureAlgorithm });
 	    LOGGER.error(msg);
 	    throw new IllegalArgumentException(msg);
 	}
@@ -803,26 +803,26 @@ public final class ASiCSBaselineSigner implements Signer {
      * signature policies.
      * @throws SigningException If the method fails.
      */
-    private void generateSignatureASiCSBaselineCAdES(byte[ ] data, String algorithm, String signatureFormat, PrivateKeyEntry privateKey, boolean includeTimestamp, String signatureForm, String signaturePolicyID, OutputStream outZip) throws SigningException {
+    private void generateSignatureASiCSBaselineCAdES(final byte[ ] data, final String algorithm, final String signatureFormat, final PrivateKeyEntry privateKey, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID, final OutputStream outZip) throws SigningException {
 	// Se genera y se añade la firma CAdES Baseline
 	byte[ ] signature = null;
 	// Generamos la firma CAdES Baseline
 	try {
-	    Signer signer = new CAdESBaselineSigner();
+	    final Signer signer = new CAdESBaselineSigner();
 	    signature = signer.sign(data, algorithm, signatureFormat, privateKey, null, includeTimestamp, signatureForm, signaturePolicyID);
 
 	    // se añade la firma al fichero zip
-	    ZipEntry signatureZipEntry = new ZipEntry(SignatureFormatDetectorASiC.NAME_SIGNATURE_CADES_B);
+	    final ZipEntry signatureZipEntry = new ZipEntry(SignatureFormatDetectorASiC.NAME_SIGNATURE_CADES_B);
 	    ((ZipOutputStream) outZip).putNextEntry(signatureZipEntry);
 	    addEntryToZip(signature, outZip);
 	    ((ZipOutputStream) outZip).closeEntry();
-	} catch (SigningException e) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG050, new Object[ ] { e.getMessage() });
+	} catch (final SigningException e) {
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG050, new Object[ ] { e.getMessage() });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg, e);
 
-	} catch (IOException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG035);
+	} catch (final IOException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG035);
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg, e);
 	}
@@ -859,10 +859,10 @@ public final class ASiCSBaselineSigner implements Signer {
      * signature policies.
      * @throws SigningException If the method fails.
      */
-    private void generateSignatureASiCSBaselineXAdES(byte[ ] data, String algorithm, String signatureFormat, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID, OutputStream outZip, String fileToSignName) throws SigningException {
+    private void generateSignatureASiCSBaselineXAdES(final byte[ ] data, final String algorithm, final String signatureFormat, final PrivateKeyEntry privateKey, final Properties extraParams, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID, final OutputStream outZip, final String fileToSignName) throws SigningException {
 	byte[ ] signature = null;
 
-	Signer signer = new XAdESBaselineSigner();
+	final Signer signer = new XAdESBaselineSigner();
 	try {
 
 	    // se comprueba parámetros adicionales y opcionales son los
@@ -874,19 +874,19 @@ public final class ASiCSBaselineSigner implements Signer {
 	    // para una firma ASIC
 	    signature = ((XAdESBaselineSigner) signer).sign(data, algorithm, signatureFormat, privateKey, extraParams, includeTimestamp, signatureForm, signaturePolicyID, true, fileToSignName);
 	    // se añade la firma al fichero zip
-	    ZipEntry signatureZipEntry = new ZipEntry(SignatureFormatDetectorASiC.NAME_SIGNATURE_XADES_B);
+	    final ZipEntry signatureZipEntry = new ZipEntry(SignatureFormatDetectorASiC.NAME_SIGNATURE_XADES_B);
 
 	    ((ZipOutputStream) outZip).putNextEntry(signatureZipEntry);
 
 	    addEntryToZip(signature, outZip);
 	    ((ZipOutputStream) outZip).closeEntry();
-	} catch (SigningException e) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG051, new Object[ ] { e.getMessage() });
+	} catch (final SigningException e) {
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG051, new Object[ ] { e.getMessage() });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg, e);
 
-	} catch (IOException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG034);
+	} catch (final IOException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG034);
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg, e);
 	}
@@ -900,19 +900,19 @@ public final class ASiCSBaselineSigner implements Signer {
      * @return the name of the file to sign.
      * @throws SigningException If the method fails.
      */
-    private String addFileToSign(byte[ ] data, OutputStream outZip) throws SigningException {
+    private String addFileToSign(final byte[ ] data, final OutputStream outZip) throws SigningException {
 	// A partir del array de bytes que firmar determinamos qué tipo de datos
 	// son y añadimos al fichero ZIP que se corresponde con la firma ASiC-S
 	// un archivo que se corresponde con los datos firmados
 
 	try {
 	    // Obtenemos el mimetype de los datos a firmar
-	    String mimeTypeData = UtilsResourcesSignOperations.getMimeType(data);
-	    MimeTypes mimeTypes = MimeTypes.getDefaultMimeTypes();
-	    MimeType mimeType = mimeTypes.forName(mimeTypeData);
+	    final String mimeTypeData = UtilsResourcesSignOperations.getMimeType(data);
+	    final MimeTypes mimeTypes = MimeTypes.getDefaultMimeTypes();
+	    final MimeType mimeType = mimeTypes.forName(mimeTypeData);
 
 	    // Obtenemos la extensión asociada al mimetype
-	    String extension = mimeType.getExtension();
+	    final String extension = mimeType.getExtension();
 
 	    String signedFileName = null;
 
@@ -920,24 +920,24 @@ public final class ASiCSBaselineSigner implements Signer {
 	    if (extension.isEmpty()) {
 		// Usamos la extensión .txt por defecto
 		signedFileName = SIGNED_DATA_FILENAME + DEFAULT_EXTENSION;
-		String infoMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG047, new Object[ ] { mimeTypeData, signedFileName });
+		final String infoMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG047, new Object[ ] { mimeTypeData, signedFileName });
 		LOGGER.info(infoMsg);
 	    } else {
 		signedFileName = SIGNED_DATA_FILENAME + extension;
 	    }
 
-	    ZipEntry signedFileZIPEntry = new ZipEntry(signedFileName);
+	    final ZipEntry signedFileZIPEntry = new ZipEntry(signedFileName);
 	    ((ZipOutputStream) outZip).putNextEntry(signedFileZIPEntry);
 	    addEntryToZip(data, outZip);
 	    ((ZipOutputStream) outZip).closeEntry();
 
 	    return signedFileName;
-	} catch (MimeTypeException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG048);
+	} catch (final MimeTypeException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG048);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (IOException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG049);
+	} catch (final IOException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG049);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	}
@@ -949,8 +949,8 @@ public final class ASiCSBaselineSigner implements Signer {
      * @param asicsOutputStream Parameter that allows to write into the ZIP file.
      * @throws IOException If the method fails.
      */
-    private static void addEntryToZip(byte[ ] entryBytes, OutputStream asicsOutputStream) throws IOException {
-	InputStream in = new ByteArrayInputStream(entryBytes);
+    private static void addEntryToZip(final byte[ ] entryBytes, final OutputStream asicsOutputStream) throws IOException {
+	final InputStream in = new ByteArrayInputStream(entryBytes);
 	try {
 	    IOUtils.copy(in, asicsOutputStream);
 	} finally {
@@ -964,23 +964,23 @@ public final class ASiCSBaselineSigner implements Signer {
      * @param outZip Parameter that allows to operate with the ZIP file.
      * @throws SigningException If the method fails.
      */
-    private void addMimetypeFile(OutputStream outZip) throws SigningException {
+    private void addMimetypeFile(final OutputStream outZip) throws SigningException {
 	// Creamos un fichero mimetype que incluya únicamente el texto
 	// "application/vnd.etsi.asic-s+zip" y lo añadimos al fichero ZIP que se
 	// corresponde con la firma ASiC-S
 	try {
-	    File mimetypeFile = new File(SignatureFormatDetectorASiC.MIME_TYPE_FILE);
+	    final File mimetypeFile = new File(SignatureFormatDetectorASiC.MIME_TYPE_FILE);
 	    FileUtils.writeStringToFile(mimetypeFile, SignatureFormatDetectorASiC.ASIC_S_MIME_TYPE);
 
-	    ZipEntry mimetypeZIPEntry = new ZipEntry(SignatureFormatDetectorASiC.MIME_TYPE_FILE);
+	    final ZipEntry mimetypeZIPEntry = new ZipEntry(SignatureFormatDetectorASiC.MIME_TYPE_FILE);
 	    ((ZipOutputStream) outZip).putNextEntry(mimetypeZIPEntry);
 	    addEntryToZip(FileUtils.readFileToByteArray(mimetypeFile), outZip);
 	    ((ZipOutputStream) outZip).closeEntry();
 
 	    // Borramos del disco el fichero creado
 	    FileUtils.forceDelete(mimetypeFile);
-	} catch (IOException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG044);
+	} catch (final IOException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG044);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	}
@@ -991,14 +991,14 @@ public final class ASiCSBaselineSigner implements Signer {
      * 
      * @param extraParams Represents the optional input parameters.
      */
-    private void checkInputExtraParams(Properties extraParams) {
+    private void checkInputExtraParams(final Properties extraParams) {
 	boolean enc = false;
-	Iterator<Object> it = extraParams.keySet().iterator();
+	final Iterator<Object> it = extraParams.keySet().iterator();
 	while (it.hasNext() && !enc) {
-	    String prop = (String) it.next();
+	    final String prop = (String) it.next();
 	    if (!prop.equals(SignatureProperties.XADES_CLAIMED_ROLE_PROP) && !prop.equals(SignatureProperties.XADES_POLICY_QUALIFIER_PROP) && !prop.equals(SignatureProperties.XADES_DATA_FORMAT_DESCRIPTION_PROP) && !prop.equals(SignatureProperties.XADES_DATA_FORMAT_MIME_PROP) && !prop.equals(SignatureProperties.XADES_DATA_FORMAT_ENCODING_PROP) && !prop.equals(SignatureProperties.XADES_CANONICALIZATION_METHOD)) {
 		enc = true;
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG033, new Object[ ] { prop });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG033, new Object[ ] { prop });
 		LOGGER.error(errorMsg);
 		throw new IllegalArgumentException(errorMsg);
 	    }
@@ -1010,11 +1010,11 @@ public final class ASiCSBaselineSigner implements Signer {
      * @param asicSSignature Parameter that represents the XAdES signature.
      * @return an object that contains the information about the validation result.
      */
-    public ValidationResult verifySignature(byte[ ] asicSSignature) {
+    public ValidationResult verifySignature(final byte[ ] asicSSignature) {
 	LOGGER.info(Language.getResIntegra(ILogConstantKeys.ASBS_LOG012));
 
 	// Instanciamos el objeto a devolver
-	ValidationResult validationResult = new ValidationResult();
+	final ValidationResult validationResult = new ValidationResult();
 	try {
 	    // Por defecto indicamos que la validación de la firma ha sido
 	    // correcta
@@ -1034,7 +1034,7 @@ public final class ASiCSBaselineSigner implements Signer {
 	    checkSignatureIntegrity(validationResult, asicSSignature);
 
 	    // Si la firma es ASN.1
-	    if (asn1Signature != null) {
+	    if (this.asn1Signature != null) {
 		// Se comprobará que la firma indicada es de tipo CAdES, posee
 		// al menos un firmante, y que los datos firmados se
 		// corresponden con el fichero incluído dentro de la firma
@@ -1052,7 +1052,7 @@ public final class ASiCSBaselineSigner implements Signer {
 	    }
 	    // Actualizamos la fecha de expiración de la firma ASiC.
 	    calculateExpirationDate(validationResult);
-	} catch (SigningException e) {
+	} catch (final SigningException e) {
 	    validationResult.setCorrect(false);
 	} finally {
 	    if (!validationResult.isCorrect()) {
@@ -1069,12 +1069,12 @@ public final class ASiCSBaselineSigner implements Signer {
      * Method that calculates the expiration date of a ASiC signature.
      * @param validationResult ASiC signature validation result.
      */
-    private void calculateExpirationDate(ValidationResult validationResult) {
+    private void calculateExpirationDate(final ValidationResult validationResult) {
 	Date date = null;
 	if (validationResult != null && validationResult.getListSignersValidationResults() != null) {
 	    // Recuperamos la lista de resultados de los firmantes.
-	    List<SignerValidationResult> signersResultList = validationResult.getListSignersValidationResults();
-	    for (SignerValidationResult signersResult: signersResultList) {
+	    final List<SignerValidationResult> signersResultList = validationResult.getListSignersValidationResults();
+	    for (final SignerValidationResult signersResult: signersResultList) {
 		date = UtilsSignatureOp.calculateExpirationDateForValidations(signersResult, date);
 	    }
 	    validationResult.setExpirationDate(date);
@@ -1086,18 +1086,18 @@ public final class ASiCSBaselineSigner implements Signer {
      * @param validationResult Parameter that represents the information about the validation of the ASiC-S signature.
      * @throws SigningException If the method fails.
      */
-    private void validateXMLSignature(ValidationResult validationResult) throws SigningException {
+    private void validateXMLSignature(final ValidationResult validationResult) throws SigningException {
 	// Accedemos al documento XML
-	Document xmlDocument = getDocumentFromXML(validationResult);
+	final Document xmlDocument = getDocumentFromXML(validationResult);
 
 	// Registramos los atributos de tipo ID del documento XML
 	IdRegister.registerElements(xmlDocument.getDocumentElement());
 
 	// Comprobamos que el primer elemento del documento XML es
 	// asic:XAdESSignatures
-	Node firstNode = xmlDocument.getFirstChild();
+	final Node firstNode = xmlDocument.getFirstChild();
 	if (firstNode.getNodeType() != Node.ELEMENT_NODE || !firstNode.getLocalName().equals("XAdESSignatures") || !firstNode.getPrefix().equals("asic")) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG023);
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG023);
 	    LOGGER.error(errorMsg);
 	    validationResult.setIntegrallyCorrect(false);
 	    validationResult.setErrorMsg(errorMsg);
@@ -1106,11 +1106,11 @@ public final class ASiCSBaselineSigner implements Signer {
 
 	// Obtenemos la lista de firmantes y
 	// contra-firmantes contenidos en la firma
-	List<XAdESSignerInfo> listSigners = UtilsSignatureOp.getXAdESListSigners(xmlDocument);
+	final List<XAdESSignerInfo> listSigners = UtilsSignatureOp.getXAdESListSigners(xmlDocument);
 
 	// Comprobamos que exista al menos un firmante
 	if (listSigners.isEmpty()) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG022);
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG022);
 	    LOGGER.error(errorMsg);
 	    validationResult.setIntegrallyCorrect(false);
 	    validationResult.setErrorMsg(errorMsg);
@@ -1119,14 +1119,14 @@ public final class ASiCSBaselineSigner implements Signer {
 
 	// Instanciamos una lista donde ubicar la información de validación
 	// de cada firmante y la asociamos al resultado final
-	List<SignerValidationResult> listSignersValidationResults = new ArrayList<SignerValidationResult>();
+	final List<SignerValidationResult> listSignersValidationResults = new ArrayList<SignerValidationResult>();
 	validationResult.setListSignersValidationResults(listSignersValidationResults);
 
 	// Recorremos la lista de firmantes
-	for (XAdESSignerInfo signer: listSigners) {
+	for (final XAdESSignerInfo signer: listSigners) {
 	    try {
 		// Instanciamos la firma XML asociada
-		XMLSignature xmlSignature = new XMLSignatureElement(signer.getElementSignature()).getXMLSignature();
+		final XMLSignature xmlSignature = new XMLSignatureElement(signer.getElementSignature()).getXMLSignature();
 
 		// Obtenemos el identificador de la firma
 		String signatureId = signer.getId();
@@ -1135,8 +1135,8 @@ public final class ASiCSBaselineSigner implements Signer {
 		// Comprobamos si la firma XML es detached y si posee una
 		// referencia a los datos firmados
 		checkSignedModeAndReferencesOfXMLSignature(xmlSignature, signatureId, validationResult);
-	    } catch (MarshalException e) {
-		String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG028);
+	    } catch (final MarshalException e) {
+		final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG028);
 		LOGGER.error(errorMsg, e);
 		validationResult.setIntegrallyCorrect(false);
 		validationResult.setErrorMsg(errorMsg);
@@ -1144,16 +1144,16 @@ public final class ASiCSBaselineSigner implements Signer {
 	    }
 	    // Instanciamos la clase que gestiona la validación de firmas
 	    // CAdES Baseline
-	    XAdESBaselineSigner xadesBaselineSigner = new XAdESBaselineSigner();
+	    final XAdESBaselineSigner xadesBaselineSigner = new XAdESBaselineSigner();
 
 	    // Determinamos el formato del firmante
-	    String signerFormat = SignatureFormatDetectorXades.resolveSignerXAdESFormat(signer.getElementSignature());
+	    final String signerFormat = SignatureFormatDetectorXades.resolveSignerXAdESFormat(signer.getElementSignature());
 
 	    // Validamos el firmante
-	    SignerValidationResult signerValidationResult = xadesBaselineSigner.validateSigner(IUtilsSignature.DETACHED_SIGNATURE_MODE, signer, validationResult, null, signerFormat, false, signedFile, signedFileName);
+	    final SignerValidationResult signerValidationResult = xadesBaselineSigner.validateSigner(IUtilsSignature.DETACHED_SIGNATURE_MODE, signer, validationResult, null, signerFormat, false, this.signedFile, this.signedFileName);
 
 	    // Validamos los contra-firmantes asociados al firmante
-	    xadesBaselineSigner.validateCounterSigners(IUtilsSignature.DETACHED_SIGNATURE_MODE, signer, signerValidationResult, validationResult, null, signedFile, signedFileName);
+	    xadesBaselineSigner.validateCounterSigners(IUtilsSignature.DETACHED_SIGNATURE_MODE, signer, signerValidationResult, validationResult, null, this.signedFile, this.signedFileName);
 
 	    // Añadimos la información de validación del firmante a la lista
 	    // asociada
@@ -1170,11 +1170,11 @@ public final class ASiCSBaselineSigner implements Signer {
      * @return an object as a representation of a XML document.
      * @throws SigningException If the method fails.
      */
-    private Document getDocumentFromXML(ValidationResult validationResult) throws SigningException {
+    private Document getDocumentFromXML(final ValidationResult validationResult) throws SigningException {
 	try {
-	    return UtilsSignatureCommons.getDocumentFromXML(signedXML);
-	} catch (Exception e) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG020, new Object[ ] { e.getMessage() });
+	    return UtilsSignatureCommons.getDocumentFromXML(this.signedXML);
+	} catch (final Exception e) {
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG020, new Object[ ] { e.getMessage() });
 	    LOGGER.error(errorMsg, e);
 	    validationResult.setIntegrallyCorrect(false);
 	    validationResult.setErrorMsg(errorMsg);
@@ -1187,13 +1187,13 @@ public final class ASiCSBaselineSigner implements Signer {
      * @param validationResult Parameter that represents the information about the validation of the ASiC-S signature.
      * @throws SigningException If the method fails.
      */
-    private void validateASN1Signature(ValidationResult validationResult) throws SigningException {
+    private void validateASN1Signature(final ValidationResult validationResult) throws SigningException {
 	// Obtenemos el objeto SignedData de la firma ASN.1
-	CMSSignedData asn1SignedData = getCMSSignedData(validationResult);
+	final CMSSignedData asn1SignedData = getCMSSignedData(validationResult);
 
 	// Comprobamos que la firma ASN.1 es explícita
 	if (UtilsSignatureOp.isImplicit(asn1SignedData)) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG020);
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG020);
 	    LOGGER.error(errorMsg);
 	    validationResult.setIntegrallyCorrect(false);
 	    validationResult.setErrorMsg(errorMsg);
@@ -1202,11 +1202,11 @@ public final class ASiCSBaselineSigner implements Signer {
 
 	// Obtenemos la lista de firmantes y contra-firmantes contenidos en
 	// la firma
-	List<CAdESSignerInfo> listSignersFound = UtilsSignatureOp.getCAdESListSigners(asn1SignedData);
+	final List<CAdESSignerInfo> listSignersFound = UtilsSignatureOp.getCAdESListSigners(asn1SignedData);
 
 	// Comprobamos que exista al menos un firmante
 	if (listSignersFound.isEmpty()) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG001);
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG001);
 	    LOGGER.error(errorMsg);
 	    validationResult.setIntegrallyCorrect(false);
 	    validationResult.setErrorMsg(errorMsg);
@@ -1215,38 +1215,38 @@ public final class ASiCSBaselineSigner implements Signer {
 
 	// Instanciamos una lista donde ubicar la información de validación
 	// de cada firmante y la asociamos al resultado final
-	List<SignerValidationResult> listSignersValidationResults = new ArrayList<SignerValidationResult>();
+	final List<SignerValidationResult> listSignersValidationResults = new ArrayList<SignerValidationResult>();
 	validationResult.setListSignersValidationResults(listSignersValidationResults);
 
 	// Recorremos la lista de firmantes
-	for (CAdESSignerInfo signerInfo: listSignersFound) {
+	for (final CAdESSignerInfo signerInfo: listSignersFound) {
 	    // Accedemos a la información del firmante
-	    SignerInformation signerInformation = signerInfo.getSignerInformation();
+	    final SignerInformation signerInformation = signerInfo.getSignerInformation();
 
 	    // Obtenemos los atributos firmados
-	    AttributeTable signedAttributes = signerInformation.getSignedAttributes();
+	    final AttributeTable signedAttributes = signerInformation.getSignedAttributes();
 
 	    // Si la firma contiene atributos firmados
 	    if (signedAttributes != null) {
 		// Accedemos al atributo message-digest
-		Attribute messageDigestAttribute = signedAttributes.get(CMSAttributes.messageDigest);
+		final Attribute messageDigestAttribute = signedAttributes.get(CMSAttributes.messageDigest);
 
 		// Obtenemos el resumen de los datos firmados
-		byte[ ] signatureSignedDigest = ((ASN1OctetString) messageDigestAttribute.getAttrValues().getObjectAt(0).toASN1Primitive()).getOctets();
+		final byte[ ] signatureSignedDigest = ((ASN1OctetString) messageDigestAttribute.getAttrValues().getObjectAt(0).toASN1Primitive()).getOctets();
 
 		// Obtenemos el algoritmo de resumen usado para calcular el
 		// resumen
 		// de los datos firmados
-		AlgorithmIdentifier signatureDigestAlgorithmIdentifier = signerInformation.getDigestAlgorithmID();
-		String digestAlgorithm = CryptoUtilPdfBc.translateAlgorithmIdentifier(signatureDigestAlgorithmIdentifier);
+		final AlgorithmIdentifier signatureDigestAlgorithmIdentifier = signerInformation.getDigestAlgorithmID();
+		final String digestAlgorithm = CryptoUtilPdfBc.translateAlgorithmIdentifier(signatureDigestAlgorithmIdentifier);
 
 		// Calculamos el resumen del fichero incluído en la firma ASiC-S
 		// usando el algoritmo de resumen contenido en la propia firma
-		byte[ ] signedFileDigest = getSignedFileDigest(digestAlgorithm, validationResult);
+		final byte[ ] signedFileDigest = getSignedFileDigest(digestAlgorithm, validationResult);
 
 		// Comprobamos que los resúmenes coincidan
 		if (!Arrays.equals(signatureSignedDigest, signedFileDigest)) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG021, new Object[ ] { signerInfo.getSigningCertificate().getSubjectDN().getName(), digestAlgorithm });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG021, new Object[ ] { signerInfo.getSigningCertificate().getSubjectDN().getName(), digestAlgorithm });
 		    LOGGER.error(errorMsg);
 		    validationResult.setIntegrallyCorrect(false);
 		    validationResult.setErrorMsg(errorMsg);
@@ -1254,13 +1254,13 @@ public final class ASiCSBaselineSigner implements Signer {
 		}
 		// Instanciamos la clase que gestiona la validación de firmas
 		// CAdES Baseline
-		CAdESBaselineSigner cadesBaselineSigner = new CAdESBaselineSigner();
+		final CAdESBaselineSigner cadesBaselineSigner = new CAdESBaselineSigner();
 
 		// Primero, determinamos el formato del firmante
-		String signerFormat = SignatureFormatDetectorCadesPades.resolveSignerCAdESFormat(asn1SignedData, signerInfo.getSignerInformation());
+		final String signerFormat = SignatureFormatDetectorCadesPades.resolveSignerCAdESFormat(asn1SignedData, signerInfo.getSignerInformation());
 
 		// Validamos el firmante
-		SignerValidationResult signerValidationResult = cadesBaselineSigner.validateSigner(asn1SignedData, signerInfo, validationResult, null, false, signerFormat);
+		final SignerValidationResult signerValidationResult = cadesBaselineSigner.validateSigner(asn1SignedData, signerInfo, validationResult, null, false, signerFormat);
 
 		// Validamos los contra-firmantes asociados al firmante
 		cadesBaselineSigner.validateCounterSigners(signerInfo, signerValidationResult, asn1SignedData, validationResult, null);
@@ -1274,7 +1274,7 @@ public final class ASiCSBaselineSigner implements Signer {
 	    }
 	    // Si la firma no contiene atributos firmados
 	    else {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG031, new Object[ ] { signerInfo.getSigningCertificate().getSubjectDN().getName() });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG031, new Object[ ] { signerInfo.getSigningCertificate().getSubjectDN().getName() });
 		LOGGER.error(errorMsg);
 		validationResult.setIntegrallyCorrect(false);
 		validationResult.setErrorMsg(errorMsg);
@@ -1291,11 +1291,11 @@ public final class ASiCSBaselineSigner implements Signer {
      * @return the hash value.
      * @throws SigningException If the method fails.
      */
-    private byte[ ] getSignedFileDigest(String digestAlgorithm, ValidationResult validationResult) throws SigningException {
+    private byte[ ] getSignedFileDigest(final String digestAlgorithm, final ValidationResult validationResult) throws SigningException {
 	try {
-	    return CryptoUtilPdfBc.digest(digestAlgorithm, signedFile);
-	} catch (Exception e) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG029, new Object[ ] { e.getMessage() });
+	    return CryptoUtilPdfBc.digest(digestAlgorithm, this.signedFile);
+	} catch (final Exception e) {
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG029, new Object[ ] { e.getMessage() });
 	    LOGGER.error(errorMsg, e);
 	    validationResult.setIntegrallyCorrect(false);
 	    validationResult.setErrorMsg(errorMsg);
@@ -1309,11 +1309,11 @@ public final class ASiCSBaselineSigner implements Signer {
      * @return the signature message.
      * @throws SigningException If the method fails.
      */
-    private CMSSignedData getCMSSignedData(ValidationResult validationResult) throws SigningException {
+    private CMSSignedData getCMSSignedData(final ValidationResult validationResult) throws SigningException {
 	try {
-	    return new CMSSignedData(new CMSProcessableByteArray(signedFile), asn1Signature);
-	} catch (Exception e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG052);
+	    return new CMSSignedData(new CMSProcessableByteArray(this.signedFile), this.asn1Signature);
+	} catch (final Exception e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG052);
 	    LOGGER.error(errorMsg, e);
 	    validationResult.setIntegrallyCorrect(false);
 	    validationResult.setErrorMsg(errorMsg);
@@ -1332,7 +1332,7 @@ public final class ASiCSBaselineSigner implements Signer {
      * @param asicSSignature Parameter that represents the ASiC-S signature.
      * @throws SigningException If the validation fails.
      */
-    private void checkSignatureIntegrity(ValidationResult validationResult, byte[ ] asicSSignature) throws SigningException {
+    private void checkSignatureIntegrity(final ValidationResult validationResult, final byte[ ] asicSSignature) throws SigningException {
 	// Establecemos, por defecto, que la firma es estructuralmente correcta
 	validationResult.setIntegrallyCorrect(true);
 
@@ -1345,10 +1345,10 @@ public final class ASiCSBaselineSigner implements Signer {
 	byte[ ] mimeTypeFile = null;
 
 	// Inicializamos las variables relacionadas con el proceso de validación
-	signedFile = null;
-	asn1Signature = null;
-	signedXML = null;
-	signedFileName = null;
+	this.signedFile = null;
+	this.asn1Signature = null;
+	this.signedXML = null;
+	this.signedFileName = null;
 
 	InputStream is = null;
 	InputStream asicsInputStream = null;
@@ -1360,7 +1360,7 @@ public final class ASiCSBaselineSigner implements Signer {
 	    // Recorremos las entradas del fichero ZIP
 	    for (ZipEntry entry = ((ZipInputStream) asicsInputStream).getNextEntry(); entry != null; entry = ((ZipInputStream) asicsInputStream).getNextEntry()) {
 		// Accedemos al nombre de la entrada
-		String entryName = entry.getName();
+		final String entryName = entry.getName();
 
 		// Si la entrada es el fichero mimetype
 		if (entryName.equals(SignatureFormatDetectorASiC.MIME_TYPE_FILE)) {
@@ -1371,22 +1371,22 @@ public final class ASiCSBaselineSigner implements Signer {
 		// Si la entrada es la firma ASN.1
 		else if (SignatureFormatDetectorASiC.isCAdESEntry(entryName)) {
 		    // Accedemos al elemento SignedData
-		    asn1Signature = GenericUtilsCommons.getDataFromInputStream(asicsInputStream);
+		    this.asn1Signature = GenericUtilsCommons.getDataFromInputStream(asicsInputStream);
 
 		}
 		// Si la entrada es la firma XML
 		else if (SignatureFormatDetectorASiC.isXAdESEntry(entryName)) {
-		    signedXML = GenericUtilsCommons.getDataFromInputStream(asicsInputStream);
+		    this.signedXML = GenericUtilsCommons.getDataFromInputStream(asicsInputStream);
 		}
 		// Si la entrada no es un directorio, debe ser los datos
 		// firmados
 		else if (!entry.isDirectory()) {
-		    signedFile = GenericUtilsCommons.getDataFromInputStream(asicsInputStream);
-		    signedFileName = entryName;
+		    this.signedFile = GenericUtilsCommons.getDataFromInputStream(asicsInputStream);
+		    this.signedFileName = entryName;
 		}
 	    }
-	} catch (IOException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG011);
+	} catch (final IOException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG011);
 	    LOGGER.error(errorMsg, e);
 	    validationResult.setIntegrallyCorrect(false);
 	    validationResult.setErrorMsg(errorMsg);
@@ -1411,13 +1411,14 @@ public final class ASiCSBaselineSigner implements Signer {
      * {@inheritDoc}
      * @see es.gob.afirma.signature.Signer#getSignedData(byte[])
      */
-    public OriginalSignedData getSignedData(byte[ ] asicSSignature) throws SigningException {
+    @Override
+	public OriginalSignedData getSignedData(final byte[ ] asicSSignature) throws SigningException {
 	LOGGER.info(Language.getResIntegra(ILogConstantKeys.ASBS_LOG036));
 
 	// Instanciamos el objeto a devolver
-	OriginalSignedData result = new OriginalSignedData();
+	final OriginalSignedData result = new OriginalSignedData();
 
-	signedFile = null;
+	this.signedFile = null;
 
 	InputStream is = null;
 	InputStream asicsInputStream = null;
@@ -1427,23 +1428,23 @@ public final class ASiCSBaselineSigner implements Signer {
 	    asicsInputStream = new ZipInputStream(is);
 
 	    // Recorremos las entradas del fichero ZIP
-	    for (ZipEntry entry = ((ZipInputStream) asicsInputStream).getNextEntry(); entry != null && signedFile == null; entry = ((ZipInputStream) asicsInputStream).getNextEntry()) {
+	    for (ZipEntry entry = ((ZipInputStream) asicsInputStream).getNextEntry(); entry != null && this.signedFile == null; entry = ((ZipInputStream) asicsInputStream).getNextEntry()) {
 		// Accedemos al nombre de la entrada
-		String entryName = entry.getName();
+		final String entryName = entry.getName();
 
 		// Si la entrada no es un directorio, no es el fichero mimetype,
 		// no es la firma ASN.1 y no es la firma XML debe ser los datos
 		// firmados
 		if (!entry.isDirectory() && !entryName.equals(SignatureFormatDetectorASiC.MIME_TYPE_FILE) && !SignatureFormatDetectorASiC.isCAdESEntry(entryName) && !SignatureFormatDetectorASiC.isXAdESEntry(entryName)) {
-		    signedFile = GenericUtilsCommons.getDataFromInputStream(asicsInputStream);
+		    this.signedFile = GenericUtilsCommons.getDataFromInputStream(asicsInputStream);
 		}
 	    }
 
 	    // Obtenemos la información de los datos firmados
-	    result.setMimetype(UtilsResourcesSignOperations.getMimeType(signedFile));
-	    result.setSignedData(signedFile);
-	} catch (IOException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG011);
+	    result.setMimetype(UtilsResourcesSignOperations.getMimeType(this.signedFile));
+	    result.setSignedData(this.signedFile);
+	} catch (final IOException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG011);
 	    LOGGER.error(errorMsg, e);
 	    return null;
 	} finally {

@@ -151,7 +151,7 @@
 		<version.tika>2.8.0</version.tika>
 		<version.woodstox>6.5.1</version.woodstox>
 		<version.wss4j>2.4.1</version.wss4j>
-		<version.xmlsec>2.3.4</version.xmlsec>
+		<version.xmlsec>3.0.5-SNAPSHOT</version.xmlsec>
 		<version.xalan>2.7.3</version.xalan>
 		<version.xerces>2.12.2</version.xerces>
 		<version.mime4j>0.8.11</version.mime4j>
