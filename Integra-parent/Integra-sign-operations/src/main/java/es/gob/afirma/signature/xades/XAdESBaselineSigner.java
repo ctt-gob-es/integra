@@ -151,12 +151,12 @@ public final class XAdESBaselineSigner implements Signer {
     /**
      * Attribute that represents default digest algorithm in the xml references to ASICS signatures.
      */
-    private String digestAlgorithmRefAsic = DigestMethod.SHA1;
+    private final String digestAlgorithmRefAsic = DigestMethod.SHA1;
 
     /**
      * Attribute that represents algorithm to encrypt data to be signed.
      */
-    private String algorithmRefAsic = "SHA1";
+    private final String algorithmRefAsic = "SHA1";
     /**
      * Attribute that represents dataElement object.
      */
@@ -180,7 +180,8 @@ public final class XAdESBaselineSigner implements Signer {
     static {
 	AccessController.doPrivileged(new java.security.PrivilegedAction<Void>() {
 
-	    public Void run() {
+	    @Override
+		public Void run() {
 		try {
 		    // Correccion al problema insertado a partir de Apache Santuario 2.0.7 (Java 8u272 y Java 11)
 		    //
@@ -230,7 +231,7 @@ public final class XAdESBaselineSigner implements Signer {
      * @param optionalParams Parameter that represents the set o extra configuration parameters defined by the user.
      * @return the canonicalization algorithm to use for signature generation operations.
      */
-    private String defineCanonicalizationMethod(Properties optionalParams) {
+    private String defineCanonicalizationMethod(final Properties optionalParams) {
 	String canonicalizationMethod = optionalParams.getProperty(SignatureProperties.XADES_CANONICALIZATION_METHOD);
 	if (canonicalizationMethod == null || canonicalizationMethod.isEmpty()) {
 	    canonicalizationMethod = CanonicalizationMethod.EXCLUSIVE;
@@ -274,7 +275,7 @@ public final class XAdESBaselineSigner implements Signer {
      * @throws UnsupportedEncodingException If the method fails.
      * @throws InvalidCanonicalizerException If the method fails.
      */
-    private byte[ ] generateXAdESSignature(byte[ ] data, String algorithm, String signatureFormat, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID, String idClient, boolean asicsSignature, String fileToSignName) throws SigningException, MarshalException, XMLSignatureException, GeneralSecurityException, ParserConfigurationException, TransformersException, UnsupportedEncodingException, InvalidCanonicalizerException {
+    private byte[ ] generateXAdESSignature(final byte[ ] data, final String algorithm, final String signatureFormat, final PrivateKeyEntry privateKey, final Properties extraParams, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID, final String idClient, final boolean asicsSignature, final String fileToSignName) throws SigningException, MarshalException, XMLSignatureException, GeneralSecurityException, ParserConfigurationException, TransformersException, UnsupportedEncodingException, InvalidCanonicalizerException {
 	// Se crea documento XML
 	Document docSignature = null;
 	// Comprobamos que se ha indicado el algoritmo de firma y tiene un
@@ -293,7 +294,7 @@ public final class XAdESBaselineSigner implements Signer {
 	checkInputSignatureFormat(signatureFormat, data);
 
 	// Inicializamos los parámetros extra en caso de no haberse indicado
-	Properties optionalParams = checkInputExtraParams(extraParams);
+	final Properties optionalParams = checkInputExtraParams(extraParams);
 
 	// Comprobamos si en los parámetros extra se ha indicado la propiedad
 	// SignatureProperties.XADES_DATA_FORMAT_DESCRIPTION_PROP
@@ -302,12 +303,16 @@ public final class XAdESBaselineSigner implements Signer {
 	// Comprobamos si en los parámetros extra se ha indicado la propiedad
 	// SignatureProperties.XADES_DATA_FORMAT_MIME_PROP
 	checkDataObjectFormatMimeType(optionalParams, data);
+	
+    final String keyType = privateKey.getPrivateKey().getAlgorithm();
+    
+    final String signAlgorithm = SignatureConstants.composeSignatureAlgorithmName(algorithm, keyType);
 
 	// Obtenemos la URI del algoritmo de firma
-	String uriSignAlgorithm = SIGN_ALGORITHM_URI.get(algorithm);
+	final String uriSignAlgorithm = SIGN_ALGORITHM_URI.get(signAlgorithm);
 
 	// Obtenemos el algoritmo de hash
-	digestAlgorithmRef = SignatureConstants.DIGEST_METHOD_ALGORITHMS_XADES.get(algorithm);
+	this.digestAlgorithmRef = SignatureConstants.DIGEST_METHOD_ALGORITHMS_XADES.get(signAlgorithm);
 
 	// Creamos el documento XML
 	if (asicsSignature) {
@@ -321,20 +326,20 @@ public final class XAdESBaselineSigner implements Signer {
 	}
 
 	// Generamos el objeto que representará la firma
-	XAdES_EPES xades = generateXAdESElement(privateKey, optionalParams, docSignature.getDocumentElement());
+	final XAdES_EPES xades = generateXAdESElement(privateKey, optionalParams, docSignature.getDocumentElement());
 
 	// Instanciamos el objeto que permite la generación de la firma
 	// XAdES
-	XadesExt signBuilder = XadesExt.newInstance(xades, true);
+	final XadesExt signBuilder = XadesExt.newInstance(xades, true);
 
 	// Asociamos el algoritmo de hash a la firma
-	signBuilder.setDigestMethod(digestAlgorithmRef);
+	signBuilder.setDigestMethod(this.digestAlgorithmRef);
 
 	// Asociamos el algoritmo de canonicalización a la firma
 	signBuilder.setCanonicalizationMethod(defineCanonicalizationMethod(optionalParams));
 
 	// Creamos el conjunto de referencias
-	List<Reference> references = buildReferences(signBuilder, signatureFormat, optionalParams, fileToSignName, data);
+	final List<Reference> references = buildReferences(signBuilder, signatureFormat, optionalParams, fileToSignName, data);
 
 	// Definimos una variable para determinar si añadir política de
 	// firma
@@ -343,7 +348,7 @@ public final class XAdESBaselineSigner implements Signer {
 
 	// Accedemos al archivo con las propiedades asociadas a las
 	// políticas de firma
-	Properties policyProperties = new IntegraProperties().getIntegraProperties(idClient);
+	final Properties policyProperties = new IntegraProperties().getIntegraProperties(idClient);
 
 	// Si se ha indicado política de firma
 	if (signaturePolicyID != null) {
@@ -366,7 +371,7 @@ public final class XAdESBaselineSigner implements Signer {
 		// para
 		// XAdES no sea nulo ni vacío
 		if (!GenericUtilsCommons.assertStringValue(policyID)) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG026, new Object[ ] { signaturePolicyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG026, new Object[ ] { signaturePolicyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
 		    LOGGER.warn(errorMsg);
 		    mustContainSignaturePolicy = false;
 		} else {
@@ -384,7 +389,7 @@ public final class XAdESBaselineSigner implements Signer {
 	    addSignPolicy(mustContainSignaturePolicy, uriSignAlgorithm, policyID, policyProperties, optionalParams, xades, signatureFormat, idClient);
 	}
 	// Definimos el Id de la nueva firma
-	String signatureId = "Signature-" + UUID.randomUUID().toString();
+	final String signatureId = "Signature-" + UUID.randomUUID().toString();
 
 	// Generamos la firma como tal
 	signBuilder.sign((X509Certificate) privateKey.getCertificate(), privateKey.getPrivateKey(), uriSignAlgorithm, references, signatureId, null);
@@ -392,15 +397,15 @@ public final class XAdESBaselineSigner implements Signer {
 	// Si se esta realizando una firma enveloping quitamos el nodo raíz
 	// y extraemos la firma.
 	if (signatureFormat.equals(SIGN_FORMAT_XADES_ENVELOPING) && docSignature.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_SIGNATURE).getLength() == 1) {
-	    Document newdoc = dBFactory.newDocumentBuilder().newDocument();
+	    final Document newdoc = dBFactory.newDocumentBuilder().newDocument();
 	    newdoc.appendChild(newdoc.adoptNode(docSignature.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_SIGNATURE).item(0)));
 	    docSignature = newdoc;
 	}
 
 	// Accedemos al elemento ds:Signature que acabamos de crear
-	Element dsSignature = UtilsSignatureOp.getXMLSignatureById(docSignature, signatureId + "-Signature");
+	final Element dsSignature = UtilsSignatureOp.getXMLSignatureById(docSignature, signatureId + "-Signature");
 	if (dsSignature == null) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
@@ -420,16 +425,16 @@ public final class XAdESBaselineSigner implements Signer {
 	if (mustContainSignaturePolicy) {
 	    try {
 		SignaturePolicyManager.validateGeneratedXAdESEPESSignature(dsSignature, policyID, policyProperties, idClient);
-	    } catch (SignaturePolicyException e) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG034, new Object[ ] { e.getMessage() });
+	    } catch (final SignaturePolicyException e) {
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG034, new Object[ ] { e.getMessage() });
 		LOGGER.error(errorMsg, e);
 		throw new SigningException(errorMsg, e);
 	    }
 	}
 
 	// Informamos de que hemos generado la firma XAdES Baseline
-	String xmlResult = UtilsXML.transformDOMtoString(docSignature);
-	byte[ ] result = xmlResult.getBytes(SignatureConstants.UTF8_ENCODING);
+	final String xmlResult = UtilsXML.transformDOMtoString(docSignature);
+	final byte[ ] result = xmlResult.getBytes(SignatureConstants.UTF8_ENCODING);
 	LOGGER.info(Language.getResIntegra(ILogConstantKeys.XBS_LOG035));
 
 	// Escribimos la firma en el Log
@@ -444,36 +449,36 @@ public final class XAdESBaselineSigner implements Signer {
      * @see es.gob.afirma.signature.Signer#sign(byte[], java.lang.String, java.lang.String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public byte[ ] sign(byte[ ] data, String algorithm, String signatureFormat, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID, String idClient) throws SigningException {
+    public byte[ ] sign(final byte[ ] data, final String algorithm, final String signatureFormat, final PrivateKeyEntry privateKey, final Properties extraParams, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID, final String idClient) throws SigningException {
 	LOGGER.info(Language.getResIntegra(ILogConstantKeys.XBS_LOG002));
 	try {
 	    return generateXAdESSignature(data, algorithm, signatureFormat, privateKey, extraParams, includeTimestamp, signatureForm, signaturePolicyID, idClient, false, null);
-	} catch (UnsupportedEncodingException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
+	} catch (final UnsupportedEncodingException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (MarshalException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
+	} catch (final MarshalException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (XMLSignatureException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
+	} catch (final XMLSignatureException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (GeneralSecurityException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
+	} catch (final GeneralSecurityException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (ParserConfigurationException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
+	} catch (final ParserConfigurationException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (TransformersException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
+	} catch (final TransformersException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (InvalidCanonicalizerException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
+	} catch (final InvalidCanonicalizerException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	} finally {
@@ -486,7 +491,7 @@ public final class XAdESBaselineSigner implements Signer {
      * @see es.gob.afirma.signature.Signer#sign(byte[], java.lang.String, java.lang.String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, java.lang.String, java.lang.String)
      */
     @Override
-    public byte[ ] sign(byte[ ] data, String algorithm, String signatureFormat, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID) throws SigningException {
+    public byte[ ] sign(final byte[ ] data, final String algorithm, final String signatureFormat, final PrivateKeyEntry privateKey, final Properties extraParams, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID) throws SigningException {
 	return sign(data, algorithm, signatureFormat, privateKey, extraParams, includeTimestamp, signatureForm, signaturePolicyID, null);
     }
 
@@ -495,36 +500,36 @@ public final class XAdESBaselineSigner implements Signer {
      * @see es.gob.afirma.signature.Signer#sign(byte[], java.lang.String, java.lang.String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, java.lang.String, java.lang.String, java.lang.String)
      */
 
-    public byte[ ] sign(byte[ ] data, String algorithm, String signatureFormat, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID, boolean asicsSignature, String signedFileName) throws SigningException {
+    public byte[ ] sign(final byte[ ] data, final String algorithm, final String signatureFormat, final PrivateKeyEntry privateKey, final Properties extraParams, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID, final boolean asicsSignature, final String signedFileName) throws SigningException {
 	LOGGER.info(Language.getResIntegra(ILogConstantKeys.XBS_LOG002));
 	try {
 	    return generateXAdESSignature(data, algorithm, signatureFormat, privateKey, extraParams, includeTimestamp, signatureForm, signaturePolicyID, null, true, signedFileName);
-	} catch (UnsupportedEncodingException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
+	} catch (final UnsupportedEncodingException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (MarshalException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
+	} catch (final MarshalException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (XMLSignatureException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
+	} catch (final XMLSignatureException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (GeneralSecurityException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
+	} catch (final GeneralSecurityException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (ParserConfigurationException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
+	} catch (final ParserConfigurationException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (TransformersException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
+	} catch (final TransformersException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (InvalidCanonicalizerException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
+	} catch (final InvalidCanonicalizerException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG036);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	} finally {
@@ -537,10 +542,10 @@ public final class XAdESBaselineSigner implements Signer {
      * @param applicationID Parameter that represents the value for the identifier of the client application for the communication with TS@ defined on the associated properties file.
      * @throws SigningException If the method fails.
      */
-    private void checkApplicationID(String applicationID) throws SigningException {
+    private void checkApplicationID(final String applicationID) throws SigningException {
 	if (applicationID == null || applicationID.trim().isEmpty()) {
-	    String propertiesName = IIntegraConstants.PROPERTIES_FILE;
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG048, new Object[ ] { propertiesName });
+	    final String propertiesName = IIntegraConstants.PROPERTIES_FILE;
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG048, new Object[ ] { propertiesName });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
@@ -551,10 +556,10 @@ public final class XAdESBaselineSigner implements Signer {
      * @param tsaCommunicationMode Parameter that represents the communication mode with TS@ defined on the associated properties file.
      * @throws SigningException If the method fails.
      */
-    private void checkTSACommunicationMode(String tsaCommunicationMode) throws SigningException {
+    private void checkTSACommunicationMode(final String tsaCommunicationMode) throws SigningException {
 	if (tsaCommunicationMode == null || tsaCommunicationMode.trim().isEmpty()) {
-	    String propertiesName = IIntegraConstants.PROPERTIES_FILE;
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG049, new Object[ ] { propertiesName });
+	    final String propertiesName = IIntegraConstants.PROPERTIES_FILE;
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG049, new Object[ ] { propertiesName });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
@@ -565,10 +570,10 @@ public final class XAdESBaselineSigner implements Signer {
      * @param timestampType Parameter that represents the timestamp type to retrieve from TS@ defined on the associated properties file.
      * @throws SigningException If the method fails.
      */
-    private void checkTimestampType(String timestampType) throws SigningException {
+    private void checkTimestampType(final String timestampType) throws SigningException {
 	if (timestampType == null || timestampType.trim().isEmpty()) {
-	    String propertiesName = IIntegraConstants.PROPERTIES_FILE;
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG050, new Object[ ] { propertiesName });
+	    final String propertiesName = IIntegraConstants.PROPERTIES_FILE;
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG050, new Object[ ] { propertiesName });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
@@ -585,12 +590,12 @@ public final class XAdESBaselineSigner implements Signer {
      * </ul>
      * @throws SigningException If the method fails.
      */
-    private Object generateTimestamp(byte[ ] dataToStamp, String idClient) throws SigningException {
+    private Object generateTimestamp(final byte[ ] dataToStamp, final String idClient) throws SigningException {
 	String applicationID = null;
 	String tsaCommunicationMode = null;
 	String timestampType = null;
 
-	Properties integraProperties = new IntegraProperties().getIntegraProperties(idClient);
+	final Properties integraProperties = new IntegraProperties().getIntegraProperties(idClient);
 
 	// Rescatamos del archivo de propiedades el identificador
 	// de la aplicación cliente para conectarnos contra la TS@
@@ -626,7 +631,7 @@ public final class XAdESBaselineSigner implements Signer {
 	    // Si el modo de comunicación es Servicio Web (DSS)
 	    if (tsaCommunicationMode.equals(IUtilsTimestamp.TSA_DSS_COMMUNICATION)) {
 		// Obtenemos el sello de tiempo
-		TimeStampToken tst = (TimeStampToken) UtilsTimestampWS.getTimestampFromDssService(dataToStamp, applicationID, DSSConstants.TimestampForm.RFC_3161, idClient);
+		final TimeStampToken tst = (TimeStampToken) UtilsTimestampWS.getTimestampFromDssService(dataToStamp, applicationID, DSSConstants.TimestampForm.RFC_3161, idClient);
 
 		// Validamos el sello de tiempo obtenido
 		UtilsTimestampXML.validateASN1Timestamp(tst);
@@ -637,7 +642,7 @@ public final class XAdESBaselineSigner implements Signer {
 	    // Si el modo de comunicación es RFC 3161
 	    else {
 		// Obtenemos el sello de tiempo
-		TimeStampToken tst = UtilsTimestampOcspRfc3161.getTimestampFromRFC3161Service(dataToStamp, applicationID, tsaCommunicationMode);
+		final TimeStampToken tst = UtilsTimestampOcspRfc3161.getTimestampFromRFC3161Service(dataToStamp, applicationID, tsaCommunicationMode);
 
 		// Validamos el sello de tiempo obtenido
 		UtilsTimestampXML.validateASN1Timestamp(tst);
@@ -648,7 +653,7 @@ public final class XAdESBaselineSigner implements Signer {
 	} else if (timestampType.equals(IUtilsTimestamp.TIMESTAMP_TYPE_XML)) {
 	    // El único modo de comunicación es DSS para obtener el sello de
 	    // tiempo XML
-	    Element tst = (Element) UtilsTimestampWS.getTimestampFromDssService(dataToStamp, applicationID, DSSConstants.TimestampForm.XML, idClient);
+	    final Element tst = (Element) UtilsTimestampWS.getTimestampFromDssService(dataToStamp, applicationID, DSSConstants.TimestampForm.XML, idClient);
 
 	    // Validamos el sello de tiempo obtenido
 	    UtilsTimestampXML.validateXMLTimestamp(tst);
@@ -656,8 +661,8 @@ public final class XAdESBaselineSigner implements Signer {
 	    // Devolvemos el sello de tiempo
 	    return tst;
 	} else {
-	    String propertiesName = IIntegraConstants.PROPERTIES_FILE;
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG033, new Object[ ] { timestampType, propertiesName });
+	    final String propertiesName = IIntegraConstants.PROPERTIES_FILE;
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG033, new Object[ ] { timestampType, propertiesName });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
@@ -671,7 +676,7 @@ public final class XAdESBaselineSigner implements Signer {
      * @param idClient Parameter that represents the client application identifier.
      * @throws SigningException If the method fails.
      */
-    private void addTimestampAndValidateSigningCertificate(boolean includeTimestamp, Element dsSignature, X509Certificate signerCertificate, String idClient) throws SigningException {
+    private void addTimestampAndValidateSigningCertificate(final boolean includeTimestamp, final Element dsSignature, final X509Certificate signerCertificate, final String idClient) throws SigningException {
 	// Definimos la fecha de validación del certificado firmante como la
 	// fecha actual
 	Date validationDate = Calendar.getInstance().getTime();
@@ -679,14 +684,14 @@ public final class XAdESBaselineSigner implements Signer {
 	if (includeTimestamp) {
 
 	    // Accedemos al elemento xades:QualifyingProperties
-	    Element qualifyingProperties = UtilsSignatureOp.retrieveNode(dsSignature, IXMLConstants.ELEMENT_QUALIFIYING_PROPERTIES, IXMLConstants.XADES_1_3_2_NAMESPACE, true);
+	    final Element qualifyingProperties = UtilsSignatureOp.retrieveNode(dsSignature, IXMLConstants.ELEMENT_QUALIFIYING_PROPERTIES, IXMLConstants.XADES_1_3_2_NAMESPACE, true);
 
 	    // Obtenemos los datos a sellar
-	    byte[ ] dataToStamp = UtilsTimestampXML.getSignatureTimeStampDataToStamp(dsSignature, null);
+	    final byte[ ] dataToStamp = UtilsTimestampXML.getSignatureTimeStampDataToStamp(dsSignature, null);
 
 	    // Obtenemos el sello de tiempo sobre el conjunto de datos
 	    // procesados
-	    Object tst = generateTimestamp(dataToStamp, idClient);
+	    final Object tst = generateTimestamp(dataToStamp, idClient);
 
 	    // Añadimos el elemento xades:UnsignedProperties, en caso de no
 	    // estar
@@ -707,11 +712,11 @@ public final class XAdESBaselineSigner implements Signer {
 	    }
 
 	    // Añadimos el elemento SignatureTimeStamp
-	    Element signatureTimeStamp = unsignedSignatureProperties.getOwnerDocument().createElementNS(DSSConstants.SignTypesURIs.XADES_V_1_3_2, IXMLConstants.ELEMENT_SIGNATURE_TIMESTAMP);
+	    final Element signatureTimeStamp = unsignedSignatureProperties.getOwnerDocument().createElementNS(DSSConstants.SignTypesURIs.XADES_V_1_3_2, IXMLConstants.ELEMENT_SIGNATURE_TIMESTAMP);
 	    signatureTimeStamp.setPrefix(IXMLConstants.XADES_PREFIX);
 	    signatureTimeStamp.setAttribute(IXMLConstants.ATTRIBUTE_ID, "SignatureTimeStamp-" + UUID.randomUUID().toString());
 
-	    Element canonicalizationMethod = unsignedSignatureProperties.getOwnerDocument().createElementNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_CANONICALIZATION_METHOD);
+	    final Element canonicalizationMethod = unsignedSignatureProperties.getOwnerDocument().createElementNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_CANONICALIZATION_METHOD);
 	    canonicalizationMethod.setPrefix(IXMLConstants.DS_PREFIX);
 
 	    canonicalizationMethod.setAttribute(IXMLConstants.ATTRIBUTE_ALGORITHM, CanonicalizationMethod.INCLUSIVE);
@@ -721,12 +726,12 @@ public final class XAdESBaselineSigner implements Signer {
 	    // Diferenciamos el tipo de sello de tiempo obtenido
 	    if (tst instanceof TimeStampToken) {
 		// Sello de tiempo ASN.1
-		Element encapsulatedTimeStamp = unsignedSignatureProperties.getOwnerDocument().createElementNS(DSSConstants.SignTypesURIs.XADES_V_1_3_2, IXMLConstants.ELEMENT_ENCAPSULATED_TIMESTAMP);
+		final Element encapsulatedTimeStamp = unsignedSignatureProperties.getOwnerDocument().createElementNS(DSSConstants.SignTypesURIs.XADES_V_1_3_2, IXMLConstants.ELEMENT_ENCAPSULATED_TIMESTAMP);
 		encapsulatedTimeStamp.setPrefix(IXMLConstants.XADES_PREFIX);
 		encapsulatedTimeStamp.setAttribute(IXMLConstants.ATTRIBUTE_ENCODING, "http://uri.etsi.org/01903/v1.2.2#DER");
 		try {
 		    encapsulatedTimeStamp.appendChild(unsignedSignatureProperties.getOwnerDocument().createTextNode(new String(Base64CoderCommons.encodeBase64(((TimeStampToken) tst).getEncoded()))));
-		} catch (Exception e) {
+		} catch (final Exception e) {
 		    throw new SigningException(Language.getResIntegra(ILogConstantKeys.XBS_LOG015), e);
 		}
 		signatureTimeStamp.appendChild(encapsulatedTimeStamp);
@@ -735,9 +740,9 @@ public final class XAdESBaselineSigner implements Signer {
 		validationDate = ((TimeStampToken) tst).getTimeStampInfo().getGenTime();
 	    } else {
 		// Sello de tiempo XML
-		Element xmlTimeStamp = unsignedSignatureProperties.getOwnerDocument().createElementNS(DSSConstants.SignTypesURIs.XADES_V_1_3_2, IXMLConstants.ELEMENT_XML_TIMESTAMP);
+		final Element xmlTimeStamp = unsignedSignatureProperties.getOwnerDocument().createElementNS(DSSConstants.SignTypesURIs.XADES_V_1_3_2, IXMLConstants.ELEMENT_XML_TIMESTAMP);
 		xmlTimeStamp.setPrefix(IXMLConstants.XADES_PREFIX);
-		Node timestampNode = unsignedSignatureProperties.getOwnerDocument().importNode((Node) tst, true);
+		final Node timestampNode = unsignedSignatureProperties.getOwnerDocument().importNode((Node) tst, true);
 		xmlTimeStamp.appendChild(timestampNode);
 		signatureTimeStamp.appendChild(xmlTimeStamp);
 
@@ -770,20 +775,20 @@ public final class XAdESBaselineSigner implements Signer {
      * @param idClient Parameter that represents the client application identifier.
      * @throws SigningException If the method fails.
      */
-    private void addSignPolicy(boolean addSignaturePolicy, String uriSignAlgorithm, String policyID, Properties policyProperties, Properties extraParams, XAdES_EPES xades, String signType, String idClient) throws SigningException {
+    private void addSignPolicy(final boolean addSignaturePolicy, final String uriSignAlgorithm, final String policyID, final Properties policyProperties, final Properties extraParams, final XAdES_EPES xades, final String signType, final String idClient) throws SigningException {
 	if (addSignaturePolicy) {
 	    // Comprobamos si el algoritmo de firma está soportado por la
 	    // política de firma
 	    if (!SignaturePolicyManager.isValidXMLSignAlgorithmByPolicy(uriSignAlgorithm, policyID, policyProperties, idClient)) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG027, new Object[ ] { uriSignAlgorithm, policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG027, new Object[ ] { uriSignAlgorithm, policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 
 	    // Comprobamos si el algoritmo de hash está soportado por la
 	    // política de firma
-	    if (!SignaturePolicyManager.isValidXMLHashAlgorithmByPolicy(digestAlgorithmRef, policyID, policyProperties, idClient)) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG028, new Object[ ] { digestAlgorithmRef, policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+	    if (!SignaturePolicyManager.isValidXMLHashAlgorithmByPolicy(this.digestAlgorithmRef, policyID, policyProperties, idClient)) {
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG028, new Object[ ] { this.digestAlgorithmRef, policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -797,21 +802,21 @@ public final class XAdESBaselineSigner implements Signer {
 		signingMode = IUtilsSignature.ENVELOPING_SIGNATURE_MODE;
 	    }
 	    if (!SignaturePolicyManager.isValidXMLSigningModeByPolicy(signingMode, policyID, policyProperties, idClient)) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG029, new Object[ ] { signingMode, policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG029, new Object[ ] { signingMode, policyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
 
 	    // Accedemos a la propiedad con el valor del
 	    // elemento SigPolicyQualifier
-	    String qualifier = extraParams.getProperty(SignatureProperties.XADES_POLICY_QUALIFIER_PROP);
+	    final String qualifier = extraParams.getProperty(SignatureProperties.XADES_POLICY_QUALIFIER_PROP);
 
 	    // Procesamos los parámetros asociados a la política de firma
 	    // que utilizar
 	    try {
 		SignaturePolicyManager.addXMLSignPolicy(xades, qualifier, policyID, policyProperties, idClient);
-	    } catch (SignaturePolicyException e) {
-		String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG030);
+	    } catch (final SignaturePolicyException e) {
+		final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG030);
 		LOGGER.error(errorMsg, e);
 		throw new SigningException(errorMsg, e);
 	    }
@@ -826,9 +831,9 @@ public final class XAdESBaselineSigner implements Signer {
     private DigestMethod getDigestMethod() throws SigningException {
 	DigestMethod digestMethod = null;
 	try {
-	    digestMethod = xmlSignatureFactory.newDigestMethod(digestAlgorithmRef, null);
-	} catch (GeneralSecurityException e) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG020, new Object[ ] { digestAlgorithmRef });
+	    digestMethod = xmlSignatureFactory.newDigestMethod(this.digestAlgorithmRef, null);
+	} catch (final GeneralSecurityException e) {
+	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG020, new Object[ ] { this.digestAlgorithmRef });
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	}
@@ -840,24 +845,24 @@ public final class XAdESBaselineSigner implements Signer {
      * @param transformList Parameter that represents the list with transforms to update.
      * @throws SigningException If the method fails.
      */
-    private void addContentTransforms(List<Transform> transformList, Properties extraParams) throws SigningException {
+    private void addContentTransforms(final List<Transform> transformList, final Properties extraParams) throws SigningException {
 	
 	// Solo canonicalizo si es XML
-	if (IXMLConstants.DATA_TYPE_XML == dataType) {
+	if (IXMLConstants.DATA_TYPE_XML == this.dataType) {
 	    
-	    String canonicalizationAlgorithm = defineCanonicalizationMethod(extraParams);
+	    final String canonicalizationAlgorithm = defineCanonicalizationMethod(extraParams);
 	    
 	    try {
 		// Añadimos la transformada para la canonicalización exclusiva
 		transformList.add(xmlSignatureFactory.newTransform(canonicalizationAlgorithm, (TransformParameterSpec) null));
-	    } catch (Exception e) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG021, new Object[ ] { canonicalizationAlgorithm });
+	    } catch (final Exception e) {
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG021, new Object[ ] { canonicalizationAlgorithm });
 		LOGGER.error(errorMsg, e);
 		throw new SigningException(errorMsg, e);
 	    }
 	    // Si no era XML y tuve que convertir a Base64 yo mismo declaro la
 	    // transformación
-	} else if (IXMLConstants.DATA_TYPE_BINARY_BASE64 == dataType) {
+	} else if (IXMLConstants.DATA_TYPE_BINARY_BASE64 == this.dataType) {
 	    try {
 		transformList.add(xmlSignatureFactory.newTransform(Transform.BASE64, (TransformParameterSpec) null));
 	    } catch (final GeneralSecurityException e) {
@@ -874,23 +879,23 @@ public final class XAdESBaselineSigner implements Signer {
      * @param referenceId Parameter that represents the value of the <code>Id</code> attribute for the new reference.
      * @return an object that represents the new XML element.
      */
-    private XMLObject newEnvelopingObject(List<Reference> referenceList, List<Transform> transformList, DigestMethod digestMethod, String referenceId) {
+    private XMLObject newEnvelopingObject(final List<Reference> referenceList, final List<Transform> transformList, final DigestMethod digestMethod, final String referenceId) {
 	// crea el nuevo elemento Object que contiene el documento a firmar
 	final List<XMLStructure> structures = new ArrayList<XMLStructure>(1);
 
 	// Si los datos se han convertido a base64, bien por ser binarios o
 	// explicitos
-	if (IXMLConstants.DATA_TYPE_BINARY_BASE64 == dataType || IXMLConstants.DATA_TYPE_BINARY == dataType) {
-	    structures.add(new DOMStructure(dataElement.getFirstChild()));
+	if (IXMLConstants.DATA_TYPE_BINARY_BASE64 == this.dataType || IXMLConstants.DATA_TYPE_BINARY == this.dataType) {
+	    structures.add(new DOMStructure(this.dataElement.getFirstChild()));
 	} else {
-	    structures.add(new DOMStructure(dataElement));
+	    structures.add(new DOMStructure(this.dataElement));
 	}
 
-	String objectId = "Object-" + UUID.randomUUID().toString();
-	String mime = IXMLConstants.DATA_TYPE_XML == dataType ? "text/xml" : "application/octet-stream";
-	XMLObject envelopingObject = xmlSignatureFactory.newXMLObject(structures, objectId, mime, IXMLConstants.DATA_TYPE_XML == dataType ? null : IXMLConstants.ENCODING_BASE64);
+	final String objectId = "Object-" + UUID.randomUUID().toString();
+	final String mime = IXMLConstants.DATA_TYPE_XML == this.dataType ? "text/xml" : "application/octet-stream";
+	final XMLObject envelopingObject = xmlSignatureFactory.newXMLObject(structures, objectId, mime, IXMLConstants.DATA_TYPE_XML == this.dataType ? null : IXMLConstants.ENCODING_BASE64);
 
-	((DataObjectFormatImpl) dataObjectFormat).setObjectReference("#" + referenceId);
+	((DataObjectFormatImpl) this.dataObjectFormat).setObjectReference("#" + referenceId);
 
 	// crea la referencia al nuevo elemento Object
 	referenceList.add(xmlSignatureFactory.newReference("#" + objectId, digestMethod, transformList, IXMLConstants.OBJECT_URI, referenceId));
@@ -914,20 +919,20 @@ public final class XAdESBaselineSigner implements Signer {
      * @return a list with the generated references.
      * @throws SigningException If the method fails.
      */
-    private List<Reference> buildReferences(XadesExt xmlSignature, String signatureFormat, Properties extraParams, String signedFileName, byte[ ] data) throws SigningException {
+    private List<Reference> buildReferences(final XadesExt xmlSignature, final String signatureFormat, final Properties extraParams, final String signedFileName, final byte[ ] data) throws SigningException {
 	// Instanciamos una lista para ubicar las referencias a incluir en la
 	// firma XML
-	List<Reference> referenceList = new ArrayList<Reference>();
+	final List<Reference> referenceList = new ArrayList<Reference>();
 
 	// Obtenemos el algoritmo de resumen instanciado
-	DigestMethod digestMethod = getDigestMethod();
+	final DigestMethod digestMethod = getDigestMethod();
 
 	// Instanciamos una lista para ubicar las transformadas a utilizar en la
 	// generación de las referencias
-	List<Transform> transformList = new ArrayList<Transform>();
+	final List<Transform> transformList = new ArrayList<Transform>();
 
 	// Generamos el identificador de la referencia
-	String referenceId = "Reference-" + UUID.randomUUID().toString();
+	final String referenceId = "Reference-" + UUID.randomUUID().toString();
 
 	// crea una referencia al documento insertado en un nodo Object para la
 	// firma enveloping
@@ -938,7 +943,7 @@ public final class XAdESBaselineSigner implements Signer {
 	    addContentTransforms(transformList, extraParams);
 
 	    // Creamos el nodo para la firma Enveloping
-	    XMLObject envelopingObject = newEnvelopingObject(referenceList, transformList, digestMethod, referenceId);
+	    final XMLObject envelopingObject = newEnvelopingObject(referenceList, transformList, digestMethod, referenceId);
 
 	    // incluimos el nuevo objeto en documento a firmar
 	    xmlSignature.addXMLObject(envelopingObject);
@@ -949,21 +954,21 @@ public final class XAdESBaselineSigner implements Signer {
 	    try {
 		addContentTransforms(transformList, extraParams);
 		if (signedFileName != null) {
-		    ((DataObjectFormatImpl) dataObjectFormat).setObjectReference("#" + referenceId);
+		    ((DataObjectFormatImpl) this.dataObjectFormat).setObjectReference("#" + referenceId);
 
 		    referenceList.add(createReferenceSignedDataAsics(referenceId, signedFileName, data));
 		} else {
 
-		    ((DataObjectFormatImpl) dataObjectFormat).setObjectReference("#" + referenceId);
+		    ((DataObjectFormatImpl) this.dataObjectFormat).setObjectReference("#" + referenceId);
 
 		    // crea la referencia a los datos firmados que se
 		    // encontraran en
 		    // el mismo documento
-		    referenceList.add(xmlSignatureFactory.newReference("#" + contentId, digestMethod, transformList, null, referenceId));
+		    referenceList.add(xmlSignatureFactory.newReference("#" + this.contentId, digestMethod, transformList, null, referenceId));
 		}
 
-	    } catch (DOMException e) {
-		String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG022);
+	    } catch (final DOMException e) {
+		final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG022);
 		LOGGER.error(errorMsg, e);
 		throw new SigningException(errorMsg, e);
 	    }
@@ -981,12 +986,12 @@ public final class XAdESBaselineSigner implements Signer {
 		// documento.
 		transformList.add(xmlSignatureFactory.newTransform(Transform.XPATH, new XPathFilterParameterSpec("not(ancestor-or-self::" + IXMLConstants.DS_SIGNATURE_NODE_NAME + ")", Collections.singletonMap(IXMLConstants.DS_PREFIX, XMLSignature.XMLNS))));
 
-		((DataObjectFormatImpl) dataObjectFormat).setObjectReference("#" + referenceId);
+		((DataObjectFormatImpl) this.dataObjectFormat).setObjectReference("#" + referenceId);
 
 		// crea la referencia
 		referenceList.add(xmlSignatureFactory.newReference("", digestMethod, transformList, null, referenceId));
-	    } catch (GeneralSecurityException e) {
-		String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG022);
+	    } catch (final GeneralSecurityException e) {
+		final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG022);
 		LOGGER.error(errorMsg, e);
 		throw new SigningException(errorMsg, e);
 	    }
@@ -1009,24 +1014,24 @@ public final class XAdESBaselineSigner implements Signer {
      * @return Reference
      * @throws SigningException If the method fails.
      */
-    private Reference createReferenceSignedDataAsics(String referenceId, String signedFileName, byte[ ] data) throws SigningException {
+    private Reference createReferenceSignedDataAsics(final String referenceId, final String signedFileName, final byte[ ] data) throws SigningException {
 
 	Reference ref = null;
 	byte[ ] digestValue = null;
 	DigestMethod digestMethod = null;
 	try {
-	    digestValue = MessageDigest.getInstance(algorithmRefAsic).digest(data);
-	    digestMethod = xmlSignatureFactory.newDigestMethod(digestAlgorithmRefAsic, null);
+	    digestValue = MessageDigest.getInstance(this.algorithmRefAsic).digest(data);
+	    digestMethod = xmlSignatureFactory.newDigestMethod(this.digestAlgorithmRefAsic, null);
 
 	    ref = xmlSignatureFactory.newReference(signedFileName, digestMethod, null, null, referenceId, digestValue);
 	    return ref;
 
-	} catch (NoSuchAlgorithmException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG052);
+	} catch (final NoSuchAlgorithmException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG052);
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
-	} catch (InvalidAlgorithmParameterException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG052);
+	} catch (final InvalidAlgorithmParameterException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG052);
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
@@ -1042,15 +1047,15 @@ public final class XAdESBaselineSigner implements Signer {
      * @throws SigningException If the method fails.
      */
     @SuppressWarnings({ "unchecked" })
-    private void addManifestObject(XadesExt xmlSignature, List<Reference> referenceList, DigestMethod digestMethod, Properties extraParams) throws SigningException {
+    private void addManifestObject(final XadesExt xmlSignature, final List<Reference> referenceList, final DigestMethod digestMethod, final Properties extraParams) throws SigningException {
 	try {
 	    // Recuperamos la lista que contiene los manifests y los data format
 	    // object.
-	    List<ReferenceDataBaseline> refAndDataFormatObjList = (List<ReferenceDataBaseline>) extraParams.get(SignatureConstants.MF_REFERENCES_PROPERTYNAME);
+	    final List<ReferenceDataBaseline> refAndDataFormatObjList = (List<ReferenceDataBaseline>) extraParams.get(SignatureConstants.MF_REFERENCES_PROPERTYNAME);
 
 	    // Instanciamos el documento que contendrá el elemento Manifest de
 	    // la firma.
-	    Document mfDoc = UtilsXML.newDocument();
+	    final Document mfDoc = UtilsXML.newDocument();
 
 	    // Si existen pares de referencias/dataObjectFormat en los
 	    // parámetros adicionales, los incluimos en el Manifest.
@@ -1058,23 +1063,23 @@ public final class XAdESBaselineSigner implements Signer {
 
 		// Instanciamos el elemento Manifest y lo incluimos en su nodo
 		// padre.
-		Element mfElement = mfDoc.createElement(IXMLConstants.MANIFEST_TAG_NAME);
+		final Element mfElement = mfDoc.createElement(IXMLConstants.MANIFEST_TAG_NAME);
 		mfDoc.appendChild(mfElement);
 
 		// Por cada par referencia/dataObjectFormat, los procesamos e
 		// incluimos en la firma.
-		for (ReferenceDataBaseline ref: refAndDataFormatObjList) {
+		for (final ReferenceDataBaseline ref: refAndDataFormatObjList) {
 
 		    // Incluimos la referencia en el Manifest.
 		    if (ref instanceof ReferenceDataBaseline) {
-			ReferenceData referenceData = new ReferenceData(ref.getDigestMethodAlg(), ref.getDigestValue());
+			final ReferenceData referenceData = new ReferenceData(ref.getDigestMethodAlg(), ref.getDigestValue());
 			referenceData.setId(ref.getId());
 			referenceData.setType(ref.getType());
 			referenceData.setUri(ref.getUri());
 			referenceData.setTransforms(ref.getTransforms());
 			mfElement.appendChild(buildReferenceXmlNode(referenceData, mfDoc));
 		    } else {
-			String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG023);
+			final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG023);
 			LOGGER.error(errorMsg);
 			throw new SigningException(errorMsg);
 		    }
@@ -1082,22 +1087,22 @@ public final class XAdESBaselineSigner implements Signer {
 	    }
 
 	    // Incluimos el elemento Manifest en la firma.
-	    String manifestID = "ManifestObject-" + UUID.randomUUID().toString();
+	    final String manifestID = "ManifestObject-" + UUID.randomUUID().toString();
 	    xmlSignature.addXMLObject(xmlSignatureFactory.newXMLObject(Collections.singletonList(new DOMStructure(mfDoc.getDocumentElement())), manifestID, null, null));
 
 	    // Instanciamos el identificador para la referencia
-	    String referenceId = "Reference-" + UUID.randomUUID().toString();
+	    final String referenceId = "Reference-" + UUID.randomUUID().toString();
 
 	    // Creamos la referencia al objeto manifest.
-	    Reference ref = xmlSignatureFactory.newReference("#" + manifestID, digestMethod, null, Manifest.TYPE, referenceId);
+	    final Reference ref = xmlSignatureFactory.newReference("#" + manifestID, digestMethod, null, Manifest.TYPE, referenceId);
 	    referenceList.add(ref);
 
-	} catch (ParserConfigurationException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG024);
+	} catch (final ParserConfigurationException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG024);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (ClassCastException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG024);
+	} catch (final ClassCastException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG024);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	}
@@ -1109,8 +1114,8 @@ public final class XAdESBaselineSigner implements Signer {
      * @param doc Parameter that represents the XML document.
      * @return an element that represents the new reference.
      */
-    private Element buildReferenceXmlNode(ReferenceData rfData, Document doc) {
-	Element referenceElement = doc.createElement("ds:Reference");
+    private Element buildReferenceXmlNode(final ReferenceData rfData, final Document doc) {
+	final Element referenceElement = doc.createElement("ds:Reference");
 	if (GenericUtilsCommons.assertStringValue(rfData.getId())) {
 	    referenceElement.setAttribute(IXMLConstants.ATTRIBUTE_ID, rfData.getId());
 	}
@@ -1122,13 +1127,13 @@ public final class XAdESBaselineSigner implements Signer {
 	}
 
 	if (rfData.getTransforms() != null) {
-	    Element transformElements = UtilsXML.createChild(referenceElement, "ds:Transforms");
-	    for (TransformData transform: rfData.getTransforms()) {
+	    final Element transformElements = UtilsXML.createChild(referenceElement, "ds:Transforms");
+	    for (final TransformData transform: rfData.getTransforms()) {
 		if (transform != null) {
-		    Element transfElement = UtilsXML.createChild(transformElements, "ds:Transform");
+		    final Element transfElement = UtilsXML.createChild(transformElements, "ds:Transform");
 		    UtilsXML.insertAttributeValue(transfElement, "@Algorithm", transform.getAlgorithm());
 		    if (transform.getXPath() != null) {
-			for (String xPath: transform.getXPath()) {
+			for (final String xPath: transform.getXPath()) {
 			    if (GenericUtilsCommons.assertStringValue(xPath)) {
 				UtilsXML.insertValueElement(transfElement, "ds:XPath", xPath);
 			    }
@@ -1151,9 +1156,9 @@ public final class XAdESBaselineSigner implements Signer {
      * @return the initializated XAdES signature.
      */
     @SuppressWarnings("unchecked")
-    private XAdES_EPES generateXAdESElement(PrivateKeyEntry privateKey, Properties extraParams, Element element) {
+    private XAdES_EPES generateXAdESElement(final PrivateKeyEntry privateKey, final Properties extraParams, final Element element) {
 	// Generamos el objeto que generará la firma
-	XAdES_EPES xades = (XAdES_EPES) XAdES.newInstance(XAdES.EPES, IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.XADES_PREFIX, IXMLConstants.DS_PREFIX, digestAlgorithmRef, element);
+	final XAdES_EPES xades = (XAdES_EPES) XAdES.newInstance(XAdES.EPES, IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.XADES_PREFIX, IXMLConstants.DS_PREFIX, this.digestAlgorithmRef, element);
 
 	// Establecemos el elemento SigningTime
 	xades.setSigningTime(Calendar.getInstance().getTime());
@@ -1163,68 +1168,68 @@ public final class XAdESBaselineSigner implements Signer {
 
 	// Accedemos a la propiedad con los roles de la persona en
 	// la firma electrónica
-	String claimedRoles = extraParams.getProperty(SignatureProperties.XADES_CLAIMED_ROLE_PROP);
+	final String claimedRoles = extraParams.getProperty(SignatureProperties.XADES_CLAIMED_ROLE_PROP);
 	// En caso de que se hayan indicado los roles de la persona en la firma
 	// electrónica
 	if (GenericUtilsCommons.assertStringValue(claimedRoles)) {
 	    // Instanciamos el elemento SignerRole
-	    SignerRole signerRole = new SignerRoleImpl();
+	    final SignerRole signerRole = new SignerRoleImpl();
 
 	    // Recorremos los valores indicados para los elementos ClaimedRole
 	    // contenidos dentro de SignerRole, separados por coma
-	    String[ ] claimedRolValues = claimedRoles.split(",");
+	    final String[ ] claimedRolValues = claimedRoles.split(",");
 	    for (int i = 0; i < claimedRolValues.length; i++) {
 		// Añadimos el elemento ClaimedRole
-		String claimedRole = claimedRolValues[i].trim();
+		final String claimedRole = claimedRolValues[i].trim();
 		LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG019, new Object[ ] { claimedRole }));
 		signerRole.addClaimedRole(claimedRole);
 	    }
 	    xades.setSignerRole(signerRole);
 	}
 
-	ArrayList<DataObjectFormat> dofList = new ArrayList<DataObjectFormat>();
+	final ArrayList<DataObjectFormat> dofList = new ArrayList<DataObjectFormat>();
 	// recuperamos la lista de pares referencias/dataObjectFormat.
-	List<ReferenceDataBaseline> dataObjectList = (List<ReferenceDataBaseline>) extraParams.get(SignatureConstants.MF_REFERENCES_PROPERTYNAME);
+	final List<ReferenceDataBaseline> dataObjectList = (List<ReferenceDataBaseline>) extraParams.get(SignatureConstants.MF_REFERENCES_PROPERTYNAME);
 
 	// Si es una XAdES externally detached...
 	if (dataObjectList != null) {
 	    // Por cada par, creamos el correspondiente elemento
 	    // dataObjectFormat.
-	    for (ReferenceDataBaseline ref: dataObjectList) {
+	    for (final ReferenceDataBaseline ref: dataObjectList) {
 		// Accedemos a la propiedad con la descripción del
 		// documento original
-		String dataFormDesc = ref.getDataFormatDescription();
+		final String dataFormDesc = ref.getDataFormatDescription();
 
 		// Accedemos a la propiedad con la codificación para el
 		// documento original
-		String dataFormEnc = ref.getDataFormatEncoding();
+		final String dataFormEnc = ref.getDataFormatEncoding();
 
 		// Accedemos a la propiedad con el tipo de datos del
 		// documento original
-		String dataFormMime = ref.getDataFormatMimeType();
+		final String dataFormMime = ref.getDataFormatMimeType();
 
 		// Establecemos el elemento DataObjectFormat
-		dataObjectFormat = new DataObjectFormatImpl(dataFormDesc, null, dataFormMime, dataFormEnc, "#" + ref.getId());
+		this.dataObjectFormat = new DataObjectFormatImpl(dataFormDesc, null, dataFormMime, dataFormEnc, "#" + ref.getId());
 
-		dofList.add(dataObjectFormat);
+		dofList.add(this.dataObjectFormat);
 	    }
 	    // Si es otro de otro tipo...
 	} else {
 	    // Accedemos a la propiedad con la descripción del
 	    // documento original
-	    String dataFormDesc = extraParams.getProperty(SignatureProperties.XADES_DATA_FORMAT_DESCRIPTION_PROP);
+	    final String dataFormDesc = extraParams.getProperty(SignatureProperties.XADES_DATA_FORMAT_DESCRIPTION_PROP);
 
 	    // Accedemos a la propiedad con la codificación para el
 	    // documento original
-	    String dataFormEnc = extraParams.getProperty(SignatureProperties.XADES_DATA_FORMAT_ENCODING_PROP);
+	    final String dataFormEnc = extraParams.getProperty(SignatureProperties.XADES_DATA_FORMAT_ENCODING_PROP);
 
 	    // Accedemos a la propiedad con el tipo de datos del
 	    // documento original
-	    String dataFormMime = extraParams.getProperty(SignatureProperties.XADES_DATA_FORMAT_MIME_PROP);
+	    final String dataFormMime = extraParams.getProperty(SignatureProperties.XADES_DATA_FORMAT_MIME_PROP);
 
 	    // Establecemos el elemento DataObjectFormat
-	    dataObjectFormat = new DataObjectFormatImpl(dataFormDesc, null, dataFormMime, dataFormEnc, null);
-	    dofList.add(dataObjectFormat);
+	    this.dataObjectFormat = new DataObjectFormatImpl(dataFormDesc, null, dataFormMime, dataFormEnc, null);
+	    dofList.add(this.dataObjectFormat);
 	}
 	xades.setDataObjectFormats(dofList);
 	
@@ -1236,17 +1241,17 @@ public final class XAdESBaselineSigner implements Signer {
      * @param extraParams Parameter that represents the set of extra parameters to check.
      */
     @SuppressWarnings("unchecked")
-    private void checkDataObjectFormatDescriptionInputParameter(Properties extraParams) {
+    private void checkDataObjectFormatDescriptionInputParameter(final Properties extraParams) {
 	// Si no se ha indicado la propiedad
 	// SignatureProperties.XADES_DATA_FORMAT_DESCRIPTION_PROP
 	if (!extraParams.containsKey(SignatureProperties.XADES_DATA_FORMAT_DESCRIPTION_PROP) || extraParams.getProperty(SignatureProperties.XADES_DATA_FORMAT_DESCRIPTION_PROP).isEmpty()) {
 	    // Comprobamos si se trata de una firma con manifest y verificamos
 	    // si tiene valores válidos para la propiedad.
 	    if (extraParams.get(SignatureConstants.MF_REFERENCES_PROPERTYNAME) != null) {
-		List<ReferenceDataBaseline> list = (List<ReferenceDataBaseline>) extraParams.get(SignatureConstants.MF_REFERENCES_PROPERTYNAME);
-		List<ReferenceDataBaseline> manifestRef = list;
-		for (ReferenceDataBaseline ref: manifestRef) {
-		    String description = ref.getDataFormatDescription();
+		final List<ReferenceDataBaseline> list = (List<ReferenceDataBaseline>) extraParams.get(SignatureConstants.MF_REFERENCES_PROPERTYNAME);
+		final List<ReferenceDataBaseline> manifestRef = list;
+		for (final ReferenceDataBaseline ref: manifestRef) {
+		    final String description = ref.getDataFormatDescription();
 		    if (description == null || description.isEmpty()) {
 			// Añadimos un valor constante
 			ref.setDataFormatDescription(SignatureConstants.XADES_DATA_FORMAT_DESCRIPTION_PROP_DEFAULT);
@@ -1265,17 +1270,17 @@ public final class XAdESBaselineSigner implements Signer {
      * @param data Parameter that represents the input data to sign.
      */
     @SuppressWarnings("unchecked")
-    private void checkDataObjectFormatMimeType(Properties extraParams, byte[ ] data) {
+    private void checkDataObjectFormatMimeType(final Properties extraParams, final byte[ ] data) {
 	// Si no se ha indicado la propiedad
 	// SignatureProperties.XADES_DATA_FORMAT_MIME_PROP
 	if (!extraParams.containsKey(SignatureProperties.XADES_DATA_FORMAT_MIME_PROP) || extraParams.getProperty(SignatureProperties.XADES_DATA_FORMAT_MIME_PROP).isEmpty()) {
 	    // Comprobamos si se trata de una firma con manifest y verificamos
 	    // si tiene valores válidos para la propiedad.
 	    if (extraParams.get(SignatureConstants.MF_REFERENCES_PROPERTYNAME) != null) {
-		List<ReferenceDataBaseline> list = (List<ReferenceDataBaseline>) extraParams.get(SignatureConstants.MF_REFERENCES_PROPERTYNAME);
-		List<ReferenceDataBaseline> manifestRef = list;
-		for (ReferenceDataBaseline ref: manifestRef) {
-		    String mime = ref.getDataFormatMimeType();
+		final List<ReferenceDataBaseline> list = (List<ReferenceDataBaseline>) extraParams.get(SignatureConstants.MF_REFERENCES_PROPERTYNAME);
+		final List<ReferenceDataBaseline> manifestRef = list;
+		for (final ReferenceDataBaseline ref: manifestRef) {
+		    final String mime = ref.getDataFormatMimeType();
 		    if (mime == null || mime.isEmpty()) {
 			// Añadimos un valor constante
 			ref.setDataFormatMimeType(UtilsResourcesSignOperations.getMimeType(data));
@@ -1294,7 +1299,7 @@ public final class XAdESBaselineSigner implements Signer {
      * @param extraParams Parameter that represents the set of extra parameters to check.
      * @return the set of extra parameters, at least, intializated.
      */
-    private Properties checkInputExtraParams(Properties extraParams) {
+    private Properties checkInputExtraParams(final Properties extraParams) {
 	// Si los parámetros externos son nulos
 	if (extraParams == null) {
 	    // Los inicializamos
@@ -1316,25 +1321,25 @@ public final class XAdESBaselineSigner implements Signer {
      * @return an object that represents the XML document.
      * @throws SigningException If the method fails.
      */
-    private Document createXMLDocument(String signatureFormat) throws SigningException {
+    private Document createXMLDocument(final String signatureFormat) throws SigningException {
 	try {
 	    // Crea el nuevo documento org.w3c.dom.Document xml que contendrá la
 	    // firma
-	    Document docSignature = dBFactory.newDocumentBuilder().newDocument();
+	    final Document docSignature = dBFactory.newDocumentBuilder().newDocument();
 	    // inserta en el nuevo documento de firma el documento a firmar
 	    if (signatureFormat.equals(SIGN_FORMAT_XADES_ENVELOPED)) {
-		docSignature.appendChild(docSignature.adoptNode(dataElement));
+		docSignature.appendChild(docSignature.adoptNode(this.dataElement));
 	    } else {
 		docSignature.appendChild(docSignature.createElement(IXMLConstants.AFIRMA_TAG));
 		if (signatureFormat.equals(SIGN_FORMAT_XADES_DETACHED)) {
 		    // inserta en el nuevo documento de firma el documento a
 		    // firmar (en un nodo <CONTENT>)
-		    docSignature.getDocumentElement().appendChild(docSignature.adoptNode(dataElement));
+		    docSignature.getDocumentElement().appendChild(docSignature.adoptNode(this.dataElement));
 		}
 	    }
 	    return docSignature;
-	} catch (ParserConfigurationException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG014);
+	} catch (final ParserConfigurationException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG014);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	}
@@ -1353,9 +1358,9 @@ public final class XAdESBaselineSigner implements Signer {
      * </ul>
      * @throws SigningException If the method fails.
      */
-    private void createDataNode(byte[ ] data, String signatureFormat) throws SigningException {
+    private void createDataNode(final byte[ ] data, final String signatureFormat) throws SigningException {
 	if (!SIGN_FORMAT_XADES_EXTERNALLY_DETACHED.equals(signatureFormat)) {
-	    contentId = IXMLConstants.CONTENT_TAG + "-" + UUID.randomUUID().toString();
+	    this.contentId = IXMLConstants.CONTENT_TAG + "-" + UUID.randomUUID().toString();
 	    // Detección del tipo de datos a firmar. Diferenciamos entre
 	    // documentos XML y resto de formatos
 	    Document docum = null;
@@ -1363,24 +1368,24 @@ public final class XAdESBaselineSigner implements Signer {
 	    try {
 		docum = dBFactory.newDocumentBuilder().parse(new ByteArrayInputStream(data));
 		if (signatureFormat.equals(SIGN_FORMAT_XADES_DETACHED)) {
-		    dataElement = docum.createElement(IXMLConstants.CONTENT_TAG);
-		    dataElement.setAttribute(IXMLConstants.ATTRIBUTE_ID, contentId);
-		    dataElement.setAttribute(IXMLConstants.ATTRIBUTE_MIME_TYPE, "text/xml");
+		    this.dataElement = docum.createElement(IXMLConstants.CONTENT_TAG);
+		    this.dataElement.setAttribute(IXMLConstants.ATTRIBUTE_ID, this.contentId);
+		    this.dataElement.setAttribute(IXMLConstants.ATTRIBUTE_MIME_TYPE, "text/xml");
 		    // Obtenemos el encoding del documento original
-		    dataElement.setAttribute(IXMLConstants.ATTRIBUTE_ENCODING, docum.getXmlEncoding());
-		    dataElement.appendChild(docum.getDocumentElement());
+		    this.dataElement.setAttribute(IXMLConstants.ATTRIBUTE_ENCODING, docum.getXmlEncoding());
+		    this.dataElement.appendChild(docum.getDocumentElement());
 
 		} else {
-		    dataElement = docum.getDocumentElement();
+		    this.dataElement = docum.getDocumentElement();
 		}
-		dataType = IXMLConstants.DATA_TYPE_XML;
+		this.dataType = IXMLConstants.DATA_TYPE_XML;
 
-	    } catch (SAXException e) {
+	    } catch (final SAXException e) {
 		// captura de error en caso de no ser un documento xml y
 		// conversión a base64.
 		createNodeBase64(data, signatureFormat);
-	    } catch (Exception e) {
-		String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG012);
+	    } catch (final Exception e) {
+		final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG012);
 		LOGGER.error(errorMsg, e);
 		throw new SigningException(errorMsg, e);
 	    }
@@ -1400,9 +1405,9 @@ public final class XAdESBaselineSigner implements Signer {
      * </ul>
      * @throws SigningException If the method fails.
      */
-    private void createNodeBase64(byte[ ] data, String signatureFormat) throws SigningException {
+    private void createNodeBase64(final byte[ ] data, final String signatureFormat) throws SigningException {
 	if (signatureFormat.equals(SIGN_FORMAT_XADES_ENVELOPED)) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG013);
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG013);
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
@@ -1411,20 +1416,20 @@ public final class XAdESBaselineSigner implements Signer {
 
 	try {
 	    // crea un nuevo nodo xml para contener los datos en base 64
-	    Document docFile = dBFactory.newDocumentBuilder().newDocument();
-	    dataElement = docFile.createElement(IXMLConstants.CONTENT_TAG);
-	    dataElement.setAttribute(IXMLConstants.ATTRIBUTE_ID, contentId);
-	    dataElement.setAttribute(IXMLConstants.ATTRIBUTE_ENCODING, IXMLConstants.ENCODING_BASE64);
+	    final Document docFile = dBFactory.newDocumentBuilder().newDocument();
+	    this.dataElement = docFile.createElement(IXMLConstants.CONTENT_TAG);
+	    this.dataElement.setAttribute(IXMLConstants.ATTRIBUTE_ID, this.contentId);
+	    this.dataElement.setAttribute(IXMLConstants.ATTRIBUTE_ENCODING, IXMLConstants.ENCODING_BASE64);
 
 	    if (Base64CoderCommons.isBase64Encoded(data)) {
-		dataElement.setTextContent(new String(data));
-		dataType = IXMLConstants.DATA_TYPE_BINARY;
+		this.dataElement.setTextContent(new String(data));
+		this.dataType = IXMLConstants.DATA_TYPE_BINARY;
 	    } else {
-		dataElement.setTextContent(new String(Base64CoderCommons.encodeBase64(data)));
-		dataType = IXMLConstants.DATA_TYPE_BINARY_BASE64;
+		this.dataElement.setTextContent(new String(Base64CoderCommons.encodeBase64(data)));
+		this.dataType = IXMLConstants.DATA_TYPE_BINARY_BASE64;
 	    }
-	} catch (Exception e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG012);
+	} catch (final Exception e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG012);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	}
@@ -1437,17 +1442,17 @@ public final class XAdESBaselineSigner implements Signer {
      * @param signatureFormat Parameter that represents the signature format to check.
      * @param data Parameter that represents the data to check.
      */
-    private void checkInputSignatureFormat(String signatureFormat, byte[ ] data) {
+    private void checkInputSignatureFormat(final String signatureFormat, final byte[ ] data) {
 	// Comprobamos que el tipo de firma no es nulo
 	if (signatureFormat == null) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG010);
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG010);
 	    LOGGER.error(errorMsg);
 	    throw new IllegalArgumentException(errorMsg);
 	}
 
 	// Comprobamos que el tipo de firma a generar está soportado
 	if (!SignatureConstants.SUPPORTED_XADES_SIGN_FORMAT.contains(signatureFormat)) {
-	    String msg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG011, new Object[ ] { signatureFormat });
+	    final String msg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG011, new Object[ ] { signatureFormat });
 	    LOGGER.error(msg);
 	    throw new IllegalArgumentException(msg);
 	}
@@ -1455,7 +1460,7 @@ public final class XAdESBaselineSigner implements Signer {
 	// Comprobamos que los datos a firmar no sean nulos, sólo si el tipo de
 	// firma a generar no es Externally Detached
 	if (!signatureFormat.equals(SignatureConstants.SIGN_FORMAT_XADES_EXTERNALLY_DETACHED) && data == null) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG004);
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG004);
 	    LOGGER.error(errorMsg);
 	    throw new IllegalArgumentException(errorMsg);
 	}
@@ -1466,11 +1471,11 @@ public final class XAdESBaselineSigner implements Signer {
      * format hasn't the value {@link SignatureConstants#SUPPORTED_COUNTER_XADES_SIGN_FORMAT} for counter signatures.
      * @param signatureFormat Parameter that represents the signature format to check.
      */
-    private void checkInputSignatureFormatCounter(String signatureFormat) {
+    private void checkInputSignatureFormatCounter(final String signatureFormat) {
 
 	// Comprobamos que el tipo de firma a generar está soportado
 	if (!SignatureConstants.SUPPORTED_COUNTER_XADES_SIGN_FORMAT.contains(signatureFormat)) {
-	    String msg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG011, new Object[ ] { signatureFormat });
+	    final String msg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG011, new Object[ ] { signatureFormat });
 	    LOGGER.error(msg);
 	    throw new IllegalArgumentException(msg);
 	}
@@ -1481,10 +1486,10 @@ public final class XAdESBaselineSigner implements Signer {
      * Method that checks if the input private key is <code>null</code>.
      * @param privateKey Parameter that represents the private key to check.
      */
-    private void checkInputPrivateKey(PrivateKeyEntry privateKey) {
+    private void checkInputPrivateKey(final PrivateKeyEntry privateKey) {
 	// Comprobamos que la clave privada no es nula
 	if (privateKey == null) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG009);
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG009);
 	    LOGGER.error(errorMsg);
 	    throw new IllegalArgumentException(errorMsg);
 	}
@@ -1494,10 +1499,10 @@ public final class XAdESBaselineSigner implements Signer {
      * Method that checks if the input signature format is <code>null</code> and is allowed to use.
      * @param signatureForm Parameter that represents the signature format.
      */
-    private void checkInputSignatureForm(String signatureForm) {
+    private void checkInputSignatureForm(final String signatureForm) {
 	// Comprobamos que el formato de la firma a generar no es nulo
 	if (signatureForm == null) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG007);
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG007);
 	    LOGGER.error(errorMsg);
 	    throw new IllegalArgumentException(errorMsg);
 	}
@@ -1505,7 +1510,7 @@ public final class XAdESBaselineSigner implements Signer {
 	// Comprobamos que el formato de la firma a generar está
 	// soportado.
 	if (!signatureForm.equals(ISignatureFormatDetector.FORMAT_XADES_B_LEVEL)) {
-	    String msg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG008, new Object[ ] { signatureForm });
+	    final String msg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG008, new Object[ ] { signatureForm });
 	    LOGGER.error(msg);
 	    throw new IllegalArgumentException(msg);
 	}
@@ -1515,17 +1520,17 @@ public final class XAdESBaselineSigner implements Signer {
      * Method that checks if the input signature algorithm is <code>null</code> and is allowed to use.
      * @param signatureAlgorithm Parameter that represents the signature algorithm.
      */
-    private void checkInputSignatureAlgorithm(String signatureAlgorithm) {
+    private void checkInputSignatureAlgorithm(final String signatureAlgorithm) {
 	// Comprobamos que el algoritmo de firma no es nulo
 	if (signatureAlgorithm == null) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG005);
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG005);
 	    LOGGER.error(errorMsg);
 	    throw new IllegalArgumentException(errorMsg);
 	}
 
 	// Comprobamos que el algoritmo de firma está soportado
 	if (!SignatureConstants.SIGN_ALGORITHMS_SUPPORT_CADES.containsKey(signatureAlgorithm)) {
-	    String msg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG006, new Object[ ] { signatureAlgorithm });
+	    final String msg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG006, new Object[ ] { signatureAlgorithm });
 	    LOGGER.error(msg);
 	    throw new IllegalArgumentException(msg);
 	}
@@ -1535,10 +1540,10 @@ public final class XAdESBaselineSigner implements Signer {
      * Method that checks if the input signature is <code>null</code>.
      * @param signature Parameter that represents the signature to check.
      */
-    private void checkInputSignature(byte[ ] signature) {
+    private void checkInputSignature(final byte[ ] signature) {
 	// Comprobamos que la firma no es nula
 	if (signature == null) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG039);
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG039);
 	    LOGGER.error(errorMsg);
 	    throw new IllegalArgumentException(errorMsg);
 	}
@@ -1549,7 +1554,7 @@ public final class XAdESBaselineSigner implements Signer {
      * @see es.gob.afirma.signature.Signer#coSign(byte[], byte[], java.lang.String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public byte[ ] coSign(byte[ ] signature, byte[ ] document, String algorithm, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID, String idClient) throws SigningException {
+    public byte[ ] coSign(final byte[ ] signature, final byte[ ] document, final String algorithm, final PrivateKeyEntry privateKey, final Properties extraParams, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID, final String idClient) throws SigningException {
 	LOGGER.info(Language.getResIntegra(ILogConstantKeys.XBS_LOG037));
 	try {
 	    // Comprobamos que se han indicado la firma a actualizar
@@ -1564,7 +1569,7 @@ public final class XAdESBaselineSigner implements Signer {
 
 	    // / Inicializamos los parámetros extra en caso de no haberse
 	    // indicado
-	    Properties optionalParams = checkInputExtraParams(extraParams);
+	    final Properties optionalParams = checkInputExtraParams(extraParams);
 
 	    // Comprobamos si en los parámetros extra se ha indicado la
 	    // propiedad SignatureProperties.XADES_DATA_FORMAT_DESCRIPTION_PROP
@@ -1575,18 +1580,18 @@ public final class XAdESBaselineSigner implements Signer {
 	    checkDataObjectFormatMimeType(optionalParams, document);
 
 	    // Obtenemos la URI del algoritmo de firma
-	    String uriSignAlgorithm = SIGN_ALGORITHM_URI.get(algorithm);
+	    final String uriSignAlgorithm = SIGN_ALGORITHM_URI.get(algorithm);
 
 	    // Obtenemos el algoritmo de hash a partir del algoritmo de firma
-	    digestAlgorithmRef = SignatureConstants.DIGEST_METHOD_ALGORITHMS_XADES.get(algorithm);
+	    this.digestAlgorithmRef = SignatureConstants.DIGEST_METHOD_ALGORITHMS_XADES.get(algorithm);
 
 	    // Obtenemos el objeto Document a partir del array de bytes de la
 	    // firma XAdES previa
-	    Document eSignDoc = UtilsSignatureCommons.getDocumentFromXML(signature);
+	    final Document eSignDoc = UtilsSignatureCommons.getDocumentFromXML(signature);
 
 	    // Obtenemos del modo de firma (Enveloping, Enveloped o Detached) de
 	    // la firma XAdES previa
-	    String signType = UtilsSignatureOp.getTypeOfXMLSignature(eSignDoc);
+	    final String signType = UtilsSignatureOp.getTypeOfXMLSignature(eSignDoc);
 	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG040, new Object[ ] { signType }));
 
 	    // En función del modo de firma creamos la co-firma
@@ -1595,56 +1600,54 @@ public final class XAdESBaselineSigner implements Signer {
 	    // Si el modo de firma es Enveloping
 	    if (signType.equals(SIGN_FORMAT_XADES_ENVELOPING)) {
 		// obtención del documento original a partir de la firma.
-		byte[ ] originalDoc = UtilsSignatureOp.getOriginalDataFromSignedXMLDocument(eSignDoc);
+		final byte[ ] originalDoc = UtilsSignatureOp.getOriginalDataFromSignedXMLDocument(eSignDoc);
 		// creación de una firma nueva
-		byte[ ] tmpSign = sign(originalDoc, algorithm, SIGN_FORMAT_XADES_ENVELOPING, privateKey, optionalParams, includeTimestamp, signatureForm, signaturePolicyID);
+		final byte[ ] tmpSign = sign(originalDoc, algorithm, SIGN_FORMAT_XADES_ENVELOPING, privateKey, optionalParams, includeTimestamp, signatureForm, signaturePolicyID);
 		// Creación de un nodo que contenga ambas firmas (antigua y
 		// nueva)
-		Element newCoSign = dBFactory.newDocumentBuilder().parse(new ByteArrayInputStream(tmpSign)).getDocumentElement();
+		final Element newCoSign = dBFactory.newDocumentBuilder().parse(new ByteArrayInputStream(tmpSign)).getDocumentElement();
 		newCoSignDoc = UtilsSignatureOp.composeCoSignaturesDocument(eSignDoc, dBFactory);
 		UtilsSignatureOp.appendXMLDocument(newCoSignDoc, newCoSign.getOwnerDocument());
-	    }
-	    // Si el modo de firma es Enveloped
-	    else if (signType.equals(SIGN_FORMAT_XADES_ENVELOPED)) {
-		newCoSignDoc = eSignDoc;
-		generateXAdESCoSignature(newCoSignDoc, uriSignAlgorithm, privateKey, signType, optionalParams, signaturePolicyID, includeTimestamp, idClient);
+	    } else {
+			if (signType.equals(SIGN_FORMAT_XADES_ENVELOPED)) {
+			newCoSignDoc = eSignDoc;
 
-	    }
-	    // Si el modo de firma es Externally Detached
-	    else if (signType.equals(SIGN_FORMAT_XADES_EXTERNALLY_DETACHED)) {
-		// No se verifica el documento a firmar pues se firmará el
-		// objeto Manifest incluido en la firma xml.
-		// generación de la cofirma
-		newCoSignDoc = eSignDoc;
-		// Búsqueda de los datos a firmar externos(objeto Manifest)
-		NodeList manifestObjects = newCoSignDoc.getElementsByTagName(IXMLConstants.MANIFEST_TAG_NAME);
+			}
+			// Si el modo de firma es Externally Detached
+			else if (signType.equals(SIGN_FORMAT_XADES_EXTERNALLY_DETACHED)) {
+			// No se verifica el documento a firmar pues se firmará el
+			// objeto Manifest incluido en la firma xml.
+			// generación de la cofirma
+			newCoSignDoc = eSignDoc;
+			// Búsqueda de los datos a firmar externos(objeto Manifest)
+			final NodeList manifestObjects = newCoSignDoc.getElementsByTagName(IXMLConstants.MANIFEST_TAG_NAME);
 
-		// Parseamos el elemento manifest y dataObjectFormat al tipo ReferenceDataBaseline.
-		NodeList dataObjectFormatObjects = newCoSignDoc.getElementsByTagName(IXMLConstants.XADES_PREFIX + ":" + IXMLConstants.ELEMENT_SIGNED_DATA_OBJECT_PROPERTIES);
-		if (manifestObjects != null && manifestObjects.getLength() > 0 && dataObjectFormatObjects != null && dataObjectFormatObjects.getLength() > 0) {
-		    List<ReferenceDataBaseline> refs = UtilsSignatureOp.fromNodeListToReferenceDataBaselineList(manifestObjects.item(0), dataObjectFormatObjects.item(0));
-		    optionalParams.put(SignatureConstants.MF_REFERENCES_PROPERTYNAME, refs);
-		} else {
-		    String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG258);
-		    LOGGER.error(errorMsg);
-		    throw new SigningException(errorMsg);
+			// Parseamos el elemento manifest y dataObjectFormat al tipo ReferenceDataBaseline.
+			final NodeList dataObjectFormatObjects = newCoSignDoc.getElementsByTagName(IXMLConstants.XADES_PREFIX + ":" + IXMLConstants.ELEMENT_SIGNED_DATA_OBJECT_PROPERTIES);
+			if (manifestObjects != null && manifestObjects.getLength() > 0 && dataObjectFormatObjects != null && dataObjectFormatObjects.getLength() > 0) {
+			    final List<ReferenceDataBaseline> refs = UtilsSignatureOp.fromNodeListToReferenceDataBaselineList(manifestObjects.item(0), dataObjectFormatObjects.item(0));
+			    optionalParams.put(SignatureConstants.MF_REFERENCES_PROPERTYNAME, refs);
+			} else {
+			    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG258);
+			    LOGGER.error(errorMsg);
+			    throw new SigningException(errorMsg);
+			}
+
+			}
+			// Si el modo de firma es Detached
+			else {
+			newCoSignDoc = eSignDoc;
+			// Obtención del ID del nodo que contiene el documento a
+			// cofirmar (<CONTENT Id="XX">)
+			this.contentId = UtilsSignatureOp.getSignedElementIdValue(newCoSignDoc);
+
+			}
+			generateXAdESCoSignature(newCoSignDoc, uriSignAlgorithm, privateKey, signType, optionalParams, signaturePolicyID, includeTimestamp, idClient);
 		}
-		generateXAdESCoSignature(newCoSignDoc, uriSignAlgorithm, privateKey, signType, optionalParams, signaturePolicyID, includeTimestamp, idClient);
-
-	    }
-	    // Si el modo de firma es Detached
-	    else {
-		newCoSignDoc = eSignDoc;
-		// Obtención del ID del nodo que contiene el documento a
-		// cofirmar (<CONTENT Id="XX">)
-		contentId = UtilsSignatureOp.getSignedElementIdValue(newCoSignDoc);
-		generateXAdESCoSignature(newCoSignDoc, uriSignAlgorithm, privateKey, signType, optionalParams, signaturePolicyID, includeTimestamp, idClient);
-
-	    }
 
 	    // Informamos de que hemos generado la firma XAdES Baseline
-	    String xmlResult = UtilsXML.transformDOMtoString(newCoSignDoc);
-	    byte[ ] result = xmlResult.getBytes(SignatureConstants.UTF8_ENCODING);
+	    final String xmlResult = UtilsXML.transformDOMtoString(newCoSignDoc);
+	    final byte[ ] result = xmlResult.getBytes(SignatureConstants.UTF8_ENCODING);
 	    LOGGER.info(Language.getResIntegra(ILogConstantKeys.XBS_LOG041));
 
 	    // Escribimos la firma en el Log
@@ -1652,24 +1655,24 @@ public final class XAdESBaselineSigner implements Signer {
 
 	    // Devolvemos la co-firma XAdES generada
 	    return result;
-	} catch (SAXException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
+	} catch (final SAXException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (IOException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
+	} catch (final IOException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (ParserConfigurationException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
+	} catch (final ParserConfigurationException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (TransformersException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
+	} catch (final TransformersException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (InvalidCanonicalizerException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
+	} catch (final InvalidCanonicalizerException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	} finally {
@@ -1682,7 +1685,7 @@ public final class XAdESBaselineSigner implements Signer {
      * @see es.gob.afirma.signature.Signer#coSign(byte[], byte[], java.lang.String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, java.lang.String, java.lang.String)
      */
     @Override
-    public byte[ ] coSign(byte[ ] signature, byte[ ] document, String algorithm, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID) throws SigningException {
+    public byte[ ] coSign(final byte[ ] signature, final byte[ ] document, final String algorithm, final PrivateKeyEntry privateKey, final Properties extraParams, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID) throws SigningException {
 	return coSign(signature, document, algorithm, privateKey, extraParams, includeTimestamp, signatureForm, signaturePolicyID, null);
     }
 
@@ -1708,22 +1711,22 @@ public final class XAdESBaselineSigner implements Signer {
      * @throws SigningException If the method fails.
      * @throws InvalidCanonicalizerException If the method fails.
      */
-    private void generateXAdESCoSignature(Document eSign, String uriSignAlgorithm, PrivateKeyEntry privateKey, String signType, Properties optionalParams, String signaturePolicyID, boolean includeTimestamp, String idClient) throws SigningException, InvalidCanonicalizerException {
+    private void generateXAdESCoSignature(final Document eSign, final String uriSignAlgorithm, final PrivateKeyEntry privateKey, final String signType, final Properties optionalParams, final String signaturePolicyID, final boolean includeTimestamp, final String idClient) throws SigningException, InvalidCanonicalizerException {
 	try {
 	    // Instanciamos el objeto encargado de generar la firma XAdES
-	    XAdES_EPES xades = generateXAdESElement(privateKey, optionalParams, eSign.getDocumentElement());
+	    final XAdES_EPES xades = generateXAdESElement(privateKey, optionalParams, eSign.getDocumentElement());
 
 	    // Obtenemos el objeto que permite la generación de la firma XAdES
-	    XadesExt signBuilder = XadesExt.newInstance(xades, true);
+	    final XadesExt signBuilder = XadesExt.newInstance(xades, true);
 
 	    // Asociamos el algoritmo de hash a la firma
-	    signBuilder.setDigestMethod(digestAlgorithmRef);
+	    signBuilder.setDigestMethod(this.digestAlgorithmRef);
 
 	    // Asociamos el algoritmo de canonicalización a la firma
 	    signBuilder.setCanonicalizationMethod(defineCanonicalizationMethod(optionalParams));
 
 	    // Creamos el conjunto de referencias
-	    List<Reference> references = buildReferences(signBuilder, signType, optionalParams, null, null);
+	    final List<Reference> references = buildReferences(signBuilder, signType, optionalParams, null, null);
 
 	    // Comprobamos si la firma a realizar debe contener política de
 	    // firma
@@ -1731,7 +1734,7 @@ public final class XAdESBaselineSigner implements Signer {
 
 	    // Accedemos al archivo con las propiedades asociadas a las
 	    // políticas de firma
-	    Properties policyProperties = new IntegraProperties().getIntegraProperties(idClient);
+	    final Properties policyProperties = new IntegraProperties().getIntegraProperties(idClient);
 
 	    // Instanciamos el identificador de la política de firma a usar
 	    String policyID = null;
@@ -1757,7 +1760,7 @@ public final class XAdESBaselineSigner implements Signer {
 		    // para
 		    // XAdES no sea nulo ni vacío
 		    if (!GenericUtilsCommons.assertStringValue(policyID)) {
-			String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG026, new Object[ ] { signaturePolicyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+			final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG026, new Object[ ] { signaturePolicyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
 			LOGGER.warn(errorMsg);
 			includeSignaturePolicy = false;
 		    } else {
@@ -1774,16 +1777,16 @@ public final class XAdESBaselineSigner implements Signer {
 	    addSignPolicy(includeSignaturePolicy, uriSignAlgorithm, policyID, policyProperties, optionalParams, xades, signType, idClient);
 
 	    // Definimos el Id del nuevo elemento Signature
-	    String signatureId = "Signature-" + UUID.randomUUID().toString();
+	    final String signatureId = "Signature-" + UUID.randomUUID().toString();
 
-	    X509Certificate signerCertificate = (X509Certificate) privateKey.getCertificate();
+	    final X509Certificate signerCertificate = (X509Certificate) privateKey.getCertificate();
 	    // Generamos la firma como tal
 	    signBuilder.sign(signerCertificate, privateKey.getPrivateKey(), uriSignAlgorithm, references, signatureId, null);
 
 	    // Accedemos al elemento ds:Signature que acabamos de crear
-	    Element dsSignature = UtilsSignatureOp.getXMLSignatureById(eSign, signatureId + "-Signature");
+	    final Element dsSignature = UtilsSignatureOp.getXMLSignatureById(eSign, signatureId + "-Signature");
 	    if (dsSignature == null) {
-		String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
+		final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
@@ -1797,23 +1800,23 @@ public final class XAdESBaselineSigner implements Signer {
 	    if (includeSignaturePolicy) {
 		try {
 		    SignaturePolicyManager.validateGeneratedXAdESEPESSignature(dsSignature, policyID, policyProperties, idClient);
-		} catch (SignaturePolicyException e) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG034, new Object[ ] { e.getMessage() });
+		} catch (final SignaturePolicyException e) {
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG034, new Object[ ] { e.getMessage() });
 		    LOGGER.error(errorMsg, e);
 		    throw new SigningException(errorMsg, e);
 		}
 	    }
 
-	} catch (MarshalException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
+	} catch (final MarshalException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (XMLSignatureException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
+	} catch (final XMLSignatureException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (GeneralSecurityException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
+	} catch (final GeneralSecurityException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	}
@@ -1824,7 +1827,7 @@ public final class XAdESBaselineSigner implements Signer {
      * @see es.gob.afirma.signature.Signer#counterSign(byte[], java.lang.String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public byte[ ] counterSign(byte[ ] signature, String algorithm, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID, String idClient) throws SigningException {
+    public byte[ ] counterSign(final byte[ ] signature, final String algorithm, final PrivateKeyEntry privateKey, final Properties extraParams, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID, final String idClient) throws SigningException {
 	LOGGER.info(Language.getResIntegra(ILogConstantKeys.XBS_LOG043));
 	try {
 	    // Comprobamos que se han indicado la firma a actualizar
@@ -1846,10 +1849,10 @@ public final class XAdESBaselineSigner implements Signer {
 	    checkInputSignatureForm(signatureForm);
 
 	    // Obtenemos la URI del algoritmo de firma
-	    String uriSignAlgorithm = SIGN_ALGORITHM_URI.get(algorithm);
+	    final String uriSignAlgorithm = SIGN_ALGORITHM_URI.get(algorithm);
 
 	    // Obtenemos el algoritmo de hash a partir del algoritmo de firma
-	    digestAlgorithmRef = SignatureConstants.DIGEST_METHOD_ALGORITHMS_XADES.get(algorithm);
+	    this.digestAlgorithmRef = SignatureConstants.DIGEST_METHOD_ALGORITHMS_XADES.get(algorithm);
 
 	    // Obtenemos el objeto Document a partir del array de bytes de la
 	    // firma XAdES previa
@@ -1857,7 +1860,7 @@ public final class XAdESBaselineSigner implements Signer {
 
 	    // Obtenemos el modo de firma (Enveloping, Enveloped o Detached) de
 	    // la firma XAdES previa
-	    String signType = UtilsSignatureOp.getTypeOfXMLSignature(signDocument);
+	    final String signType = UtilsSignatureOp.getTypeOfXMLSignature(signDocument);
 
 	    checkInputSignatureFormatCounter(signType);
 
@@ -1885,14 +1888,14 @@ public final class XAdESBaselineSigner implements Signer {
 	    // raiz temporal AFIRMA
 	    // y se vuelve a dejar como raiz el nodo Signature original
 	    if (isEnvelopingSign) {
-		Document newdoc = dBFactory.newDocumentBuilder().newDocument();
+		final Document newdoc = dBFactory.newDocumentBuilder().newDocument();
 		newdoc.appendChild(newdoc.adoptNode(signDocument.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_SIGNATURE).item(0)));
 		signDocument = newdoc;
 	    }
 
 	    // Informamos de que hemos generado la firma XAdES Baseline
-	    String xmlResult = UtilsXML.transformDOMtoString(signDocument);
-	    byte[ ] result = xmlResult.getBytes(SignatureConstants.UTF8_ENCODING);
+	    final String xmlResult = UtilsXML.transformDOMtoString(signDocument);
+	    final byte[ ] result = xmlResult.getBytes(SignatureConstants.UTF8_ENCODING);
 	    LOGGER.info(Language.getResIntegra(ILogConstantKeys.XBS_LOG045));
 
 	    // Escribimos la firma en el Log
@@ -1901,32 +1904,32 @@ public final class XAdESBaselineSigner implements Signer {
 	    // Devolvemos la co-firma XAdES generada
 	    return result;
 
-	} catch (GeneralSecurityException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
+	} catch (final GeneralSecurityException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (MarshalException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
+	} catch (final MarshalException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (XMLSignatureException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
+	} catch (final XMLSignatureException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (ParserConfigurationException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
+	} catch (final ParserConfigurationException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (TransformersException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
+	} catch (final TransformersException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (UnsupportedEncodingException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
+	} catch (final UnsupportedEncodingException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
-	} catch (InvalidCanonicalizerException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
+	} catch (final InvalidCanonicalizerException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	} finally {
@@ -1939,7 +1942,7 @@ public final class XAdESBaselineSigner implements Signer {
      * @see es.gob.afirma.signature.Signer#counterSign(byte[], java.lang.String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, java.lang.String, java.lang.String)
      */
     @Override
-    public byte[ ] counterSign(byte[ ] signature, String algorithm, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID) throws SigningException {
+    public byte[ ] counterSign(final byte[ ] signature, final String algorithm, final PrivateKeyEntry privateKey, final Properties extraParams, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID) throws SigningException {
 	return counterSign(signature, algorithm, privateKey, extraParams, includeTimestamp, signatureForm, signaturePolicyID, null);
     }
 
@@ -1968,13 +1971,13 @@ public final class XAdESBaselineSigner implements Signer {
      * @throws XMLSignatureException If the method fails.
      * @throws InvalidCanonicalizerException If the method fails.
      */
-    private void generateXAdESCounterSignature(Element rootElement, PrivateKeyEntry privateKey, Properties extraParams, String signType, String signaturePolicyID, String uriSignAlgorithm, boolean includeTimestamp, String idClient) throws SigningException, GeneralSecurityException, MarshalException, XMLSignatureException, InvalidCanonicalizerException {
+    private void generateXAdESCounterSignature(final Element rootElement, final PrivateKeyEntry privateKey, final Properties extraParams, final String signType, final String signaturePolicyID, final String uriSignAlgorithm, final boolean includeTimestamp, final String idClient) throws SigningException, GeneralSecurityException, MarshalException, XMLSignatureException, InvalidCanonicalizerException {
 	// Comprobamos si la firma a realizar debe incluir política de firma
 	boolean mustIncludeSignaturePolicy = signaturePolicyID != null;
 
 	// Accedemos al archivo con las propiedades asociadas a las
 	// políticas de firma
-	Properties policyProperties = new IntegraProperties().getIntegraProperties(idClient);
+	final Properties policyProperties = new IntegraProperties().getIntegraProperties(idClient);
 
 	// Instanciamos el identificador de la política de firma a usar
 	String policyID = null;
@@ -1996,7 +1999,7 @@ public final class XAdESBaselineSigner implements Signer {
 		// para
 		// XAdES no sea nulo ni vacío
 		if (!GenericUtilsCommons.assertStringValue(policyID)) {
-		    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG026, new Object[ ] { signaturePolicyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
+		    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG026, new Object[ ] { signaturePolicyID, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
 		    LOGGER.warn(errorMsg);
 		    mustIncludeSignaturePolicy = false;
 		} else {
@@ -2008,12 +2011,12 @@ public final class XAdESBaselineSigner implements Signer {
 	// Instanciamos una lista donde ubicar los elementos que no contengan
 	// contrafirmas o subnodos de firma y que además no sean sellos de
 	// tiempo
-	List<Element> listSignaturesToCounterSign = UtilsSignatureOp.getListSignaturesToCounterSign(rootElement);
+	final List<Element> listSignaturesToCounterSign = UtilsSignatureOp.getListSignaturesToCounterSign(rootElement);
 
 	// Recorremos la lista de elementos que contrafirmar
-	for (Element signElement: listSignaturesToCounterSign) {
+	for (final Element signElement: listSignaturesToCounterSign) {
 	    // Accedemos al elemento xades:QualifyingProperties
-	    Element qualifyingProperties = UtilsSignatureOp.retrieveNode(signElement, IXMLConstants.ELEMENT_QUALIFIYING_PROPERTIES, IXMLConstants.XADES_1_3_2_NAMESPACE, true);
+	    final Element qualifyingProperties = UtilsSignatureOp.retrieveNode(signElement, IXMLConstants.ELEMENT_QUALIFIYING_PROPERTIES, IXMLConstants.XADES_1_3_2_NAMESPACE, true);
 
 	    // Accedemos al elemento xades:UnsignedProperties
 	    Element unsignedProperties = UtilsSignatureOp.retrieveNode(qualifyingProperties, IXMLConstants.ELEMENT_UNSIGNED_PROPERTIES, IXMLConstants.XADES_1_3_2_NAMESPACE, false);
@@ -2036,20 +2039,20 @@ public final class XAdESBaselineSigner implements Signer {
 
 	    // Obtenemos el elemento SignatureValue (para calcular el hash y
 	    // referenciarlo)
-	    Element signatureValue = UtilsSignatureOp.retrieveNode(signElement, IXMLConstants.ELEMENT_SIGNATURE_VALUE, XMLSignature.XMLNS, true);
+	    final Element signatureValue = UtilsSignatureOp.retrieveNode(signElement, IXMLConstants.ELEMENT_SIGNATURE_VALUE, XMLSignature.XMLNS, true);
 
 	    // Registramos el atributo Id del nodo referenciado
 	    IdRegister.registerAttrId(signatureValue);
-	    String idSignValue = signatureValue.getAttribute(IXMLConstants.ATTRIBUTE_ID);
+	    final String idSignValue = signatureValue.getAttribute(IXMLConstants.ATTRIBUTE_ID);
 
 	    // Creamos la referencia
-	    String canonicalizationAlgorithm = defineCanonicalizationMethod(extraParams);
-	    List<Transform> transformList = Collections.singletonList(xmlSignatureFactory.newTransform(canonicalizationAlgorithm, (TransformParameterSpec) null));
-	    String referenceId = "Reference-" + UUID.randomUUID().toString();
-	    Reference reference = xmlSignatureFactory.newReference("#" + idSignValue, getDigestMethod(), transformList, IXMLConstants.COUNTER_SIGN_URI, referenceId);
+	    final String canonicalizationAlgorithm = defineCanonicalizationMethod(extraParams);
+	    final List<Transform> transformList = Collections.singletonList(xmlSignatureFactory.newTransform(canonicalizationAlgorithm, (TransformParameterSpec) null));
+	    final String referenceId = "Reference-" + UUID.randomUUID().toString();
+	    final Reference reference = xmlSignatureFactory.newReference("#" + idSignValue, getDigestMethod(), transformList, IXMLConstants.COUNTER_SIGN_URI, referenceId);
 
 	    // Creamos el elemento xades:CounterSignature
-	    Element counterSignature = signElement.getOwnerDocument().createElementNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_COUNTER_SIGNATURE);
+	    final Element counterSignature = signElement.getOwnerDocument().createElementNS(IXMLConstants.XADES_1_3_2_NAMESPACE, IXMLConstants.ELEMENT_COUNTER_SIGNATURE);
 	    counterSignature.setPrefix(IXMLConstants.XADES_PREFIX);
 
 	    // Añadimos el elemento xades:CounterSignature como hijo de
@@ -2057,23 +2060,23 @@ public final class XAdESBaselineSigner implements Signer {
 	    unsignedSignatureProperties.appendChild(counterSignature);
 
 	    // Inicializamos los parámetros extra en caso de no haberse indicado
-	    Properties optionalParams = checkInputExtraParams(extraParams);
+	    final Properties optionalParams = checkInputExtraParams(extraParams);
 
 	    // Generamos el objeto que representará la contra-firma
-	    XAdES_EPES xades = generateXAdESElement(privateKey, optionalParams, counterSignature);
+	    final XAdES_EPES xades = generateXAdESElement(privateKey, optionalParams, counterSignature);
 
 	    // Añadimos la referencia al objeto a firmar en el elemento
 	    // xades:DataObjectFormat del nuevo elemento xades:CounterSignature
-	    ((DataObjectFormatImpl) dataObjectFormat).setObjectReference("#" + referenceId);
-	    ((DataObjectFormatImpl) dataObjectFormat).setDescription(SignatureConstants.XADES_DATA_FORMAT_DESCRIPTION_PROP_DEFAULT);
-	    ((DataObjectFormatImpl) dataObjectFormat).setMimeType(SignatureConstants.XADES_DATA_FORMAT_MIME_PROP_DEFAULT);
+	    ((DataObjectFormatImpl) this.dataObjectFormat).setObjectReference("#" + referenceId);
+	    ((DataObjectFormatImpl) this.dataObjectFormat).setDescription(SignatureConstants.XADES_DATA_FORMAT_DESCRIPTION_PROP_DEFAULT);
+	    ((DataObjectFormatImpl) this.dataObjectFormat).setMimeType(SignatureConstants.XADES_DATA_FORMAT_MIME_PROP_DEFAULT);
 
 	    // Obtenemos el objeto que permite la generación de la firma
 	    // XAdES
 	    final XadesExt signBuilder = XadesExt.newInstance(xades, true);
 
 	    // Asociamos el algoritmo de hash a la firma
-	    signBuilder.setDigestMethod(digestAlgorithmRef);
+	    signBuilder.setDigestMethod(this.digestAlgorithmRef);
 
 	    // Asociamos el algoritmo de canonicalización a la firma
 	    signBuilder.setCanonicalizationMethod(defineCanonicalizationMethod(optionalParams));
@@ -2088,9 +2091,9 @@ public final class XAdESBaselineSigner implements Signer {
 	    addSignPolicy(mustIncludeSignaturePolicy, uriSignAlgorithm, policyID, policyProperties, optionalParams, xades, signType, idClient);
 
 	    // Definimos el Id de la firma
-	    String signatureId = "Signature-" + UUID.randomUUID().toString();
+	    final String signatureId = "Signature-" + UUID.randomUUID().toString();
 
-	    X509Certificate signerCertificate = (X509Certificate) privateKey.getCertificate();
+	    final X509Certificate signerCertificate = (X509Certificate) privateKey.getCertificate();
 	    // Generamos la firma como tal
 	    signBuilder.sign(signerCertificate, privateKey.getPrivateKey(), uriSignAlgorithm, Collections.singletonList(reference), signatureId, null);
 
@@ -2117,11 +2120,11 @@ public final class XAdESBaselineSigner implements Signer {
      * @param idClient Parameter that represents the client application identifier.
      * @throws SigningException If the method fails.
      */
-    private void addTimestampAndValidatePolicyOfCreatedCounterSignature(Element rootElement, String signatureId, boolean includeTimestamp, boolean includeSignaturePolicy, String policyID, Properties policyProperties, X509Certificate signerCertificate, String idClient) throws SigningException {
+    private void addTimestampAndValidatePolicyOfCreatedCounterSignature(final Element rootElement, final String signatureId, final boolean includeTimestamp, final boolean includeSignaturePolicy, final String policyID, final Properties policyProperties, final X509Certificate signerCertificate, final String idClient) throws SigningException {
 	// Accedemos al elemento ds:Signature que acabamos de crear
-	Element dsSignature = UtilsSignatureOp.getXMLSignatureById(rootElement.getOwnerDocument(), signatureId + "-Signature");
+	final Element dsSignature = UtilsSignatureOp.getXMLSignatureById(rootElement.getOwnerDocument(), signatureId + "-Signature");
 	if (dsSignature == null) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG031);
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
@@ -2135,8 +2138,8 @@ public final class XAdESBaselineSigner implements Signer {
 	if (includeSignaturePolicy) {
 	    try {
 		SignaturePolicyManager.validateGeneratedXAdESEPESSignature(dsSignature, policyID, policyProperties, idClient);
-	    } catch (SignaturePolicyException e) {
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG034, new Object[ ] { e.getMessage() });
+	    } catch (final SignaturePolicyException e) {
+		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XBS_LOG034, new Object[ ] { e.getMessage() });
 		LOGGER.error(errorMsg, e);
 		throw new SigningException(errorMsg, e);
 	    }
@@ -2148,35 +2151,35 @@ public final class XAdESBaselineSigner implements Signer {
      * @see es.gob.afirma.signature.Signer#upgrade(byte[], java.util.List, java.lang.String)
      */
     @Override
-    public byte[ ] upgrade(byte[ ] signature, List<X509Certificate> listSignersToUpdate, String idClient) throws SigningException {
+    public byte[ ] upgrade(final byte[ ] signature, final List<X509Certificate> listSignersToUpdate, final String idClient) throws SigningException {
 	LOGGER.info(Language.getResIntegra(ILogConstantKeys.XBS_LOG046));
 	try {
 	    // Comprobamos que se han indicado la firma a actualizar
 	    checkInputSignature(signature);
 
 	    // Obtenemos el documento XML firmado
-	    Document doc = UtilsSignatureCommons.getDocumentFromXML(signature);
+	    final Document doc = UtilsSignatureCommons.getDocumentFromXML(signature);
 
 	    // Registramos los atributos de tipo ID
 	    IdRegister.registerElements(doc.getDocumentElement());
 
 	    // Obtenemos la lista de firmantes
-	    List<XAdESSignerInfo> listSigners = UtilsSignatureOp.getXAdESListSigners(doc);
+	    final List<XAdESSignerInfo> listSigners = UtilsSignatureOp.getXAdESListSigners(doc);
 
 	    // Actualizamos los firmantes
 	    processListSignersToUpdate(listSigners, listSignersToUpdate, idClient);
 	    try {
 		// Informamos de que hemos generado la firma XAdES Baseline
-		String xmlResult = UtilsXML.transformDOMtoString(doc);
-		byte[ ] result = xmlResult.getBytes(SignatureConstants.UTF8_ENCODING);
+		final String xmlResult = UtilsXML.transformDOMtoString(doc);
+		final byte[ ] result = xmlResult.getBytes(SignatureConstants.UTF8_ENCODING);
 
 		// Escribimos la firma en el Log
 		GenericUtilsCommons.printResult(result, LOGGER);
 
 		// Devolvemos la firma XAdES generada
 		return result;
-	    } catch (Exception e) {
-		String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG017);
+	    } catch (final Exception e) {
+		final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG017);
 		LOGGER.error(errorMsg, e);
 		throw new SigningException(errorMsg, e);
 	    }
@@ -2191,7 +2194,7 @@ public final class XAdESBaselineSigner implements Signer {
      * @see es.gob.afirma.signature.Signer#upgrade(byte[], java.util.List)
      */
     @Override
-    public byte[ ] upgrade(byte[ ] signature, List<X509Certificate> listSignersToUpdate) throws SigningException {
+    public byte[ ] upgrade(final byte[ ] signature, final List<X509Certificate> listSignersToUpdate) throws SigningException {
 	return upgrade(signature, listSignersToUpdate, null);
     }
 
@@ -2200,7 +2203,7 @@ public final class XAdESBaselineSigner implements Signer {
      * @param xmlDocument Parameter that represents the XAdES signature.
      * @return an object that contains the information about the validation result.
      */
-    public ValidationResult verifySignature(byte[ ] xmlDocument) {
+    public ValidationResult verifySignature(final byte[ ] xmlDocument) {
 	return verifySignature(xmlDocument, null);
     }
 
@@ -2211,13 +2214,13 @@ public final class XAdESBaselineSigner implements Signer {
      * @param idClient Parameter that represents the client application identifier.
      * @throws SigningException If the method fails.
      */
-    private void processListSignersToUpdate(List<XAdESSignerInfo> listSigners, List<X509Certificate> listSignersToUpdate, String idClient) throws SigningException {
+    private void processListSignersToUpdate(final List<XAdESSignerInfo> listSigners, final List<X509Certificate> listSignersToUpdate, final String idClient) throws SigningException {
 	// Comprobamos si es necesario actualizar todos los firmantes o sólo los
 	// indicados
-	boolean updateAllSigners = listSignersToUpdate == null || listSignersToUpdate.size() == 0;
+	final boolean updateAllSigners = listSignersToUpdate == null || listSignersToUpdate.size() == 0;
 
 	// Recorremos la lista de firmantes
-	for (XAdESSignerInfo signerInfo: listSigners) {
+	for (final XAdESSignerInfo signerInfo: listSigners) {
 	    // Comprobamos que no se ha producido ningún error recuperando el
 	    // firmante
 	    if (signerInfo.getErrorMsg() != null) {
@@ -2231,7 +2234,7 @@ public final class XAdESBaselineSigner implements Signer {
 	    // Determinamos si tenemos que actualizar este firmante
 	    if (!updateThisSigner) {
 		// Tratamos de acceder al certificado firmante
-		X509Certificate signingCertificate = signerInfo.getSigningCertificate();
+		final X509Certificate signingCertificate = signerInfo.getSigningCertificate();
 		if (signingCertificate != null) {
 		    // Determinamos si tenemos que actualizar este firmante
 		    boolean enc = false;
@@ -2265,7 +2268,7 @@ public final class XAdESBaselineSigner implements Signer {
      * @param idClient Parameter that represents the client application identifier.
      * @throws SigningException If the method fails.
      */
-    private void updateSigner(boolean updateThisSigner, XAdESSignerInfo signerInfo, String idClient) throws SigningException {
+    private void updateSigner(final boolean updateThisSigner, final XAdESSignerInfo signerInfo, final String idClient) throws SigningException {
 	// Actualizaremos el firmante sólo si no posee un sello de
 	// tiempo previo
 	// CHECKSTYLE:OFF Boolean complexity needed
@@ -2281,7 +2284,7 @@ public final class XAdESBaselineSigner implements Signer {
      * @see es.gob.afirma.signature.Signer#getSignedData(byte[])
      */
     @Override
-    public OriginalSignedData getSignedData(byte[ ] data) throws SigningException {
+    public OriginalSignedData getSignedData(final byte[ ] data) throws SigningException {
 	throw new SigningException(Language.getResIntegra(ILogConstantKeys.XBS_LOG051));
     }
 
@@ -2294,13 +2297,13 @@ public final class XAdESBaselineSigner implements Signer {
 	try {
 	    // Crea el nuevo documento org.w3c.dom.Document xml que contendrá la
 	    // firma
-	    Document docSignature = dBFactory.newDocumentBuilder().newDocument();
+	    final Document docSignature = dBFactory.newDocumentBuilder().newDocument();
 
 	    docSignature.appendChild(docSignature.createElementNS(IXMLConstants.ASIC_NS, IXMLConstants.ASIC_NS_PREFIX + ":" + IXMLConstants.ELEMENT_XADES_SIGNATURE));
 
 	    return docSignature;
-	} catch (ParserConfigurationException e) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG014);
+	} catch (final ParserConfigurationException e) {
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG014);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
 	}
@@ -2311,7 +2314,7 @@ public final class XAdESBaselineSigner implements Signer {
      * @param signerFormat Parameter that represents the format associated to the signer.
      * @return a boolean that indicates if a signer has Baseline form.
      */
-    private boolean signerIsBaseline(String signerFormat) {
+    private boolean signerIsBaseline(final String signerFormat) {
 	return signerFormat.equals(ISignatureFormatDetector.FORMAT_XADES_B_LEVEL) || signerFormat.equals(ISignatureFormatDetector.FORMAT_XADES_T_LEVEL) || signerFormat.equals(ISignatureFormatDetector.FORMAT_XADES_LT_LEVEL) || signerFormat.equals(ISignatureFormatDetector.FORMAT_XADES_LTA_LEVEL);
     }
 
@@ -2321,11 +2324,11 @@ public final class XAdESBaselineSigner implements Signer {
      * @param idClient Parameter that represents the client application identifier.
      * @return an object that contains information about the validation of the signed XML document, including all the signers and counter-signers contained inside it.
      */
-    public ValidationResult verifySignature(byte[ ] xmlDocument, String idClient) {
+    public ValidationResult verifySignature(final byte[ ] xmlDocument, final String idClient) {
 	LOGGER.info(Language.getResIntegra(ILogConstantKeys.XBS_LOG016));
 
 	// Instanciamos el objeto a devolver
-	ValidationResult validationResult = new ValidationResult();
+	final ValidationResult validationResult = new ValidationResult();
 
 	// Por defecto indicamos que la validación de la firma ha sido correcta
 	validationResult.setCorrect(true);
@@ -2335,33 +2338,33 @@ public final class XAdESBaselineSigner implements Signer {
 
 	    // Definimos un objeto donde ubicar la lista de firmantes y
 	    // contra-firmantes contenidos en la firma
-	    List<XAdESSignerInfo> listSigners = new ArrayList<XAdESSignerInfo>();
+	    final List<XAdESSignerInfo> listSigners = new ArrayList<XAdESSignerInfo>();
 
 	    /*
 	     * Validación de la Integridad: Se comprobará que el documento XML posee al menos una firma, y que los datos firmados incluídos
 	     * en la misma son acordes respecto al modo en que se ha realizado la firma (detached, enveloped, o enveloping).
 	     */
-	    String signingMode = checkSigantureIntegrity(xmlDocument, validationResult, listSigners);
+	    final String signingMode = checkSigantureIntegrity(xmlDocument, validationResult, listSigners);
 
 	    // Instanciamos una lista donde ubicar la información de validación
 	    // de cada firmante y la asociamos al resultado final
-	    List<SignerValidationResult> listSignersValidationResults = new ArrayList<SignerValidationResult>();
+	    final List<SignerValidationResult> listSignersValidationResults = new ArrayList<SignerValidationResult>();
 	    validationResult.setListSignersValidationResults(listSignersValidationResults);
 
 	    // inicializamos la fecha que determinará la caducidad de la firma.
 	    Date currentDate = null;
 
 	    // Recorremos la lista de firmantes
-	    for (XAdESSignerInfo signerInfo: listSigners) {
+	    for (final XAdESSignerInfo signerInfo: listSigners) {
 		// Primero, determinamos el formato del firmante
-		String signerFormat = SignatureFormatDetectorXades.resolveSignerXAdESFormat(signerInfo.getElementSignature());
+		final String signerFormat = SignatureFormatDetectorXades.resolveSignerXAdESFormat(signerInfo.getElementSignature());
 
 		// Si el firmante tiene formato Baseline, nos mantenemos en
 		// este clase. En otro caso, derivamos la validación del
 		// firmante a la clase asociada a firmas no Baseline
 		SignerValidationResult signerValidationResult = null;
 		if (!signerIsBaseline(signerFormat)) {
-		    XadesSigner xadesSigner = new XadesSigner();
+		    final XadesSigner xadesSigner = new XadesSigner();
 
 		    // Obtenemos la información de validación asociada al
 		    // contra-firmante
@@ -2380,7 +2383,7 @@ public final class XAdESBaselineSigner implements Signer {
 		validateCounterSigners(signingMode, signerInfo, signerValidationResult, validationResult, idClient, null, null);
 
 		// Recuperamos la fecha de expiración de los archiveTimestamp.
-		X509Certificate archiveTstClosestCert = UtilsSignatureOp.obtainCertificateArchiveTimestampsXAdES(signerInfo);
+		final X509Certificate archiveTstClosestCert = UtilsSignatureOp.obtainCertificateArchiveTimestampsXAdES(signerInfo);
 		signerValidationResult.setLastArchiveTst(archiveTstClosestCert);
 
 		// Obtenemos la fecha de caducidad de la firma.
@@ -2390,7 +2393,7 @@ public final class XAdESBaselineSigner implements Signer {
 
 	    // Indicamos en el log que la firma es correcta
 	    LOGGER.info(Language.getResIntegra(ILogConstantKeys.XBS_LOG055));
-	} catch (SigningException e) {
+	} catch (final SigningException e) {
 	    // Establecemos en la información asociada a la validación de la
 	    // firma que ésta no es correcta
 	    validationResult.setCorrect(false);
@@ -2421,7 +2424,7 @@ public final class XAdESBaselineSigner implements Signer {
      * </ul>
      * @throws SigningException If the validation fails.
      */
-    private String checkSigantureIntegrity(byte[ ] xmlDocument, ValidationResult validationResult, List<XAdESSignerInfo> listSigners) throws SigningException {
+    private String checkSigantureIntegrity(final byte[ ] xmlDocument, final ValidationResult validationResult, final List<XAdESSignerInfo> listSigners) throws SigningException {
 	// Establecemos, por defecto, que la firma es estructuralmente correcta
 	validationResult.setIntegrallyCorrect(true);
 
@@ -2438,13 +2441,13 @@ public final class XAdESBaselineSigner implements Signer {
 	    IdRegister.registerElements(doc.getDocumentElement());
 
 	    // Obtenemos el modo de firma
-	    String signType = UtilsSignatureOp.getTypeOfXMLSignature(doc);
+	    final String signType = UtilsSignatureOp.getTypeOfXMLSignature(doc);
 	    if (signType.equals(SignatureConstants.SIGN_FORMAT_XADES_ENVELOPED)) {
 		signingMode = IUtilsSignature.ENVELOPED_SIGNATURE_MODE;
 	    } else if (signType.equals(SignatureConstants.SIGN_FORMAT_XADES_ENVELOPING)) {
 		signingMode = IUtilsSignature.ENVELOPING_SIGNATURE_MODE;
 	    }
-	} catch (SigningException e) {
+	} catch (final SigningException e) {
 	    LOGGER.error(e.getMessage());
 	    validationResult.setIntegrallyCorrect(false);
 	    validationResult.setErrorMsg(e.getMessage());
@@ -2452,11 +2455,11 @@ public final class XAdESBaselineSigner implements Signer {
 	}
 
 	// Obtenemos la lista de firmantes
-	List<XAdESSignerInfo> listSignersFound = UtilsSignatureOp.getXAdESListSigners(doc);
+	final List<XAdESSignerInfo> listSignersFound = UtilsSignatureOp.getXAdESListSigners(doc);
 
 	// Comprobamos que exista al menos un firmante
 	if (listSignersFound.isEmpty()) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG018);
+	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XBS_LOG018);
 	    LOGGER.error(errorMsg);
 	    validationResult.setIntegrallyCorrect(false);
 	    validationResult.setErrorMsg(errorMsg);
@@ -2485,10 +2488,10 @@ public final class XAdESBaselineSigner implements Signer {
      * @param signedFileName Parameter that represents the name of the file signed by the XML signature when the signed data isn't included into the signed XML document.
      * @return an object that represents the validation information about the signer/counter-signer.
      */
-    public SignerValidationResult validateSigner(String signingMode, XAdESSignerInfo signerInfo, ValidationResult validationResult, String idClient, String signerFormat, boolean isCounterSignature, byte[ ] signedFile, String signedFileName) {
+    public SignerValidationResult validateSigner(final String signingMode, final XAdESSignerInfo signerInfo, final ValidationResult validationResult, final String idClient, final String signerFormat, final boolean isCounterSignature, final byte[ ] signedFile, final String signedFileName) {
 	// Instanciamos el objeto que representa la información de
 	// validación del firmante y lo añadimos a la lista asociada
-	SignerValidationResult signerValidationResult = new SignerValidationResult();
+	final SignerValidationResult signerValidationResult = new SignerValidationResult();
 
 	// Por defecto indicamos que la validación del firmante ha sido correcta
 	signerValidationResult.setCorrect(true);
@@ -2501,15 +2504,15 @@ public final class XAdESBaselineSigner implements Signer {
 	signerValidationResult.setFormat(signerFormat);
 
 	// Determinamos a partir del formato si el firmante es Baseline
-	boolean isBaseline = SignatureFormatDetectorXades.isXAdESBaseline(signerFormat);
+	final boolean isBaseline = SignatureFormatDetectorXades.isXAdESBaseline(signerFormat);
 
 	try {
 	    // Recuperamos el elemento obligatorio xades:SignedProperties
-	    Element signedPropertiesElement = retrieveSignedPropertiesElement(signerValidationResult, signerInfo, validationResult);
+	    final Element signedPropertiesElement = retrieveSignedPropertiesElement(signerValidationResult, signerInfo, validationResult);
 
 	    // Recuperamos el elemento obligatorio
 	    // xades:SignedSignatureProperties
-	    Element signedSignaturePropertiesElement = retrieveSignedSignaturePropertiesElement(signedPropertiesElement, signerValidationResult, signerInfo, validationResult);
+	    final Element signedSignaturePropertiesElement = retrieveSignedSignaturePropertiesElement(signedPropertiesElement, signerValidationResult, signerInfo, validationResult);
 
 	    // Recuperamos el certificado firmante y lo asociamos a la
 	    // información del firmante
@@ -2531,7 +2534,7 @@ public final class XAdESBaselineSigner implements Signer {
 	    // generación del primer sello de tiempo contenido en un
 	    // elemento xades:SignatureTimeStamp. En caso de no
 	    // haber ninguno se tomará la fecha actual
-	    Date validationDate = getValidationDate(signerInfo);
+	    final Date validationDate = getValidationDate(signerInfo);
 
 	    /*
 	     * Validación del Núcleo de Firma: Se realizarán las siguientes verificaciones (en el caso de que la firma no sea Baseline):
@@ -2588,7 +2591,7 @@ public final class XAdESBaselineSigner implements Signer {
 	     * 		se utilizará como fecha de validación la fecha actual. Además, se verificará que el certificado posee la extensión id-kp-timestamp.
 	     */
 	    validateSignatureTimeStampElements(signerValidationResult, signerInfo, validationResult, idClient);
-	} catch (Exception e) {
+	} catch (final Exception e) {
 	    // Establecemos en la información asociada a la validación
 	    // del firmante que éste no es correcto
 	    signerValidationResult.setCorrect(false);
@@ -2609,10 +2612,10 @@ public final class XAdESBaselineSigner implements Signer {
      * @param validationDate Parameter that represents the validation date.
      * @throws SigningException If the validation fails.
      */
-    private void validateSigningCertificate(SignerValidationResult signerValidationResult, XAdESSignerInfo signerInfo, ValidationResult validationResult, String idClient, Date validationDate) throws SigningException {
+    private void validateSigningCertificate(final SignerValidationResult signerValidationResult, final XAdESSignerInfo signerInfo, final ValidationResult validationResult, final String idClient, final Date validationDate) throws SigningException {
 	// Instanciamos el objeto que ofrece información sobre la validación
 	// llevada a cabo
-	ValidationInfo validationInfo = new ValidationInfo();
+	final ValidationInfo validationInfo = new ValidationInfo();
 	validationInfo.setIdValidationTask(ISignatureValidationTaskID.ID_SIGNING_CERTIFICATE_VALIDATION);
 
 	// Añadimos a la lista de validaciones del firmante/contra-firmante la
@@ -2624,7 +2627,7 @@ public final class XAdESBaselineSigner implements Signer {
 
 	    // Indicamos que la validación ha sido correcta
 	    validationInfo.setSucess(true);
-	} catch (Exception e) {
+	} catch (final Exception e) {
 	    // Establecemos, a nivel general, el error asociado a la
 	    // validación
 	    // de la
@@ -2666,12 +2669,12 @@ public final class XAdESBaselineSigner implements Signer {
      * @param idClient Parameter that represents the client application identifier.
      * @throws SigningException If the validation fails.
      */
-    private void validateSignaturePolicy(SignerValidationResult signerValidationResult, XAdESSignerInfo signerInfo, ValidationResult validationResult, String signingMode, String idClient) throws SigningException {
+    private void validateSignaturePolicy(final SignerValidationResult signerValidationResult, final XAdESSignerInfo signerInfo, final ValidationResult validationResult, final String signingMode, final String idClient) throws SigningException {
 	// Comprobamos si el firmante incluye política de firma
 	if (SignatureFormatDetectorXades.hasSignaturePolicyIdentifier(signerInfo.getElementSignature())) {
 	    // Instanciamos el objeto que ofrece información sobre la validación
 	    // llevada a cabo
-	    ValidationInfo validationInfo = new ValidationInfo();
+	    final ValidationInfo validationInfo = new ValidationInfo();
 	    validationInfo.setIdValidationTask(ISignatureValidationTaskID.ID_SIGNATURE_POLICY_VALIDATION);
 
 	    // Añadimos a la lista de validaciones del firmante/contra-firmante
@@ -2685,7 +2688,7 @@ public final class XAdESBaselineSigner implements Signer {
 
 		// Indicamos que la validación ha sido correcta
 		validationInfo.setSucess(true);
-	    } catch (SignaturePolicyException e) {
+	    } catch (final SignaturePolicyException e) {
 		// Establecemos, a nivel general, el error asociado a la
 		// validación
 		// de la
@@ -2723,10 +2726,10 @@ public final class XAdESBaselineSigner implements Signer {
      * @param isBaseline Parameter that indicates if the XML signature has Baseline form (true) or not (false).
      * @throws SigningException If the validation fails.
      */
-    private void validateSigningTime(SignerValidationResult signerValidationResult, XAdESSignerInfo signerInfo, ValidationResult validationResult, Date validationDate, Element signedSignaturePropertiesElement, boolean isBaseline) throws SigningException {
+    private void validateSigningTime(final SignerValidationResult signerValidationResult, final XAdESSignerInfo signerInfo, final ValidationResult validationResult, final Date validationDate, final Element signedSignaturePropertiesElement, final boolean isBaseline) throws SigningException {
 	// Instanciamos el objeto que ofrece información sobre la validación
 	// llevada a cabo
-	ValidationInfo validationInfo = new ValidationInfo();
+	final ValidationInfo validationInfo = new ValidationInfo();
 	validationInfo.setIdValidationTask(ISignatureValidationTaskID.ID_SIGNING_TIME_VALIDATION);
 
 	// Añadimos a la lista de validaciones del firmante/contra-firmante la
@@ -2735,7 +2738,7 @@ public final class XAdESBaselineSigner implements Signer {
 
 	// El atributo signing-time no es obligatorio
 	// en la firma, salvo que ésta tenga formato Baseline
-	boolean signingTimeIsRequired = isBaseline;
+	final boolean signingTimeIsRequired = isBaseline;
 	try {
 	    // Comprobamos que el atributo signing-time, en caso de estar
 	    // presente, es correcto
@@ -2743,7 +2746,7 @@ public final class XAdESBaselineSigner implements Signer {
 
 	    // Indicamos que la validación ha sido correcta
 	    validationInfo.setSucess(true);
-	} catch (Exception e) {
+	} catch (final Exception e) {
 	    // Establecemos, a nivel general, el error asociado a la validación
 	    // de la
 	    // firma XAdES como el error producido, si es que no se indicó
@@ -2781,10 +2784,10 @@ public final class XAdESBaselineSigner implements Signer {
      * @param isCounterSignature Parameter that indicates if the signature to validate is a counterSignature.
      * @throws SigningException If the validation fails.
      */
-    private void validateSignatureCore(SignerValidationResult signerValidationResult, XAdESSignerInfo signerInfo, ValidationResult validationResult, Element signedSignaturePropertiesElement, Element signedPropertiesElement, boolean isBaseline, byte[ ] signedFile, String signedFileName, boolean isCounterSignature) throws SigningException {
+    private void validateSignatureCore(final SignerValidationResult signerValidationResult, final XAdESSignerInfo signerInfo, final ValidationResult validationResult, final Element signedSignaturePropertiesElement, final Element signedPropertiesElement, final boolean isBaseline, final byte[ ] signedFile, final String signedFileName, final boolean isCounterSignature) throws SigningException {
 	// Instanciamos el objeto que ofrece información sobre la validación
 	// llevada a cabo
-	ValidationInfo validationInfo = new ValidationInfo();
+	final ValidationInfo validationInfo = new ValidationInfo();
 	validationInfo.setIdValidationTask(ISignatureValidationTaskID.ID_SIGNATURE_CORE_VALIDATION);
 
 	// Añadimos a la lista de validaciones del firmante/contra-firmante la
@@ -2796,7 +2799,7 @@ public final class XAdESBaselineSigner implements Signer {
 
 	    // Indicamos que la validación ha sido correcta
 	    validationInfo.setSucess(true);
-	} catch (Exception e) {
+	} catch (final Exception e) {
 	    // Establecemos, a nivel general, el error asociado a la validación
 	    // de la
 	    // firma XAdES como el error producido, si es que no se indicó
@@ -2829,13 +2832,13 @@ public final class XAdESBaselineSigner implements Signer {
      * @return the validation date.
      * @throws SigningException If there is some problem trying to retrieve the validation date.
      */
-    private Date getValidationDate(XAdESSignerInfo signerInfo) throws SigningException {
+    private Date getValidationDate(final XAdESSignerInfo signerInfo) throws SigningException {
 	// Por defecto definimos la fecha de validación como la fecha actual
 	Date validationDate = Calendar.getInstance().getTime();
 
 	// Si el firmante incluye algún sello de tiempo contenido en elementos
 	// xades:SignatureTimeStamp
-	List<XAdESTimeStampType> listTimeStamps = signerInfo.getListTimeStamps();
+	final List<XAdESTimeStampType> listTimeStamps = signerInfo.getListTimeStamps();
 	if (listTimeStamps != null && listTimeStamps.size() > 0) {
 	    // Establecemos como fecha de validación la fecha de generación del
 	    // sello de
@@ -2852,7 +2855,7 @@ public final class XAdESBaselineSigner implements Signer {
      * @param validationResult Parameter that represents the information about the validation of the signature.
      * @throws SigningException If the signing certificate cannot be retrieved.
      */
-    private void addSigningCertificateInfo(SignerValidationResult signerValidationResult, XAdESSignerInfo signerInfo, ValidationResult validationResult) throws SigningException {
+    private void addSigningCertificateInfo(final SignerValidationResult signerValidationResult, final XAdESSignerInfo signerInfo, final ValidationResult validationResult) throws SigningException {
 	// Añadimos a la información de validación del firmante su certificado
 	signerValidationResult.setSigningCertificate(signerInfo.getSigningCertificate());
 
@@ -2889,10 +2892,10 @@ public final class XAdESBaselineSigner implements Signer {
      * @param isCounterSignature Parameter that indicates if the element to validate is a signer (false) or a counter-signer (true).
      * @throws SigningException If the validation fails.
      */
-    private void validateKeyInfo(SignerValidationResult signerValidationResult, XAdESSignerInfo signerInfo, ValidationResult validationResult, boolean isBaseline, boolean isCounterSignature) throws SigningException {
+    private void validateKeyInfo(final SignerValidationResult signerValidationResult, final XAdESSignerInfo signerInfo, final ValidationResult validationResult, final boolean isBaseline, final boolean isCounterSignature) throws SigningException {
 	// Instanciamos el objeto que ofrece información sobre la validación
 	// llevada a cabo
-	ValidationInfo validationInfo = new ValidationInfo();
+	final ValidationInfo validationInfo = new ValidationInfo();
 	validationInfo.setIdValidationTask(ISignatureValidationTaskID.ID_PUBLIC_KEY_INFO_VALIDATION);
 
 	// Añadimos a la lista de validaciones del firmante/contra-firmante la
@@ -2905,7 +2908,7 @@ public final class XAdESBaselineSigner implements Signer {
 
 	    // Indicamos que la validación ha sido correcta
 	    validationInfo.setSucess(true);
-	} catch (Exception e) {
+	} catch (final Exception e) {
 	    // Establecemos, a nivel general, el error asociado a la validación
 	    // de la
 	    // firma XAdES como el error producido, si es que no se indicó
@@ -2940,13 +2943,13 @@ public final class XAdESBaselineSigner implements Signer {
      * @return an object that represents the <code>xades:SignedSignatureProperties</code> element.
      * @throws SigningException If the XML signature doesn't contain the element.
      */
-    private Element retrieveSignedSignaturePropertiesElement(Element signedPropertiesElement, SignerValidationResult signerValidationResult, XAdESSignerInfo signerInfo, ValidationResult validationResult) throws SigningException {
+    private Element retrieveSignedSignaturePropertiesElement(final Element signedPropertiesElement, final SignerValidationResult signerValidationResult, final XAdESSignerInfo signerInfo, final ValidationResult validationResult) throws SigningException {
 	try {
 	    // Recorremos la lista de elementos hijos del elemento
 	    // xades:SignedProperties buscando el elemento
 	    // xades:SignedSignatureProperties
 	    return UtilsXML.getChildElement(signedPropertiesElement, IXMLConstants.ELEMENT_SIGNED_SIGNATURE_PROPERTIES, signerInfo.getId(), true);
-	} catch (Exception e) {
+	} catch (final Exception e) {
 	    // Establecemos, a nivel general, el error asociado a la validación
 	    // de la
 	    // firma XAdES como el error producido, si es que no se indicó
@@ -2974,13 +2977,13 @@ public final class XAdESBaselineSigner implements Signer {
      * @return an object that represents the <code>xades:SignedProperties</code> element.
      * @throws SigningException If the XML signature doesn't contain the element.
      */
-    private Element retrieveSignedPropertiesElement(SignerValidationResult signerValidationResult, XAdESSignerInfo signerInfo, ValidationResult validationResult) throws SigningException {
+    private Element retrieveSignedPropertiesElement(final SignerValidationResult signerValidationResult, final XAdESSignerInfo signerInfo, final ValidationResult validationResult) throws SigningException {
 	try {
 	    // Recorremos la lista de elementos hijos del elemento
 	    // xades:QualifyingProperties buscando el elemento
 	    // xades:SignedProperties
 	    return UtilsXML.getChildElement(signerInfo.getQualifyingPropertiesElement(), IXMLConstants.ELEMENT_SIGNED_PROPERTIES, signerInfo.getId(), true);
-	} catch (Exception e) {
+	} catch (final Exception e) {
 	    // Establecemos, a nivel general, el error asociado a la validación
 	    // de la
 	    // firma XAdES como el error producido, si es que no se indicó
@@ -3007,13 +3010,13 @@ public final class XAdESBaselineSigner implements Signer {
      * @param idClient Parameter that represents the client application identifier.
      * @throws SigningException If the validation fails.
      */
-    private void validateSignatureTimeStampElements(SignerValidationResult signerValidationResult, XAdESSignerInfo signerInfo, ValidationResult validationResult, String idClient) throws SigningException {
+    private void validateSignatureTimeStampElements(final SignerValidationResult signerValidationResult, final XAdESSignerInfo signerInfo, final ValidationResult validationResult, final String idClient) throws SigningException {
 	// Si el firmante contiene al menos un elemento xades:SignatureTimeStamp
 	if (signerInfo.getListTimeStamps() != null && !signerInfo.getListTimeStamps().isEmpty()) {
 	    // Instanciamos el objeto que ofrece información sobre la
 	    // validación
 	    // llevada a cabo
-	    ValidationInfo validationInfo = new ValidationInfo();
+	    final ValidationInfo validationInfo = new ValidationInfo();
 	    validationInfo.setIdValidationTask(ISignatureValidationTaskID.ID_SIGNATURE_TIME_STAMP_ELEMENTS_VALIDATION);
 
 	    // Por defecto establecemos que la validación ha sido correcta
@@ -3035,11 +3038,11 @@ public final class XAdESBaselineSigner implements Signer {
 		// elementos xades:SignatureTimeStamp ordenados ascendentemente
 		// por fecha
 		// de generación
-		List<XAdESTimeStampType> listTimestampsIntoSignature = signerInfo.getListTimeStamps();
+		final List<XAdESTimeStampType> listTimestampsIntoSignature = signerInfo.getListTimeStamps();
 
 		// Definimos la fecha actual como fecha de validación para
 		// el certificado firmante del sello de tiempo más reciente
-		Date validationDateLatestSignatureTimeStamp = Calendar.getInstance().getTime();
+		final Date validationDateLatestSignatureTimeStamp = Calendar.getInstance().getTime();
 
 		// Recorremos la lista con los sellos de tiempo contenidos
 		// en los
@@ -3063,13 +3066,13 @@ public final class XAdESBaselineSigner implements Signer {
 		    }
 
 		    // Accedemos al sello de tiempo
-		    XAdESTimeStampType currentTimestampType = listTimestampsIntoSignature.get(i);
+		    final XAdESTimeStampType currentTimestampType = listTimestampsIntoSignature.get(i);
 
 		    // Instanciamos el objeto donde ubicar la información de
 		    // validación asociada al sello de tiempo y añadimos esa
 		    // información al objeto que contiene la información
 		    // de validación del firmante
-		    TimestampValidationResult timestampValidationResult = new TimestampValidationResult();
+		    final TimestampValidationResult timestampValidationResult = new TimestampValidationResult();
 		    signerValidationResult.getListTimestampsValidations().add(timestampValidationResult);
 
 		    // Por defecto establecemos que el sello de tiempo es
@@ -3091,7 +3094,7 @@ public final class XAdESBaselineSigner implements Signer {
 		    // Validamos el sello de tiempo
 		    validateTimeStamp(currentTimestampType, timestampValidationResult, signerValidationResult, signerInfo, validationResult, idClient, validationDate, validationInfo);
 		}
-	    } catch (Exception e) {
+	    } catch (final Exception e) {
 		// Establecemos, a nivel general, el error asociado a la
 		// validación
 		// de la
@@ -3134,11 +3137,11 @@ public final class XAdESBaselineSigner implements Signer {
      * to the current signer/counter-signer.
      * @throws SigningException If the validation fails.
      */
-    private void validateTimeStamp(XAdESTimeStampType tst, TimestampValidationResult timestampValidationResult, SignerValidationResult signerValidationResult, XAdESSignerInfo signerInfo, ValidationResult validationResult, String idClient, Date validationDate, ValidationInfo validationInfo) throws SigningException {
+    private void validateTimeStamp(final XAdESTimeStampType tst, final TimestampValidationResult timestampValidationResult, final SignerValidationResult signerValidationResult, final XAdESSignerInfo signerInfo, final ValidationResult validationResult, final String idClient, final Date validationDate, final ValidationInfo validationInfo) throws SigningException {
 	try {
 	    // Obtenemos el certificado firmante del sello de
 	    // tiempo
-	    X509Certificate timestampCertificate = tst.getTstCertificate();
+	    final X509Certificate timestampCertificate = tst.getTstCertificate();
 
 	    // Añadimos a la información de validación asociada
 	    // al sello de tiempo los datos del certificado
@@ -3157,7 +3160,7 @@ public final class XAdESBaselineSigner implements Signer {
 	    // Validamos el certificado firmante del sello de
 	    // tiempo
 	    validateTimeStampCertificate(timestampValidationResult, timestampCertificate, validationDate, idClient);
-	} catch (Exception e) {
+	} catch (final Exception e) {
 	    // Establecemos, a nivel general, el error asociado
 	    // a la
 	    // validación
@@ -3206,10 +3209,10 @@ public final class XAdESBaselineSigner implements Signer {
      * @param idClient Parameter that represents the client application identifier.
      * @throws SigningException If the validation fails.
      */
-    private void validateTimeStampCertificate(TimestampValidationResult timestampValidationResult, X509Certificate timestampCertificate, Date validationDate, String idClient) throws SigningException {
+    private void validateTimeStampCertificate(final TimestampValidationResult timestampValidationResult, final X509Certificate timestampCertificate, final Date validationDate, final String idClient) throws SigningException {
 	// Instanciamos el objeto que ofrece información sobre la validación
 	// llevada a cabo
-	TimeStampValidationInfo timestampValidationInto = new TimeStampValidationInfo();
+	final TimeStampValidationInfo timestampValidationInto = new TimeStampValidationInfo();
 	timestampValidationInto.setIdValidationTask(ITimestampValidationTaskID.ID_SIGNING_CERTIFICATE_VALIDATION);
 
 	// Añadimos a la lista de validaciones del sello de tiempo la
@@ -3221,7 +3224,7 @@ public final class XAdESBaselineSigner implements Signer {
 
 	    // Indicamos que la validación ha sido correcta
 	    timestampValidationInto.setSucess(true);
-	} catch (Exception e) {
+	} catch (final Exception e) {
 	    // Indicamos en la información sobre la validación llevada a cabo
 	    // que no ha sido correcta
 	    timestampValidationInto.setSucess(false);
@@ -3239,10 +3242,10 @@ public final class XAdESBaselineSigner implements Signer {
      * @param signerInfo Parameter that represents the information about the signer/counter-signer.
      * @throws SigningException If the validation fails.
      */
-    private void validateTimeStampStampedData(TimestampValidationResult timestampValidationResult, XAdESTimeStampType tst, XAdESSignerInfo signerInfo) throws SigningException {
+    private void validateTimeStampStampedData(final TimestampValidationResult timestampValidationResult, final XAdESTimeStampType tst, final XAdESSignerInfo signerInfo) throws SigningException {
 	// Instanciamos el objeto que ofrece información sobre la validación
 	// llevada a cabo
-	TimeStampValidationInfo timestampValidationInto = new TimeStampValidationInfo();
+	final TimeStampValidationInfo timestampValidationInto = new TimeStampValidationInfo();
 
 	// Si el sello de tiempo es XML
 	if (tst.getXmlTimestamp() != null) {
@@ -3263,7 +3266,7 @@ public final class XAdESBaselineSigner implements Signer {
 	timestampValidationResult.getListValidations().add(timestampValidationInto);
 	try {
 	    // Obtenemos los datos que deberían haber sido ser sellados
-	    byte[ ] stampedData = UtilsTimestampXML.getSignatureTimeStampDataToStamp(signerInfo.getElementSignature(), tst.getCanonicalizationAlgorithm());
+	    final byte[ ] stampedData = UtilsTimestampXML.getSignatureTimeStampDataToStamp(signerInfo.getElementSignature(), tst.getCanonicalizationAlgorithm());
 
 	    // Si el sello de tiempo es XML
 	    if (tst.getXmlTimestamp() != null) {
@@ -3277,7 +3280,7 @@ public final class XAdESBaselineSigner implements Signer {
 	    }
 	    // Indicamos que la validación ha sido correcta
 	    timestampValidationInto.setSucess(true);
-	} catch (Exception e) {
+	} catch (final Exception e) {
 	    // Indicamos en la información sobre la validación llevada a cabo
 	    // que no ha sido correcta
 	    timestampValidationInto.setSucess(false);
@@ -3293,10 +3296,10 @@ public final class XAdESBaselineSigner implements Signer {
      * @param tst Parameter that represents the information about the time-stamp to validate.
      * @throws SigningException If the validation fails.
      */
-    private void validateTimestampSignature(TimestampValidationResult timestampValidationResult, XAdESTimeStampType tst) throws SigningException {
+    private void validateTimestampSignature(final TimestampValidationResult timestampValidationResult, final XAdESTimeStampType tst) throws SigningException {
 	// Instanciamos el objeto que ofrece información sobre la validación
 	// llevada a cabo
-	TimeStampValidationInfo timestampValidationInto = new TimeStampValidationInfo();
+	final TimeStampValidationInfo timestampValidationInto = new TimeStampValidationInfo();
 	timestampValidationInto.setIdValidationTask(ITimestampValidationTaskID.ID_TIMESTAMP_SIGNATURE_VALIDATION);
 
 	// Añadimos a la lista de validaciones del sello de tiempo la
@@ -3314,7 +3317,7 @@ public final class XAdESBaselineSigner implements Signer {
 
 	    // Indicamos que la validación ha sido correcta
 	    timestampValidationInto.setSucess(true);
-	} catch (Exception e) {
+	} catch (final Exception e) {
 	    // Indicamos en la información sobre la validación llevada a cabo
 	    // que no ha sido correcta
 	    timestampValidationInto.setSucess(false);
@@ -3339,21 +3342,21 @@ public final class XAdESBaselineSigner implements Signer {
      * @param signedFile Parameter that represents the file signed by the XML signature when the signed data isn't included into the signed XML document.
      * @param signedFileName Parameter that represents the name of the file signed by the XML signature when the signed data isn't included into the signed XML document.
      */
-    public void validateCounterSigners(String signingMode, XAdESSignerInfo signerInfo, SignerValidationResult signerValidationResult, ValidationResult validationResult, String idClient, byte[ ] signedFile, String signedFileName) {
+    public void validateCounterSigners(final String signingMode, final XAdESSignerInfo signerInfo, final SignerValidationResult signerValidationResult, final ValidationResult validationResult, final String idClient, final byte[ ] signedFile, final String signedFileName) {
 	// Accedemos a la lista de contra-firmantes, en caso de haber
-	List<XAdESSignerInfo> listCounterSignerInfo = signerInfo.getListCounterSigners();
+	final List<XAdESSignerInfo> listCounterSignerInfo = signerInfo.getListCounterSigners();
 	if (listCounterSignerInfo != null && !listCounterSignerInfo.isEmpty()) {
 	    // Si el firmante posee contra-firmantes instanciamos una lista
 	    // donde ubicar la información de validación
 	    // de cada contra-firmante y la asociamos al resultado final de
 	    // validar el firmante padre
-	    List<SignerValidationResult> listCounterSignersValidationResults = new ArrayList<SignerValidationResult>();
+	    final List<SignerValidationResult> listCounterSignersValidationResults = new ArrayList<SignerValidationResult>();
 	    signerValidationResult.setListCounterSignersValidationsResults(listCounterSignersValidationResults);
 
 	    // Recorremos la lista de contra-firmantes
-	    for (XAdESSignerInfo counterSignerInfo: listCounterSignerInfo) {
+	    for (final XAdESSignerInfo counterSignerInfo: listCounterSignerInfo) {
 		// Primero, determinamos el formato del contra-firmante
-		String signerFormat = SignatureFormatDetectorXades.resolveSignerXAdESFormat(counterSignerInfo.getElementSignature());
+		final String signerFormat = SignatureFormatDetectorXades.resolveSignerXAdESFormat(counterSignerInfo.getElementSignature());
 
 		// Si el contra-firmante tiene formato no Baseline, nos
 		// mantenemos en este clase. En otro caso, derivamos la
@@ -3361,7 +3364,7 @@ public final class XAdESBaselineSigner implements Signer {
 		// no Baseline
 		SignerValidationResult counterSignerValidationResult = null;
 		if (!signerIsBaseline(signerFormat)) {
-		    XadesSigner xadesSigner = new XadesSigner();
+		    final XadesSigner xadesSigner = new XadesSigner();
 
 		    // Obtenemos la información de validación asociada al
 		    // contra-firmante

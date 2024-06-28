@@ -232,29 +232,121 @@ public class ASiCSBaselineSignerTest extends TestCase {
      * @throws TransformersException 
      */
     public final void testSignWithoutTimestamp() throws TransformersException {
-	final byte[ ] dataToSignCades = UtilsFileSystemCommons.readFile("ficheroAfirmar.txt", true);
-	final byte[ ] dataToSignXades = UtilsFileSystemCommons.readFile("ficheroAfirmar.xml", true);
-	final PrivateKeyEntry privateKey = getCertificatePrivateKey();
+    	final byte[ ] dataToSignCades = UtilsFileSystemCommons.readFile("ficheroAfirmar.txt", true);
+    	final byte[ ] dataToSignXades = UtilsFileSystemCommons.readFile("ficheroAfirmar.xml", true);
+    	final PrivateKeyEntry privateKey = getCertificatePrivateKey();
 
-	final ASiCSBaselineSigner signer = new ASiCSBaselineSigner();
+    	final ASiCSBaselineSigner signer = new ASiCSBaselineSigner();
 
-	byte[ ] asicsCadesBaseline = null;
-	final byte[ ] asicsXadesBaseline = null;
+    	byte[ ] asicsCadesBaseline = null;
+    	byte[ ] asicsXadesBaseline = null;
 
-	/*
-	* Generación y Validación de firma ASiC-S Baseline con firma CAdES
-	Baseline explícita, con política de firma y algoritmo SHA-512
-	*/
-	try {
-	    asicsCadesBaseline = signer.sign(dataToSignCades, SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, SignatureConstants.SIGN_MODE_EXPLICIT, privateKey, null, false, ISignatureFormatDetector.FORMAT_CADES_B_LEVEL, "ASN1_AGE_1.9");
-	    final ValidationResult vr = signer.verifySignature(asicsCadesBaseline);
-	    assertTrue(vr.isCorrect());
+    	/*
+    	 * Generación y Validación de firma ASiCs Baseline con firma CAdES Baseline, sin política de firma, algoritmo SHA-256 (válido) y explícita.
+    	 */
+    	try {
+    	    asicsCadesBaseline = signer.sign(dataToSignCades, SignatureConstants.SIGN_ALGORITHM_SHA256WITHRSA, SignatureConstants.SIGN_MODE_EXPLICIT, privateKey, null, false, ISignatureFormatDetector.FORMAT_CADES_B_LEVEL, null);
+    	    assertEquals(SignatureFormatDetectorASiC.getSignatureFormat(asicsCadesBaseline), ISignatureFormatDetector.FORMAT_ASIC_S_B_LEVEL);
+    	    final ValidationResult vr = signer.verifySignature(asicsCadesBaseline);
+    	    assertTrue(vr.isCorrect());
 
-	} catch (final SigningException e) {
-	    assertTrue(false);
-	}
+    	} catch (final SigningException e) {
+    	    assertTrue(false);
+    	}
 
-    }
+    	/*
+    	* Generación y Validación de firma ASiC-S Baseline con firma CAdES
+    	Baseline IMPLICITA, sin política de firma y algoritmo SHA-512
+    	*/
+    	try {
+    	    asicsCadesBaseline = signer.sign(dataToSignCades, SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, SignatureConstants.SIGN_MODE_IMPLICIT, privateKey, null, false, ISignatureFormatDetector.FORMAT_CADES_B_LEVEL, null);
+    	    final ValidationResult vr = signer.verifySignature(asicsCadesBaseline);
+    	    assertTrue(vr.isCorrect());
+
+    	} catch (final SigningException e) {
+    	    assertTrue(false);
+    	}
+
+    	/*
+    	* Generación y Validación de firma ASiC-S Baseline con firma CAdES
+    	Baseline explícita, con política de firma y algoritmo SHA-512
+    	*/
+    	try {
+    	    asicsCadesBaseline = signer.sign(dataToSignCades, SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, SignatureConstants.SIGN_MODE_EXPLICIT, privateKey, null, false, ISignatureFormatDetector.FORMAT_CADES_B_LEVEL, "ASN1_AGE_1.9");
+    	    final ValidationResult vr = signer.verifySignature(asicsCadesBaseline);
+    	    assertTrue(vr.isCorrect());
+
+    	} catch (final SigningException e) {
+    	    assertTrue(false);
+    	}
+
+    	/*
+    	* Generación y Validación de firma ASiC-S Baseline con firma CAdES
+    	Baseline explícita, con política de firma y algoritmo no permitido
+    	*/
+    	try {
+    	    asicsCadesBaseline = signer.sign(dataToSignCades, null, SignatureConstants.SIGN_MODE_EXPLICIT, privateKey, null, false, ISignatureFormatDetector.FORMAT_CADES_B_LEVEL, "ASN1_AGE_1.9");
+    	    final ValidationResult vr = signer.verifySignature(asicsCadesBaseline);
+    	    assertFalse(vr.isCorrect());
+
+    	} catch (final IllegalArgumentException e) {
+    	    assertTrue(true);
+    	} catch (final SigningException e) {
+    	    assertTrue(false);
+    	}
+
+    	final Properties extraParams = new Properties();
+    	extraParams.put(SignatureProperties.XADES_CLAIMED_ROLE_PROP, "emisor");
+    	// extraParams.put(SignatureProperties.XADES_POLICY_QUALIFIER_PROP, "");
+    	extraParams.put(SignatureProperties.XADES_DATA_FORMAT_DESCRIPTION_PROP, "");
+    	extraParams.put(SignatureProperties.XADES_DATA_FORMAT_ENCODING_PROP, "UTF-8");
+    	extraParams.put(SignatureProperties.XADES_DATA_FORMAT_MIME_PROP, "");
+    	extraParams.put(SignatureProperties.XADES_CANONICALIZATION_METHOD, "http://www.w3.org/2006/12/xml-c14n11");
+    	/*
+    	* Generación y Validación de firma ASiC-S Baseline con firma XAdES
+    	Baseline detached, sin política de firma.
+    	*/
+    	try {
+
+    	    asicsXadesBaseline = signer.sign(dataToSignXades, SignatureConstants.SIGN_ALGORITHM_SHA256WITHRSA, SignatureConstants.SIGN_FORMAT_XADES_DETACHED, privateKey, extraParams, false, ISignatureFormatDetector.FORMAT_XADES_B_LEVEL, null);
+    	   
+    	    final ValidationResult vr = signer.verifySignature(asicsXadesBaseline);
+    	    assertTrue(vr.isCorrect());
+    	} catch (final SigningException e) {
+    	    assertTrue(false);
+    	}
+
+    	/*
+    	* Generación y Validación de firma ASiC-S Baseline con firma XAdES
+    	Baseline detached, con política de firma.
+    	*/
+    	try {
+
+    	    asicsXadesBaseline = signer.sign(dataToSignXades, SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, SignatureConstants.SIGN_FORMAT_XADES_DETACHED, privateKey, extraParams, false, ISignatureFormatDetector.FORMAT_XADES_B_LEVEL, "XML_AGE_1.9_URL");
+
+    	    final ValidationResult vr = signer.verifySignature(asicsXadesBaseline);
+    	    assertTrue(vr.isCorrect());
+    	} catch (final SigningException e) {
+    	    assertTrue(true);
+    	}
+
+    	/*
+    	* Generación y Validación de firma ASiC-S Baseline con firma XAdES
+    	Baseline con parámetros adiciones no permitidos.
+    	*/
+    	try {
+
+    	    extraParams.put(SignatureProperties.CADES_POLICY_QUALIFIER_PROP, "");
+
+    	    asicsXadesBaseline = signer.sign(dataToSignXades, SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, SignatureConstants.SIGN_FORMAT_XADES_DETACHED, privateKey, extraParams, false, ISignatureFormatDetector.FORMAT_XADES_B_LEVEL, null);
+    	    final ValidationResult vr = signer.verifySignature(asicsXadesBaseline);
+    	    assertTrue(!vr.isCorrect());
+    	} catch (final IllegalArgumentException e) {
+    	    assertTrue(true);
+    	} catch (final SigningException e) {
+    	    assertTrue(false);
+    	}
+        }
     
     /**
      * Test for method {@link ASiCSBaselineSigner#sign(byte[], String, String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String)}.

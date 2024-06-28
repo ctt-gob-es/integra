@@ -1188,10 +1188,10 @@ public final class ASiCSBaselineSigner implements Signer {
      * @throws SigningException If the method fails.
      */
     private void validateASN1Signature(final ValidationResult validationResult) throws SigningException {
-	// Obtenemos el objeto SignedData de la firma ASN.1
-	final CMSSignedData asn1SignedData = getCMSSignedData(validationResult);
+	// Obtenemos el objeto SignedData de la firma interna
+	CMSSignedData asn1SignedData = UtilsSignatureOp.getCMSSignedData(this.asn1Signature);
 
-	// Comprobamos que la firma ASN.1 es explícita
+	// Comprobamos que la firma ASN.1 interna es explícita
 	if (UtilsSignatureOp.isImplicit(asn1SignedData)) {
 	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG020);
 	    LOGGER.error(errorMsg);
@@ -1199,6 +1199,9 @@ public final class ASiCSBaselineSigner implements Signer {
 	    validationResult.setErrorMsg(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
+	
+	// Componemos el signedData con los datos extraidos de la firma ASiC
+	asn1SignedData = getCMSSignedData(validationResult);
 
 	// Obtenemos la lista de firmantes y contra-firmantes contenidos en
 	// la firma
