@@ -224,7 +224,11 @@ public class XMLSignatureDocument {
 
     public KeyInfo newKeyInfo(X509Certificate certificate, String keyInfoId) throws KeyException {
 	KeyInfoFactory kif = getXMLSignatureFactory().getKeyInfoFactory();
-	if (XmlWrappedKeyInfo.PUBLIC_KEY.equals(getXmlWrappedKeyInfo())) {
+	
+	//FIXME: Se omite la inclusion del KeyValue en las firmas de curva elipticas hasta que @firma
+	// soporte el elemento ECKeyValue generado por Apache Santuario (Apache Santuario e IAIK
+	// soportan distintos estandares)
+	if (XmlWrappedKeyInfo.PUBLIC_KEY.equals(getXmlWrappedKeyInfo()) && !"EC".equals(certificate.getPublicKey().getAlgorithm())) {
 	    KeyValue kv = kif.newKeyValue(certificate.getPublicKey());
 	    return kif.newKeyInfo(Collections.singletonList(kv), keyInfoId);
 	} else {

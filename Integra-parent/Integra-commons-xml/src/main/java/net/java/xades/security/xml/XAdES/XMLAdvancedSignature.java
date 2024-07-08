@@ -362,7 +362,14 @@ public class XMLAdvancedSignature {
 
     protected KeyInfo newKeyInfo(X509Certificate certificate, String keyInfoId) throws KeyException {
 	KeyInfoFactory keyInfoFactory = getXMLSignatureFactory().getKeyInfoFactory();
-	KeyValue keyValue = keyInfoFactory.newKeyValue(certificate.getPublicKey());
+	
+	//FIXME: Se omite la inclusion del KeyValue en las firmas de curva elipticas hasta que @firma
+	// soporte el elemento ECKeyValue generado por Apache Santuario (Apache Santuario e IAIK
+	// soportan distintos estandares)
+	KeyValue keyValue = null;
+	if (!"EC".equals(certificate.getPublicKey().getAlgorithm())) {
+		keyValue = keyInfoFactory.newKeyValue(certificate.getPublicKey());
+	}
 
 	List<Object> x509DataList = new ArrayList<Object>();
 
@@ -378,7 +385,9 @@ public class XMLAdvancedSignature {
 	X509Data x509Data = keyInfoFactory.newX509Data(x509DataList);
 
 	List<XMLStructure> newList = new ArrayList<>();
-	newList.add(keyValue);
+	if (keyValue != null) {
+		newList.add(keyValue);
+	}
 	newList.add(x509Data);
 
 	return keyInfoFactory.newKeyInfo(newList, keyInfoId);

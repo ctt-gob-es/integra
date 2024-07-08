@@ -96,6 +96,9 @@ public class KeyValueSelector extends KeySelector {
 	if (algName.equalsIgnoreCase("RSA") && (algURI.equalsIgnoreCase(XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA1) || algURI.equalsIgnoreCase(XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA256) || algURI.equalsIgnoreCase(XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA512))) {
 	    result = true;
 	}
+	else if (algName.equalsIgnoreCase("ECC") && (algURI.equalsIgnoreCase(XMLSignature.ALGO_ID_SIGNATURE_ECDSA_SHA1) || algURI.equalsIgnoreCase(XMLSignature.ALGO_ID_SIGNATURE_ECDSA_SHA256) || algURI.equalsIgnoreCase(XMLSignature.ALGO_ID_SIGNATURE_ECDSA_SHA512))) {
+	    result = true;
+	}
 	return result;
     }
 

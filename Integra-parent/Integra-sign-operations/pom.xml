@@ -73,21 +73,6 @@
 	
 
 	<build>
-		<resources>
-			<resource>
-				<directory></directory>
-				<includes>
-					<include>LICENSE.txt</include>
-				</includes>
-				<targetPath>${basedir}/target/classes/META-INF</targetPath>
-			</resource>
-			<resource>
-				<directory></directory>
-				<includes>
-					<include>messages/**</include>
-				</includes>
-			</resource>
-		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -119,9 +104,6 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<skipTests>true</skipTests>
-					<encoding>UTF-8</encoding>
-        			<inputEncoding>UTF-8</inputEncoding>
-        			<outputEncoding>UTF-8</outputEncoding>
         			<argLine>-Dfile.encoding=UTF-8</argLine>
         			<!-- argLine>-Dintegra.config=D:/resources</argLine-->
 				</configuration>

@@ -288,11 +288,9 @@ public final class CMSBuilder {
 	    final ASN1Set signedAttr = generateSignedAttr(parameters, digestAlgorithmId, digAlgId, digestAlgorithm, dataType, optionalParams, signatureForm, signaturePolicyID, includeContent, idClient);
 
 	    final String keyType = signerCertificate.getPublicKey().getAlgorithm();
-	    
-	    final String signAlgorithm = SignatureConstants.composeSignatureAlgorithmName(digestAlgorithm, keyType);
-	    
+	    	    
 	    // Generamos la firma
-	    final ASN1OctetString sign2 = sign(signAlgorithm, parameters.getPrivateKey(), signedAttr);
+	    final ASN1OctetString sign2 = sign(parameters.getSignatureAlgorithm(), parameters.getPrivateKey(), signedAttr);
 
 	    // Atributos no firmados
 	    ASN1Set unsignedAttr = null;
@@ -331,7 +329,7 @@ public final class CMSBuilder {
 	    }
 
 	    // digEncryptionAlgorithm
-	    final AlgorithmIdentifier encAlgId = new DefaultSignatureAlgorithmIdentifierFinder().find(signAlgorithm);
+	    final AlgorithmIdentifier encAlgId = new DefaultSignatureAlgorithmIdentifierFinder().find(parameters.getSignatureAlgorithm());
 
 	    final SignerInfo signerInfo = new SignerInfo(identifier, digAlgId, signedAttr, encAlgId, sign2, unsignedAttr);
 
@@ -527,9 +525,7 @@ public final class CMSBuilder {
 		contexExpecific.add(new Attribute(CMSAttributes.signingTime, new DERSet(new DERUTCTime(Calendar.getInstance().getTime()))));
 	    }
 	    
-	    final String signAlgorithm = SignatureConstants.composeSignatureAlgorithmName(digestAlgorithm, parameters.getPrivateKey().getPrivateKey().getAlgorithm());
-
-	    final AlgorithmIdentifier signAlgorithmId = new DefaultSignatureAlgorithmIdentifierFinder().find(signAlgorithm);
+	    final AlgorithmIdentifier signAlgorithmId = new DefaultSignatureAlgorithmIdentifierFinder().find(parameters.getSignatureAlgorithm());
 
 	    // Política de la firma --> elemento SignaturePolicyId
 	    addPolicy(contexExpecific, extraParams, isPadesSigner, signatureForm, signaturePolicyID, signAlgorithmId, algId, includeContent, idClient);
@@ -1035,7 +1031,7 @@ public final class CMSBuilder {
 	    final SignerIdentifier signerIdentifier = new SignerIdentifier(issuerAndSerial);
 
 	    // DigestAlgorithmIdentifier
-	    final String digestAlgorithm = SignatureConstants.SIGN_ALGORITHMS_SUPPORT_CADES.get(parameters.getSignatureAlgorithm());
+	    final String digestAlgorithm = SignatureConstants.SIGN_ALGORITHMS_SUPPORT.get(parameters.getSignatureAlgorithm());
 	    final AlgorithmIdentifier digestAlgorithmId = makeDigestAlgorithmId(digestAlgorithm);
 
 	    // ATRIBUTOS FIRMADOS
@@ -1049,13 +1045,9 @@ public final class CMSBuilder {
 	    }
 	    // SigningTime (fecha de firma)
 	    signedAttributes.add(new Attribute(CMSAttributes.signingTime, new DERSet(new DERUTCTime(Calendar.getInstance().getTime()))));
-
-	    final String keyType = signerCertificate.getPublicKey().getAlgorithm();
-	    
-	    final String algorithmName = SignatureConstants.composeSignatureAlgorithmName(digestAlgorithm, keyType);
 	    
 	    // SignatureAlgorithmIdentifier
-	    final AlgorithmIdentifier signAlgorithmId = new DefaultSignatureAlgorithmIdentifierFinder().find(algorithmName);
+	    final AlgorithmIdentifier signAlgorithmId = new DefaultSignatureAlgorithmIdentifierFinder().find(parameters.getSignatureAlgorithm());
 
 	    // Política de la firma --> elemento SignaturePolicyId
 	    addPolicy(signedAttributes, parameters.getOptionalParams(), false, signatureForm, signaturePolicyID, signAlgorithmId, digestAlgorithmId, includeContent, idClient);
@@ -1075,7 +1067,7 @@ public final class CMSBuilder {
 	    // ========================================================================================================
 
 	    // SignatureValue (cálculo de la firma de los atributos firmados)
-	    final ASN1OctetString signatureValue = sign(algorithmName, privateKey, signedAttrSet);
+	    final ASN1OctetString signatureValue = sign(parameters.getSignatureAlgorithm(), privateKey, signedAttrSet);
 
 	    // Atributos no firmados
 	    ASN1Set unsignedAttr = null;

@@ -11,7 +11,6 @@ package es.gob.afirma.tsl.parsing.impl.common;
 
 /**
  * Indica si la firma es v&aacute;lida o no.
- * @author Carlos Gamuci
  */
 public final class SignValidity {
 

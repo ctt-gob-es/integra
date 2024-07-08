@@ -79,7 +79,7 @@ public final class IntegraFacade {
 	checkIsNotNullAndNotEmpty(signatureAlgorithm, Language.getFormatResIntegra(ILogConstantKeys.IF_LOG003, new Object[ ] { IIntegraConstants.DEFAULT_PROPERTIES_FILE }));
 
 	// Comprobamos que el algoritmo de firma está soportado
-	if (!SignatureConstants.SIGN_ALGORITHMS_SUPPORT_CADES.containsKey(signatureAlgorithm)) {
+	if (!SignatureConstants.SIGN_ALGORITHMS_SUPPORT.containsKey(signatureAlgorithm)) {
 	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.IF_LOG004, new Object[ ] { signatureAlgorithm, IIntegraConstants.DEFAULT_PROPERTIES_FILE });
 	    LOGGER.error(errorMsg);
 	    throw new SigningException(errorMsg);

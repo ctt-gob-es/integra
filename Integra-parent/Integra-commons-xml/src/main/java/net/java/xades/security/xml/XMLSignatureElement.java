@@ -263,15 +263,15 @@ public class XMLSignatureElement {
 	}
 
 	static boolean algEquals(String algURI, String algName) {
-	    if (algName.equalsIgnoreCase("DSA") && algURI.toUpperCase().contains("DSA")) {
-		return true;
-	    } else {
 		if (algName.equalsIgnoreCase("RSA") && algURI.toUpperCase().contains("RSA")) {
-		    return true;
+			return true;
+		} else if (algName.equalsIgnoreCase("ECC") && algURI.toUpperCase().contains("ECDSA")) {
+			return true;
+		} else if (algName.equalsIgnoreCase("DSA") && algURI.toUpperCase().contains("DSA")) {
+			return true;
 		} else {
-		    return false;
+			return false;
 		}
-	    }
 	}
     }
 

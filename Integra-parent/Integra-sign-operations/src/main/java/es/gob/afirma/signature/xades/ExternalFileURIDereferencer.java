@@ -22,8 +22,6 @@
 package es.gob.afirma.signature.xades;
 
 
-import org.w3c.dom.Attr;
-
 import org.apache.xml.security.signature.XMLSignatureInput;
 import org.apache.xml.security.utils.resolver.ResourceResolverContext;
 import org.apache.xml.security.utils.resolver.ResourceResolverException;

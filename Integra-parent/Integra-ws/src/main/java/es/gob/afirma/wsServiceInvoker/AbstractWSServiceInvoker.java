@@ -24,8 +24,6 @@ import java.util.Properties;
 
 import es.gob.afirma.properties.Afirma5ServiceInvokerProperties;
 import es.gob.afirma.properties.EvisorServiceInvokerProperties;
-import es.gob.afirma.wsServiceInvoker.WSServiceInvokerConstants;
-import es.gob.afirma.wsServiceInvoker.WSServiceInvokerException;
 
 /**
  * <p>Class that defines the common functionality for all the classes which allow to invoke the web services of @Firma.</p>

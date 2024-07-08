@@ -132,7 +132,7 @@ public final class PadesSigner implements Signer {
 	    LOGGER.error(errorMsg);
 	    throw new IllegalArgumentException(errorMsg);
 	}
-	if (!SignatureConstants.SIGN_ALGORITHMS_SUPPORT_CADES.containsKey(algorithm)) {
+	if (!SignatureConstants.SIGN_ALGORITHMS_SUPPORT.containsKey(algorithm)) {
 	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.PS_LOG002, new Object[ ] { algorithm });
 	    LOGGER.error(errorMsg);
 	    throw new IllegalArgumentException(errorMsg);
@@ -255,11 +255,17 @@ public final class PadesSigner implements Signer {
 	    exc.put(PdfName.CONTENTS, Integer.valueOf(csize * 2 + 2));
 	    signatureAppearance.preClose(exc);
 
+	    // Obtenemos el algoritmo de firma compatible con el tipo de clave del
+	    // certificado utilizando el algoritmo de hash del algoritmo
+	    // proporcionado 
+	    final String keyType = privateKey.getPrivateKey().getAlgorithm();
+	    final String signAlgorithm = SignatureConstants.composeSignatureAlgorithmName(algorithm, keyType);	
+	    
 	    /**	********************************
 	     * Creación del objeto SignedData*
 	     ***********************************/
 	    byte[ ] signedData = null;
-	    P7ContentSignerParameters csp = new P7ContentSignerParameters(data, algorithm, privateKey);
+	    P7ContentSignerParameters csp = new P7ContentSignerParameters(data, signAlgorithm, privateKey);
 	    Oid dataType = new Oid(PKCSObjectIdentifiers.data.getId());
 	    // cálculo del digest del documento pdf original
 	    String digestAlgorithm = CryptoUtilPdfBc.getDigestAlgorithmName(algorithm);
@@ -370,7 +376,7 @@ public final class PadesSigner implements Signer {
      * {@inheritDoc}
      * @see es.gob.afirma.signature.Signer#coSign(byte[], byte[], java.lang.String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, java.lang.String, java.lang.String, java.lang.String)
      */
-    public byte[ ] coSign(byte[ ] signature, byte[ ] document, String algorithm, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureFormat, String signaturePolicyID, String idClient) throws SigningException {
+    public byte[ ] coSign(byte[ ] signature, byte[ ] document, String algorithm, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID, String idClient) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.PS_LOG023));
 	byte[ ] result = null;
 	ByteArrayOutputStream bytesResult = null;
@@ -382,7 +388,7 @@ public final class PadesSigner implements Signer {
 	    if (externalParams == null) {
 		externalParams = new Properties();
 	    }
-	    checkCoSignInputParams(signature, algorithm, privateKey, externalParams, signatureFormat);
+	    checkCoSignInputParams(signature, algorithm, privateKey, externalParams, signatureForm);
 
 	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.PS_LOG004, new Object[ ] { algorithm, extraParams }));
 
@@ -423,7 +429,7 @@ public final class PadesSigner implements Signer {
 	    // Establecemos el valor de la clave /SubFilter. Para firmas
 	    // PAdES-BES y PAdES-EPES el valor es 'ETSI.CAdES.detached'. Para
 	    // firmas PAdES-Basic el valor es 'adbe.pkcs7.detached'
-	    PdfSignature signDictionary = new PdfSignature(PdfName.ADOBE_PPKLITE, defineSubFilterValue(signatureFormat));
+	    PdfSignature signDictionary = new PdfSignature(PdfName.ADOBE_PPKLITE, defineSubFilterValue(signatureForm));
 	    signDictionary.setDate(new PdfDate(signatureAppearance.getSignDate()));
 
 	    String signatureDictionaryName = PdfPKCS7.getSubjectFields((X509Certificate) certificateChain[0]).getField("CN");
@@ -459,11 +465,17 @@ public final class PadesSigner implements Signer {
 	    exc.put(PdfName.CONTENTS, Integer.valueOf(csize * 2 + 2));
 	    signatureAppearance.preClose(exc);
 
+	    // Obtenemos el algoritmo de firma compatible con el tipo de clave del
+	    // certificado utilizando el algoritmo de hash del algoritmo
+	    // proporcionado 
+	    final String keyType = privateKey.getPrivateKey().getAlgorithm();
+	    final String signAlgorithm = SignatureConstants.composeSignatureAlgorithmName(algorithm, keyType);	
+	    
 	    /**********************************
 	     * Creación del objeto SignedData*
 	     ***********************************/
 	    byte[ ] signedData = null;
-	    P7ContentSignerParameters csp = new P7ContentSignerParameters(signature, algorithm, privateKey);
+	    P7ContentSignerParameters csp = new P7ContentSignerParameters(signature, signAlgorithm, privateKey);
 	    Oid dataType = new Oid(PKCSObjectIdentifiers.data.getId());
 	    // cálculo del digest del documento pdf original
 	    String digestAlgorithm = CryptoUtilPdfBc.getDigestAlgorithmName(algorithm);
@@ -475,7 +487,7 @@ public final class PadesSigner implements Signer {
 	    // pades para crear signedData (específico para PAdES)
 	    externalParams.put(SignatureConstants.SIGN_FORMAT_PADES, true);
 	    CMSBuilder cmsBuilder = new CMSBuilder();
-	    signedData = cmsBuilder.generateSignedData(csp, false, dataType, externalParams, includeTimestamp, signatureFormat, signaturePolicyID, idClient);
+	    signedData = cmsBuilder.generateSignedData(csp, false, dataType, externalParams, includeTimestamp, signatureForm, signaturePolicyID, idClient);
 
 	    /***********************************/
 	    byte[ ] outc = new byte[csize];
@@ -524,7 +536,7 @@ public final class PadesSigner implements Signer {
      * {@inheritDoc}
      * @see es.gob.afirma.signature.Signer#counterSign(byte[], java.lang.String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, java.lang.String, java.lang.String, java.lang.String)
      */
-    public byte[ ] counterSign(byte[ ] pdfDocument, String algorithm, PrivateKeyEntry privateKey, Properties optionalParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID, String idClient) throws SigningException {
+    public byte[ ] counterSign(byte[ ] signature, String algorithm, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID, String idClient) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.PS_LOG027));
 	byte[ ] result = null;
 	ByteArrayOutputStream bytesResult = null;
@@ -532,20 +544,20 @@ public final class PadesSigner implements Signer {
 	try {
 	    // Comprobación parámetros de entrada
 
-	    Properties externalParams = optionalParams;
+	    Properties externalParams = extraParams;
 	    if (externalParams == null) {
 		externalParams = new Properties();
 	    }
-	    checkCounterSignInputParams(pdfDocument, algorithm, privateKey, externalParams, signatureForm);
+	    checkCounterSignInputParams(signature, algorithm, privateKey, externalParams, signatureForm);
 
-	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.PS_LOG004, new Object[ ] { algorithm, optionalParams }));
+	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.PS_LOG004, new Object[ ] { algorithm, extraParams }));
 
 	    bytesResult = new ByteArrayOutputStream();
 
 	    // se obtiene la cadena de certificación
 	    Certificate[ ] certificateChain = privateKey.getCertificateChain();
 	    // Leemos el PDF original
-	    PdfReader reader = new PdfReader(pdfDocument);
+	    PdfReader reader = new PdfReader(signature);
 
 	    // Antes de llevar a cabo la firma comprobamos el nivel de
 	    // certificación asociado a la firma más reciente, en caso de
@@ -567,6 +579,7 @@ public final class PadesSigner implements Signer {
 	    if (UtilsSignatureOp.checkExtraParamsSignWithRubric(externalParams)) {
 		UtilsSignatureOp.insertRubric(reader, signatureAppearance, externalParams);
 	    }
+
 	    // Establecemos como fecha de creación de la firma la fecha actual
 	    signatureAppearance.setSignDate(new GregorianCalendar());
 
@@ -612,11 +625,17 @@ public final class PadesSigner implements Signer {
 	    exc.put(PdfName.CONTENTS, Integer.valueOf(csize * 2 + 2));
 	    signatureAppearance.preClose(exc);
 
+	    // Obtenemos el algoritmo de firma compatible con el tipo de clave del
+	    // certificado utilizando el algoritmo de hash del algoritmo
+	    // proporcionado 
+	    final String keyType = privateKey.getPrivateKey().getAlgorithm();
+	    final String signAlgorithm = SignatureConstants.composeSignatureAlgorithmName(algorithm, keyType);	
+	    
 	    /**********************************
 	     * Creación del objeto SignedData*
 	     ***********************************/
 	    byte[ ] signedData = null;
-	    P7ContentSignerParameters csp = new P7ContentSignerParameters(pdfDocument, algorithm, privateKey);
+	    P7ContentSignerParameters csp = new P7ContentSignerParameters(signature, signAlgorithm, privateKey);
 	    Oid dataType = new Oid(PKCSObjectIdentifiers.data.getId());
 	    // cálculo del digest del documento pdf original
 	    String digestAlgorithm = CryptoUtilPdfBc.getDigestAlgorithmName(algorithm);
@@ -669,8 +688,8 @@ public final class PadesSigner implements Signer {
      * {@inheritDoc}
      * @see es.gob.afirma.signature.Signer#counterSign(byte[], java.lang.String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, java.lang.String, java.lang.String)
      */
-    public byte[ ] counterSign(byte[ ] pdfDocument, String algorithm, PrivateKeyEntry privateKey, Properties optionalParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID) throws SigningException {
-	return counterSign(pdfDocument, algorithm, privateKey, optionalParams, includeTimestamp, signatureForm, signaturePolicyID, null);
+    public byte[ ] counterSign(byte[ ] signature, String algorithm, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID) throws SigningException {
+	return counterSign(signature, algorithm, privateKey, extraParams, includeTimestamp, signatureForm, signaturePolicyID, null);
     }
 
     /**
@@ -819,7 +838,7 @@ public final class PadesSigner implements Signer {
 	    LOGGER.error(errorMsg);
 	    throw new IllegalArgumentException(errorMsg);
 	}
-	if (!SignatureConstants.SIGN_ALGORITHMS_SUPPORT_CADES.containsKey(algorithm)) {
+	if (!SignatureConstants.SIGN_ALGORITHMS_SUPPORT.containsKey(algorithm)) {
 	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.PS_LOG002, new Object[ ] { algorithm });
 	    LOGGER.error(errorMsg);
 	    throw new IllegalArgumentException(errorMsg);
@@ -850,7 +869,7 @@ public final class PadesSigner implements Signer {
 	    LOGGER.error(errorMsg);
 	    throw new IllegalArgumentException(errorMsg);
 	}
-	if (!SignatureConstants.SIGN_ALGORITHMS_SUPPORT_CADES.containsKey(algorithm)) {
+	if (!SignatureConstants.SIGN_ALGORITHMS_SUPPORT.containsKey(algorithm)) {
 	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.PS_LOG002, new Object[ ] { algorithm });
 	    LOGGER.error(errorMsg);
 	    throw new IllegalArgumentException(errorMsg);

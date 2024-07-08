@@ -777,7 +777,7 @@ public final class ASiCSBaselineSigner implements Signer {
 	GenericUtilsCommons.checkInputParameterIsNotNull(signatureAlgorithm, Language.getResIntegra(ILogConstantKeys.ASBS_LOG040));
 
 	// Comprobamos que el algoritmo de firma está soportado
-	if (!SignatureConstants.SIGN_ALGORITHMS_SUPPORT_CADES.containsKey(signatureAlgorithm)) {
+	if (!SignatureConstants.SIGN_ALGORITHMS_SUPPORT.containsKey(signatureAlgorithm)) {
 	    final String msg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG041, new Object[ ] { signatureAlgorithm });
 	    LOGGER.error(msg);
 	    throw new IllegalArgumentException(msg);

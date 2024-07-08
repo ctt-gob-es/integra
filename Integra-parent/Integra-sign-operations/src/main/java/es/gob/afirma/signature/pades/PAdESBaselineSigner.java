@@ -362,7 +362,7 @@ public final class PAdESBaselineSigner implements Signer {
 	GenericUtilsCommons.checkInputParameterIsNotNull(signatureAlgorithm, Language.getResIntegra(ILogConstantKeys.PBS_LOG003));
 
 	// Comprobamos que el algoritmo de firma está soportado
-	if (!SignatureConstants.SIGN_ALGORITHMS_SUPPORT_CADES.containsKey(signatureAlgorithm)) {
+	if (!SignatureConstants.SIGN_ALGORITHMS_SUPPORT.containsKey(signatureAlgorithm)) {
 	    String msg = Language.getFormatResIntegra(ILogConstantKeys.PBS_LOG004, new Object[ ] { signatureAlgorithm });
 	    LOGGER.error(msg);
 	    throw new IllegalArgumentException(msg);

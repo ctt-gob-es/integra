@@ -41,6 +41,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.crypto.dsig.keyinfo.KeyValue;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPException;
@@ -552,7 +553,14 @@ class TSAClientHandler extends AbstractTSAHandler {
 	    Document doc = docFactory.newDocumentBuilder().newDocument();
 
 	    KeyInfo keyInfo = new KeyInfo(doc);
-	    keyInfo.addKeyValue(pubKey);
+	    
+		//FIXME: Se omite la inclusion del KeyValue en las firmas de curva elipticas hasta que @firma
+		// soporte el elemento ECKeyValue generado por Apache Santuario (Apache Santuario e IAIK
+		// soportan distintos estandares)
+		if (!"EC".equals(pubKey.getAlgorithm())) {
+			keyInfo.addKeyValue(pubKey);
+		}
+	    
 
 	    List subConfirmation = new ArrayList();
 	    subConfirmation.add("urn:oasis:names:tc:SAML:1.0:cm:holder-of-key");

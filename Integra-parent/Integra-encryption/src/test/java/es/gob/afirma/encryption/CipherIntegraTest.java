@@ -31,6 +31,7 @@ import java.security.Key;
 
 import javax.crypto.spec.SecretKeySpec;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -154,7 +155,7 @@ public class CipherIntegraTest implements Serializable {
 	// constructor, pasándole algoritmo de cifrado no compatible con la
 	// clave para cifrar.
 	expectedEx.expect(CipherException.class);
-	expectedEx.expectMessage(containsString(Language.getResIntegra(ILogConstantKeys.IE_LOG009)));
+	expectedEx.expectMessage(CoreMatchers.containsString(Language.getResIntegra(ILogConstantKeys.IE_LOG009)));
 	cipherIntegra = new CipherIntegra(algorithmTest, keyDes);
 	cipherIntegra.encrypt(TEXT);
 

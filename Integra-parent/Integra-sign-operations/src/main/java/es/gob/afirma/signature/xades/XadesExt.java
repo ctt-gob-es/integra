@@ -46,6 +46,7 @@ import javax.xml.crypto.dsig.XMLSignatureFactory;
 import javax.xml.crypto.dsig.dom.DOMSignContext;
 import javax.xml.crypto.dsig.keyinfo.KeyInfo;
 import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
+import javax.xml.crypto.dsig.keyinfo.KeyValue;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 
 import net.java.xades.security.xml.WrappedKeyStorePlace;
@@ -123,7 +124,12 @@ public final class XadesExt extends XMLAdvancedSignature {
 	    x509DataList.add(certificate);
 	}
 	final List<XMLStructure> newList = new ArrayList<>();
-	newList.add(keyInfoFactory.newKeyValue(certificate.getPublicKey()));
+	//FIXME: Se omite la inclusion del KeyValue en las firmas de curva elipticas hasta que @firma
+	// soporte el elemento ECKeyValue generado por Apache Santuario (Apache Santuario e IAIK
+	// soportan distintos estandares)
+	if (!"EC".equals(certificate.getPublicKey().getAlgorithm())) {
+		newList.add(keyInfoFactory.newKeyValue(certificate.getPublicKey()));
+	}
 	newList.add(keyInfoFactory.newX509Data(x509DataList));
 	return keyInfoFactory.newKeyInfo(newList, keyInfoId);
     }

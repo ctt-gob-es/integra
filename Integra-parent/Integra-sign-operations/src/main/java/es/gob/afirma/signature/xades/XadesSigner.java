@@ -21,6 +21,7 @@
  */
 package es.gob.afirma.signature.xades;
 
+import static es.gob.afirma.signature.SignatureConstants.SIGN_ALGORITHMS_SUPPORT;
 import static es.gob.afirma.signature.SignatureConstants.SIGN_ALGORITHM_URI;
 import static es.gob.afirma.signature.SignatureConstants.SIGN_FORMAT_XADES_DETACHED;
 import static es.gob.afirma.signature.SignatureConstants.SIGN_FORMAT_XADES_ENVELOPED;
@@ -858,7 +859,7 @@ public final class XadesSigner implements Signer {
 	    throw new IllegalArgumentException(errorMsg);
 	}
 
-	if (!SIGN_ALGORITHM_URI.containsKey(algorithm)) {
+	if (!SIGN_ALGORITHMS_SUPPORT.containsKey(algorithm)) {
 	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XS_LOG027, new Object[ ] { algorithm });
 	    LOGGER.error(errorMsg);
 	    throw new IllegalArgumentException(errorMsg);
@@ -882,7 +883,7 @@ public final class XadesSigner implements Signer {
 	    throw new IllegalArgumentException(errorMsg);
 	}
 
-	if (!SIGN_ALGORITHM_URI.containsKey(algorithm)) {
+	if (!SIGN_ALGORITHMS_SUPPORT.containsKey(algorithm)) {
 	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XS_LOG027, new Object[ ] { algorithm });
 	    LOGGER.error(errorMsg);
 	    throw new IllegalArgumentException(errorMsg);
@@ -1200,7 +1201,7 @@ public final class XadesSigner implements Signer {
 	final String uriSignAlgorithm = SIGN_ALGORITHM_URI.get(signAlgorithm);
 
 	// Obtenemos el algoritmo de hash
-	this.digestAlgorithmRef = SignatureConstants.DIGEST_METHOD_ALGORITHMS_XADES.get(algorithm);
+	this.digestAlgorithmRef = SignatureConstants.DIGEST_ALGORITHM_URI.get(signAlgorithm);
 
 	// Obtenemos el objeto Document a partir del array de bytes de la firma
 	// XAdES previa
@@ -1300,7 +1301,7 @@ public final class XadesSigner implements Signer {
 	    throw new IllegalArgumentException(errorMsg);
 	}
 
-	if (!SIGN_ALGORITHM_URI.containsKey(algorithm)) {
+	if (!SIGN_ALGORITHMS_SUPPORT.containsKey(algorithm)) {
 	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XS_LOG027, new Object[ ] { algorithm });
 	    LOGGER.error(errorMsg);
 	    throw new IllegalArgumentException(errorMsg);
@@ -1610,15 +1611,17 @@ public final class XadesSigner implements Signer {
 	final Properties optionalParams = checkInputParameters(algorithm, signType, extraParams, data, privateKey);
 	LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.XS_LOG025, new Object[ ] { algorithm, signType, extraParams }));
 
+    // Obtenemos el algoritmo de firma compatible con el tipo de clave del
+    // certificado utilizando el algoritmo de hash del algoritmo
+    // proporcionado 
     final String keyType = privateKey.getPrivateKey().getAlgorithm();
-    
-    final String signAlgorithm = SignatureConstants.composeSignatureAlgorithmName(algorithm, keyType);
+    final String signAlgorithm = SignatureConstants.composeSignatureAlgorithmName(algorithm, keyType);	
 	
 	// Obtenemos la URI del algoritmo de firma
 	final String uriSignAlgorithm = SIGN_ALGORITHM_URI.get(signAlgorithm);
 
 	// Obtenemos el algoritmo de hash
-	this.digestAlgorithmRef = SignatureConstants.DIGEST_METHOD_ALGORITHMS_XADES.get(signAlgorithm);
+	this.digestAlgorithmRef = SignatureConstants.DIGEST_ALGORITHM_URI.get(signAlgorithm);
 
 	// Creación del nodo que contendrá los datos del documento a firmar
 	// (para todos los formatos de firma, excepto externally detached)
@@ -1764,6 +1767,7 @@ public final class XadesSigner implements Signer {
     @Override
     public byte[ ] sign(final byte[ ] data, final String algorithm, final String signatureFormat, final PrivateKeyEntry privateKey, final Properties extraParams, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID, final String idClient) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.XS_LOG024));
+		
 	try {
 	    return generateXAdESSignature(data, algorithm, signatureFormat, privateKey, extraParams, includeTimestamp, signatureForm, signaturePolicyID, idClient);
 	} catch (final TransformersException e) {
@@ -1976,7 +1980,7 @@ public final class XadesSigner implements Signer {
 	    final String uriSignAlgorithm = SIGN_ALGORITHM_URI.get(signAlgorithm);
 
 	    // Obtenemos el algoritmo de hash
-	    this.digestAlgorithmRef = SignatureConstants.DIGEST_METHOD_ALGORITHMS_XADES.get(algorithm);
+	    this.digestAlgorithmRef = SignatureConstants.DIGEST_ALGORITHM_URI.get(signAlgorithm);
 
 	    // Obtenemos el objeto Document a partir del array de bytes de la
 	    // firma XAdES previa

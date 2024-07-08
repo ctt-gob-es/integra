@@ -261,27 +261,6 @@ public final class UtilsSignatureOp implements IUtilsSignature {
     private static final String OID_SIGN_ALGORITHM_SHA512WITHRSA = "1.2.840.113549.1.1.13";
     
     /**
-     * Constant that represents the OID of the SHA1withECDSA algorithm.
-     */
-    private static final String OID_SIGN_ALGORITHM_SHA1WITHECDSA = "1.2.840.113549.1.1.5";
-
-    /**
-     * Constant that represents the OID of the SHA256withECDSA algorithm.
-     */
-    private static final String OID_SIGN_ALGORITHM_SHA256WITHECDSA = "1.2.840.113549.1.1.11";
-
-    /**
-     * Constant that represents the OID of the SHA384withECDSA algorithm.
-     */
-    private static final String OID_SIGN_ALGORITHM_SHA384WITHECDSA = "1.2.840.113549.1.1.12";
-
-    /**
-     * Constant that represents the OID of the SHA512withRSA algorithm.
-     */
-    private static final String OID_SIGN_ALGORITHM_SHA512WITHECDSA = "1.2.840.113549.1.1.13";
-    
-    
-    /**
      * Constructor method for the class SignatureUtils.java.
      */
     private UtilsSignatureOp() {
@@ -6269,7 +6248,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * Obtiene el identificador de algoritmo de firma que se corresponde al usar el
      * algoritmo de encriptaci&oacute;n con el algoritmo de hash indicados. En caso
      * de no haberse indicado un algoritmo de encriptaci&oacute;n reconocido, se
-     * interpretar&aacute; que este es en realidad el algoritmo de huella. 
+     * interpretar&aacute; que este es en realidad el algoritmo de firma. 
      * @param encryptionAlgOid OID del algoritmo de encriptaci&oacute;n.
      * @param hashAlgOid OID del algoritmo de huella.
      * @return Identificador del algorimo de firma.
@@ -6295,6 +6274,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    }
 	}
 	else {
+		// Este es el caso de las firmas ECDSA, en donde el algoritmo de encriptacion es el de firma
 	    signatureAlgOid = encryptionAlgOid;
 	}
 

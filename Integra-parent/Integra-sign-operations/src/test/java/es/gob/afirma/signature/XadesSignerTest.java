@@ -20,6 +20,8 @@
  */
 package es.gob.afirma.signature;
 
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +32,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import es.gob.afirma.integraFacade.pojo.TransformData;
+import es.gob.afirma.logger.Logger;
 import es.gob.afirma.signature.validation.ValidationResult;
 import es.gob.afirma.signature.xades.ReferenceData;
 import es.gob.afirma.signature.xades.XadesSigner;
@@ -99,7 +102,7 @@ public class XadesSignerTest extends AbstractSignatureTest {
 	final byte[ ] signature = xadesSign.sign(dataToSign, SignatureConstants.SIGN_ALGORITHM_SHA384WITHECDSA, SignatureConstants.SIGN_FORMAT_XADES_ENVELOPING, getCertificatePrivateKey(), getDataFormatParams(), false, ISignatureFormatDetector.FORMAT_XADES_BES, null);
 	// validamos firma
 	assertTrue(xadesSign.verifySignature(signature).isCorrect());
-
+	
 	externalSignVerify(signature);
 
     }
@@ -181,7 +184,8 @@ public class XadesSignerTest extends AbstractSignatureTest {
     public void testSignECCXmlDetached() throws Exception {
 	final XadesSigner xadesSign = new XadesSigner();
 
-	final byte[ ] signature = xadesSign.sign(getXmlDocument(), SignatureConstants.SIGN_ALGORITHM_SHA1, SignatureConstants.SIGN_FORMAT_XADES_DETACHED, getCertificateECCPrivateKey(), null, false, ISignatureFormatDetector.FORMAT_XADES_BES, null);
+	final byte[ ] signature = xadesSign.sign(getXmlDocument(), SignatureConstants.SIGN_ALGORITHM_SHA256, SignatureConstants.SIGN_FORMAT_XADES_DETACHED, getCertificateECCPrivateKey(), null, false, ISignatureFormatDetector.FORMAT_XADES_BES, null);
+	
 	// validamos firma
 	assertTrue(xadesSign.verifySignature(signature).isCorrect());
 	externalSignVerify(signature);

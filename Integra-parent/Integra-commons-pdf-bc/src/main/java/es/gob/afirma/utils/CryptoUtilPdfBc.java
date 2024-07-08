@@ -157,7 +157,7 @@ public final class CryptoUtilPdfBc {
 		if (upperPseudoName.startsWith("SHA512") || upperPseudoName.startsWith("SHA-512")) {
 			return CryptoUtilCommons.HASH_ALGORITHM_SHA512;
 		} else if (upperPseudoName.startsWith("RIPEMD160") || upperPseudoName.startsWith("RIPEMD-160")) {
-			return CryptoUtilCommons.HASH_ALGORITHM_SHA512;
+			return CryptoUtilCommons.HASH_ALGORITHM_RIPEMD160;
 		} else {
 			throw new IllegalArgumentException(Language.getFormatResIntegra(ILogConstantKeys.CU_LOG002, new Object[ ] { pseudoName }));
 		}

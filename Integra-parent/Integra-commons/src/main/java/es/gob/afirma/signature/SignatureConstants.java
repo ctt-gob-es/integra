@@ -224,10 +224,6 @@ public final class SignatureConstants {
 	private static final long serialVersionUID = -3091842386857850550L;
 
 	{
-	    put(SIGN_ALGORITHM_SHA1, "http://www.w3.org/2000/09/xmldsig#rsa-sha1");
-	    put(SIGN_ALGORITHM_SHA256, "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256");
-	    put(SIGN_ALGORITHM_SHA384, "http://www.w3.org/2001/04/xmldsig-more#rsa-sha384");
-	    put(SIGN_ALGORITHM_SHA512, "http://www.w3.org/2001/04/xmldsig-more#rsa-sha512");
 	    put(SIGN_ALGORITHM_SHA1WITHRSA, "http://www.w3.org/2000/09/xmldsig#rsa-sha1");
 	    put(SIGN_ALGORITHM_SHA256WITHRSA, "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256");
 	    put(SIGN_ALGORITHM_SHA384WITHRSA, "http://www.w3.org/2001/04/xmldsig-more#rsa-sha384");
@@ -240,39 +236,9 @@ public final class SignatureConstants {
     };
 
     /**
-     * Constant attribute that represents the allowed digest algorithms to use with CADES signatures.
-     */
-    public static final Map<String, String> DIGEST_ALGORITHMS_SUPPORT_CADES = new HashMap<String, String>() {
-
-	/**
-	 * Class serial version.
-	 */
-	private static final long serialVersionUID = 74770910568121154L;
-
-	{
-	    put(SIGN_ALGORITHM_SHA1, CryptoUtilCommons.HASH_ALGORITHM_SHA1);
-	    put(SIGN_ALGORITHM_SHA256, CryptoUtilCommons.HASH_ALGORITHM_SHA256);
-	    put(SIGN_ALGORITHM_SHA384, CryptoUtilCommons.HASH_ALGORITHM_SHA384);
-	    put(SIGN_ALGORITHM_SHA512, CryptoUtilCommons.HASH_ALGORITHM_SHA512);
-	    put(CryptoUtilCommons.HASH_ALGORITHM_SHA1, CryptoUtilCommons.HASH_ALGORITHM_SHA1);
-	    put(CryptoUtilCommons.HASH_ALGORITHM_SHA256, CryptoUtilCommons.HASH_ALGORITHM_SHA256);
-	    put(CryptoUtilCommons.HASH_ALGORITHM_SHA384, CryptoUtilCommons.HASH_ALGORITHM_SHA384);
-	    put(CryptoUtilCommons.HASH_ALGORITHM_SHA512, CryptoUtilCommons.HASH_ALGORITHM_SHA512);
-	    put(SIGN_ALGORITHM_SHA1WITHRSA, CryptoUtilCommons.HASH_ALGORITHM_SHA1);
-	    put(SIGN_ALGORITHM_SHA256WITHRSA, CryptoUtilCommons.HASH_ALGORITHM_SHA256);
-	    put(SIGN_ALGORITHM_SHA384WITHRSA, CryptoUtilCommons.HASH_ALGORITHM_SHA384);
-	    put(SIGN_ALGORITHM_SHA512WITHRSA, CryptoUtilCommons.HASH_ALGORITHM_SHA512);
-	    put(SIGN_ALGORITHM_SHA1WITHECDSA, CryptoUtilCommons.HASH_ALGORITHM_SHA1);
-	    put(SIGN_ALGORITHM_SHA256WITHECDSA, CryptoUtilCommons.HASH_ALGORITHM_SHA256);
-	    put(SIGN_ALGORITHM_SHA384WITHECDSA, CryptoUtilCommons.HASH_ALGORITHM_SHA384);
-	    put(SIGN_ALGORITHM_SHA512WITHECDSA, CryptoUtilCommons.HASH_ALGORITHM_SHA512);
-	}
-    };
-
-    /**
      * Constant attribute that represents the URI of allowed hash algorithms to use with XADES signatures.
      */
-    public static final Map<String, String> DIGEST_METHOD_ALGORITHMS_XADES = new HashMap<String, String>() {
+    public static final Map<String, String> DIGEST_ALGORITHM_URI = new HashMap<String, String>() {
 
 	/**
 	 * Class serial version.
@@ -280,10 +246,6 @@ public final class SignatureConstants {
 	private static final long serialVersionUID = -3091842386857850550L;
 
 	{
-	    put(SIGN_ALGORITHM_SHA1, DigestMethod.SHA1);
-	    put(SIGN_ALGORITHM_SHA256, DigestMethod.SHA256);
-	    put(SIGN_ALGORITHM_SHA384, "http://www.w3.org/2001/04/xmldsig-more#sha384");
-	    put(SIGN_ALGORITHM_SHA512, DigestMethod.SHA512);
 	    put(SIGN_ALGORITHM_SHA1WITHRSA, DigestMethod.SHA1);
 	    put(SIGN_ALGORITHM_SHA256WITHRSA, DigestMethod.SHA256);
 	    put(SIGN_ALGORITHM_SHA384WITHRSA, "http://www.w3.org/2001/04/xmldsig-more#sha384");
@@ -298,7 +260,7 @@ public final class SignatureConstants {
     /**
      * Constant attribute that represents the allowed signature algorithms to use with CADES, PAdES and XAdES signatures.
      */
-    public static final Map<String, String> SIGN_ALGORITHMS_SUPPORT_CADES = new HashMap<String, String>() {
+    public static final Map<String, String> SIGN_ALGORITHMS_SUPPORT = new HashMap<String, String>() {
 
 	/**
 	 * Class serial version.

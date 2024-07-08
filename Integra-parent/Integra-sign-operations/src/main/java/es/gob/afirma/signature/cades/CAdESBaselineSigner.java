@@ -104,20 +104,6 @@ public final class CAdESBaselineSigner implements Signer {
     }
 
     /**
-     * Method that checks if the input algorithm is valid or not.
-     * @param algorithm Algorithm parameter to verify.
-     * @param isExplicitHash if the algorithm is not valid.
-     */
-    private void checkSignAlg(String algorithm, boolean isExplicitHash) {
-
-	if (isExplicitHash) {
-	    checkInputSignatureAlgorithmHash(algorithm);
-	} else {
-	    checkInputSignatureAlgorithm(algorithm);
-	}
-    }
-
-    /**
      * Method that checks if the input signature algorithm is <code>null</code> and is allowed to use.
      * @param signatureAlgorithm Parameter that represents the signature algorithm.
      */
@@ -126,24 +112,8 @@ public final class CAdESBaselineSigner implements Signer {
 	GenericUtilsCommons.checkInputParameterIsNotNull(signatureAlgorithm, Language.getResIntegra(ILogConstantKeys.CBS_LOG003));
 
 	// Comprobamos que el algoritmo de firma está soportado
-	if (!SignatureConstants.SIGN_ALGORITHMS_SUPPORT_CADES.containsKey(signatureAlgorithm)) {
+	if (!SignatureConstants.SIGN_ALGORITHMS_SUPPORT.containsKey(signatureAlgorithm)) {
 	    String msg = Language.getFormatResIntegra(ILogConstantKeys.CBS_LOG004, new Object[ ] { signatureAlgorithm });
-	    LOGGER.error(msg);
-	    throw new IllegalArgumentException(msg);
-	}
-    }
-
-    /**
-     * Method that checks if the input hash algorithm is valid or not.
-     * @param algorithm Parameter that represents the signature algorithm.
-     */
-    private void checkInputSignatureAlgorithmHash(String algorithm) {
-	// Comprobamos que el algoritmo de firma no es nulo
-	GenericUtilsCommons.checkInputParameterIsNotNull(algorithm, Language.getResIntegra(ILogConstantKeys.CBS_LOG003));
-
-	// Comprobamos que el algoritmo de firma está soportado
-	if (!SignatureConstants.DIGEST_ALGORITHMS_SUPPORT_CADES.containsKey(algorithm)) {
-	    String msg = Language.getFormatResIntegra(ILogConstantKeys.CBS_LOG004, new Object[ ] { algorithm });
 	    LOGGER.error(msg);
 	    throw new IllegalArgumentException(msg);
 	}
@@ -177,7 +147,7 @@ public final class CAdESBaselineSigner implements Signer {
 	try {
 	    // Comprobamos que se ha indicado el algoritmo de firma y tiene un
 	    // valor admitido
-	    checkSignAlg(algorithm, isExplicitHash);
+	    checkInputSignatureAlgorithm(algorithm);
 
 	    // Comprobamos que se han indicado los datos a firmar
 	    GenericUtilsCommons.checkInputParameterIsNotNull(data, Language.getResIntegra(ILogConstantKeys.CBS_LOG005));
@@ -195,14 +165,20 @@ public final class CAdESBaselineSigner implements Signer {
 		externalParams = new Properties();
 	    }
 
+	    // Obtenemos el algoritmo de firma compatible con el tipo de clave del
+	    // certificado utilizando el algoritmo de hash del algoritmo
+	    // proporcionado
+	    final String keyType = privateKey.getPrivateKey().getAlgorithm();
+	    final String signAlgorithm = SignatureConstants.composeSignatureAlgorithmName(algorithm, keyType);
+	    
 	    // Instanciamos los parámetros que recibirá el método encargado de
 	    // generar la firma CAdES Baseline
 	    P7ContentSignerParameters csp = null;
 	    if (isExplicitHash) {
-		csp = new P7ContentSignerParameters(null, SignatureConstants.DIGEST_ALGORITHMS_SUPPORT_CADES.get(algorithm), privateKey);
+		csp = new P7ContentSignerParameters(null, signAlgorithm, privateKey);
 		csp.setDigestValue(data);
 	    } else {
-		csp = new P7ContentSignerParameters(data, algorithm, privateKey);
+		csp = new P7ContentSignerParameters(data, signAlgorithm, privateKey);
 	    }
 
 	    // Instanciamos el OID para el atributo content-type, que deberá
@@ -320,9 +296,15 @@ public final class CAdESBaselineSigner implements Signer {
 		throw new SigningException(errorMsg);
 	    }
 
+	    // Obtenemos el algoritmo de firma compatible con el tipo de clave del
+	    // certificado utilizando el algoritmo de hash del algoritmo
+	    // proporcionado
+	    final String keyType = privateKey.getPrivateKey().getAlgorithm();
+	    final String signAlgorithm = SignatureConstants.composeSignatureAlgorithmName(algorithm, keyType);
+	    
 	    // Instanciamos los parámetros que recibirá el método encargado de
 	    // generar la co-firma CAdES Baseline
-	    P7ContentSignerParameters pkcs7Params = new P7ContentSignerParameters(document, algorithm, privateKey, externalParams);
+	    P7ContentSignerParameters pkcs7Params = new P7ContentSignerParameters(document, signAlgorithm, privateKey, externalParams);
 
 	    // Creamos el nuevo firmante
 	    SignerInfo newSignerInfo = cmsBuilder.generateSignerInfo(pkcs7Params, SignerInfoTypes.COSIGNATURE, includeTimestamp, signatureForm, signaturePolicyID, includeContent, idClient);
@@ -399,16 +381,22 @@ public final class CAdESBaselineSigner implements Signer {
 	    // junto con el nuevo certificado firmante
 	    Store allCerts = UtilsSignatureOp.addCertificateToStore(signedData.getCertificates(), (X509Certificate) privateKey.getCertificate());
 
+	    // Obtenemos el algoritmo de firma compatible con el tipo de clave del
+	    // certificado utilizando el algoritmo de hash del algoritmo
+	    // proporcionado
+	    final String keyType = privateKey.getPrivateKey().getAlgorithm();
+	    final String signAlgorithm = SignatureConstants.composeSignatureAlgorithmName(algorithm, keyType);
+
 	    // Buscamos los últimos firmantes (incluyendo co-firmas y
 	    // contra-firmas) para realizar la contra-firma
-	    P7ContentSignerParameters params = new P7ContentSignerParameters(algorithm, privateKey, externalParams);
+	    P7ContentSignerParameters params = new P7ContentSignerParameters(signAlgorithm, privateKey, externalParams);
 	    SignerInformationStore newSignerInfomations = cmsBuilder.counterSignLeaf(oldSignerInfos, params, includeTimestamp, signatureForm, signaturePolicyID, includeContent, idClient);
 
 	    // Creamos un conjunto que incluya todos los firmantes
 	    ASN1Set newSigners = cmsBuilder.convertToASN1Set(newSignerInfomations);
 
 	    // Construimos la firma
-	    String digestAlgorithm = SignatureConstants.SIGN_ALGORITHMS_SUPPORT_CADES.get(algorithm);
+	    String digestAlgorithm = SignatureConstants.SIGN_ALGORITHMS_SUPPORT.get(signAlgorithm);
 	    AlgorithmIdentifier digestAlgorithmId = cmsBuilder.makeDigestAlgorithmId(digestAlgorithm);
 	    byte[ ] result = cmsBuilder.generateSignedData(signedData, digestAlgorithmId, allCerts, newSigners);
 
@@ -439,7 +427,6 @@ public final class CAdESBaselineSigner implements Signer {
      * {@inheritDoc}
      * @see es.gob.afirma.signature.Signer#upgrade(byte[], java.util.List, java.lang.String)
      */
-    @SuppressWarnings("unchecked")
     @Override
     public byte[ ] upgrade(byte[ ] signature, List<X509Certificate> listCertificates, String idClient) throws SigningException {
 	LOGGER.info(Language.getResIntegra(ILogConstantKeys.CBS_LOG021));
@@ -514,7 +501,6 @@ public final class CAdESBaselineSigner implements Signer {
      * {@inheritDoc}
      * @see es.gob.afirma.signature.Signer#getSignedData(byte[])
      */
-    @SuppressWarnings("unchecked")
     @Override
     public OriginalSignedData getSignedData(byte[ ] signature) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.CBS_LOG028));
