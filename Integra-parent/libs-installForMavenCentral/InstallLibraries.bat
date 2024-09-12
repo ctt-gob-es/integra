@@ -16,3 +16,5 @@ call mvn install:install-file -Dfile=./es/gob/afirma/xmlbeans/2_3_0/afirmaSchema
 call mvn install:install-file -Dfile=./es/gob/afirma/xmlbeans/2_3_0/afirmaSchemaXMLTSLv5/119612v020101/afirmaSchemaXMLTSLv5-119612v020101-sources.jar -DgroupId=es.gob.afirma.xmlbeans.2_3_0 -DartifactId=afirmaSchemaXMLTSLv5 -Dversion=119612v020101 -Dpackaging=jar -Dclassifier=sources
 rem #Dependencia con Barcode4j v 2.1 
 call mvn install:install-file -Dfile=./net/sf/barcode4j/barcode4j-fop-ext-complete/2.1/barcode4j-fop-ext-complete-2.1.jar -DgroupId=net.sf.barcode4j -DartifactId=barcode4j-fop-ext-complete -Dversion=2.1 -Dpackaging=jar -DpomFile=./net/sf/barcode4j/barcode4j-fop-ext-complete/2.1/barcode4j-fop-ext-complete-2.1.pom
+rem #Apache santuario 3.0.5.SNAPSHOT
+mvn install:install-file -Dfile=./org/apache/santuario/xmlsec-3.0.5-SNAPSHOT.jar -DgroupId=org.apache.santuario -DartifactId=xmlsec -Dversion=3.0.5-SNAPSHOT -Dpackaging=jar -DpomFile=./org/apache/santuario/xmlsec-3.0.5-SNAPSHOT.pom
