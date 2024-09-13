@@ -17,31 +17,20 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>10/12/2014.</p>
  * @author Gobierno de España.
- * @version 1.0, 10/12/2014.
+ * @version 1.1, 13/09/2024.
  */
 package es.gob.afirma.hsm;
 
 /** 
  * <p>Interface that defines all the constants related to the managing of HSMs.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.0, 10/12/2014.
+ * @version 1.1, 13/09/2024.
  */
 public interface IHSMConstants {
 
-    /**
+	/**
      * Constant attribute that identifies the name of the properties file where to configure the access to the HSMs.
      */
-    String HSM_PROPERTIES = "hsm.properties";
-
-    /**
-     *  Constant attribute that identifies the key defined on {@link #HSM_PROPERTIES} properties file with the path to the PKCS11 configuration file where
-     *  to set the absolute path to the HSM native library.
-     */
-    String KEY_HSM_CONFIG_PATH = "HSM_CONFIG_PATH";
-
-    /**
-     *  Constant attribute that identifies the key defined on {@link #HSM_PROPERTIES} properties file with the password for accessing to the HSM.
-     */
-    String KEY_HSM_PASSWORD = "HSM_PASSWORD";
+    String HSM_CFG = "hsm.cfg";
 
 }

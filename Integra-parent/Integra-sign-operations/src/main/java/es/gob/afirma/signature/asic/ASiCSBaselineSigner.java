@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>27/01/2016.</p>
  * @author Gobierno de España.
- * @version 1.4, 18/04/2022.
+ * @version 1.5, 13/09/2024.
  */
 package es.gob.afirma.signature.asic;
 
@@ -98,7 +98,7 @@ import net.java.xades.security.xml.XMLSignatureElement;
 /**
  * <p>Class that manages the generation, validation and upgrade of ASiC-S Baseline signatures.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.4, 18/04/2022.
+ * @version 1.5, 13/09/2024.
  */
 public final class ASiCSBaselineSigner implements Signer {
 
@@ -704,12 +704,6 @@ public final class ASiCSBaselineSigner implements Signer {
 		    }
 		}
 	    }
-	} catch (final IOException e) {
-	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG019);
-	    LOGGER.error(errorMsg, e);
-	    validationResult.setIntegrallyCorrect(false);
-	    validationResult.setErrorMsg(errorMsg);
-	    throw new SigningException(errorMsg, e);
 	} finally {
 	    // Cerramos recursos
 	    UtilsResourcesCommons.safeCloseInputStream(is);
