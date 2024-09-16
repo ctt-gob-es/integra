@@ -87,6 +87,18 @@
 					<target>${project.build.jdk}</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+	                <archive>
+	                    <manifestEntries>
+	                        <Built-By>${user.name}</Built-By>
+	                        <Build-Jdk>${project.build.jdk}</Build-Jdk>
+	                    </manifestEntries>
+	                </archive>
+	            </configuration>
+			</plugin>			
 <!--
        		<plugin>
          		<groupId>org.apache.axis2</groupId>

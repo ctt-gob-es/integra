@@ -205,10 +205,11 @@
 		<version.plugin.compiler>2.3.2</version.plugin.compiler>
 		<version.plugin.jar>2.3.1</version.plugin.jar>
 		<version.plugin.surefire>2.4.2</version.plugin.surefire>
+		<version.plugin.war>3.3.1</version.plugin.war>
 		
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<project.build.jdk>11</project.build.jdk>
+		<project.build.jdk>17</project.build.jdk>
 	</properties>
 
 	<dependencyManagement>
@@ -459,6 +460,11 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>${version.plugin.surefire}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>${version.plugin.war}</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
