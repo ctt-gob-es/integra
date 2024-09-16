@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Horizontal platform to generation signature reports in legible format.</p>
  * <b>Date:</b><p>10/02/2011.</p>
  * @author Spanish Government.
- * @version 1.1, 18/04/2022.
+ * @version 1.2, 16/09/2023.
  */
 package es.gob.afirma.mreport.utils;
 
@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -39,7 +38,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import es.gob.afirma.mreport.logger.Logger;
 import org.apache.xpath.XPathAPI;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
@@ -51,11 +49,12 @@ import org.xml.sax.SAXException;
 import es.gob.afirma.mreport.exceptions.UtilsException;
 import es.gob.afirma.mreport.i18.ILogConstantKeys;
 import es.gob.afirma.mreport.i18.Language;
+import es.gob.afirma.mreport.logger.Logger;
 
 /**
  * <p>Class contains utilities for processing XML.</p>
  * <b>Project:</b><p>Horizontal platform to generation signature reports in legible format.</p>
- * @version 1.0, 10/02/2011.
+ * @version 1.2, 16/09/2023.
  */
 public final class XMLUtils {
 
@@ -101,26 +100,7 @@ public final class XMLUtils {
 			throw new UtilsException(UtilsException.XML_PARSER_ERROR, msg,e);
 		}
 	}
-	/**
-	 * Extracts the SOAP message include into {@link SOAPMessage} object.
-	 * @param msgSOAP SOAP message.
-	 * @return	SOAP message as array of bytes.
-	 * @throws UtilsException	If an error occurs.
-	 */
-	public static byte[] getSOAP(SOAPMessage msgSOAP) throws UtilsException{
-		byte[] soap = null;
-		
-		try (ByteArrayOutputStream stream = new ByteArrayOutputStream();) {
-			
-			msgSOAP.writeTo(stream);
-			soap = stream.toByteArray();
-		} catch (Exception e) {
-			String msg = Language.getResSigReport(ILogConstantKeys.UTIL_039);
-			LOGGER.error(msg,e);
-			throw new UtilsException(UtilsException.UNKNOWN_ERROR, msg,e);
-		}
-		return soap;
-	}
+	
 	/**
 	 * Method that returns the XML result of applying the XSL transformation to the data supplied.
 	 * @param xml	XML input.
