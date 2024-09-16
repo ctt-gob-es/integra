@@ -59,6 +59,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.xml.security.c14n.CanonicalizationException;
 import org.apache.xml.security.c14n.InvalidCanonicalizerException;
+import org.bouncycastle.tsp.TSPException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -157,7 +158,7 @@ public class XMLAdvancedSignature {
 	this.xadesNamespace = xadesNamespace;
     }
 
-    public void sign(X509Certificate certificate, PrivateKey privateKey, String signatureMethod, List refsIdList, String signatureIdPrefix, String tsaURL) throws MarshalException, XMLSignatureException, GeneralSecurityException, TransformException, InvalidCanonicalizerException, CanonicalizationException, IOException, ParserConfigurationException, SAXException, URISyntaxException {
+    public void sign(X509Certificate certificate, PrivateKey privateKey, String signatureMethod, List refsIdList, String signatureIdPrefix, String tsaURL) throws MarshalException, XMLSignatureException, GeneralSecurityException, TransformException, InvalidCanonicalizerException, CanonicalizationException, IOException, ParserConfigurationException, SAXException, URISyntaxException, TSPException {
 	List referencesIdList = new ArrayList(refsIdList);
 
 	if (WrappedKeyStorePlace.SIGNING_CERTIFICATE_PROPERTY.equals(getWrappedKeyStorePlace())) {
@@ -196,7 +197,7 @@ public class XMLAdvancedSignature {
 	enrichUnsignedProperties(tsaURL);
     }
 
-    public void enrichUnsignedProperties(String tsaURL) throws TransformException, MarshalException, NoSuchAlgorithmException, SignatureException, IOException, InvalidCanonicalizerException, CanonicalizationException, ParserConfigurationException, SAXException, URISyntaxException {
+    public void enrichUnsignedProperties(String tsaURL) throws TransformException, MarshalException, NoSuchAlgorithmException, SignatureException, IOException, InvalidCanonicalizerException, CanonicalizationException, ParserConfigurationException, SAXException, URISyntaxException, TSPException {
 	if (this.signature == null) {
 	    throw new IllegalStateException("Can not find Signature. You must call sign method firs to generate it");
 	}

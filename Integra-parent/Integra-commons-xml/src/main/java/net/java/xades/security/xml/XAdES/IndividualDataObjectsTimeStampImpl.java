@@ -22,21 +22,22 @@ package net.java.xades.security.xml.XAdES;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SignatureException;
+
+import org.bouncycastle.tsp.TSPException;
+import org.w3c.dom.Document;
 
 import net.java.xades.security.timestamp.TimeStampFactory;
 
-import org.w3c.dom.Document;
-
 public class IndividualDataObjectsTimeStampImpl implements IndividualDataObjectsTimeStamp {
 
-    private byte[ ] data;
+	private byte[] data;
 
-    public IndividualDataObjectsTimeStampImpl(byte[ ] data) {
-	this.data = data;
-    }
+	public IndividualDataObjectsTimeStampImpl(byte[] data) {
+		this.data = data;
+	}
 
-    public byte[ ] generateEncapsulatedTimeStamp(Document parent, String tsaURL) throws NoSuchAlgorithmException, SignatureException, IOException, URISyntaxException {
-	return TimeStampFactory.getTimeStamp(tsaURL, this.data, true);
-    }
+	public byte[] generateEncapsulatedTimeStamp(Document parent, String tsaURL)
+			throws NoSuchAlgorithmException, IOException, URISyntaxException, TSPException {
+		return TimeStampFactory.getTimeStamp(tsaURL, this.data, true);
+	}
 }

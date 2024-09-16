@@ -24,9 +24,10 @@ import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 
+import org.bouncycastle.tsp.TSPException;
 import org.w3c.dom.Document;
 
 public interface AllDataObjectsTimeStamp {
 
-    public byte[ ] generateEncapsulatedTimeStamp(Document parent, String tsaURL) throws NoSuchAlgorithmException, SignatureException, IOException, URISyntaxException;
+    public byte[ ] generateEncapsulatedTimeStamp(Document parent, String tsaURL) throws NoSuchAlgorithmException, SignatureException, IOException, URISyntaxException, TSPException;
 }

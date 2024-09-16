@@ -26,6 +26,7 @@ import java.security.SignatureException;
 
 import javax.xml.crypto.dsig.XMLSignature;
 
+import org.bouncycastle.tsp.TSPException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -34,25 +35,26 @@ import net.java.xades.security.timestamp.TimeStampFactory;
 
 public class SignatureTimeStampImpl implements SignatureTimeStamp {
 
-    private byte[ ] data;
+	private byte[] data;
 
-    public SignatureTimeStampImpl(byte[ ] data) {
-	this.data = data;
-    }
-
-    private Node getSignatureValue(Document base) {
-	NodeList nl = base.getElementsByTagNameNS(XMLSignature.XMLNS, "SignatureValue");
-
-	if (nl.getLength() > 0) {
-	    return nl.item(0);
-	} else {
-	    return null;
+	public SignatureTimeStampImpl(byte[] data) {
+		this.data = data;
 	}
-    }
 
-    public byte[ ] generateEncapsulatedTimeStamp(Document parent, String tsaURL) throws NoSuchAlgorithmException, SignatureException, IOException, URISyntaxException {
-	Node signatureValue = getSignatureValue(parent);
+	private Node getSignatureValue(Document base) {
+		NodeList nl = base.getElementsByTagNameNS(XMLSignature.XMLNS, "SignatureValue");
 
-	return TimeStampFactory.getTimeStamp(tsaURL, this.data, true);
-    }
+		if (nl.getLength() > 0) {
+			return nl.item(0);
+		} else {
+			return null;
+		}
+	}
+
+	public byte[] generateEncapsulatedTimeStamp(Document parent, String tsaURL)
+			throws NoSuchAlgorithmException, IOException, URISyntaxException, TSPException {
+		Node signatureValue = getSignatureValue(parent);
+
+		return TimeStampFactory.getTimeStamp(tsaURL, this.data, true);
+	}
 }
