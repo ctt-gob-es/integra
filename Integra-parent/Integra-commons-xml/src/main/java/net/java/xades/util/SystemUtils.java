@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -41,7 +42,7 @@ import java.util.Date;
  * <p>Company: </p>
  *
  * @author not attributable
- * @version 1.1
+ * @version 1.2
  */
 public class SystemUtils {
 
@@ -213,14 +214,14 @@ public class SystemUtils {
      * @param defaultValue default value.
      * @return Property value as boolean.
      */
-    public static boolean getBooleanProperty(String propName, boolean defaultValue) {
-	// if set, require value of either true or false
-	String b = (String) AccessController.doPrivileged(new sun.security.action.GetPropertyAction(propName));
+	public static boolean getBooleanProperty(String propName, boolean defaultValue) {
+		// if set, require value of either true or false
+		String b = (String) AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty(propName));
 
-	if (b == null) {
-	    return defaultValue;
+		if (b == null) {
+			return defaultValue;
+		}
+
+		return Boolean.parseBoolean(b);
 	}
-
-	return Boolean.parseBoolean(b);
-    }
 }
