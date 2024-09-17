@@ -123,6 +123,22 @@
 		<!-- Construccion para publicacion (Genera un informe de vulnerabilidades y exporta las dependencias -->
 		<profile>
 			<id>topublish</id>	
+			
+			<modules>
+				<module>Integra-commons-xml</module>
+				<module>Integra-commons-pdf-bc</module>
+				<module>Integra-commons</module>
+				<module>Integra-ocsp-rfc3161</module>
+				<module>Integra-ws</module>
+				<module>Integra-sign-operations</module>
+				<module>Integra-utils</module>
+				<module>Integra-encryption</module>
+				<module>Integra-services</module>
+				<module>Integra-tsl</module>
+				<module>Integra-signature-report</module>
+				<module>Integra-commons-tsl</module>
+			</modules>
+			
 			<build>
 		        <plugins>
 		            <plugin>
