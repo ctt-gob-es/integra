@@ -323,7 +323,7 @@ public class DigitalID implements Serializable {
 					byte[ ] kvByteArray = new byte[lengthKeyValue];
 					in.read(kvByteArray);
 					ByteArrayInputStream bais = new ByteArrayInputStream(kvByteArray);
-					keyValue = KeyValueType.Factory.parse(bais);
+					keyValue = (KeyValueType) KeyValueType.Factory.parse(bais);
 					break;
 
 				case DigitalID.TYPE_X509SKI:
