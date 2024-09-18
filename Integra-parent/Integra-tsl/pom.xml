@@ -30,6 +30,12 @@
 		    <groupId>org.apache.xmlbeans</groupId>
 		    <artifactId>xmlbeans</artifactId>
 		    <version>5.2.1</version>
+		    <exclusions>
+				<exclusion>
+					<groupId>stax</groupId>
+					<artifactId>stax-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>es.gob.afirma.xmlbeans.2_3_0</groupId>
