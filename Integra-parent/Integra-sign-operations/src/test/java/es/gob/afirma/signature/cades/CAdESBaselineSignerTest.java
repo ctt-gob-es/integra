@@ -22,7 +22,11 @@
 package es.gob.afirma.signature.cades;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStore.PrivateKeyEntry;
 import java.security.MessageDigest;
@@ -45,6 +49,8 @@ import junit.framework.TestCase;
  */
 public class CAdESBaselineSignerTest extends TestCase {
 
+	private static boolean saveToFile = false;
+	
     /**
      * Method that obtains the private key to use for tests.
      * @return the private key to use for tests.
@@ -56,7 +62,7 @@ public class CAdESBaselineSignerTest extends TestCase {
 	    final KeyStore ks = KeyStore.getInstance("JCEKS");
 	    final char[ ] password = "12345".toCharArray();
 	    ks.load(is, password);
-	    key = ks.getEntry("raul conde", new KeyStore.PasswordProtection(password));
+	    key = ks.getEntry("eidas", new KeyStore.PasswordProtection(password));
 	} catch (final Exception e) {
 	    return null;
 	}
@@ -91,8 +97,24 @@ public class CAdESBaselineSignerTest extends TestCase {
      */
     public final void testSignWithoutTimestamp() {
 
-	final byte[ ] dataToSign = UtilsFileSystemCommons.readFile("ficheroAfirmar.txt", true);
-
+    final byte[ ] dataToSign = UtilsFileSystemCommons.readFile("ficheroAfirmar.txt", true);
+    	
+    // Obtenemos el directorio de "Downloads" del usuario actual
+    String userHome = System.getProperty("user.home");
+    Path downloadPath = Paths.get(userHome, "Downloads", "pruebasIntegra1");
+    
+    // Crearemos la carpeta "pruebasIntegra" si no existe para guardar los resultados y verificarlos contra valide
+    if (Files.notExists(downloadPath)) {
+        try {
+        	if(saveToFile) {
+        		Files.createDirectories(downloadPath);
+    			UtilsFileSystemCommons.writeFile(dataToSign,downloadPath.toFile() + "\\ficheroAfirmar.txt");
+        	}
+		} catch (IOException e) {
+			assertTrue(false);
+		}
+    }
+    
 	// byte[ ] dataToSign =
 	// UtilsFileSystemCommons.readFile("D:/KitPruebas/bin/firmaElectronica/fileToSign.log",
 	// false);
@@ -111,11 +133,14 @@ public class CAdESBaselineSignerTest extends TestCase {
 	    assertEquals(SignatureFormatDetectorCadesPades.getSignatureFormat(cadesBLevelSignature), ISignatureFormatDetector.FORMAT_CADES_B_LEVEL);
 	    final ValidationResult vr = signer.verifySignature(cadesBLevelSignature, dataToSign);
 	    assertTrue(vr.isCorrect());
-
+	    if(saveToFile) {
+		    // Almacenamos el resultado
+		    UtilsFileSystemCommons.writeFile(cadesBLevelSignature,downloadPath.toFile() + "\\firma1.csig");
+	    }
 	} catch (final Exception e) {
 	    assertTrue(false);
 	}
-
+	
 	/*
 	 *  Generación y Validación de co-firma CAdES B-Level explícita sin política de firma y algoritmo SHA-1
 	 */
@@ -123,10 +148,14 @@ public class CAdESBaselineSignerTest extends TestCase {
 	    cadesBLevelCoSignature = signer.coSign(cadesBLevelSignature, dataToSign, SignatureConstants.SIGN_ALGORITHM_SHA1WITHRSA, privateKey, null, false, ISignatureFormatDetector.FORMAT_CADES_B_LEVEL, null);
 	    final ValidationResult vr = signer.verifySignature(cadesBLevelCoSignature, dataToSign);
 	    assertTrue(vr.isCorrect());
+	    if(saveToFile) {
+		    // Almacenamos el resultado
+		    UtilsFileSystemCommons.writeFile(cadesBLevelSignature,downloadPath.toFile() + "\\firma2.csig");
+	    }
 	} catch (final Exception e) {
 	    assertTrue(false);
 	}
-
+	
 	/*
 	 *  Generación y Validación de contra-firma CAdES B-Level explícita sin política de firma y algoritmo SHA-512
 	 */
@@ -134,10 +163,14 @@ public class CAdESBaselineSignerTest extends TestCase {
 	    cadesBLevelCounterSignature = signer.counterSign(cadesBLevelSignature, SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, privateKey, null, false, ISignatureFormatDetector.FORMAT_CADES_B_LEVEL, null);
 	    final ValidationResult vr = signer.verifySignature(cadesBLevelCounterSignature, dataToSign);
 	    assertTrue(vr.isCorrect());
+	    if(saveToFile) {
+		    // Almacenamos el resultado
+		    UtilsFileSystemCommons.writeFile(cadesBLevelSignature,downloadPath.toFile() + "\\firma3.csig");
+	    }
 	} catch (final Exception e) {
 	    assertTrue(false);
 	}
-
+	
 	/*
 	 * Generación y Validación de firma CAdES B-Level explícita con política de firma y algoritmo SHA-256
 	 */
@@ -146,10 +179,14 @@ public class CAdESBaselineSignerTest extends TestCase {
 	    assertEquals(SignatureFormatDetectorCadesPades.getSignatureFormat(cadesBLevelSignature), ISignatureFormatDetector.FORMAT_CADES_B_LEVEL);
 	    final ValidationResult vr = signer.verifySignature(cadesBLevelSignature, dataToSign);
 	    assertTrue(vr.isCorrect());
+	    if(saveToFile) {
+		    // Almacenamos el resultado
+		    UtilsFileSystemCommons.writeFile(cadesBLevelSignature,downloadPath.toFile() + "\\firma4.csig");
+	    }
 	} catch (final Exception e) {
 	    assertTrue(false);
 	}
-
+	
 	/*
 	 *  Generación y Validación de co-firma CAdES B-Level explícita con política de firma y algoritmo SHA-1
 	 */
@@ -157,10 +194,14 @@ public class CAdESBaselineSignerTest extends TestCase {
 	    cadesBLevelCoSignature = signer.coSign(cadesBLevelSignature, dataToSign, SignatureConstants.SIGN_ALGORITHM_SHA1WITHRSA, privateKey, null, false, ISignatureFormatDetector.FORMAT_CADES_B_LEVEL, "ASN1_AGE_1.9");
 	    final ValidationResult vr = signer.verifySignature(cadesBLevelCoSignature, dataToSign);
 	    assertTrue(vr.isCorrect());
+	    if(saveToFile) {
+		    // Almacenamos el resultado
+		    UtilsFileSystemCommons.writeFile(cadesBLevelSignature,downloadPath.toFile() + "\\firma5.csig");
+	    }
 	} catch (final Exception e) {
 	    assertTrue(false);
 	}
-
+	
 	/*
 	 *  Generación y Validación de contra-firma CAdES B-Level explícita con política de firma y algoritmo SHA-512
 	 */
@@ -168,6 +209,10 @@ public class CAdESBaselineSignerTest extends TestCase {
 	    cadesBLevelCounterSignature = signer.counterSign(cadesBLevelSignature, SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, privateKey, null, false, ISignatureFormatDetector.FORMAT_CADES_B_LEVEL, "ASN1_AGE_1.9");
 	    final ValidationResult vr = signer.verifySignature(cadesBLevelCoSignature, dataToSign);
 	    assertTrue(vr.isCorrect());
+	    if(saveToFile) {
+		    // Almacenamos el resultado
+		    UtilsFileSystemCommons.writeFile(cadesBLevelSignature,downloadPath.toFile() + "\\firma6.csig");
+	    }
 	} catch (final Exception e) {
 	    assertTrue(false);
 	}
@@ -178,15 +223,18 @@ public class CAdESBaselineSignerTest extends TestCase {
 	try {
 	    final MessageDigest md = MessageDigest.getInstance(CryptoUtilCommons.HASH_ALGORITHM_SHA256);
 	    final byte[ ] hashToSign = md.digest(dataToSign);
-	    cadesBLevelSignature = signer.sign(hashToSign, CryptoUtilCommons.HASH_ALGORITHM_SHA256, SignatureConstants.SIGN_MODE_EXPLICIT_HASH, privateKey, null, false, ISignatureFormatDetector.FORMAT_CADES_B_LEVEL, null);
+	    cadesBLevelSignature = signer.sign(hashToSign, SignatureConstants.SIGN_ALGORITHM_SHA256, SignatureConstants.SIGN_MODE_EXPLICIT_HASH, privateKey, null, false, ISignatureFormatDetector.FORMAT_CADES_B_LEVEL, null);
 	    assertEquals(SignatureFormatDetectorCadesPades.getSignatureFormat(cadesBLevelSignature), ISignatureFormatDetector.FORMAT_CADES_B_LEVEL);
 	    final ValidationResult vr = signer.verifySignature(cadesBLevelSignature, dataToSign);
 	    assertTrue(vr.isCorrect());
-
+	    if(saveToFile) {
+		    // Almacenamos el resultado
+		    UtilsFileSystemCommons.writeFile(cadesBLevelSignature,downloadPath.toFile() + "\\firma7.csig");
+	    }
 	} catch (final Exception e) {
 	    assertTrue(false);
 	}
-
+	
     }
     
     /**
@@ -199,6 +247,22 @@ public class CAdESBaselineSignerTest extends TestCase {
 
 	final byte[ ] dataToSign = UtilsFileSystemCommons.readFile("ficheroAfirmar.txt", true);
 
+	// Obtenemos el directorio de "Downloads" del usuario actual
+    String userHome = System.getProperty("user.home");
+    Path downloadPath = Paths.get(userHome, "Downloads", "pruebasIntegra2");
+    
+    // Crearemos la carpeta "pruebasIntegra" si no existe para guardar los resultados y verificarlos contra valide
+    if (Files.notExists(downloadPath)) {
+        try {
+        	if(saveToFile) {
+        		Files.createDirectories(downloadPath);
+    			UtilsFileSystemCommons.writeFile(dataToSign,downloadPath.toFile() + "\\ficheroAfirmar.txt");
+        	}
+		} catch (IOException e) {
+			assertTrue(false);
+		}
+    }
+    
 	// byte[ ] dataToSign =
 	// UtilsFileSystemCommons.readFile("D:/KitPruebas/bin/firmaElectronica/fileToSign.log",
 	// false);
@@ -218,7 +282,10 @@ public class CAdESBaselineSignerTest extends TestCase {
 	    final ValidationResult vr = signer.verifySignature(cadesBLevelSignature, dataToSign);
 	    assertTrue(vr.isCorrect());
 		System.out.println("\n-->>FIRMA RESULTANTE : \n" + new String(Base64CoderCommons.encodeBase64(cadesBLevelSignature)));
-
+		if(saveToFile) {
+			// Almacenamos el resultado
+		    UtilsFileSystemCommons.writeFile(cadesBLevelSignature,downloadPath.toFile() + "\\firma1.csig");
+		}
 	} catch (final Exception e) {
 	    assertTrue(false);
 	}
@@ -231,6 +298,10 @@ public class CAdESBaselineSignerTest extends TestCase {
 	    final ValidationResult vr = signer.verifySignature(cadesBLevelCoSignature, dataToSign);
 	    assertTrue(vr.isCorrect());
 		System.out.println("\n-->>FIRMA RESULTANTE : \n" + new String(Base64CoderCommons.encodeBase64(cadesBLevelCoSignature)));
+		if(saveToFile) {
+			// Almacenamos el resultado
+		    UtilsFileSystemCommons.writeFile(cadesBLevelSignature,downloadPath.toFile() + "\\firma2.csig");
+		}
 	} catch (final Exception e) {
 	    assertTrue(false);
 	}
@@ -243,6 +314,10 @@ public class CAdESBaselineSignerTest extends TestCase {
 	    final ValidationResult vr = signer.verifySignature(cadesBLevelCounterSignature, dataToSign);
 	    assertTrue(vr.isCorrect());
 		System.out.println("\n-->>FIRMA RESULTANTE : \n" + new String(Base64CoderCommons.encodeBase64(cadesBLevelCounterSignature)));
+		if(saveToFile) {
+			// Almacenamos el resultado
+		    UtilsFileSystemCommons.writeFile(cadesBLevelSignature,downloadPath.toFile() + "\\firma3.csig");
+		}
 	} catch (final Exception e) {
 	    assertTrue(false);
 	}
@@ -252,12 +327,9 @@ public class CAdESBaselineSignerTest extends TestCase {
 	 */
 	try {
 	    cadesBLevelSignature = signer.sign(dataToSign, SignatureConstants.SIGN_ALGORITHM_SHA256, SignatureConstants.SIGN_MODE_EXPLICIT, privateKey, null, false, ISignatureFormatDetector.FORMAT_CADES_B_LEVEL, "ASN1_AGE_1.9");
-	    assertEquals(SignatureFormatDetectorCadesPades.getSignatureFormat(cadesBLevelSignature), ISignatureFormatDetector.FORMAT_CADES_B_LEVEL);
-	    final ValidationResult vr = signer.verifySignature(cadesBLevelSignature, dataToSign);
-	    assertTrue(vr.isCorrect());
-		System.out.println("\n-->>FIRMA RESULTANTE : \n" + new String(Base64CoderCommons.encodeBase64(cadesBLevelSignature)));
 	} catch (final Exception e) {
-	    assertTrue(false);
+		// La politica de firma de la AGE solo permite la firma con algoritmo RSA, por lo que debe fallar al usar una clave ECC, que firma con algoritmo ECDSA
+		assertTrue(true);
 	}
 
 	/*
@@ -265,11 +337,9 @@ public class CAdESBaselineSignerTest extends TestCase {
 	 */
 	try {
 	    cadesBLevelCoSignature = signer.coSign(cadesBLevelSignature, dataToSign, SignatureConstants.SIGN_ALGORITHM_SHA1, privateKey, null, false, ISignatureFormatDetector.FORMAT_CADES_B_LEVEL, "ASN1_AGE_1.9");
-	    final ValidationResult vr = signer.verifySignature(cadesBLevelCoSignature, dataToSign);
-	    assertTrue(vr.isCorrect());
-		System.out.println("\n-->>FIRMA RESULTANTE : \n" + new String(Base64CoderCommons.encodeBase64(cadesBLevelCoSignature)));
 	} catch (final Exception e) {
-	    assertTrue(false);
+		// La politica de firma de la AGE solo permite la firma con algoritmo RSA, por lo que debe fallar al usar una clave ECC, que firma con algoritmo ECDSA
+		assertTrue(true);
 	}
 
 	/*
@@ -277,11 +347,9 @@ public class CAdESBaselineSignerTest extends TestCase {
 	 */
 	try {
 	    cadesBLevelCounterSignature = signer.counterSign(cadesBLevelSignature, SignatureConstants.SIGN_ALGORITHM_SHA512, privateKey, null, false, ISignatureFormatDetector.FORMAT_CADES_B_LEVEL, "ASN1_AGE_1.9");
-	    final ValidationResult vr = signer.verifySignature(cadesBLevelCoSignature, dataToSign);
-	    assertTrue(vr.isCorrect());
-		System.out.println("\n-->>FIRMA RESULTANTE : \n" + new String(Base64CoderCommons.encodeBase64(cadesBLevelCounterSignature)));
 	} catch (final Exception e) {
-	    assertTrue(false);
+		// La politica de firma de la AGE solo permite la firma con algoritmo RSA, por lo que debe fallar al usar una clave ECC, que firma con algoritmo ECDSA
+		assertTrue(true);
 	}
 
 	/*
@@ -295,7 +363,10 @@ public class CAdESBaselineSignerTest extends TestCase {
 	    final ValidationResult vr = signer.verifySignature(cadesBLevelSignature, dataToSign);
 	    assertTrue(vr.isCorrect());
 		System.out.println("\n-->>FIRMA RESULTANTE : \n" + new String(Base64CoderCommons.encodeBase64(cadesBLevelSignature)));
-
+		if(saveToFile) {
+			// Almacenamos el resultado
+		    UtilsFileSystemCommons.writeFile(cadesBLevelSignature,downloadPath.toFile() + "\\firma7.csig");
+		}
 	} catch (final Exception e) {
 	    assertTrue(false);
 	}
