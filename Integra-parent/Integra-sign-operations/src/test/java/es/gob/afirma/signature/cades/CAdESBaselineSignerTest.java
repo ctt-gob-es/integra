@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>18/01/2016.</p>
  * @author Gobierno de España.
- * @version 1.3, 06/03/2020.
+ * @version 1.4, 25/09/2024.
  */
 package es.gob.afirma.signature.cades;
 
@@ -45,10 +45,13 @@ import junit.framework.TestCase;
 /**
  * <p>Class that defines tests for {@link CAdESBaselineSigner}.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.3, 06/03/2020.
+ * @version 1.4, 25/09/2024.
  */
 public class CAdESBaselineSignerTest extends TestCase {
 
+	/**
+	 * Constant to save in disk result of test
+	 */
 	private static boolean saveToFile = false;
 	
     /**
