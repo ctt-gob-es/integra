@@ -17,13 +17,16 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>25/01/2016.</p>
  * @author Gobierno de España.
- * @version 1.2, 14/03/2017.
+ * @version 1.3, 25/09/2024.
  */
 package es.gob.afirma.signature.pades;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.KeyStore.PrivateKeyEntry;
 import java.security.Security;
 import java.util.Properties;
@@ -42,16 +45,20 @@ import es.gob.afirma.signature.SignatureFormatDetectorCadesPades;
 import es.gob.afirma.signature.SignatureProperties;
 import es.gob.afirma.signature.SigningException;
 import es.gob.afirma.signature.validation.PDFValidationResult;
-import es.gob.afirma.signature.validation.ValidationResult;
 import es.gob.afirma.utils.UtilsFileSystemCommons;
 
 /**
  * <p>Class that defines tests for {@link PAdESBaselineSigner}.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.2, 14/03/2017.
+ * @version 1.3, 25/09/2024.
  */
 public class PAdESBaselineSignerTest extends AbstractSignatureTest {
 
+	/**
+	 * Constant to save in disk result of test
+	 */
+	private static boolean saveToFile = false;
+	
     /**
      * Constant attribute that represents the message which identifies an exception isn't thrown. 
      */
@@ -76,6 +83,22 @@ public class PAdESBaselineSignerTest extends AbstractSignatureTest {
 	byte[ ] dataToSign = UtilsFileSystemCommons.readFile("pdfToSign.pdf", true);
 	System.out.println("!!!!!!!!!!!! 1");
 
+	// Obtenemos el directorio de "Downloads" del usuario actual
+    String userHome = System.getProperty("user.home");
+    Path downloadPath = Paths.get(userHome, "Downloads", "pruebasIntegra3");
+    
+    // Crearemos la carpeta "pruebasIntegra" si no existe para guardar los resultados y verificarlos contra valide
+    if (Files.notExists(downloadPath)) {
+        try {
+        	if(saveToFile) {
+        		Files.createDirectories(downloadPath);
+    			UtilsFileSystemCommons.writeFile(dataToSign,downloadPath.toFile() + "\\pdfToSign.pdf");
+        	}
+		} catch (IOException e) {
+			assertTrue(false);
+		}
+    }
+	
 	PAdESBaselineSigner signer = new PAdESBaselineSigner();
 	byte[ ] padesBLevelSignature = null;
 	byte[ ] padesTLevelSignature = null;
@@ -99,6 +122,10 @@ public class PAdESBaselineSignerTest extends AbstractSignatureTest {
 	    System.out.println("!!!!!!!!!!!! 6" + vr.getErrorMsg());
 	    assertTrue(vr.isCorrect());
 
+	    if(saveToFile) {
+		    // Almacenamos el resultado
+		    UtilsFileSystemCommons.writeFile(padesBLevelSignature,downloadPath.toFile() + "\\firma1.pdf");
+	    }
 	} catch (Exception e) {
 	    assertTrue(false);
 	}
@@ -131,6 +158,10 @@ public class PAdESBaselineSignerTest extends AbstractSignatureTest {
 	    System.out.println("!!!!!!!!!!!! 13");
 	    assertTrue(vr.isCorrect());
 	    System.out.println("!!!!!!!!!!!! 14");
+	    if(saveToFile) {
+		    // Almacenamos el resultado
+		    UtilsFileSystemCommons.writeFile(padesBLevelSignature,downloadPath.toFile() + "\\firma2.pdf");
+	    }
 	} catch (Exception e) {
 	    assertTrue(false);
 	}
