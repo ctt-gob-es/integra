@@ -157,7 +157,7 @@ public class AbstractSignatureTest extends TestCase {
 		final KeyStore ks = KeyStore.getInstance("JCEKS");
 		final char[ ] password = "12345".toCharArray();
 		ks.load(is, password);
-		key = ks.getEntry("raul conde", new KeyStore.PasswordProtection(password));
+		key = ks.getEntry("eidas", new KeyStore.PasswordProtection(password));
 	    } catch (final NoSuchAlgorithmException e) {
 		e.printStackTrace();
 	    } catch (final CertificateException e) {
