@@ -22,7 +22,11 @@
 package es.gob.afirma.signature.xades;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStore.PrivateKeyEntry;
 import java.util.ArrayList;
@@ -46,6 +50,11 @@ import junit.framework.TestCase;
  */
 public class XAdESBaselineSignerTest extends TestCase {
 
+	/**
+	 * Constant to save in disk result of test
+	 */
+	private static boolean saveToFile = false;
+	
     /**
      * Constant attribute that represents the message which identifies an exception isn't thrown. 
      */
@@ -62,7 +71,7 @@ public class XAdESBaselineSignerTest extends TestCase {
 	    KeyStore ks = KeyStore.getInstance("JCEKS");
 	    char[ ] password = "12345".toCharArray();
 	    ks.load(is, password);
-	    key = ks.getEntry("raul conde", new KeyStore.PasswordProtection(password));
+	    key = ks.getEntry("eidas", new KeyStore.PasswordProtection(password));
 	} catch (Exception e) {
 	    return null;
 	}
@@ -98,6 +107,7 @@ public class XAdESBaselineSignerTest extends TestCase {
 	    assertEquals(SignatureFormatDetectorXades.getSignatureFormat(xadesBLevelSignature), ISignatureFormatDetector.FORMAT_XADES_B_LEVEL);
 	    ValidationResult vr = signer.verifySignature(xadesBLevelSignature);
 	    assertTrue(vr.isCorrect());
+	    save(xadesBLevelSignature, dataToSign, "prueba1");
 	} catch (Exception e) {
 	    assertTrue(false);
 	}
@@ -109,6 +119,7 @@ public class XAdESBaselineSignerTest extends TestCase {
 	    xadesBLevelCoSignature = signer.coSign(xadesBLevelSignature, dataToSign, SignatureConstants.SIGN_ALGORITHM_SHA256WITHRSA, privateKey, extraParams, false, ISignatureFormatDetector.FORMAT_XADES_B_LEVEL, null);
 	    ValidationResult vr = signer.verifySignature(xadesBLevelCoSignature);
 	    assertTrue(vr.isCorrect());
+	    save(xadesBLevelCoSignature, dataToSign, "prueba2");
 	} catch (Exception e) {
 	    assertTrue(false);
 	}
@@ -120,6 +131,7 @@ public class XAdESBaselineSignerTest extends TestCase {
 	    xadesBLevelCounterSignature = signer.counterSign(xadesBLevelSignature, SignatureConstants.SIGN_ALGORITHM_SHA384WITHRSA, privateKey, extraParams, false, ISignatureFormatDetector.FORMAT_XADES_B_LEVEL, null);
 	    ValidationResult vr = signer.verifySignature(xadesBLevelCounterSignature);
 	    assertTrue(vr.isCorrect());
+	    save(xadesBLevelCounterSignature, dataToSign, "prueba3");
 	} catch (Exception e) {
 	    assertTrue(false);
 	}
@@ -152,6 +164,7 @@ public class XAdESBaselineSignerTest extends TestCase {
 	    assertEquals(SignatureFormatDetectorXades.getSignatureFormat(xadesBLevelSignature), ISignatureFormatDetector.FORMAT_XADES_B_LEVEL);
 	    ValidationResult vr = signer.verifySignature(xadesBLevelSignature);
 	    assertTrue(vr.isCorrect());
+	    save(xadesBLevelSignature, dataToSign, "prueba4");
 	} catch (Exception e) {
 	    assertTrue(false);
 	}
@@ -163,6 +176,7 @@ public class XAdESBaselineSignerTest extends TestCase {
 	    xadesBLevelCoSignature = signer.coSign(xadesBLevelSignature, dataToSign, SignatureConstants.SIGN_ALGORITHM_SHA256WITHRSA, privateKey, extraParams, false, ISignatureFormatDetector.FORMAT_XADES_B_LEVEL, null);
 	    ValidationResult vr = signer.verifySignature(xadesBLevelCoSignature);
 	    assertTrue(vr.isCorrect());
+	    save(xadesBLevelSignature, dataToSign, "prueba5");
 	} catch (Exception e) {
 	    assertTrue(false);
 	}
@@ -207,6 +221,7 @@ public class XAdESBaselineSignerTest extends TestCase {
 	    assertEquals(SignatureFormatDetectorXades.getSignatureFormat(xadesBLevelSignature), ISignatureFormatDetector.FORMAT_XADES_B_LEVEL);
 	    ValidationResult vr = signer.verifySignature(xadesBLevelSignature);
 	    assertTrue(vr.isCorrect());
+	    save(xadesBLevelSignature, dataToSign, "prueba6");
 	} catch (Exception e) {
 	    assertTrue(false);
 	}
@@ -218,6 +233,7 @@ public class XAdESBaselineSignerTest extends TestCase {
 	    xadesBLevelCoSignature = signer.coSign(xadesBLevelSignature, dataToSign, SignatureConstants.SIGN_ALGORITHM_SHA256WITHRSA, privateKey, extraParams, false, ISignatureFormatDetector.FORMAT_XADES_B_LEVEL, null);
 	    ValidationResult vr = signer.verifySignature(xadesBLevelCoSignature);
 	    assertTrue(vr.isCorrect());
+	    save(xadesBLevelSignature, dataToSign, "prueba7");
 	} catch (Exception e) {
 	    assertTrue(false);
 	}
@@ -263,6 +279,7 @@ public class XAdESBaselineSignerTest extends TestCase {
 	    assertEquals(SignatureFormatDetectorXades.getSignatureFormat(xadesBLevelSignature), ISignatureFormatDetector.FORMAT_XADES_B_LEVEL);
 	    ValidationResult vr = signer.verifySignature(xadesBLevelSignature);
 	    assertTrue(vr.isCorrect());
+	    save(xadesBLevelSignature, dataToSign, "prueba8");
 	} catch (Exception e) {
 	    assertTrue(false);
 	}
@@ -274,6 +291,7 @@ public class XAdESBaselineSignerTest extends TestCase {
 	    xadesBLevelCoSignature = signer.coSign(xadesBLevelSignature, dataToSign, SignatureConstants.SIGN_ALGORITHM_SHA256WITHRSA, privateKey, extraParams, false, ISignatureFormatDetector.FORMAT_XADES_B_LEVEL, "XML_AGE_1.9_URL");
 	    ValidationResult vr = signer.verifySignature(xadesBLevelCoSignature);
 	    assertTrue(vr.isCorrect());
+	    save(xadesBLevelCoSignature, dataToSign, "prueba9");
 	} catch (Exception e) {
 	    assertTrue(false);
 	}
@@ -285,6 +303,7 @@ public class XAdESBaselineSignerTest extends TestCase {
 	    xadesBLevelCounterSignature = signer.counterSign(xadesBLevelSignature, SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, privateKey, extraParams, false, ISignatureFormatDetector.FORMAT_XADES_B_LEVEL, "XML_AGE_1.9_URL");
 	    ValidationResult vr = signer.verifySignature(xadesBLevelCounterSignature);
 	    assertTrue(vr.isCorrect());
+	    save(xadesBLevelCounterSignature, dataToSign, "prueba10");
 	} catch (Exception e) {
 	    assertTrue(false);
 	}
@@ -317,6 +336,7 @@ public class XAdESBaselineSignerTest extends TestCase {
 	    assertEquals(SignatureFormatDetectorXades.getSignatureFormat(xadesBLevelSignature), ISignatureFormatDetector.FORMAT_XADES_B_LEVEL);
 	    ValidationResult vr = signer.verifySignature(xadesBLevelSignature);
 	    assertTrue(vr.isCorrect());
+	    save(xadesBLevelSignature, dataToSign, "prueba11");
 	} catch (Exception e) {
 	    assertTrue(false);
 	}
@@ -328,6 +348,7 @@ public class XAdESBaselineSignerTest extends TestCase {
 	    xadesBLevelCoSignature = signer.coSign(xadesBLevelSignature, dataToSign, SignatureConstants.SIGN_ALGORITHM_SHA256WITHRSA, privateKey, extraParams, false, ISignatureFormatDetector.FORMAT_XADES_B_LEVEL, "XML_AGE_1.9_URL");
 	    ValidationResult vr = signer.verifySignature(xadesBLevelCoSignature);
 	    assertTrue(vr.isCorrect());
+	    save(xadesBLevelCoSignature, dataToSign, "prueba12");
 	} catch (Exception e) {
 	    assertTrue(false);
 	}
@@ -612,6 +633,7 @@ public class XAdESBaselineSignerTest extends TestCase {
 	    assertEquals(SignatureFormatDetectorXades.getSignatureFormat(xadesTLevelSignature), ISignatureFormatDetector.FORMAT_XADES_T_LEVEL);
 	    ValidationResult vr = signer.verifySignature(xadesTLevelSignature);
 	    assertTrue(vr.isCorrect());
+	    save(xadesBLevelSignature, dataToSign, "prueba13");
 	} catch (Exception e) {
 	    assertTrue(false);
 	}
@@ -624,6 +646,7 @@ public class XAdESBaselineSignerTest extends TestCase {
 	    xadesTLevelCoSignature = signer.upgrade(xadesBLevelCoSignature, null);
 	    ValidationResult vr = signer.verifySignature(xadesTLevelCoSignature);
 	    assertTrue(vr.isCorrect());
+	    save(xadesBLevelCoSignature, dataToSign, "prueba14");
 	} catch (Exception e) {
 	    assertTrue(false);
 	}
@@ -636,6 +659,7 @@ public class XAdESBaselineSignerTest extends TestCase {
 	    xadesTLevelCounterSignature = signer.upgrade(xadesBLevelCounterSignature, null);
 	    ValidationResult vr = signer.verifySignature(xadesTLevelCounterSignature);
 	    assertTrue(vr.isCorrect());
+	    save(xadesBLevelCounterSignature, dataToSign, "prueba15");
 	} catch (Exception e) {
 	    assertTrue(false);
 	}
@@ -671,6 +695,7 @@ public class XAdESBaselineSignerTest extends TestCase {
 	    assertEquals(SignatureFormatDetectorXades.getSignatureFormat(xadesTLevelSignature), ISignatureFormatDetector.FORMAT_XADES_T_LEVEL);
 	    ValidationResult vr = signer.verifySignature(xadesTLevelSignature);
 	    assertTrue(vr.isCorrect());
+	    save(xadesBLevelSignature, dataToSign, "prueba16");
 	} catch (Exception e) {
 	    assertTrue(false);
 	}
@@ -683,6 +708,7 @@ public class XAdESBaselineSignerTest extends TestCase {
 	    xadesTLevelCoSignature = signer.upgrade(xadesBLevelCoSignature, null);
 	    ValidationResult vr = signer.verifySignature(xadesTLevelCoSignature);
 	    assertTrue(vr.isCorrect());
+	    save(xadesBLevelCoSignature, dataToSign, "prueba17");
 	} catch (Exception e) {
 	    assertTrue(false);
 	}
@@ -780,6 +806,7 @@ public class XAdESBaselineSignerTest extends TestCase {
 	    assertEquals(SignatureFormatDetectorXades.getSignatureFormat(xadesBLevelSignature), ISignatureFormatDetector.FORMAT_XADES_B_LEVEL);
 	    ValidationResult vr = signer.verifySignature(xadesBLevelSignature);
 	    assertTrue(vr.isCorrect());
+	    save(xadesBLevelSignature, dataToSign, "prueba18");
 	} catch (Exception e) {
 	    assertTrue(false);
 	}
@@ -806,4 +833,26 @@ public class XAdESBaselineSignerTest extends TestCase {
 	    assertTrue(false);
 	}
     }
+    
+	private static void save(byte[] data, byte[] dataToSign, final String prefix) throws Exception {
+		// Obtenemos el directorio de "Downloads" del usuario actual
+	    String userHome = System.getProperty("user.home");
+	    Path downloadPath = Paths.get(userHome, "Downloads", "pruebasIntegra4");
+	    
+	    if(saveToFile) {
+	    	// Crearemos la carpeta "pruebasIntegra4" si no existe para guardar los resultados y verificarlos contra valide
+		    if (Files.notExists(downloadPath)) {
+		        try {
+		        	Files.createDirectories(downloadPath);
+	    			UtilsFileSystemCommons.writeFile(dataToSign,downloadPath.toFile() + "\\ficheroAfirmar.txt");
+				} catch (IOException e) {
+					assertTrue(false);
+				}
+		    }
+		    
+		    // Almacenamos el resultado
+		    UtilsFileSystemCommons.writeFile(data,downloadPath.toFile() + "\\" + prefix + ".xml");
+	    }
+	    
+	}
 }

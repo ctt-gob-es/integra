@@ -68,7 +68,7 @@ public class XAdESCanonicalizationTest extends TestCase {
 	    KeyStore ks = KeyStore.getInstance("JCEKS");
 	    char[ ] password = "12345".toCharArray();
 	    ks.load(is, password);
-	    key = ks.getEntry("raul conde", new KeyStore.PasswordProtection(password));
+	    key = ks.getEntry("eidas", new KeyStore.PasswordProtection(password));
 	} catch (Exception e) {
 	    return null;
 	}
