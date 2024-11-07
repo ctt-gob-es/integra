@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>13/01/2014.</p>
  * @author Gobierno de España.
- * @version 1.5, 18/04/2022.
+ * @version 1.6, 07/11/2024.
  */
 package es.gob.afirma.tsaServiceInvoker.ws;
 
@@ -84,7 +84,7 @@ import es.gob.afirma.wsServiceInvoker.WSServiceInvokerException;
 /**
  * <p>Class that manages the invoke of TS@ web services.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.5, 18/04/2022.
+ * @version 1.6, 07/11/2024.
  */
 public class TSAWebServiceInvoker {
 
@@ -344,47 +344,52 @@ public class TSAWebServiceInvoker {
      * @param mustUnderstandResponseHandler MustUnderstand response handler.
      * @throws TSAServiceInvokerException if some error occurred in the process.
      */
-    private void addHandlers(ServiceClient client, TSAClientHandler clientHandler, TSAClientSymmetricKeyHandler clientSymmetricKeyHandler, TSAResponseHandler responseHandler, TSAResponseSymmetricKeyHandler responseSymmetricKeyHandler, MustUnderstandResponseHander mustUnderstandResponseHandler) throws TSAServiceInvokerException {
+	private void addHandlers(ServiceClient client, TSAClientHandler clientHandler,
+			TSAClientSymmetricKeyHandler clientSymmetricKeyHandler, TSAResponseHandler responseHandler,
+			TSAResponseSymmetricKeyHandler responseSymmetricKeyHandler,
+			MustUnderstandResponseHander mustUnderstandResponseHandler) throws TSAServiceInvokerException {
 
-	String errorMsg = Language.getResIntegra(ILogConstantKeys.WSI_LOG021);
+		String errorMsg = Language.getResIntegra(ILogConstantKeys.WSI_LOG021);
 
-	// Añadimos el handler de seguridad de salida.
-	AxisConfiguration config = client.getAxisConfiguration();
-	List<Phase> phasesOut = config.getOutFlowPhases();
-	for (Phase phase: phasesOut) {
-	    if (PHASE_NAME_SECURITY.equals(phase.getPhaseName())) {
-		try {
-		    addHandler(phase, clientHandler, 1);
-		    addHandler(phase, clientSymmetricKeyHandler, 2);
-		    break;
-		} catch (PhaseException e) {
-		    throw new TSAServiceInvokerException(errorMsg);
+		// Añadimos el handler de seguridad de salida para la fase de invocación.
+		AxisConfiguration config = client.getAxisConfiguration();
+		List<Phase> phasesOut = config.getOutFlowPhases();
+		for (Phase phase : phasesOut) {
+			if (PHASE_NAME_SECURITY.equals(phase.getPhaseName())) {
+				try {
+					addHandler(phase, clientHandler, 1);
+					addHandler(phase, clientSymmetricKeyHandler, 2);
+					break;
+				} catch (PhaseException e) {
+					throw new TSAServiceInvokerException(errorMsg);
+				}
+			}
 		}
-	    }
+		
+		// Añadimos el handler de seguridad y el handler de mustUnderstand para la fase de invocación.
+		List<Phase> phasesIn = config.getInFlowPhases();
+		for (Phase phase : phasesIn) {
+			// Añadimos el handler de seguridad de entrada.
+			if (responseHandler != null) {
+				if (PHASE_NAME_SECURITY.equals(phase.getPhaseName())) {
+					try {
+						addHandler(phase, responseSymmetricKeyHandler, 0);
+						addHandler(phase, responseHandler, 1);
+					} catch (PhaseException e) {
+						throw new TSAServiceInvokerException(errorMsg);
+					}
+				}
+			}
+
+			if (PHASE_NAME_DISPATCH.equals(phase.getPhaseName())) {
+				try {
+					addHandler(phase, mustUnderstandResponseHandler, 2);
+				} catch (PhaseException e) {
+					throw new TSAServiceInvokerException(errorMsg);
+				}
+			}
+		}
 	}
-
-	// Añadimos el handler de seguridad de entrada.
-	if (responseHandler != null) {
-	    List<Phase> phasesIn = config.getInFlowPhases();
-	    for (Phase phase: phasesIn) {
-		if (PHASE_NAME_SECURITY.equals(phase.getPhaseName())) {
-		    try {
-			addHandler(phase, responseHandler, 1);
-			addHandler(phase, responseSymmetricKeyHandler, 0);
-		    } catch (PhaseException e) {
-			throw new TSAServiceInvokerException(errorMsg);
-		    }
-		}
-		if (PHASE_NAME_DISPATCH.equals(phase.getPhaseName())) {
-		    try {
-			addHandler(phase, mustUnderstandResponseHandler, 2);
-		    } catch (PhaseException e) {
-			throw new TSAServiceInvokerException(errorMsg);
-		    }
-		}
-	    }
-	}
-    }
 
     /**
      * Method that removes the added handler from the axis engine.
