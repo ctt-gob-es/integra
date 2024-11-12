@@ -15,12 +15,6 @@
 		<dependency>
 			<groupId>es.gob.afirma</groupId>
 			<artifactId>Integra-commons-xml</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>xml-apis</groupId>
-					<artifactId>xml-apis</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>es.gob.afirma</groupId>
@@ -73,14 +67,6 @@
 				<exclusion>
 					<artifactId>xmldsig</artifactId>
 					<groupId>javax.xml.crypto</groupId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.xml.bind</groupId>
-					<artifactId>jsr173_api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.xml.stream</groupId>
-					<artifactId>stax-api</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>

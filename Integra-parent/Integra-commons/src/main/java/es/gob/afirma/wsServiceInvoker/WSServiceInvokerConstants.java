@@ -16,14 +16,14 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>24/12/2014.</p>
  * @author Gobierno de España.
- * @version 1.1, 04/03/2020.
+ * @version 1.2, 12/11/2024.
  */
 package es.gob.afirma.wsServiceInvoker;
 
 /**
  * <p>Interface that defines all the constants related to the invocation of @Firma services.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.1, 04/03/2020.
+ * @version 1.2, 12/11/2024.
  */
 public interface WSServiceInvokerConstants {
 
@@ -62,6 +62,30 @@ public interface WSServiceInvokerConstants {
      *  the connection and request timeout for the web service, in milliseconds.
      */
     String WS_CALL_TIMEOUT_PROP = "callTimeout";
+    
+    /**
+     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of @Firma and eVisor web services with
+     *  the connection and request timeout for the web service, in milliseconds.
+     */
+    String WS_CALL_PROXIE_HOST_PROP = "proxieHost";
+
+    /**
+     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of @Firma and eVisor web services with
+     *  the connection and request timeout for the web service, in milliseconds.
+     */
+    String WS_CALL_PROXIE_PORT_PROP = "proxiePort";
+
+    /**
+     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of @Firma and eVisor web services with
+     *  the connection and request timeout for the web service, in milliseconds.
+     */
+    String WS_CALL_USER_PROXIE_PROP = "userProxie";
+
+    /**
+     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of @Firma and eVisor web services with
+     *  the connection and request timeout for the web service, in milliseconds.
+     */
+    String WS_CALL_PASS_PROXIE_PROP = "passProxie";
 
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of @Firma and eVisor web services with

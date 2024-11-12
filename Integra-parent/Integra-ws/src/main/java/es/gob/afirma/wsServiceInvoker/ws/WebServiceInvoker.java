@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>26/12/2014.</p>
  * @author Gobierno de España.
- * @version 1.6, 18/04/2022.
+ * @version 1.7, 12/11/2024.
  */
 package es.gob.afirma.wsServiceInvoker.ws;
 
@@ -39,6 +39,7 @@ import org.apache.axis2.engine.Handler;
 import org.apache.axis2.engine.Phase;
 import org.apache.axis2.kernel.http.HTTPConstants;
 import org.apache.axis2.phaseresolver.PhaseException;
+import org.apache.axis2.transport.http.HttpTransportProperties;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
@@ -52,7 +53,7 @@ import es.gob.afirma.wsServiceInvoker.WSServiceInvokerException;
 /**
  * <p>Class that manages the invoke of @Firma and eVisor web services.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.6, 18/04/2022.
+ * @version 1.7, 12/11/2024.
  */
 public class WebServiceInvoker {
 
@@ -175,6 +176,18 @@ public class WebServiceInvoker {
 	    // Desactivamos el chunked.
 	    options.setProperty(HTTPConstants.CHUNKED, "false");
 
+	    // Configuraremos un proxie para afirma en caso de estar definido 
+	    String proxie = this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_PROXIE_HOST_PROP);
+	    String proxiePort = this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_PROXIE_PORT_PROP);
+	    if(proxie != null && !proxie.isEmpty() && proxiePort != null && !proxiePort.isEmpty()) {
+	    	 HttpTransportProperties.ProxyProperties proxyProperties = new HttpTransportProperties.ProxyProperties();
+	    	 proxyProperties.setProxyName(proxie);
+	    	 proxyProperties.setProxyPort(Integer.valueOf(proxiePort));
+	    	 proxyProperties.setUserName(this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_USER_PROXIE_PROP)); // Si no hay usuario de proxie, se puede dejar vacío
+	    	 proxyProperties.setPassWord(this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_PASS_PROXIE_PROP)); // Si no hay usuario de proxie, se puede dejar vacío
+	    	 options.setProperty(HTTPConstants.PROXY, proxyProperties);
+	    }
+	    
 	    // Creamos el cliente y le añadimos la configuración anterior.
 	    LOGGER.debug("Peticion: " + (String) params[0]);
 	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.WSI_LOG005));
