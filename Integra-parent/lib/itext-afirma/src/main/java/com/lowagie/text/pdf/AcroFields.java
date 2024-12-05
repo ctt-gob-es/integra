@@ -136,6 +136,12 @@ public class AcroFields {
     private float extraMarginLeft;
     private float extraMarginTop;
     private ArrayList substitutionFonts;
+    
+    /**
+    Número máximo de saltos entre elementos que se permiten al intentar
+    localizar el componente padre de otro.
+    */
+    private static final int MAX_NUM_LEAPS_TO_FIND_PARENT = 5;
 
     AcroFields(PdfReader reader, PdfWriter writer) {
         this.reader = reader;
@@ -329,26 +335,34 @@ public class AcroFields {
 	}
     
     /**
-     * Obtiene la referencia del objeto padre del diccionario indicado.
-     * @param dict Diccionario del que tomar el padre.
-     * @return Referencia al elemento padre o {@code null} si no ten&iacute;a.
-     */
+    Obtiene la referencia del objeto padre del diccionario indicado.
+    @param dict Diccionario del que tomar el padre.
+    @return Referencia al elemento padre o {@code null} si no tenía.
+    */
     private static PRIndirectReference getParentReference(final PdfDictionary dict) {
-
-    	PdfDictionary parentDict = dict;
-
-    	PRIndirectReference parentRef = null;
-    	do {
-    		final PdfObject parentObj = parentDict.get(PdfName.PARENT);
-    		if (parentObj != null && parentObj instanceof PRIndirectReference) {
-    			parentRef = (PRIndirectReference) parentObj;
-    		}
-    		parentDict = parentDict.getAsDict(PdfName.PARENT);
-    	}
-    	while (parentDict != null);
-
-		return parentRef;
-	}
+	    
+    	PdfDictionary parentDict = dict;	
+	    
+    	// Contaremos el numero de saltos que tenemos que dar hasta localizar
+	    // el elemento padre de otro. Lo hacemos para poder establecer un maximo
+	    // numero de saltos y poder evitar que una referencia ciclica bloquee el
+	    // proceso.
+	    int leap = 0;
+	    
+	    PRIndirectReference parentRef = null;
+	    
+	    do {
+	    	final PdfObject parentObj = parentDict.get(PdfName.PARENT);
+	    	if (parentObj != null && parentObj instanceof PRIndirectReference) {
+	    		parentRef = (PRIndirectReference) parentObj;
+	    	}
+	    	parentDict = parentDict.getAsDict(PdfName.PARENT);
+	    	leap++;
+	    }
+	    while (parentDict != null && leap < MAX_NUM_LEAPS_TO_FIND_PARENT);
+	    	
+	    return parentRef;
+    }
     
     /**
      * Gets the list of appearance names. Use it to get the names allowed
