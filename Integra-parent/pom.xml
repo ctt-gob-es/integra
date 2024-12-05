@@ -179,7 +179,7 @@
 		<version.Integra.utils>2.2.4_001</version.Integra.utils>
 		<version.Integra.ws>2.2.4_001</version.Integra.ws>
 		
-		<version.afirma.itext>2.4</version.afirma.itext>
+		<version.afirma.itext>2.5</version.afirma.itext>
 		
 		<version.axis2>1.8.2</version.axis2>
 		<version.bouncycastle>1.78</version.bouncycastle>
