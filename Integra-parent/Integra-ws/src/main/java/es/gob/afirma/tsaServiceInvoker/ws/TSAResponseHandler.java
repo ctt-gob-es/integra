@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>04/03/2020.</p>
  * @author Gobierno de España.
- * @version 1.3, 18/04/2022.
+ * @version 1.4, 23/12/2024.
  */
 package es.gob.afirma.tsaServiceInvoker.ws;
 
@@ -71,7 +71,7 @@ import es.gob.afirma.utils.UtilsResourcesCommons;
 /**
  * <p>Class that represents handler used to verify the signature response.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.3, 18/04/2022.
+ * @version 1.4, 23/12/2024.
  */
 @SuppressWarnings("deprecation")
 public class TSAResponseHandler extends AbstractTSAHandler {
@@ -259,7 +259,7 @@ public class TSAResponseHandler extends AbstractTSAHandler {
 	    if (keyIdentifier == null) {
 		throw new IllegalArgumentException(Language.getFormatResIntegra(ILogConstantKeys.TRH_LOG003, new Object[ ] { KEY_IDENTIFIER_TOKEN }));
 	    }
-	    SubjectKeyIdentifier skiRequest = new SubjectKeyIdentifier(Base64.getDecoder().decode(keyIdentifier.getText()));
+	    SubjectKeyIdentifier skiRequest = new SubjectKeyIdentifier(Base64.getMimeDecoder().decode(keyIdentifier.getText()));
 
 	    InputStream is = null;
 	    ASN1InputStream asn1is = null;
@@ -381,7 +381,7 @@ public class TSAResponseHandler extends AbstractTSAHandler {
 	    // X509Certificate.
 	    CertificateFactory factory;
 	    factory = CertificateFactory.getInstance("X.509");
-	    X509Certificate resCert = (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(Base64.getDecoder().decode(certValue)));
+	    X509Certificate resCert = (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(Base64.getMimeDecoder().decode(certValue)));
 
 	    // Recuperamos el certificado configurado para la validación de
 	    // respuestas SOAP.
