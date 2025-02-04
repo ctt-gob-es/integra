@@ -63,7 +63,7 @@ public final class UtilsAxis {
     /**
      * Attribute that represents the counter of numbered sequences generated at this loop.
      */
-    private static int counter = (int) (getRandomDouble() * NumberConstants.INT_5000);
+    private static int counter = 0;
 
     /**
      * Attribute that represents the current time milliseconds representation in a string
@@ -160,6 +160,9 @@ public final class UtilsAxis {
      */
     public static synchronized String generateNumbersUniqueId() {
 
+	if(counter == 0) {
+    	counter = (int) (getRandomDouble() * NumberConstants.INT_5000);
+    }
 	counter += 1;
 	if (counter >= NumberConstants.INT_10000) {
 	    counter = (int) (getRandomDouble() * NumberConstants.INT_5000);
