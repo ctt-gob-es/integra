@@ -89,6 +89,24 @@
 						<manifest>
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 						</manifest>
+						<manifestSection>
+	                    	<name>Dependencies</name>
+	                    	<manifestEntries>
+	                    		<log4j-api>${version.log4j2}</log4j-api>
+								<log4j-core>${version.log4j2}</log4j-core>
+								<log4j-jcl>${version.log4j2}</log4j-jcl>
+								<itext-afirma>${version.afirma.itext}</itext-afirma>
+								<fop>${version.fop}</fop>
+								<barcode4j-fop-ext-complete>2.1</barcode4j-fop-ext-complete>
+								<xalan>${version.xalan}</xalan>
+								<serializer>${version.xalan}</serializer>
+								<zxing.core>3.5.3</zxing.core>
+								<zxing.javase>3.5.3</zxing.javase>
+								<version.tika>${version.tika}</version.tika>
+								<commons-text>1.12.0</commons-text>
+								<junit>${version.junit}</junit>
+	                    	</manifestEntries>
+	                    </manifestSection>
 					</archive>
 				</configuration>				
 			</plugin>

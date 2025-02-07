@@ -59,6 +59,18 @@
 						<manifest>
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 						</manifest>
+						<manifestSection>
+	                    	<name>Dependencies</name>
+	                    	<manifestEntries>
+	                    		<Integra-commons>${version.Integra.commons}</Integra-commons>
+	                    		<Integra-ocsp-rfc3161>${version.Integra.ocsp.rfc3161}</Integra-ocsp-rfc3161>
+	                    		<Integra-ws>${version.Integra.ws}</Integra-ws>
+	                    		<Integra-sign-operations>${version.Integra.sign.operations}</Integra-sign-operations>
+	                    		<Integra-commons-pdf-bc>${version.Integra.commons.pdf.bc}</Integra-commons-pdf-bc>
+	                    		<Integra-commons-xml>${version.Integra.commons.xml}</Integra-commons-xml>
+	                    		<junit>${version.junit}</junit>
+	                    	</manifestEntries>
+	                    </manifestSection>
 					</archive>
 				</configuration>
 				<executions>

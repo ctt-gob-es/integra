@@ -97,6 +97,22 @@
 						<manifest>
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 						</manifest>
+						<manifestSection>
+	                    	<name>Dependencies</name>
+	                    	<manifestEntries>
+	                    		<Integra-commons-xml>${version.Integra.commons.xml}</Integra-commons-xml>
+	                    		<Integra-commons>${version.Integra.commons}</Integra-commons>
+	                    		<wss4j-ws-security-dom>${version.wss4j}</wss4j-ws-security-dom>
+								<wss4j-ws-security-common>${version.wss4j}</wss4j-ws-security-common>
+								<axis2-adb>${version.axis2}</axis2-adb>
+								<axis2-saaj>${version.axis2}</axis2-saaj>
+								<axis2-transport-local>${version.axis2}</axis2-transport-local>
+								<axis2-transport-http>${version.axis2}</axis2-transport-http>
+								<xws-security>3.0</xws-security>
+								<commons-lang3>${version.commons.lang3}</commons-lang3>
+	                    		<junit>${version.junit}</junit>
+	                    	</manifestEntries>
+	                    </manifestSection>
 					</archive>
 				</configuration>
 				<executions>

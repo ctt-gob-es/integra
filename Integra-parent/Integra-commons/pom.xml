@@ -54,6 +54,15 @@
 						<manifest>
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 						</manifest>
+						<manifestSection>
+							<name>Dependencies</name>
+							<manifestEntries>
+								<log4j-api>${version.log4j2}</log4j-api>
+								<log4j-core>${version.log4j2}</log4j-core>
+								<log4j-jcl>${version.log4j2}</log4j-jcl>
+                                <xmlsec>${version.xmlsec}</xmlsec>
+							</manifestEntries>
+						</manifestSection>
 					</archive>
 				</configuration>
 				<executions>
