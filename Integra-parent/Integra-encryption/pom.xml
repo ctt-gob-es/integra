@@ -33,6 +33,35 @@
 	
 	<build>
     	<plugins>
+    		<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+						</manifest>
+						<manifestSection>
+							<name>Dependencies</name>
+							<manifestEntries>
+								<Integra-commons>${version.Integra.commons}</Integra-commons>
+								<commons-codec>${version.commons.codec}</commons-codec>
+								<bcprov-jdk18on>${version.bouncycastle}</bcprov-jdk18on>
+								<junit>${version.junit}</junit>
+							</manifestEntries>
+						</manifestSection>
+					</archive>
+				</configuration>
+				<executions>
+					<execution>
+						<id>jar-integra-encryption</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<phase>package</phase>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
