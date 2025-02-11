@@ -16,7 +16,6 @@
 			<groupId>es.gob.afirma</groupId>
 			<artifactId>Integra-commons</artifactId>
 		</dependency>
-		
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk18on</artifactId>
@@ -59,6 +58,17 @@
 						<manifest>
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 						</manifest>
+						<manifestSection>
+							<name>Dependencies</name>
+							<manifestEntries>
+								<Integra-commons>${version.Integra.commons}</Integra-commons>
+								<bcprov-jdk18on>${version.bouncycastle}</bcprov-jdk18on>
+								<bcpkix-jdk18on>${version.bouncycastle}</bcpkix-jdk18on>
+								<bcutil-jdk18on>${version.bouncycastle}</bcutil-jdk18on>
+                                <itext-afirma>${version.afirma.itext}</itext-afirma>
+                                <junit>${version.junit}</junit>
+							</manifestEntries>
+						</manifestSection>
 					</archive>
 				</configuration>
 				<executions>
