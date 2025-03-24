@@ -209,7 +209,7 @@ public class Afirma5ServiceInvokerFacadeTest extends TestCase {
     private Properties getPropertiesForSvcInvoker() {
 	Properties result = new Properties();
 	result.put("com.trustedstore", "truststoreWS.jks");
-	result.put("com.trustedstorepassword", "12345");
+	result.put("com.trustedstorePassword", "12345");
 	result.put("secureMode", "false");
 	result.put("endPoint", "localhost:8080");
 	result.put("servicePath", "afirmaws/services");
