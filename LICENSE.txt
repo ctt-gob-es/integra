@@ -1,0 +1,15 @@
+Copyright (C) 2012-24, Gobierno de España
+
+Este programa tiene licencia y puede usarse, modificarse y redistribuirse según
+los términos de la Licencia Pública Europea (EUPL), ya sea la versión 1.1 o (a
+su elección) cualquier versión posterior tan pronto como sean aprobadas por la
+Comisión Europea.
+
+A menos que lo exija la ley aplicable o se acuerde por escrito, el software
+distribuido bajo la Licencia se distribuye "TAL CUAL", SIN GARANTÍAS NI
+CONDICIONES DE NINGÚN TIPO, ya sean expresas o implícitas. Consulte la Licencia
+para conocer el idioma específico que rige los permisos y más detalles.
+
+Debería haber recibido una copia de la licencia EUPL1.1 junto con este programa;
+si no, puedes encontrarlo en
+https://eupl.eu/1.1/es/
