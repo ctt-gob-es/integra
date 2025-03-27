@@ -71,6 +71,14 @@
 	</dependencies>
 
 	<build>
+		<resources>
+			<resource>
+				<directory></directory>
+				<includes>
+					<include>messages/*</include>
+				</includes>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
