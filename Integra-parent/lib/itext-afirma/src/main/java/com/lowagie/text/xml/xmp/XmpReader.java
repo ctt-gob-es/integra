@@ -96,6 +96,7 @@ public class XmpReader {
 			final DocumentBuilder db = fact.newDocumentBuilder();
 			db.setEntityResolver(new SafeEmptyEntityResolver());
 	        final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+	        db.setErrorHandler(null);
 	        this.domDocument = db.parse(bais);
 		} catch (ParserConfigurationException e) {
 			throw new ExceptionConverter(e);

@@ -256,7 +256,7 @@ public final class UtilsSignature implements IUtilsSignature {
      * @throws SigningException If the XML document has a bad format.
      */
     public static Document getDocumentFromXML(byte[ ] xmlDocument) throws SigningException {
-	return UtilsSignatureCommons.getDocumentFromXML(xmlDocument);
+	return UtilsSignatureCommons.getDocumentFromXML(xmlDocument, false);
     }
 
     /**

@@ -5243,7 +5243,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		if (isXAdES(signatureFormat)) {
 
 		    // Accedemos al documento XML firmado.
-		    final Document doc = UtilsSignatureCommons.getDocumentFromXML(signature);
+		    final Document doc = UtilsSignatureCommons.getDocumentFromXML(signature, false);
 		    // Recuperamos la lista de firmantes.
 		    final List<XAdESSignerInfo> signers = UtilsSignatureOp.getXAdESListSigners(doc);
 		    return calculateExpirationDate(signers, null);
@@ -5330,7 +5330,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	// Si la firma es XAdES.
 	if (signedXML != null) {
 	    // Accedemos al documento XML firmado.
-	    final Document doc = UtilsSignatureCommons.getDocumentFromXML(signedXML);
+	    final Document doc = UtilsSignatureCommons.getDocumentFromXML(signedXML, false);
 	    // Recuperamos la lista de firmantes.
 	    final List<XAdESSignerInfo> signers = UtilsSignatureOp.getXAdESListSigners(doc);
 	    date = closestExpirationDate(calculateExpirationDate(signers, null), date);

@@ -57,10 +57,11 @@ public final class UtilsSignatureCommons implements IUtilsSignature {
 	/**
 	 * Method that obtains an object as a representation of a XML document.
 	 * @param xmlDocument Parameter that represents the XML document.
+	 * @param onlyCheck. Parameter that represents if is an only check format request.
 	 * @return an object as a representation of the XML document.
 	 * @throws SigningException If the XML document has a bad format.
 	 */
-	public static Document getDocumentFromXML(byte[ ] xmlDocument) throws SigningException {
+	public static Document getDocumentFromXML(byte[ ] xmlDocument, boolean onlyCheck) throws SigningException {
 		LOGGER.info(Language.getResIntegra(ILogConstantKeys.US_LOG076));
 		try {
 			// Comprobamos que se han indicado parámetros de entrada
@@ -70,11 +71,16 @@ public final class UtilsSignatureCommons implements IUtilsSignature {
 				dbf.setNamespaceAware(true);
 				dbf.setAttribute("http://xml.org/sax/features/namespaces", Boolean.TRUE);
 				DocumentBuilder db = dbf.newDocumentBuilder();
+				db.setErrorHandler(null);
 				return db.parse(new java.io.ByteArrayInputStream(xmlDocument));
 			} catch (Exception e) {
-				String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG036);
-				LOGGER.error(errorMsg, e);
-				throw new SigningException(errorMsg, e);
+				if (!onlyCheck) {
+					String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG036);
+					LOGGER.error(errorMsg, e);
+					throw new SigningException(errorMsg, e);
+				} else {
+					throw new SigningException(e);
+				}
 			}
 		} finally {
 			LOGGER.info(Language.getResIntegra(ILogConstantKeys.US_LOG077));
