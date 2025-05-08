@@ -450,7 +450,7 @@ public class XMLUtils {
      */
     public static boolean isXMLFormat(byte[ ] document) {
 	try {
-	    Document doc = UtilsSignatureCommons.getDocumentFromXML(document);
+	    Document doc = UtilsSignatureCommons.getDocumentFromXML(document, true);
 	    if (doc != null) {
 		return true;
 	    } else {

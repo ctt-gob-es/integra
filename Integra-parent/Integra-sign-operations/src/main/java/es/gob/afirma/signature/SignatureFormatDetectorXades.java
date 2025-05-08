@@ -79,7 +79,7 @@ public final class SignatureFormatDetectorXades implements ISignatureFormatDetec
 	if (SignatureFormatDetectorCommons.isXMLFormat(signature)) {
 	    try {
 		// Obtenemos el documento XML
-		Document doc = UtilsSignatureCommons.getDocumentFromXML(signature);
+		Document doc = UtilsSignatureCommons.getDocumentFromXML(signature, false);
 
 		// Obtenemos la lista de elementos ds:Signature que no
 		// correspondan

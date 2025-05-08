@@ -1595,7 +1595,7 @@ public final class XAdESBaselineSigner implements Signer {
 
 	    // Obtenemos el objeto Document a partir del array de bytes de la
 	    // firma XAdES previa
-	    final Document eSignDoc = UtilsSignatureCommons.getDocumentFromXML(signature);
+	    final Document eSignDoc = UtilsSignatureCommons.getDocumentFromXML(signature, false);
 
 	    // Obtenemos del modo de firma (Enveloping, Enveloped o Detached) de
 	    // la firma XAdES previa
@@ -1870,7 +1870,7 @@ public final class XAdESBaselineSigner implements Signer {
 
 	    // Obtenemos el objeto Document a partir del array de bytes de la
 	    // firma XAdES previa
-	    Document signDocument = UtilsSignatureCommons.getDocumentFromXML(signature);
+	    Document signDocument = UtilsSignatureCommons.getDocumentFromXML(signature, false);
 
 	    // Obtenemos el modo de firma (Enveloping, Enveloped o Detached) de
 	    // la firma XAdES previa
@@ -2172,7 +2172,7 @@ public final class XAdESBaselineSigner implements Signer {
 	    checkInputSignature(signature);
 
 	    // Obtenemos el documento XML firmado
-	    final Document doc = UtilsSignatureCommons.getDocumentFromXML(signature);
+	    final Document doc = UtilsSignatureCommons.getDocumentFromXML(signature, false);
 
 	    // Registramos los atributos de tipo ID
 	    IdRegister.registerElements(doc.getDocumentElement());
@@ -2449,7 +2449,7 @@ public final class XAdESBaselineSigner implements Signer {
 	String signingMode = IUtilsSignature.DETACHED_SIGNATURE_MODE;
 	try {
 	    // Accedemos al documento XML firmado
-	    doc = UtilsSignatureCommons.getDocumentFromXML(xmlDocument);
+	    doc = UtilsSignatureCommons.getDocumentFromXML(xmlDocument, false);
 
 	    // Registramos los atributos de tipo ID del documento XML
 	    IdRegister.registerElements(doc.getDocumentElement());

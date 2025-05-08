@@ -1182,7 +1182,7 @@ public final class XadesSigner implements Signer {
 
 	// Obtenemos el objeto Document a partir del array de bytes de la
 	// firma XAdES previa
-	final Document eSignDoc = UtilsSignatureCommons.getDocumentFromXML(signature);
+	final Document eSignDoc = UtilsSignatureCommons.getDocumentFromXML(signature, false);
 
 	// Obtenemos del modo de firma (Enveloping, Enveloped o Detached) de
 	// la firma XAdES previa
@@ -1207,7 +1207,7 @@ public final class XadesSigner implements Signer {
 	// XAdES previa
 	Document signDocument = null;
 	try {
-	    signDocument = UtilsSignatureCommons.getDocumentFromXML(signature);
+	    signDocument = UtilsSignatureCommons.getDocumentFromXML(signature, false);
 	} catch (final SigningException e) {
 	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XS_LOG005);
 	    LOGGER.error(errorMsg, e);
@@ -1335,7 +1335,7 @@ public final class XadesSigner implements Signer {
 	}
 
 	// Obtenemos la firma como objeto XML
-	final Document doc = UtilsSignatureCommons.getDocumentFromXML(signature);
+	final Document doc = UtilsSignatureCommons.getDocumentFromXML(signature, false);
 
 	// Registramos los atributos de tipo ID
 	IdRegister.registerElements(doc.getDocumentElement());
@@ -1984,7 +1984,7 @@ public final class XadesSigner implements Signer {
 
 	    // Obtenemos el objeto Document a partir del array de bytes de la
 	    // firma XAdES previa
-	    final Document eSignDoc = UtilsSignatureCommons.getDocumentFromXML(signature);
+	    final Document eSignDoc = UtilsSignatureCommons.getDocumentFromXML(signature, false);
 
 	    // Obtenemos del modo de firma (Enveloping, Enveloped o Detached) de
 	    // la firma XAdES previa
@@ -2235,7 +2235,7 @@ public final class XadesSigner implements Signer {
 	String signingMode = IUtilsSignature.DETACHED_SIGNATURE_MODE;
 	try {
 	    // Accedemos al documento XML firmado
-	    doc = UtilsSignatureCommons.getDocumentFromXML(xmlDocument);
+	    doc = UtilsSignatureCommons.getDocumentFromXML(xmlDocument, false);
 
 	    // Registramos los atributos de tipo ID del documento XML
 	    IdRegister.registerElements(doc.getDocumentElement());

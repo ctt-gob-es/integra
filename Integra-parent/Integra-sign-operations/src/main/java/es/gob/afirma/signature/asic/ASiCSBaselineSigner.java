@@ -1166,7 +1166,7 @@ public final class ASiCSBaselineSigner implements Signer {
      */
     private Document getDocumentFromXML(final ValidationResult validationResult) throws SigningException {
 	try {
-	    return UtilsSignatureCommons.getDocumentFromXML(this.signedXML);
+	    return UtilsSignatureCommons.getDocumentFromXML(this.signedXML, false);
 	} catch (final Exception e) {
 	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG020, new Object[ ] { e.getMessage() });
 	    LOGGER.error(errorMsg, e);
