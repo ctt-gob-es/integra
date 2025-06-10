@@ -179,6 +179,11 @@ public class AcroFields {
                     continue;
                 }
                 
+                if (!PdfName.WIDGET.equals(annot.getAsName(PdfName.SUBTYPE))) {
+                    PdfReader.releaseLastXrefPartial(annots.getAsIndirectObject(j));
+                    continue;
+                }
+                
                 // Comprobamos que la firma encontrada (o el padre de esta) estaba entre las
                 // firmas declaradas
                 boolean found = false;
@@ -196,11 +201,6 @@ public class AcroFields {
                 if (!found) {
                 	PdfReader.releaseLastXrefPartial(annots.getAsIndirectObject(j));
                 	continue;
-                }
-                
-                if (!PdfName.WIDGET.equals(annot.getAsName(PdfName.SUBTYPE))) {
-                    PdfReader.releaseLastXrefPartial(annots.getAsIndirectObject(j));
-                    continue;
                 }
                 
             	// 19/01/2024 - Ignoraremos las firmas en las que haya un valor
