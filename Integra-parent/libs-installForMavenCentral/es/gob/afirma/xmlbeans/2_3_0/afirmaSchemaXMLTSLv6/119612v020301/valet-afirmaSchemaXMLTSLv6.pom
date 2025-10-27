@@ -1,0 +1,46 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>es.gob.valet</groupId>
+		<artifactId>valet-parent</artifactId>
+		<version>1.2.0</version>
+		<relativePath>..</relativePath>
+	</parent>
+	<artifactId>valet-afirmaSchemaXMLTSLv6</artifactId>
+	<version>${valet-afirmaSchemaXMLTSLv6}</version>
+	<name>valet-afirmaSchemaXMLTSLv6</name>
+	<description>XML TSL Schema 119612 2.3.1</description>
+	<packaging>jar</packaging>
+	
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.xmlbeans</groupId>
+			<artifactId>xmlbeans-afirma</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.1</version>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Built-By>${built.by}</Built-By>
+							<Built-Time>${timestamp}</Built-Time>
+							<Vendor>${project.organization.name}</Vendor>
+							<Project-Name>${valet.project.name}</Project-Name>
+							<Valet-Version>${valet.version}</Valet-Version>
+							<Artifact-Name>${project.artifactId}</Artifact-Name>
+							<Artifact-Version>${project.version}</Artifact-Version>
+						</manifestEntries>
+					</archive>
+					<finalName>${project.artifactId}</finalName>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

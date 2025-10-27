@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>es.gob.afirma</groupId>
 		<artifactId>Integra-parent</artifactId>
-		<version>2.2.2_000c</version>
+		<version>2.2.2_000d</version>
 	</parent>
 	<artifactId>Integra-tsl</artifactId>
 	<name>Integra-tsl</name>
@@ -97,21 +97,9 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.xmlbeans</groupId>
-			<artifactId>xmlbeans-afirma</artifactId>
-			<version>2.3.0</version>
-			<exclusions>
-				<exclusion>
-					<groupId>stax</groupId>
-					<artifactId>stax-api</artifactId>
-				</exclusion>
-			</exclusions>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>es.gob.afirma.xmlbeans.2_3_0</groupId>
-			<artifactId>afirmaSchemaXMLTSLv5</artifactId>
-			<version>119612v020101</version>
+		    <groupId>es.gob.valet</groupId>
+		    <artifactId>valet-afirmaSchemaXMLTSLv6</artifactId>
+		    <version>1.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>es.gob.afirma</groupId>
