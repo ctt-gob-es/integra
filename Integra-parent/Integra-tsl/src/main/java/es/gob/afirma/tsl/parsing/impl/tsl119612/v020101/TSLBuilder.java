@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 10/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.3, 17/04/2023.
+ * @version 1.4, 28/10/2025.
  */
 package es.gob.afirma.tsl.parsing.impl.tsl119612.v020101;
 
@@ -116,7 +116,7 @@ import es.gob.afirma.tsl.utils.UtilsStringChar;
  * <p>Class that represents a TSL Builder of TSL implementation as the
  * ETSI TS 119612 2.1.1 specification.</p>
  * <b>Project:</b><p>Platform for detection and validation of certificates recognized in European TSL.</p>
- * @version 1.3, 17/04/2023.
+ * @version 1.4, 28/10/2025.
  */
 public class TSLBuilder extends ATSLBuilder {
 
