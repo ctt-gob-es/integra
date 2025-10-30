@@ -104,7 +104,7 @@
 		<dependency>
 			<groupId>es.gob.afirma</groupId>
 			<artifactId>afirma-crypto-validation</artifactId>
-			<version>1.6.2</version>
+			<version>1.9</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>afirma-crypto-cms</artifactId>

@@ -18,7 +18,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 10/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.3, 17/04/2023.
+ * @version 1.4, 27/10/2025.
  */
 package es.gob.afirma.tsl.parsing.impl.common;
 
@@ -32,8 +32,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import es.gob.afirma.cert.signvalidation.SignValidity;
-import es.gob.afirma.cert.signvalidation.ValidateXMLSignature;
+import es.gob.afirma.signvalidation.SignValidity;
+import es.gob.afirma.signvalidation.ValidateXMLSignature;
 import es.gob.afirma.core.AOInvalidFormatException;
 import es.gob.afirma.core.signers.AOSimpleSignInfo;
 import es.gob.afirma.core.util.tree.AOTreeModel;
@@ -57,7 +57,7 @@ import es.gob.afirma.tsl.utils.UtilsStringChar;
  * <p>Abstract class that represents a TSL data checker with the principal functions
  * regardless it implementation.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.3, 17/04/2023.
+ * @version 1.4, 27/10/2025.
  */
 public abstract class ATSLChecker implements ITSLChecker {
     /**
@@ -1319,7 +1319,12 @@ public abstract class ATSLChecker implements ITSLChecker {
 	 */
 	protected final void veryfyTSLSignature(byte[ ] fullTSLxml) throws TSLMalformedException {
 
-		SignValidity validity = new ValidateXMLSignature().validate(fullTSLxml);
+		List<SignValidity> validities = new ValidateXMLSignature().validate(fullTSLxml);
+		// Comprobamos que la lista no esta vacia
+		if (validities == null || validities.isEmpty()) {
+			throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.ATC_LOG004));
+		}
+		SignValidity validity = validities.get(0);
 		if (validity.getValidity() != SignValidity.SIGN_DETAIL_TYPE.OK) {
 			throw new TSLMalformedException(Language.getResIntegraTsl(ILogTslConstant.ATC_LOG004));
 		}
