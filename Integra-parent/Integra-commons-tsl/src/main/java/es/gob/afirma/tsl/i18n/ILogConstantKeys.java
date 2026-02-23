@@ -145,6 +145,9 @@ String UR_LOG001 = "UR001";
  */
 String UR_LOG002 = "UR002";
 
-
+/**
+ * Constant attribute that represents the name of the property <code>LGG001</code> belonging to the file integra_xx_YY.properties.
+ */
+String LGG_LOG001 = "LGG001";
 
 }

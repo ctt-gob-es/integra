@@ -21,7 +21,12 @@
  */
 package es.gob.afirma.tsl.logger;
 
+import java.io.File;
+
 import org.apache.logging.log4j.LogManager;
+
+import es.gob.afirma.tsl.i18n.ILogConstantKeys;
+import es.gob.afirma.tsl.i18n.Language;
 
 /**
  * <p>Class that encapsulates the logging methods.</p>
@@ -33,39 +38,60 @@ public class Logger {
     /**
      * Attribute that represents the object that manages the log of the class.
      */
-    private static org.apache.logging.log4j.Logger LOGGER;
+    private org.apache.logging.log4j.Logger LOGGER;
+
+    static {
+    	// Set the Log4j2 configuration file if no already set.
+    	try {
+    		String configFilePath = System.getProperty("log4j.configurationFile");
+    		if (configFilePath == null) {
+    			String configDirPath = System.getProperty("integra.config");
+    			if (configDirPath != null) {
+    				File logConfigFile = new File(configDirPath, "integra-log4j2.xml");
+    				if (logConfigFile.isFile()) {
+    					System.setProperty("log4j.configurationFile", logConfigFile.getAbsolutePath());
+    				}
+    			}
+    		}
+    	}
+    	catch (Exception e) {
+    		LogManager.getLogger(Logger.class).warn(
+    				Language.getResIntegra(ILogConstantKeys.LGG_LOG001), e);
+    	}
+    }
 
     /**
      * Constructor for instancing the configured Logger class using an appender name
      * @param name String that represents an appender name configured.
      */
-    public Logger(String name) {
-
-	LOGGER = LogManager.getLogger(name);
+    private Logger(String name) {
+    	LOGGER = LogManager.getLogger(name);
     }
 
     /**
      * Constructor for instancing the configured Logger class using a class object.
      * @param clazz Class object of the Logger.
      */
-    public Logger(Class<?> clazz) {
-
-	LOGGER = LogManager.getLogger(clazz);
-    }
-
-    public static Logger getLogger(String name) {
-
-	return new Logger(name);
+    private Logger(Class<?> clazz) {
+    	LOGGER = LogManager.getLogger(clazz);
     }
 
     /**
      * Method that encapsulates the call to the logger retrieval according to the chosen logger system implementation.
-     * @param clazz The name of the configured logger.
+     * @param name The name of the configured logger.
+     * @return a new {@link Logger}
+     */
+    public static Logger getLogger(String name) {
+    	return new Logger(name);
+    }
+
+    /**
+     * Method that encapsulates the call to the logger retrieval according to the chosen logger system implementation.
+     * @param clazz The .class of the class whose logger we want to obtain.
      * @return a new {@link Logger}
      */
     public static Logger getLogger(Class<?> clazz) {
-
-	return new Logger(clazz);
+    	return new Logger(clazz);
     }
 
     /**
@@ -73,8 +99,7 @@ public class Logger {
      * @param message String that represents the message to log with the INFO level.
      */
     public void info(final Object message) {
-
-	LOGGER.info(message);
+    	LOGGER.info(message);
     }
 
     /**
@@ -83,8 +108,7 @@ public class Logger {
      * @param t the exception to log, including its stack trace.
      */
     public void info(final Object message, final Throwable t) {
-
-	LOGGER.info(message, t);
+    	LOGGER.info(message, t);
     }
 
     /**
@@ -92,8 +116,7 @@ public class Logger {
      * @param message String that represents the message to log with the DEBUG level.
      */
     public void debug(final Object message) {
-
-	LOGGER.debug(message);
+    	LOGGER.debug(message);
     }
 
     /**
@@ -102,8 +125,7 @@ public class Logger {
      * @param t the exception to log, including its stack trace.
      */
     public void debug(final Object message, final Throwable t) {
-
-	LOGGER.debug(message, t);
+    	LOGGER.debug(message, t);
     }
 
     /**
@@ -111,8 +133,7 @@ public class Logger {
      * @param message String that represents the message to log with the WARN level.
      */
     public void warn(final Object message) {
-
-	LOGGER.warn(message);
+    	LOGGER.warn(message);
     }
 
     /**
@@ -121,8 +142,7 @@ public class Logger {
      * @param t the exception to log, including its stack trace.
      */
     public void warn(final Object message, final Throwable t) {
-
-	LOGGER.warn(message, t);
+    	LOGGER.warn(message, t);
     }
 
     /**
@@ -130,8 +150,7 @@ public class Logger {
      * @param message String that represents the message to log with the ERROR level.
      */
     public void error(final Object message) {
-
-	LOGGER.error(message);
+    	LOGGER.error(message);
     }
 
     /**
@@ -140,8 +159,7 @@ public class Logger {
      * @param t the exception to log, including its stack trace.
      */
     public void error(final Object message, final Throwable t) {
-
-	LOGGER.error(message, t);
+    	LOGGER.error(message, t);
     }
 
     /**
@@ -149,8 +167,6 @@ public class Logger {
      * @return {@code true} if debug mode is enabled, {@code false} otherwise.
      */
     public boolean isDebugEnabled() {
-
-	return LOGGER.isDebugEnabled();
+    	return LOGGER.isDebugEnabled();
     }
-
 }

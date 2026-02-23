@@ -16,3 +16,6 @@ call mvn install:install-file -Dfile=./es/gob/afirma/xmlbeans/2_3_0/afirmaSchema
 call mvn install:install-file -Dfile=./es/gob/afirma/xmlbeans/2_3_0/afirmaSchemaXMLTSLv5/119612v020101/afirmaSchemaXMLTSLv5-119612v020101-sources.jar -DgroupId=es.gob.afirma.xmlbeans.2_3_0 -DartifactId=afirmaSchemaXMLTSLv5 -Dversion=119612v020101 -Dpackaging=jar -Dclassifier=sources
 rem #Dependencia con Barcode4j v 2.1 
 call mvn install:install-file -Dfile=./net/sf/barcode4j/barcode4j-fop-ext-complete/2.1/barcode4j-fop-ext-complete-2.1.jar -DgroupId=net.sf.barcode4j -DartifactId=barcode4j-fop-ext-complete -Dversion=2.1 -Dpackaging=jar -DpomFile=./net/sf/barcode4j/barcode4j-fop-ext-complete/2.1/barcode4j-fop-ext-complete-2.1.pom
+
+rem Compilamos e instalamos la dependencia Maven de iText
+call mvn -f "%~dp0../lib/itext-afirma" clean install
