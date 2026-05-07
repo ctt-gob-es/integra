@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p> 10/11/2020.</p>
  * @author Gobierno de España.
- * @version 1.4, 17/04/2023.
+ * @version 1.5, 15/10/2025.
  */
 package es.gob.afirma.tsl;
 
@@ -26,6 +26,7 @@ import java.io.File;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Map;
+import java.util.Date;
 
 import es.gob.afirma.tsl.access.TSLManager;
 import es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult;
@@ -44,7 +45,7 @@ import es.gob.afirma.tsl.utils.UtilsStringChar;
 /** 
  * <p>Class that implements the necessary methods to perform certificate validation using a TSL.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.4, 17/04/2023.
+ * @version 1.5, 15/10/2025.
  */
 public class TslValidation implements ITslValidation {
 
@@ -143,7 +144,8 @@ public class TslValidation implements ITslValidation {
 	}
 	// si todo correcto, se continua con el proceso
 	if (allIsOk) {
-	    tslValidatorResult = TSLManager.getInstance().validateX509withTSL(x509cert, x509cert.getNotBefore(), false, true, tslObject);
+	    Date validationDate = new Date();
+	    tslValidatorResult = TSLManager.getInstance().validateX509withTSL(x509cert, validationDate, false, true, tslObject);
 	    
 	    
 	    if (tslValidatorResult == null) {
