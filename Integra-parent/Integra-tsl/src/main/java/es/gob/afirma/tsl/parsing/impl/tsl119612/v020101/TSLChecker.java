@@ -21,7 +21,7 @@
  * <b>Project:</b><p>Platform for detection and validation of certificates recognized in European TSL.</p>
  * <b>Date:</b><p>06/11/2018.</p>
  * @author Gobierno de España.
- * @version 1.7, 17/04/2023.
+ * @version 1.8, 28/10/2025.
  */
 package es.gob.afirma.tsl.parsing.impl.tsl119612.v020101;
 
@@ -75,7 +75,7 @@ import iaik.x509.extensions.SubjectKeyIdentifier;
  * <p>Class that represents a TSL Data Checker of TSL implementation as the
  * ETSI TS 119612 2.1.1 specification.</p>
  * <b>Project:</b><p>Platform for detection and validation of certificates recognized in European TSL.</p>
- * @version 1.7, 17/04/2023.
+ * @version 1.8, 28/10/2025.
  */
 public class TSLChecker extends ATSLChecker {
 
@@ -139,7 +139,8 @@ public class TSLChecker extends ATSLChecker {
     @Override
     protected void checkSchemeInformationTSLVersionIdentifierValue() throws TSLMalformedException {
 
-	if (getTSLObject().getSchemeInformation().getTslVersionIdentifier() != NumberConstants.INT_5) {
+	if (getTSLObject().getSchemeInformation().getTslVersionIdentifier() != NumberConstants.INT_5 &&
+			getTSLObject().getSchemeInformation().getTslVersionIdentifier() != NumberConstants.INT_6) {
 	    throw new TSLMalformedException(Language.getFormatResIntegraTsl(ILogTslConstant.TC_LOG003, new Object[ ] { ITSLElementsAndAttributes.ELEMENT_TSL_VERSION_IDENTIFIER }));
 	}
 
