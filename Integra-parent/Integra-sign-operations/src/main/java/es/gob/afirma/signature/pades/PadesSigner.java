@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -166,7 +165,8 @@ public final class PadesSigner implements Signer {
      * {@inheritDoc}
      * @see es.gob.afirma.signature.Signer#sign(byte[], java.lang.String, java.lang.String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, java.lang.String, java.lang.String, java.lang.String)
      */
-    public byte[ ] sign(byte[ ] data, String algorithm, String signatureFormat, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID, String idClient) throws SigningException {
+    @Override
+	public byte[ ] sign(byte[ ] data, String algorithm, String signatureFormat, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID, String idClient) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.PS_LOG006));
 	// Comprobación parámetros de entrada
 	checkSignInputParams(data, algorithm, privateKey);
@@ -257,10 +257,10 @@ public final class PadesSigner implements Signer {
 
 	    // Obtenemos el algoritmo de firma compatible con el tipo de clave del
 	    // certificado utilizando el algoritmo de hash del algoritmo
-	    // proporcionado 
+	    // proporcionado
 	    final String keyType = privateKey.getPrivateKey().getAlgorithm();
-	    final String signAlgorithm = SignatureConstants.composeSignatureAlgorithmName(algorithm, keyType);	
-	    
+	    final String signAlgorithm = SignatureConstants.composeSignatureAlgorithmName(algorithm, keyType);
+
 	    /**	********************************
 	     * Creación del objeto SignedData*
 	     ***********************************/
@@ -320,7 +320,8 @@ public final class PadesSigner implements Signer {
      * {@inheritDoc}
      * @see es.gob.afirma.signature.Signer#sign(byte[], java.lang.String, java.lang.String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, java.lang.String, java.lang.String)
      */
-    public byte[ ] sign(byte[ ] data, String algorithm, String signatureFormat, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID) throws SigningException {
+    @Override
+	public byte[ ] sign(byte[ ] data, String algorithm, String signatureFormat, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID) throws SigningException {
 	return sign(data, algorithm, signatureFormat, privateKey, extraParams, includeTimestamp, signatureForm, signaturePolicyID, null);
     }
 
@@ -376,159 +377,18 @@ public final class PadesSigner implements Signer {
      * {@inheritDoc}
      * @see es.gob.afirma.signature.Signer#coSign(byte[], byte[], java.lang.String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, java.lang.String, java.lang.String, java.lang.String)
      */
-    public byte[ ] coSign(byte[ ] signature, byte[ ] document, String algorithm, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID, String idClient) throws SigningException {
-	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.PS_LOG023));
-	byte[ ] result = null;
-	ByteArrayOutputStream bytesResult = null;
-
-	try {
-	    // Comprobación parámetros de entrada
-
-	    Properties externalParams = extraParams;
-	    if (externalParams == null) {
-		externalParams = new Properties();
-	    }
-	    checkCoSignInputParams(signature, algorithm, privateKey, externalParams, signatureForm);
-
-	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.PS_LOG004, new Object[ ] { algorithm, extraParams }));
-
-	    bytesResult = new ByteArrayOutputStream();
-
-	    // se obtiene la cadena de certificación
-	    Certificate[ ] certificateChain = privateKey.getCertificateChain();
-	    // Leemos el PDF original
-	    PdfReader reader = new PdfReader(signature);
-
-	    // Antes de llevar a cabo la firma comprobamos el nivel de
-	    // certificación asociado a la firma más reciente, en caso de
-	    // existir, del documento PDF.
-	    // Si la firma anterior está definida como Certified, en ese caso,
-	    // no se podrán añadir más firmas al documento PDF
-	    PdfReader lastRevisionReader = UtilsSignatureOp.obtainLatestRevision(reader);
-	    if (lastRevisionReader != null && lastRevisionReader.getCertificationLevel() != PdfSignatureAppearance.NOT_CERTIFIED) {
-		throw new SigningException(Language.getResIntegra(ILogConstantKeys.PS_LOG019));
-	    }
-
-	    // Creamos el contenido de la firma
-	    PdfStamper stp = PdfStamper.createSignature(reader, bytesResult, '\0', null, true);
-
-	    // Iniciamos el proceso de generación de la firma PAdES
-	    PdfSignatureAppearance signatureAppearance = stp.getSignatureAppearance();
-
-	    // Se comprueba si se va a insertar rúbrica
-	    if (UtilsSignatureOp.checkExtraParamsSignWithRubric(externalParams)) {
-		UtilsSignatureOp.insertRubric(reader, signatureAppearance, externalParams);
-	    }
-
-	    // Establecemos como fecha de creación de la firma la fecha actual
-	    signatureAppearance.setSignDate(new GregorianCalendar());
-
-	    // Asociamos la cadena de certificación
-	    signatureAppearance.setCrypto(null, certificateChain, null, PdfName.ADOBE_PPKLITE);
-
-	    // Establecemos el valor de la clave /SubFilter. Para firmas
-	    // PAdES-BES y PAdES-EPES el valor es 'ETSI.CAdES.detached'. Para
-	    // firmas PAdES-Basic el valor es 'adbe.pkcs7.detached'
-	    PdfSignature signDictionary = new PdfSignature(PdfName.ADOBE_PPKLITE, defineSubFilterValue(signatureForm));
-	    signDictionary.setDate(new PdfDate(signatureAppearance.getSignDate()));
-
-	    String signatureDictionaryName = PdfPKCS7.getSubjectFields((X509Certificate) certificateChain[0]).getField("CN");
-	    signDictionary.setName(signatureDictionaryName);
-
-	    // Comprobamos si se ha indicado en las propiedades extra la
-	    // propiedad SignatureProperties.PADES_CERTIFICATION_LEVEL. Dicha
-	    // propiedad
-	    // indica el nivel de restricción asociado a la firma. Si posee el
-	    // valor CERTIFIED_NO_CHANGES_ALLOWED indicará
-	    // que la firma
-	    // no admitirá que se le añadan firmas "approval" en el futuro. Si
-	    // posee el valor NOT_CERTIFIED, (valor por defecto), indicará
-	    // que la firma
-	    // admitirá que se le añadan firmas "approval" en el futuro.
-	    int certificationLevel = defineCertificationLevel(externalParams);
-
-	    // Establecemos el nivel de certificación en la firma
-	    signatureAppearance.setCertificationLevel(certificationLevel);
-
-	    // incluimos propiedades de la firma (si existen)
-	    addPropertyToDictionary(externalParams, signDictionary);
-
-	    // Comentamos inclusión entrada 'Cert' para firmas PADES
-	    // signDictionary.setCert(((X509Certificate)certificateChain[0]).getEncoded());
-	    signatureAppearance.setCryptoDictionary(signDictionary);
-	    // Reservamos espacio para el contenido de la clave /Contents
-	    // 2229 <- CamerFirma Demo SHA-1 (1024)
-	    // 5123 <- Firma Profesional Demo SHA-1 (1024)
-	    // 5031 <- DNIe SHA-2 (2048)
-	    int csize = CONTENT_RESERVED_SIZE;
-	    HashMap<PdfName, Integer> exc = new HashMap<PdfName, Integer>();
-	    exc.put(PdfName.CONTENTS, Integer.valueOf(csize * 2 + 2));
-	    signatureAppearance.preClose(exc);
-
-	    // Obtenemos el algoritmo de firma compatible con el tipo de clave del
-	    // certificado utilizando el algoritmo de hash del algoritmo
-	    // proporcionado 
-	    final String keyType = privateKey.getPrivateKey().getAlgorithm();
-	    final String signAlgorithm = SignatureConstants.composeSignatureAlgorithmName(algorithm, keyType);	
-	    
-	    /**********************************
-	     * Creación del objeto SignedData*
-	     ***********************************/
-	    byte[ ] signedData = null;
-	    P7ContentSignerParameters csp = new P7ContentSignerParameters(signature, signAlgorithm, privateKey);
-	    Oid dataType = new Oid(PKCSObjectIdentifiers.data.getId());
-	    // cálculo del digest del documento pdf original
-	    String digestAlgorithm = CryptoUtilPdfBc.getDigestAlgorithmName(algorithm);
-
-	    byte[ ] messageDigest = CryptoUtilPdfBc.digest(digestAlgorithm, GenericUtilsCommons.getDataFromInputStream(signatureAppearance.getRangeStream()));
-	    csp.setDigestValue(messageDigest);
-
-	    // incluimos en los parámetros opcionales el formato de la firma
-	    // pades para crear signedData (específico para PAdES)
-	    externalParams.put(SignatureConstants.SIGN_FORMAT_PADES, true);
-	    CMSBuilder cmsBuilder = new CMSBuilder();
-	    signedData = cmsBuilder.generateSignedData(csp, false, dataType, externalParams, includeTimestamp, signatureForm, signaturePolicyID, idClient);
-
-	    /***********************************/
-	    byte[ ] outc = new byte[csize];
-	    PdfDictionary dic2 = new PdfDictionary();
-	    System.arraycopy(signedData, 0, outc, 0, signedData.length);
-	    dic2.put(PdfName.CONTENTS, new PdfString(outc).setHexWriting(true));
-	    signatureAppearance.close(dic2);
-
-	    // Si la firma a generar ha sido PAdES-EPES, comprobamos si es
-	    // válida respecto a las entradas del diccionario de firma
-	    if (cmsBuilder.isEPES()) {
-		SignaturePolicyManager.validateGeneratedPAdESEPESSignature(signDictionary, cmsBuilder.getPolicyID(), null, idClient);
-	    }
-	} catch (DocumentException e) {
-	    LOGGER.error(e);
-	    throw new SigningException(e);
-	} catch (IOException e) {
-	    LOGGER.error(e);
-	    throw new SigningException(e);
-	} catch (GSSException e) {
-	    LOGGER.error(e);
-	    throw new SigningException(e);
-	} catch (SignaturePolicyException e) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.PS_LOG025, new Object[ ] { e.getMessage() });
-	    LOGGER.error(errorMsg, e);
-	    throw new SigningException(errorMsg, e);
-	} finally {
-	    // Cerramos recursos
-	    UtilsResourcesCommons.safeCloseOutputStream(bytesResult);
-	    LOGGER.info(Language.getResIntegra(ILogConstantKeys.PS_LOG024));
-	}
-	result = bytesResult.toByteArray();
-	GenericUtilsCommons.printResult(result, LOGGER);
-	return result;
+    @Override
+	public byte[ ] coSign(byte[ ] signature, byte[ ] document, String algorithm, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID, String idClient) throws SigningException {
+		LOGGER.debug(Language.getResIntegra(ILogConstantKeys.PS_LOG023));
+		return sign(signature, algorithm, signatureForm, privateKey, extraParams, includeTimestamp, signatureForm, signaturePolicyID, idClient);
     }
 
     /**
      * {@inheritDoc}
      * @see es.gob.afirma.signature.Signer#coSign(byte[], byte[], java.lang.String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, java.lang.String, java.lang.String)
      */
-    public byte[ ] coSign(byte[ ] signature, byte[ ] document, String algorithm, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID) throws SigningException {
+    @Override
+	public byte[ ] coSign(byte[ ] signature, byte[ ] document, String algorithm, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID) throws SigningException {
 	return coSign(signature, document, algorithm, privateKey, extraParams, includeTimestamp, signatureForm, signaturePolicyID, null);
     }
 
@@ -536,159 +396,18 @@ public final class PadesSigner implements Signer {
      * {@inheritDoc}
      * @see es.gob.afirma.signature.Signer#counterSign(byte[], java.lang.String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, java.lang.String, java.lang.String, java.lang.String)
      */
-    public byte[ ] counterSign(byte[ ] signature, String algorithm, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID, String idClient) throws SigningException {
-	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.PS_LOG027));
-	byte[ ] result = null;
-	ByteArrayOutputStream bytesResult = null;
-
-	try {
-	    // Comprobación parámetros de entrada
-
-	    Properties externalParams = extraParams;
-	    if (externalParams == null) {
-		externalParams = new Properties();
-	    }
-	    checkCounterSignInputParams(signature, algorithm, privateKey, externalParams, signatureForm);
-
-	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.PS_LOG004, new Object[ ] { algorithm, extraParams }));
-
-	    bytesResult = new ByteArrayOutputStream();
-
-	    // se obtiene la cadena de certificación
-	    Certificate[ ] certificateChain = privateKey.getCertificateChain();
-	    // Leemos el PDF original
-	    PdfReader reader = new PdfReader(signature);
-
-	    // Antes de llevar a cabo la firma comprobamos el nivel de
-	    // certificación asociado a la firma más reciente, en caso de
-	    // existir, del documento PDF.
-	    // Si la firma anterior está definida como Certified, en ese caso,
-	    // no se podrán añadir más firmas al documento PDF
-	    PdfReader lastRevisionReader = UtilsSignatureOp.obtainLatestRevision(reader);
-	    if (lastRevisionReader != null && lastRevisionReader.getCertificationLevel() != PdfSignatureAppearance.NOT_CERTIFIED) {
-		throw new SigningException(Language.getResIntegra(ILogConstantKeys.PS_LOG019));
-	    }
-
-	    // Creamos el contenido de la firma
-	    PdfStamper stp = PdfStamper.createSignature(reader, bytesResult, '\0', null, true);
-
-	    // Iniciamos el proceso de generación de la firma PAdES
-	    PdfSignatureAppearance signatureAppearance = stp.getSignatureAppearance();
-
-	    // Se comprueba si se va a insertar rúbrica
-	    if (UtilsSignatureOp.checkExtraParamsSignWithRubric(externalParams)) {
-		UtilsSignatureOp.insertRubric(reader, signatureAppearance, externalParams);
-	    }
-
-	    // Establecemos como fecha de creación de la firma la fecha actual
-	    signatureAppearance.setSignDate(new GregorianCalendar());
-
-	    // Asociamos la cadena de certificación
-	    signatureAppearance.setCrypto(null, certificateChain, null, PdfName.ADOBE_PPKLITE);
-
-	    // Establecemos el valor de la clave /SubFilter. Para firmas
-	    // PAdES-BES y PAdES-EPES el valor es 'ETSI.CAdES.detached'. Para
-	    // firmas PAdES-Basic el valor es 'adbe.pkcs7.detached'
-	    PdfSignature signDictionary = new PdfSignature(PdfName.ADOBE_PPKLITE, defineSubFilterValue(signatureForm));
-	    signDictionary.setDate(new PdfDate(signatureAppearance.getSignDate()));
-
-	    String signatureDictionaryName = PdfPKCS7.getSubjectFields((X509Certificate) certificateChain[0]).getField("CN");
-	    signDictionary.setName(signatureDictionaryName);
-
-	    // Comprobamos si se ha indicado en las propiedades extra la
-	    // propiedad SignatureProperties.PADES_CERTIFICATION_LEVEL. Dicha
-	    // propiedad
-	    // indica el nivel de restricción asociado a la firma. Si posee el
-	    // valor CERTIFIED_NO_CHANGES_ALLOWED indicará
-	    // que la firma
-	    // no admitirá que se le añadan firmas "approval" en el futuro. Si
-	    // posee el valor NOT_CERTIFIED, (valor por defecto), indicará
-	    // que la firma
-	    // admitirá que se le añadan firmas "approval" en el futuro.
-	    int certificationLevel = defineCertificationLevel(externalParams);
-
-	    // Establecemos el nivel de certificación en la firma
-	    signatureAppearance.setCertificationLevel(certificationLevel);
-
-	    // incluimos propiedades de la firma (si existen)
-	    addPropertyToDictionary(externalParams, signDictionary);
-
-	    // Comentamos inclusión entrada 'Cert' para firmas PADES
-	    // signDictionary.setCert(((X509Certificate)certificateChain[0]).getEncoded());
-	    signatureAppearance.setCryptoDictionary(signDictionary);
-	    // Reservamos espacio para el contenido de la clave /Contents
-	    // 2229 <- CamerFirma Demo SHA-1 (1024)
-	    // 5123 <- Firma Profesional Demo SHA-1 (1024)
-	    // 5031 <- DNIe SHA-2 (2048)
-	    int csize = CONTENT_RESERVED_SIZE;
-	    HashMap<PdfName, Integer> exc = new HashMap<PdfName, Integer>();
-	    exc.put(PdfName.CONTENTS, Integer.valueOf(csize * 2 + 2));
-	    signatureAppearance.preClose(exc);
-
-	    // Obtenemos el algoritmo de firma compatible con el tipo de clave del
-	    // certificado utilizando el algoritmo de hash del algoritmo
-	    // proporcionado 
-	    final String keyType = privateKey.getPrivateKey().getAlgorithm();
-	    final String signAlgorithm = SignatureConstants.composeSignatureAlgorithmName(algorithm, keyType);	
-	    
-	    /**********************************
-	     * Creación del objeto SignedData*
-	     ***********************************/
-	    byte[ ] signedData = null;
-	    P7ContentSignerParameters csp = new P7ContentSignerParameters(signature, signAlgorithm, privateKey);
-	    Oid dataType = new Oid(PKCSObjectIdentifiers.data.getId());
-	    // cálculo del digest del documento pdf original
-	    String digestAlgorithm = CryptoUtilPdfBc.getDigestAlgorithmName(algorithm);
-
-	    byte[ ] messageDigest = CryptoUtilPdfBc.digest(digestAlgorithm, GenericUtilsCommons.getDataFromInputStream(signatureAppearance.getRangeStream()));
-	    csp.setDigestValue(messageDigest);
-
-	    // incluimos en los parámetros opcionales el formato de la firma
-	    // pades para crear signedData (específico para PAdES)
-	    externalParams.put(SignatureConstants.SIGN_FORMAT_PADES, true);
-	    CMSBuilder cmsBuilder = new CMSBuilder();
-	    signedData = cmsBuilder.generateSignedData(csp, false, dataType, externalParams, includeTimestamp, signatureForm, signaturePolicyID, idClient);
-
-	    /***********************************/
-	    byte[ ] outc = new byte[csize];
-	    PdfDictionary dic2 = new PdfDictionary();
-	    System.arraycopy(signedData, 0, outc, 0, signedData.length);
-	    dic2.put(PdfName.CONTENTS, new PdfString(outc).setHexWriting(true));
-	    signatureAppearance.close(dic2);
-
-	    // Si la firma a generar ha sido PAdES-EPES, comprobamos si es
-	    // válida respecto a las entradas del diccionario de firma
-	    if (cmsBuilder.isEPES()) {
-		SignaturePolicyManager.validateGeneratedPAdESEPESSignature(signDictionary, cmsBuilder.getPolicyID(), null, idClient);
-	    }
-	} catch (DocumentException e) {
-	    LOGGER.error(e);
-	    throw new SigningException(e);
-	} catch (IOException e) {
-	    LOGGER.error(e);
-	    throw new SigningException(e);
-	} catch (GSSException e) {
-	    LOGGER.error(e);
-	    throw new SigningException(e);
-	} catch (SignaturePolicyException e) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.PS_LOG029, new Object[ ] { e.getMessage() });
-	    LOGGER.error(errorMsg, e);
-	    throw new SigningException(errorMsg, e);
-	} finally {
-	    // Cerramos recursos
-	    UtilsResourcesCommons.safeCloseOutputStream(bytesResult);
-	    LOGGER.info(Language.getResIntegra(ILogConstantKeys.PS_LOG028));
-	}
-	result = bytesResult.toByteArray();
-	GenericUtilsCommons.printResult(result, LOGGER);
-	return result;
+    @Override
+	public byte[ ] counterSign(byte[ ] signature, String algorithm, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID, String idClient) throws SigningException {
+    	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.PS_LOG023));
+		return sign(signature, algorithm, signatureForm, privateKey, extraParams, includeTimestamp, signatureForm, signaturePolicyID, idClient);
     }
 
     /**
      * {@inheritDoc}
      * @see es.gob.afirma.signature.Signer#counterSign(byte[], java.lang.String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, java.lang.String, java.lang.String)
      */
-    public byte[ ] counterSign(byte[ ] signature, String algorithm, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID) throws SigningException {
+    @Override
+	public byte[ ] counterSign(byte[ ] signature, String algorithm, PrivateKeyEntry privateKey, Properties extraParams, boolean includeTimestamp, String signatureForm, String signaturePolicyID) throws SigningException {
 	return counterSign(signature, algorithm, privateKey, extraParams, includeTimestamp, signatureForm, signaturePolicyID, null);
     }
 
@@ -696,7 +415,8 @@ public final class PadesSigner implements Signer {
      * {@inheritDoc}
      * @see es.gob.afirma.signature.Signer#upgrade(byte[], java.util.List, java.lang.String)
      */
-    public byte[ ] upgrade(byte[ ] pdfDocument, List<X509Certificate> listCertificates, String idClient) throws SigningException {
+    @Override
+	public byte[ ] upgrade(byte[ ] pdfDocument, List<X509Certificate> listCertificates, String idClient) throws SigningException {
 	String errorMsg = null;
 
 	// Comprobamos que se ha indicado el documento PDF a actualizar
@@ -787,7 +507,8 @@ public final class PadesSigner implements Signer {
      * {@inheritDoc}
      * @see es.gob.afirma.signature.Signer#upgrade(byte[], java.util.List)
      */
-    public byte[ ] upgrade(byte[ ] pdfDocument, List<X509Certificate> listCertificates) throws SigningException {
+    @Override
+	public byte[ ] upgrade(byte[ ] pdfDocument, List<X509Certificate> listCertificates) throws SigningException {
 	return upgrade(pdfDocument, listCertificates, null);
     }
 
@@ -805,7 +526,8 @@ public final class PadesSigner implements Signer {
      * {@inheritDoc}
      * @see es.gob.afirma.signature.Signer#getSignedData(byte[])
      */
-    public OriginalSignedData getSignedData(byte[ ] pdfDocument) throws SigningException {
+    @Override
+	public OriginalSignedData getSignedData(byte[ ] pdfDocument) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.PS_LOG021));
 	// Comprobamos que el parámetro de entrada no es nulo
 	if (pdfDocument == null) {
@@ -822,109 +544,6 @@ public final class PadesSigner implements Signer {
 
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.PS_LOG022));
 	return osd;
-    }
-
-    /**
-     * Method that checks the input parameters for {@link #coSign(byte[], byte[], String, PrivateKeyEntry, Properties, boolean, String, String)}.
-     * @param signature Parameter that represents the data to cosign.
-     * @param algorithm Parameter that represents the signature algorithm.
-     * @param privateKey Parameter that represents the private key of the signing certificate.
-     * @param extraParams Represents the optional input parameters.
-     * @param signatureForm Parameter that represents the signature form.
-     */
-    private void checkCoSignInputParams(byte[ ] signature, String algorithm, PrivateKeyEntry privateKey, Properties extraParams, String signatureForm) {
-	if (GenericUtilsCommons.checkNullValues(signature, privateKey) || !GenericUtilsCommons.assertStringValue(algorithm) || !GenericUtilsCommons.assertStringValue(signatureForm)) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.PS_LOG001);
-	    LOGGER.error(errorMsg);
-	    throw new IllegalArgumentException(errorMsg);
-	}
-	if (!SignatureConstants.SIGN_ALGORITHMS_SUPPORT.containsKey(algorithm)) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.PS_LOG002, new Object[ ] { algorithm });
-	    LOGGER.error(errorMsg);
-	    throw new IllegalArgumentException(errorMsg);
-	}
-
-	if (!signatureForm.equals(ISignatureFormatDetector.FORMAT_PADES_BASIC) && !signatureForm.equals(ISignatureFormatDetector.FORMAT_PADES_BES) && !signatureForm.equals(ISignatureFormatDetector.FORMAT_PADES_EPES)) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.PS_LOG025, new Object[ ] { signatureForm });
-	    LOGGER.error(errorMsg);
-	    throw new IllegalArgumentException(errorMsg);
-	}
-	if (!extraParams.isEmpty()) {
-	    checkExtraParamsCoSign(extraParams);
-	}
-
-    }
-
-    /**
-     * Method that checks the input parameters for {@link #counterSign(byte[], String, PrivateKeyEntry, Properties, boolean, String, String)}.
-     * @param signature Parameter that represents the data to counterSign.
-     * @param algorithm Parameter that represents the signature algorithm.
-     * @param privateKey Parameter that represents the private key of the signing certificate.
-     * @param extraParams Represents the optional input parameters.
-     * @param signatureForm Parameter that represents the signature form.
-     */
-    private void checkCounterSignInputParams(byte[ ] signature, String algorithm, PrivateKeyEntry privateKey, Properties extraParams, String signatureForm) {
-	if (GenericUtilsCommons.checkNullValues(signature, privateKey) || !GenericUtilsCommons.assertStringValue(algorithm) || !GenericUtilsCommons.assertStringValue(signatureForm)) {
-	    String errorMsg = Language.getResIntegra(ILogConstantKeys.PS_LOG001);
-	    LOGGER.error(errorMsg);
-	    throw new IllegalArgumentException(errorMsg);
-	}
-	if (!SignatureConstants.SIGN_ALGORITHMS_SUPPORT.containsKey(algorithm)) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.PS_LOG002, new Object[ ] { algorithm });
-	    LOGGER.error(errorMsg);
-	    throw new IllegalArgumentException(errorMsg);
-	}
-
-	if (!signatureForm.equals(ISignatureFormatDetector.FORMAT_PADES_BASIC) && !signatureForm.equals(ISignatureFormatDetector.FORMAT_PADES_BES) && !signatureForm.equals(ISignatureFormatDetector.FORMAT_PADES_EPES)) {
-	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.PS_LOG025, new Object[ ] { signatureForm });
-	    LOGGER.error(errorMsg);
-	    throw new IllegalArgumentException(errorMsg);
-	}
-	if (!extraParams.isEmpty()) {
-	    checkExtraParamsCounterSign(extraParams);
-	}
-
-    }
-
-    /**
-     * Method that checks if the extra properties have defined the allowed properties to co-sign.
-     *
-     * @param extraParams Represents the optional input parameters.
-
-     */
-    private void checkExtraParamsCoSign(Properties extraParams) {
-	boolean enc = false;
-	Iterator<Object> it = extraParams.keySet().iterator();
-	while (it.hasNext() && !enc) {
-	    String prop = (String) it.next();
-	    if (!prop.equals(SignatureProperties.PADES_CERTIFICATION_LEVEL) && !prop.equals(SignatureProperties.PADES_CONTACT_PROP) && !prop.equals(SignatureProperties.PADES_LOCATION_PROP) && !prop.equals(SignatureProperties.PADES_REASON_PROP) && !prop.equals(SignatureProperties.PADES_IMAGE) && !prop.equals(SignatureProperties.PADES_IMAGE_PAGE) && !prop.equals(SignatureProperties.PADES_LOWER_LEFT_X) && !prop.equals(SignatureProperties.PADES_LOWER_LEFT_Y) && !prop.equals(SignatureProperties.PADES_UPPER_RIGHT_X) && !prop.equals(SignatureProperties.PADES_UPPER_RIGHT_Y)) {
-		enc = true;
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.PS_LOG030, new Object[ ] { prop });
-		LOGGER.error(errorMsg);
-		throw new IllegalArgumentException(errorMsg);
-	    }
-	}
-    }
-
-    /**
-     * Method that checks if the extra properties have defined the allowed properties to counter-sign .
-     *
-     * @param extraParams Represents the optional input parameters.
-     */
-    private void checkExtraParamsCounterSign(Properties extraParams) {
-	boolean enc = false;
-	Iterator<Object> it = extraParams.keySet().iterator();
-	while (it.hasNext() && !enc) {
-	    String prop = (String) it.next();
-	    // CHECKSTYLE:OFF Boolean complexity needed
-	    if (!prop.equals(SignatureProperties.CADES_POLICY_QUALIFIER_PROP) && !prop.equals(SignatureProperties.PADES_CERTIFICATION_LEVEL) && !prop.equals(SignatureProperties.PADES_CONTACT_PROP) && !prop.equals(SignatureProperties.PADES_LOCATION_PROP) && !prop.equals(SignatureProperties.PADES_REASON_PROP) && !prop.equals(SignatureProperties.PADES_IMAGE) && !prop.equals(SignatureProperties.PADES_IMAGE_PAGE) && !prop.equals(SignatureProperties.PADES_LOWER_LEFT_X) && !prop.equals(SignatureProperties.PADES_LOWER_LEFT_Y) && !prop.equals(SignatureProperties.PADES_UPPER_RIGHT_X) && !prop.equals(SignatureProperties.PADES_UPPER_RIGHT_Y)) {
-		// CHECKSTYLE:ON
-		enc = true;
-		String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.PS_LOG031, new Object[ ] { prop });
-		LOGGER.error(errorMsg);
-		throw new IllegalArgumentException(errorMsg);
-	    }
-	}
     }
 
     /**
@@ -983,7 +602,7 @@ public final class PadesSigner implements Signer {
 
 	    // Indicamos en el log que la firma es correcta
 	    LOGGER.info(Language.getResIntegra(ILogConstantKeys.PS_LOG014));
-	    
+
 	    // Calculamos la fecha de expiración de la firma.
 	    validationResult.setExpirationDate(UtilsSignatureOp.calculateExpirationDate(listSignatureDictionaries, listTimestampDictionaries));
 	} catch (Exception e) {
@@ -994,7 +613,7 @@ public final class PadesSigner implements Signer {
 	    // Indicamos en el log que la firma no es correcta
 	    LOGGER.info(Language.getResIntegra(ILogConstantKeys.PS_LOG005));
 	} finally {
-	    LOGGER.info(Language.getResIntegra(ILogConstantKeys.PS_LOG026));
+	    LOGGER.info(Language.getResIntegra(ILogConstantKeys.PS_LOG024));
 	}
 	return validationResult;
     }
@@ -2053,7 +1672,7 @@ public final class PadesSigner implements Signer {
 	    // llevada a cabo
 	    ValidationInfo validationInfo = new ValidationInfo();
 	    validationInfo.setIdValidationTask(ISignatureValidationTaskID.ID_SIGNATURE_TIME_STAMP_ATTRIBUTES_VALIDATION);
-	    
+
 	    pdfSignatureDictionaryValidationResult.setListTimestampsValidations(new ArrayList<TimestampValidationResult>());
 
 	    // Añadimos a la lista de validaciones del diccionario de firma la

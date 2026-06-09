@@ -25,7 +25,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -120,7 +119,6 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
-import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.AcroFields;
@@ -219,12 +217,12 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * Constant that represents the OID of the RSA Encryption.
      */
     private static final String OID_RSA_ENCRYPTION = "1.2.840.113549.1.1.1";
-    
+
     /**
      * Constant that represents the OID of the SHA-1 algorithm.
      */
     private static final String OID_HASH_ALGORITHM_SHA1 = "1.3.14.3.2.26";
-    
+
     /**
      * Constant that represents the OID of the SHA-256 algorithm.
      */
@@ -259,7 +257,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * Constant that represents the OID of the SHA512withRSA algorithm.
      */
     private static final String OID_SIGN_ALGORITHM_SHA512WITHRSA = "1.2.840.113549.1.1.13";
-    
+
     /**
      * Constructor method for the class SignatureUtils.java.
      */
@@ -554,7 +552,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		// Si la firma contiene los datos originales, es implícita
 		result = true;
 	}
-	
+
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.US_LOG051));
 	return result;
     }
@@ -2313,7 +2311,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 //		Attr uriAttr = (Attr) ((DOMReference) ref).getHere();
 		final javax.xml.crypto.dsig.Reference ref = (javax.xml.crypto.dsig.Reference) tmp;
 		final Attr uriAttr = (Attr) ((DOMReference) ref).getHere();
-		
+
 //		ResourceResolver res;
 		try {
 //		    res = ResourceResolver.getInstance(uriAttr, null);
@@ -2638,7 +2636,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
     /**
      * Method that obtains the first revision of the signature dictionary.
-     * 
+     *
      * @param pdfDocument Parameter that represents the PDF document.
      * @return an input stream that represents the revision, or <code>null</code> if the PDF document doesn't contain any signature dictionary.
      * @throws SigningException exception if any error
@@ -2708,9 +2706,9 @@ public final class UtilsSignatureOp implements IUtilsSignature {
     }
 
     /**
-     * 
+     *
      * Gets the previous document by locating the previous trailer.
-     * 
+     *
      * @param signedDocument PDF document
      * @return byte array containing the previous document
      * @throws IOException if fails reading th document
@@ -2767,7 +2765,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
     /**
      * Gets the revision asigned to the signature identifier.
-     * 
+     *
      * @param fields AcroFields
      * @param signatureName signature identifier
      * @return Array of Bytes containing the revision
@@ -2811,7 +2809,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
     /**
      * Method that checks if the signature includes a rubric.
-     * 
+     *
      * @param externalParams Represents the optional input parameters.
      * @return boolean true if the signature includes rubric.
      */
@@ -2847,92 +2845,114 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      */
     public static void insertRubric(final PdfReader reader, final PdfSignatureAppearance signatureAppearance, final Properties externalParams) throws SigningException {
 
-	try {
-	    byte[ ] image = null;
-	    // se obtiene los parametros relacionados con la rúbrica.
-	    final String pathImage = externalParams.getProperty(SignatureProperties.PADES_IMAGE);
+    	try {
 
-	    if (!GenericUtilsCommons.assertStringValue(pathImage)) {
-		// se comprueba si la imagen viene dada como byte[]
-		image = (byte[ ]) externalParams.get(SignatureProperties.PADES_IMAGE);
-	    }
+    		// se obtiene los parametros relacionados con la rúbrica.
+    		final Object imageObject = externalParams.get(SignatureProperties.PADES_IMAGE);
 
-	    final int imagePage = Integer.parseInt(externalParams.getProperty(SignatureProperties.PADES_IMAGE_PAGE));
-	    final int lowerLeftX = Integer.parseInt(externalParams.getProperty(SignatureProperties.PADES_LOWER_LEFT_X));
-	    final int lowerLeftY = Integer.parseInt(externalParams.getProperty(SignatureProperties.PADES_LOWER_LEFT_Y));
-	    final int upperRightX = Integer.parseInt(externalParams.getProperty(SignatureProperties.PADES_UPPER_RIGHT_X));
-	    final int upperRightY = Integer.parseInt(externalParams.getProperty(SignatureProperties.PADES_UPPER_RIGHT_Y));
+    		// cargamos imagen
+    		final Image img = obtainRubric(imageObject);
 
-	    // cargamos imagen dependiendo del cómo venga especificada (array de
-	    // byte o ruta donde se encuentra)
-	    final Image img = obtainRubric(image, pathImage);
-	    // Loading Signature Image in Signature Appearance
-	    signatureAppearance.setImage(img);
+    		final int imagePage = Integer.parseInt(externalParams.getProperty(SignatureProperties.PADES_IMAGE_PAGE));
+    		final int lowerLeftX = Integer.parseInt(externalParams.getProperty(SignatureProperties.PADES_LOWER_LEFT_X));
+    		final int lowerLeftY = Integer.parseInt(externalParams.getProperty(SignatureProperties.PADES_LOWER_LEFT_Y));
+    		final int upperRightX = Integer.parseInt(externalParams.getProperty(SignatureProperties.PADES_UPPER_RIGHT_X));
+    		final int upperRightY = Integer.parseInt(externalParams.getProperty(SignatureProperties.PADES_UPPER_RIGHT_Y));
 
-	    // numero de páginas que tiene el documento
-	    final int numPages = reader.getNumberOfPages();
+    		// Loading Signature Image in Signature Appearance
+    		signatureAppearance.setImage(img);
 
-	    if (imagePage == -1) {
-		// se firma en la última página.
-		signatureAppearance.setVisibleSignature(new Rectangle(lowerLeftX, lowerLeftY, upperRightX, upperRightY), numPages, null);
-	    } else if (imagePage <= numPages) {
+    		// numero de páginas que tiene el documento
+    		final int numPages = reader.getNumberOfPages();
 
-		signatureAppearance.setVisibleSignature(new Rectangle(lowerLeftX, lowerLeftY, upperRightX, upperRightY), imagePage, null);
-	    } else {
-		final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG151);
-		LOGGER.error(errorMsg);
-		throw new SigningException(errorMsg);
-	    }
+    		if (imagePage == -1) {
+    			// se firma en la última página.
+    			signatureAppearance.setVisibleSignature(new Rectangle(lowerLeftX, lowerLeftY, upperRightX, upperRightY), numPages, null);
+    		} else if (imagePage <= numPages) {
 
-	} catch (final NumberFormatException e) {
-	    LOGGER.error(e);
-	    throw new SigningException(e);
-	}
+    			signatureAppearance.setVisibleSignature(new Rectangle(lowerLeftX, lowerLeftY, upperRightX, upperRightY), imagePage, null);
+    		} else {
+    			final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG151);
+    			LOGGER.error(errorMsg);
+    			throw new SigningException(errorMsg);
+    		}
+
+    	} catch (final NumberFormatException e) {
+    		LOGGER.error(e);
+    		throw new SigningException(e);
+    	}
     }
 
     /**
      * Method that obtains an instance of the object Image with the image to be inserted into the document.
-     * 
-     * @param image Parameter that represents the image in a byte array.
-     * @param imagePath Parameter that represent the path where the image is located.
+     *
+     * @param imageB64 Parameter that represents the image in Base 64.
      * @return Image.
      * @throws SigningException If the method fails.
      */
-    private static Image obtainRubric(final byte[ ] image, final String imagePath) throws SigningException {
-	Image img = null;
-	try {
-	    if (image != null) {
-		// comprobamos que el formato sea permitido
-		final String mimetype = UtilsResourcesSignOperations.getMimeType(image).toUpperCase();
-		if (!mimetype.contains("JPEG") && !mimetype.contains("PNG") && !mimetype.contains("GIF") && !mimetype.contains("BMP")) {
-		    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG152);
-		    LOGGER.error(errorMsg);
-		    throw new SigningException(errorMsg);
-		}
+    private static Image obtainRubric(final Object imageObject) throws SigningException {
 
-		img = Image.getInstance(image);
+    	Image img;
 
-	    } else {
-		// comprobamos que el formato sea el permitido
-		final String pathImageB64 = new String(Base64.decode(imagePath)).toUpperCase();
-		if (!pathImageB64.endsWith("JPEG") && !pathImageB64.endsWith("PNG") && !pathImageB64.endsWith("GIF") && !pathImageB64.endsWith("BMP")) {
-		    final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG152);
-		    LOGGER.error(errorMsg);
-		    throw new SigningException(errorMsg);
-		}
-		img = Image.getInstance(new String(Base64.decode(imagePath)));
-	    }
-	} catch (final BadElementException e) {
-	    LOGGER.error(e);
-	    throw new SigningException(e);
-	} catch (final MalformedURLException e) {
-	    LOGGER.error(e);
-	    throw new SigningException(e);
-	} catch (final IOException e) {
-	    LOGGER.error(e);
-	    throw new SigningException(e);
-	}
-	return img;
+    	try {
+    		// Se identifica si imagen contenida un valor de cadena
+    		if (imageObject instanceof String) {
+
+    			// Se decodifica el base 64 que debe contener el pol&iacute;tico.
+    			byte[ ] image = null;
+    			try {
+    				image = Base64.decode((String) imageObject);
+    			} catch (Exception e) {
+    				LOGGER.error(e);
+    				throw new SigningException(e);
+    			}
+
+    			// Comprobamos si es una imagen en un formato permitido
+    			final String mimetype = UtilsResourcesSignOperations.getMimeType(image).toUpperCase();
+    			if (!mimetype.contains("JPEG") && !mimetype.contains("PNG")
+    					&& !mimetype.contains("GIF") && !mimetype.contains("BMP")) {
+
+    				// No es una imagen permitida, asi que comprobamos si es una ruta a imagen
+    				final String pathImage = new String(image).toUpperCase();
+
+    				// Si no es una ruta de imagen, la devolvemos
+    				if (!pathImage.endsWith(".JPEG") && !pathImage.endsWith(".JPG") && !pathImage.endsWith(".PNG")
+    						&& !pathImage.endsWith(".GIF") && !pathImage.endsWith(".BMP")) {
+    					final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG152);
+    					LOGGER.error(errorMsg);
+    					throw new SigningException(errorMsg);
+
+    				}
+    				// Cargamos la imagen a traves de su ruta
+    				else {
+    					img = Image.getInstance(pathImage);
+    				}
+    			}
+    			// Cargamos la imagen binaria
+    			else {
+    				img = Image.getInstance(image);
+    			}
+    		}
+    		// se identifica si se recibio la imagen codificada o, en cambio, se obtuvo la ruta
+    		// a la imagen
+    		else if (imageObject instanceof byte[]) {
+
+    			img = Image.getInstance((byte[]) imageObject);
+    		}
+    		// si no es un tipo valido, se inerrumpe la generacion de la imagen
+    		else {
+    			final String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG261);
+				LOGGER.error(errorMsg);
+				throw new SigningException(errorMsg);
+    		}
+    	} catch (SigningException e) {
+    		throw e;
+    	} catch (final Exception e) {
+    		LOGGER.error(e);
+    		throw new SigningException(e);
+    	}
+
+    	return img;
     }
 
     /**
@@ -3027,7 +3047,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 
 	    // Accedemos al atributo SigningCertificateV2
 	    final Attribute attSigningCertificateV2 = signedAttrs.get(PKCSObjectIdentifiers.id_aa_signingCertificateV2);
-	    
+
 	    // Accedemos al atributo SigningCertificate
 	    final Attribute attSigningCertificate = signedAttrs.get(PKCSObjectIdentifiers.id_aa_signingCertificate);
 
@@ -3038,7 +3058,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		LOGGER.error(errorMsg);
 		throw new SigningException(errorMsg);
 	    }
-	    
+
 	    // Se valida el atributo SigningCertificateV2 si se ha encontrado
 	    if (attSigningCertificateV2 != null) {
 		LOGGER.info(Language.getFormatResIntegra(ILogConstantKeys.US_LOG164, new Object[ ] { signingCertificate.getSubjectDN().getName() }));
@@ -3059,23 +3079,23 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		// firmado SigningCertificateV2
 		final AlgorithmIdentifier ai2 = essCertID.getHashAlgorithm();
 		final String hashAlgorithm = CryptoUtilPdfBc.translateAlgorithmIdentifier(ai2);
-		
+
 		final String attrName = "SigningCertificateV2";
-		
-		// Comprobamos que el hash del certificado de firma sea el declarado 
+
+		// Comprobamos que el hash del certificado de firma sea el declarado
 		validateCertificateHash(signingCertificate, signingCertificateV2Hash, hashAlgorithm, attrName);
-					
+
 		// Comprobamos que el numero de serie y emisor del certificado de firma sean los declarados
 		validateCertificateIssuerSerial(signingCertificate, essCertID.getIssuerSerial(), attrName);
 
 		// Informamos de que la validación ha sido correcta
 		LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.US_LOG163, new Object[ ] { attrName, signingCertificate.getSubjectDN().getName() }));
 	    }
-	    
+
 	    // Se valida el atributo SigningCertificate si se ha encontrado
 	    if (attSigningCertificate != null) {
 		LOGGER.info(Language.getFormatResIntegra(ILogConstantKeys.US_LOG160, new Object[ ] { signingCertificate.getSubjectDN().getName() }));
-		
+
 		// Obtenemos el objeto SigningCertificate
 		final SigningCertificate signingCertificatev1 = SigningCertificate.getInstance(attSigningCertificate.getAttrValues().getObjectAt(0));
 
@@ -3097,13 +3117,13 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		    final byte[ ] signingCertificateV1Hash = essCertID.getCertHash();
 
 		    final String attrName = "SigningCertificate";
-		    
+
 		    // Comprobamos que el hash del certificado de firma sea el declarado
 		    validateCertificateHash(signingCertificate, signingCertificateV1Hash, ICryptoUtil.HASH_ALGORITHM_SHA1, attrName);
-		    
+
 		    // Comprobamos que el numero de serie y emisor del certificado de firma sean los declarados
 		    validateCertificateIssuerSerial(signingCertificate, essCertID.getIssuerSerial(), attrName);
-		    
+
 		    // Informamos de que la validación ha sido correcta
 		    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.US_LOG163, new Object[ ] { attrName, signingCertificate.getSubjectDN().getName() }));
 		}
@@ -3156,16 +3176,16 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * Method that validates if the issuer and serial number of the certificate.
      * @param cert Parameter that represents the signing certificate.
      * @param signedData Parameter that represents the IssuerSerial from the signature.
-     * @param attrName Attribute name from the IssuerSerial was extracted. 
+     * @param attrName Attribute name from the IssuerSerial was extracted.
      * @throws CertificateEncodingException If the certificate can't decoded.
      * @throws SigningException If the validation fails.
      */
     private static void validateCertificateIssuerSerial(final X509Certificate cert, final IssuerSerial issuerSerial, final String attrName)
 	    throws CertificateEncodingException, SigningException {
-	
+
 	// Solo realizamos la validacion si se proporciona IssuerSerial
 	if (issuerSerial != null) {
-	    
+
 	    // El numero de serie debe coincidir con el del certificado
 	    if (!issuerSerial.getSerial().getValue().equals(cert.getSerialNumber())) {
 		final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.US_LOG165, new Object[ ] { attrName, cert.getSubjectDN().getName() });
@@ -3191,7 +3211,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    }
 	}
     }
-    
+
     /**
      * Method that validates if the signing time of a signature is previous than certain date.
      * @param signedData Parameter that represents the signed data.
@@ -3308,7 +3328,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	 * > Se comprobará que el elemento xades:SignedSignatureProperties tiene una estructura correcta.
 	 * > Se comprobará que existe una referencia que apunta al elemento xades:SignedProperties.
 	 * > Se comprobará que el firmante verifica la firma.
-	 * 
+	 *
 	 * Mientras que en el caso de que la firma sea Baseline:
 	 * > Se comprobará que la versión de XAdES es 1.3.2 o superior.
 	 * > Se comprobará que el firmante verifica la firma.
@@ -4462,7 +4482,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	 * > El primer firmante de la firma CAdES que contiene el diccionario de firma deberá no tener el atributo firmado signing-time.
 	 * > El primer firmante de la firma CAdES que contiene el diccionario de firma deberá no tener el atributo firmado content-hints.
 	 * > La clave /Cert del diccionario de firma no deberá estar presente.
-	 * 
+	 *
 	 * Validación Estructural PAdES-EPES: Contemplará las siguientes verificaciones:
 	 * > La clave /Contents del diccionario de firma deberá estar presente y su contenido corresponderse con una firma CAdES.
 	 * > La clave /ByteRange del diccionario de firma deberá estar presente y su valor corresponderse con el resumen de la firma CAdES.
@@ -4960,7 +4980,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    if (signedAttrs.get(PKCSObjectIdentifiers.id_aa_ets_sigPolicyId) != null) {
 		hasSignaturePolicyId = true;
 	    }
-	    
+
 	    // Si no declara una politica de firma
 	    if (!hasSignaturePolicyId) {
 		// Comprobamos que el firmante no contenga el atributo
@@ -4999,7 +5019,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
     }
 
     /**
-     * Auxiliary method that calculate the expiration date of a validation or update response. 
+     * Auxiliary method that calculate the expiration date of a validation or update response.
      * The expiration date will be the closer expiration date between every signer and/or timestamp of the signature.
      * @param signerValidationResult Result of the signature validation/update.
      * @param currentDate The current closest expiration date.
@@ -5724,7 +5744,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @throws IOException if it is not possible to create the timestamp token of the archiveTimestamp.
      * @throws CMSException if it is not possible to create the CMS signed data of the node.
      * @throws XPathExpressionException  if it is not possible to find  the creation time element of the archiveTimestamp.
-     * @throws ParseException if it is not possible to parse the creation date of the timestamp.  
+     * @throws ParseException if it is not possible to parse the creation date of the timestamp.
      */
     private static Node obtainLastArchiveTimestampNodeAux(final Node archiveTstNode, final Node tstNode, final TimeStampToken tst, final Node res, final Date xmlTstDate) throws TSPException, IOException, CMSException, XPathExpressionException, ParseException {
 	Node result = res;
@@ -5871,12 +5891,12 @@ public final class UtilsSignatureOp implements IUtilsSignature {
     }
 
     /**
-     * Auxiliary method that obtains the last dictionary from a list of them. 
+     * Auxiliary method that obtains the last dictionary from a list of them.
      * The last dictionary will be the dictionary with the greatest revision number.
-     * @param dictionariesList List of PDF dictionaries to check. It can be of two types: 
+     * @param dictionariesList List of PDF dictionaries to check. It can be of two types:
      * PDFSignatureDictionary or PDFDocumentTimestampDictionary.
-     * @return the last signature dictionary if the parameter is a list of signature dictionary, 
-     * the last timestamp signature if the parameter is a list of timestamp dictionaries or 
+     * @return the last signature dictionary if the parameter is a list of signature dictionary,
+     * the last timestamp signature if the parameter is a list of timestamp dictionaries or
      * null if the list is null, empty or it's not a valid dictionary list.
      */
     private static Object getLastDictionary(final List<?> dictionariesList) {
@@ -5941,7 +5961,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
     /**
      * Auxiliary method that finds the signature and timestamp dictionaries from a PDF signature.
      * @param reader PDF reader of the signature.
-     * @param af Object that allows to access to the field of the signature. 
+     * @param af Object that allows to access to the field of the signature.
      * @param listTimestampDictionaries List where the timestamp dictionaries will be stored.
      * @param listSignatureDictionaries List where the signature dictionaries will be stored.
      * @throws SigningException if it's not possible to access to the timestamp of a timestamp dictionary.
@@ -6224,7 +6244,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
     /**
      * Obtiene el OID del algoritmo de firma empleado. Este algoritmo puede haberse declarado
      * directamente en la firma o puede que deba construirse a partir del algoritmo de
-     * encriptaci&oacute;n y el algoritmo de hash. 
+     * encriptaci&oacute;n y el algoritmo de hash.
      * @param signerInformation Informaci&oacute;n de la firma.
      * @return OID del algoritmo de firma.
      * @throws SignaturePolicyException Cuando no se puede identificar el algoritmo de firma a
@@ -6248,7 +6268,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * Obtiene el identificador de algoritmo de firma que se corresponde al usar el
      * algoritmo de encriptaci&oacute;n con el algoritmo de hash indicados. En caso
      * de no haberse indicado un algoritmo de encriptaci&oacute;n reconocido, se
-     * interpretar&aacute; que este es en realidad el algoritmo de firma. 
+     * interpretar&aacute; que este es en realidad el algoritmo de firma.
      * @param encryptionAlgOid OID del algoritmo de encriptaci&oacute;n.
      * @param hashAlgOid OID del algoritmo de huella.
      * @return Identificador del algorimo de firma.
@@ -6262,13 +6282,13 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	String signatureAlgOid;
 	if (OID_RSA_ENCRYPTION.equals(encryptionAlgOid)) {
 	    if (OID_HASH_ALGORITHM_SHA1.equals(hashAlgOid)) {
-		signatureAlgOid = OID_SIGN_ALGORITHM_SHA1WITHRSA; 
+		signatureAlgOid = OID_SIGN_ALGORITHM_SHA1WITHRSA;
 	    } else if (OID_HASH_ALGORITHM_SHA256.equals(hashAlgOid)) {
-		signatureAlgOid = OID_SIGN_ALGORITHM_SHA256WITHRSA; 
+		signatureAlgOid = OID_SIGN_ALGORITHM_SHA256WITHRSA;
 	    } else if (OID_HASH_ALGORITHM_SHA384.equals(hashAlgOid)) {
-		signatureAlgOid = OID_SIGN_ALGORITHM_SHA384WITHRSA; 
+		signatureAlgOid = OID_SIGN_ALGORITHM_SHA384WITHRSA;
 	    } else if (OID_HASH_ALGORITHM_SHA512.equals(hashAlgOid)) {
-		signatureAlgOid = OID_SIGN_ALGORITHM_SHA512WITHRSA; 
+		signatureAlgOid = OID_SIGN_ALGORITHM_SHA512WITHRSA;
 	    } else {
 		throw new SignaturePolicyException(Language.getFormatResIntegra(ILogConstantKeys.SPM_LOG081, new Object[ ] { encryptionAlgOid, hashAlgOid }));
 	    }

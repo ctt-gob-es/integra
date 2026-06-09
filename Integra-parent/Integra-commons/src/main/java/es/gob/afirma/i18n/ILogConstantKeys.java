@@ -974,41 +974,6 @@ public interface ILogConstantKeys {
     String PS_LOG024 = "PS024";
 
     /**
-     * Constant attribute that represents the name of the property <code>PS025</code> belonging to the file integra_xx_YY.properties.
-     */
-    String PS_LOG025 = "PS025";
-
-    /**
-     * Constant attribute that represents the name of the property <code>PS026</code> belonging to the file integra_xx_YY.properties.
-     */
-    String PS_LOG026 = "PS026";
-
-    /**
-     * Constant attribute that represents the name of the property <code>PS027</code> belonging to the file integra_xx_YY.properties.
-     */
-    String PS_LOG027 = "PS027";
-
-    /**
-     * Constant attribute that represents the name of the property <code>PS028</code> belonging to the file integra_xx_YY.properties.
-     */
-    String PS_LOG028 = "PS028";
-
-    /**
-     * Constant attribute that represents the name of the property <code>PS029</code> belonging to the file integra_xx_YY.properties.
-     */
-    String PS_LOG029 = "PS029";
-
-    /**
-     * Constant attribute that represents the name of the property <code>PS030</code> belonging to the file integra_xx_YY.properties.
-     */
-    String PS_LOG030 = "PS030";
-
-    /**
-     * Constant attribute that represents the name of the property <code>PS031</code> belonging to the file integra_xx_YY.properties.
-     */
-    String PS_LOG031 = "PS031";
-
-    /**
      * Constant attribute that represents the name of the property <code>IR001</code> belonging to the file integra_xx_YY.properties.
      */
     String IR_LOG001 = "IR001";
@@ -4074,6 +4039,11 @@ public interface ILogConstantKeys {
     String US_LOG260 = "US260";
 
     /**
+     * Constant attribute that represents the name of the property <code>US261</code> belonging to the file integra_xx_YY.properties.
+     */
+    String US_LOG261 = "US261";
+
+    /**
      * Constant attribute that represents the name of the property <code>SFD001</code> belonging to the file integra_xx_YY.properties.
      */
     String SFD_LOG001 = "SFD001";
@@ -5527,51 +5497,6 @@ public interface ILogConstantKeys {
      * Constant attribute that represents the name of the property <code>PBS033</code> belonging to the file integra_xx_YY.properties.
      */
     String PBS_LOG033 = "PBS033";
-
-    /**
-     * Constant attribute that represents the name of the property <code>PBS034</code> belonging to the file integra_xx_YY.properties.
-     */
-    String PBS_LOG034 = "PBS034";
-
-    /**
-     * Constant attribute that represents the name of the property <code>PBS035</code> belonging to the file integra_xx_YY.properties.
-     */
-    String PBS_LOG035 = "PBS035";
-
-    /**
-     * Constant attribute that represents the name of the property <code>PBS036</code> belonging to the file integra_xx_YY.properties.
-     */
-    String PBS_LOG036 = "PBS036";
-
-    /**
-     * Constant attribute that represents the name of the property <code>PBS037</code> belonging to the file integra_xx_YY.properties.
-     */
-    String PBS_LOG037 = "PBS037";
-
-    /**
-     * Constant attribute that represents the name of the property <code>PBS038</code> belonging to the file integra_xx_YY.properties.
-     */
-    String PBS_LOG038 = "PBS038";
-
-    /**
-     * Constant attribute that represents the name of the property <code>PBS039</code> belonging to the file integra_xx_YY.properties.
-     */
-    String PBS_LOG039 = "PBS039";
-
-    /**
-     * Constant attribute that represents the name of the property <code>PBS040</code> belonging to the file integra_xx_YY.properties.
-     */
-    String PBS_LOG040 = "PBS040";
-
-    /**
-     * Constant attribute that represents the name of the property <code>PBS041</code> belonging to the file integra_xx_YY.properties.
-     */
-    String PBS_LOG041 = "PBS041";
-
-    /**
-     * Constant attribute that represents the name of the property <code>PBS042</code> belonging to the file integra_xx_YY.properties.
-     */
-    String PBS_LOG042 = "PBS042";
 
     /**
      * Constant attribute that represents the name of the property <code>XBS001</code> belonging to the file integra_xx_YY.properties.
