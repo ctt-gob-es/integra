@@ -72,7 +72,7 @@ public class WebServiceInvoker {
     private static final Logger LOGGER = Logger.getLogger(WebServiceInvoker.class);
 
     /**
-     * Constant attribute that identifier the security Axis2 phase. 
+     * Constant attribute that identifier the security Axis2 phase.
      */
     private static final String PHASE_NAME_SECURITY = "Security";
 
@@ -82,12 +82,12 @@ public class WebServiceInvoker {
     private Properties properties;
 
     /**
-     * Attribute that represents the list of handlers added to the Axis engine. 
+     * Attribute that represents the list of handlers added to the Axis engine.
      */
     private static List<String> handlerAdded = new ArrayList<String>();
 
     /**
-     * Attribute that represents the list of DSS services defined by the @firma platform. 
+     * Attribute that represents the list of DSS services defined by the @firma platform.
      */
     private static final List<String> DSS_SERVICES_NAMES = Arrays.asList(new String[ ] { GeneralConstants.DSS_AFIRMA_VERIFY_CERTIFICATE_REQUEST, GeneralConstants.DSS_AFIRMA_ARCHIVE_RETRIEVAL, GeneralConstants.DSS_AFIRMA_SIGN_REQUEST, GeneralConstants.DSS_AFIRMA_VERIFY_REQUEST, GeneralConstants.DSS_ASYNC_REQUEST_STATUS, GeneralConstants.DSS_BATCH_VERIFY_CERTIFICATE_REQUEST, GeneralConstants.DSS_BATCH_VERIFY_SIGNATURE_REQUESTS });
 
@@ -169,6 +169,8 @@ public class WebServiceInvoker {
 	    // conexión al servicio.
 	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.WSI_LOG006));
 	    Options options = new Options();
+	    options.setProperty(HTTPConstants.CONNECTION_TIMEOUT, Integer.valueOf(timeout));
+	    options.setProperty(HTTPConstants.SO_TIMEOUT, Integer.valueOf(timeout));
 	    options.setTimeOutInMilliSeconds(Integer.valueOf(timeout));
 	    options.setTo(new EndpointReference(endPointURL));
 
@@ -183,7 +185,7 @@ public class WebServiceInvoker {
 
 	    // Añadimos los handler generados al flujo de handlers de Axis2.
 	    addHandlers(client, requestHandler, responseHandler);
-	    
+
 	    // Realizamos la llamada.
 	    LOGGER.debug(Language.getResIntegra(ILogConstantKeys.WSI_LOG009));
 	    OMElement result = client.sendReceive(operationElem);

@@ -106,7 +106,8 @@ public final class HSMKeystorePKCS11Provider {
 		// Si no existe, asociamos el proveedor de Sun como PKCS11 y lo
 		// añadimos a la lista de proveedores en la última posición
 		if (pkcs11Provider == null) {
-		    pkcs11Provider = new SunPKCS11(absPathConfigFile);
+		    pkcs11Provider = new SunPKCS11();
+		    pkcs11Provider.configure(absPathConfigFile);
 		    Security.addProvider(pkcs11Provider);
 		}
 		// Obtenemos el almacén de claves
