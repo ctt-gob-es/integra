@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.crypto.MarshalException;
+import javax.xml.crypto.URIDereferencer;
 import javax.xml.crypto.XMLStructure;
 import javax.xml.crypto.dom.DOMStructure;
 import javax.xml.crypto.dsig.CanonicalizationMethod;
@@ -85,6 +86,11 @@ public final class XadesExt extends XMLAdvancedSignature {
     private boolean isXAdESBaseline = false;
 
     /**
+     * Attribute that represents the custom URI dereferencer to use during signature generation.
+     */
+    private URIDereferencer uriDereferencer = null;
+
+    /**
      * Establece el algoritmo de canonicalizaci&oacute;n.
      * @param canMethod URL del algoritmo de canonicalizaci&oacute;n. Debe estar soportado en XMLDSig 1.0 &oacute; 1.1
      */
@@ -108,6 +114,14 @@ public final class XadesExt extends XMLAdvancedSignature {
      */
     public void setXAdESBaseline(boolean isXAdESBaselineParam) {
 	this.isXAdESBaseline = isXAdESBaselineParam;
+    }
+
+    /**
+     * Sets the custom URI dereferencer to use during signature generation.
+     * @param uriDereferencerParam Custom URI dereferencer.
+     */
+    public void setURIDereferencer(final URIDereferencer uriDereferencerParam) {
+	this.uriDereferencer = uriDereferencerParam;
     }
 
     /**
@@ -156,6 +170,9 @@ public final class XadesExt extends XMLAdvancedSignature {
 	this.signContext.putNamespacePrefix(xadesNamespace, xades.getXadesPrefix());
 
 	registerIdAttrs();
+	if (uriDereferencer != null) {
+	    signContext.setURIDereferencer(uriDereferencer);
+	}
 	signature.sign(signContext);
     }
 

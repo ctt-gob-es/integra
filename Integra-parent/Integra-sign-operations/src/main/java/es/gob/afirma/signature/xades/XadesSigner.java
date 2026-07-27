@@ -44,6 +44,7 @@ import java.util.Properties;
 import java.util.UUID;
 
 import javax.xml.crypto.MarshalException;
+import javax.xml.crypto.URIDereferencer;
 import javax.xml.crypto.XMLStructure;
 import javax.xml.crypto.dom.DOMStructure;
 import javax.xml.crypto.dsig.CanonicalizationMethod;
@@ -64,6 +65,7 @@ import org.apache.xml.security.c14n.InvalidCanonicalizerException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.w3c.dom.DOMException;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -123,6 +125,31 @@ import net.java.xades.security.xml.XAdES.XAdES_EPES;
  * @version 1.10, 18/04/2022.
  */
 public final class XadesSigner implements Signer {
+
+    /**
+     * Extra parameter used to sign a specific XML element by its Id in detached mode.
+     */
+    public static final String XADES_DETACHED_SOURCE_DATA_ELEMENTID = "digestCalcSourceElementId";
+
+    /**
+     * Extra parameter used to reference a specific XML element by its Id in enveloped mode.
+     */
+    public static final String XADES_ENVELOPED_TARGET_NODE_ID = "xadesEnvelopedTargetNodeId";
+
+    /**
+     * Extra parameter used to provide a {@link URIDereferencer} during XML signature generation.
+     */
+    public static final String XADES_URI_DEREFERENCER = "xadesUriDereferencer";
+
+    /**
+     * Extra parameter used to append an embedded ds:Object element to the generated signature.
+     */
+    public static final String XADES_EMBEDDED_DATA_OBJECT = "embeddedDataObject";
+
+    /**
+     * Extra parameter used to include an additional data object in a counter-signature.
+     */
+    public static final String XADES_COUNTERSIGNATURE_DATA_OBJECT = "counterSignatureDataObject";
 
     /**
      * Attribute that represents factory for building XML documents.
@@ -376,8 +403,15 @@ public final class XadesSigner implements Signer {
 		// del documento a firmar
 		addDataFormatReference("#" + referenceId);
 
+		String uri = "";
+		String targetNodeId = extraParams.getProperty(XADES_ENVELOPED_TARGET_NODE_ID);
+		if (GenericUtilsCommons.assertStringValue(targetNodeId)) {
+		    uri = "#" + targetNodeId.trim();
+		    transformList.add(xmlSignatureFactory.newTransform(CanonicalizationMethod.INCLUSIVE, (TransformParameterSpec) null));
+		}
+
 		// crea la referencia
-		referenceList.add(xmlSignatureFactory.newReference("", digestMethod, transformList, null, referenceId));
+		referenceList.add(xmlSignatureFactory.newReference(uri, digestMethod, transformList, null, referenceId));
 	    } catch (final GeneralSecurityException e) {
 		throw new SigningException(Language.getResIntegra(ILogConstantKeys.XS_LOG015), e);
 	    }
@@ -507,12 +541,13 @@ public final class XadesSigner implements Signer {
 	try {
 	    Object manifestData = extraParams.get(SignatureConstants.MF_REFERENCES_PROPERTYNAME);
 	    // creamos el objeto <Manifest>
-	    String manifestID = "ManifestObject-" + UUID.randomUUID().toString();
 	    Document mfDoc = UtilsXML.newDocument();
+	    Element mfElement = null;
 
 	    if (manifestData instanceof List) {
 		mfReferences = (List) manifestData;
-		Element mfElement = mfDoc.createElement(IXMLConstants.MANIFEST_TAG_NAME);
+		mfElement = mfDoc.createElementNS(XMLSignature.XMLNS, IXMLConstants.MANIFEST_TAG_NAME);
+		mfElement.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:ds", XMLSignature.XMLNS);
 		mfDoc.appendChild(mfElement);
 		LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.XS_LOG019, new Object[ ] { mfReferences.size() }));
 		for (int i = 0; i < mfReferences.size(); i++) {
@@ -520,12 +555,14 @@ public final class XadesSigner implements Signer {
 		    mfElement.appendChild(buildReferenceXmlNode(referenceData, mfDoc));
 		}
 	    } else if (manifestData instanceof Element) {
-		mfDoc.appendChild(mfDoc.importNode((Element) manifestData, true));
+		mfElement = (Element) mfDoc.importNode((Element) manifestData, true);
+		mfDoc.appendChild(mfElement);
 	    } else {
 		throw new SigningException(Language.getResIntegra(ILogConstantKeys.XS_LOG020));
 	    }
 
-	    xmlSignature.addXMLObject(xmlSignatureFactory.newXMLObject(Collections.singletonList(new DOMStructure(mfDoc.getDocumentElement())), manifestID, null, null));
+	    String manifestID = ensureElementId(mfElement, "Manifest-" + UUID.randomUUID().toString());
+	    xmlSignature.addXMLObject(xmlSignatureFactory.newXMLObject(Collections.singletonList(new DOMStructure(mfDoc.getDocumentElement())), null, null, null));
 
 	    // Instanciamos el identificador para la referencia
 	    String referenceId = "Reference-" + UUID.randomUUID().toString();
@@ -552,7 +589,7 @@ public final class XadesSigner implements Signer {
      * @return an element that represents the new reference.
      */
     private Element buildReferenceXmlNode(ReferenceData rfData, Document doc) {
-	Element referenceElement = doc.createElement("ds:Reference");
+	Element referenceElement = doc.createElementNS(XMLSignature.XMLNS, "ds:Reference");
 	if (GenericUtilsCommons.assertStringValue(rfData.getId())) {
 	    referenceElement.setAttribute(IXMLConstants.ATTRIBUTE_ID, rfData.getId());
 	}
@@ -564,23 +601,31 @@ public final class XadesSigner implements Signer {
 	}
 
 	if (rfData.getTransforms() != null) {
-	    Element transformElements = UtilsXML.createChild(referenceElement, "ds:Transforms");
+	    Element transformElements = doc.createElementNS(XMLSignature.XMLNS, "ds:Transforms");
+	    referenceElement.appendChild(transformElements);
 	    for (TransformData transform: rfData.getTransforms()) {
 		if (transform != null) {
-		    Element transfElement = UtilsXML.createChild(transformElements, "ds:Transform");
-		    UtilsXML.insertAttributeValue(transfElement, "@Algorithm", transform.getAlgorithm());
+		    Element transfElement = doc.createElementNS(XMLSignature.XMLNS, "ds:Transform");
+		    transformElements.appendChild(transfElement);
+		    transfElement.setAttribute(IXMLConstants.ATTRIBUTE_ALGORITHM, transform.getAlgorithm());
 		    if (transform.getXPath() != null) {
 			for (String xPath: transform.getXPath()) {
 			    if (GenericUtilsCommons.assertStringValue(xPath)) {
-				UtilsXML.insertValueElement(transfElement, "ds:XPath", xPath);
+				Element xPathElement = doc.createElementNS(XMLSignature.XMLNS, "ds:XPath");
+				xPathElement.setTextContent(xPath);
+				transfElement.appendChild(xPathElement);
 			    }
 			}
 		    }
 		}
 	    }
 	}
-	UtilsXML.insertAttributeValue(referenceElement, "ds:DigestMethod@Algorithm", rfData.getDigestMethodAlg());
-	UtilsXML.insertValueElement(referenceElement, "ds:DigestValue", rfData.getDigestValue());
+	Element digestMethodElement = doc.createElementNS(XMLSignature.XMLNS, "ds:DigestMethod");
+	digestMethodElement.setAttribute(IXMLConstants.ATTRIBUTE_ALGORITHM, rfData.getDigestMethodAlg());
+	referenceElement.appendChild(digestMethodElement);
+	Element digestValueElement = doc.createElementNS(XMLSignature.XMLNS, "ds:DigestValue");
+	digestValueElement.setTextContent(rfData.getDigestValue());
+	referenceElement.appendChild(digestValueElement);
 
 	return referenceElement;
     }
@@ -598,13 +643,13 @@ public final class XadesSigner implements Signer {
      * @return an object that represents the XML document.
      * @throws SigningException If the method fails.
      */
-    private Document createXMLDocument(String signatureFormat) throws SigningException {
+    private Document createXMLDocument(String signatureFormat, Properties optionalParams) throws SigningException {
 	try {
 	    // Crea el nuevo documento org.w3c.dom.Document xml que contendrá la
 	    // firma
 	    Document docSignature = dBFactory.newDocumentBuilder().newDocument();
 	    // inserta en el nuevo documento de firma el documento a firmar
-	    if (signatureFormat.equals(SIGN_FORMAT_XADES_ENVELOPED)) {
+	    if (signatureFormat.equals(SIGN_FORMAT_XADES_ENVELOPED) || hasDetachedSourceDataElement(optionalParams)) {
 		docSignature.appendChild(docSignature.adoptNode(dataElement));
 	    } else {
 		docSignature.appendChild(docSignature.createElement(IXMLConstants.AFIRMA_TAG));
@@ -619,6 +664,98 @@ public final class XadesSigner implements Signer {
 	    String errorMsg = Language.getResIntegra(ILogConstantKeys.XS_LOG006);
 	    LOGGER.error(errorMsg, e);
 	    throw new SigningException(errorMsg, e);
+	}
+    }
+
+    /**
+     * Ensures that an XML element has an Id attribute registered as DOM ID.
+     * @param element Element to update.
+     * @param defaultId Default Id value.
+     * @return Id value registered in the element.
+     */
+    private String ensureElementId(Element element, String defaultId) {
+	String id = element.getAttribute(IXMLConstants.ATTRIBUTE_ID);
+	if (!GenericUtilsCommons.assertStringValue(id)) {
+	    id = defaultId;
+	    element.setAttributeNS(null, IXMLConstants.ATTRIBUTE_ID, id);
+	}
+	Attr idAttr = element.getAttributeNode(IXMLConstants.ATTRIBUTE_ID);
+	if (idAttr != null) {
+	    element.setIdAttributeNode(idAttr, true);
+	}
+	return id;
+    }
+
+    /**
+     * Checks if the caller requested to sign a concrete detached source element.
+     * @param optionalParams Optional parameters.
+     * @return {@code true} if a detached source element was configured.
+     */
+    private boolean hasDetachedSourceDataElement(Properties optionalParams) {
+	return optionalParams != null && GenericUtilsCommons.assertStringValue(optionalParams.getProperty(XADES_DETACHED_SOURCE_DATA_ELEMENTID));
+    }
+
+    /**
+     * Configures a XAdES builder with common optional generation settings.
+     * @param signBuilder XAdES builder.
+     * @param optionalParams Optional parameters.
+     */
+    private void configureXadesExt(XadesExt signBuilder, Properties optionalParams) throws GeneralSecurityException {
+	signBuilder.setDigestMethod(digestAlgorithmRef);
+	signBuilder.setCanonicalizationMethod(defineCanonicalizationMethod(optionalParams));
+	Object uriDereferencer = optionalParams.get(XADES_URI_DEREFERENCER);
+	if (uriDereferencer instanceof URIDereferencer) {
+	    signBuilder.setURIDereferencer((URIDereferencer) uriDereferencer);
+	}
+    }
+
+    /**
+     * Adds an optional data object to a counter-signature.
+     * @param signBuilder XAdES builder.
+     * @param referenceList Reference list to update.
+     * @param transformList Transform list to apply to the data object reference.
+     * @param optionalParams Optional parameters.
+     * @throws SigningException If the data object cannot be prepared.
+     */
+    private void addCounterSignatureDataObject(XadesExt signBuilder, List<Reference> referenceList, List<Transform> transformList, Properties optionalParams) throws SigningException {
+	Object counterSignatureDataObject = optionalParams.get(XADES_COUNTERSIGNATURE_DATA_OBJECT);
+	if (counterSignatureDataObject == null) {
+	    return;
+	}
+	if (counterSignatureDataObject instanceof byte[ ]) {
+	    try {
+		Document docum = dBFactory.newDocumentBuilder().parse(new ByteArrayInputStream((byte[ ]) counterSignatureDataObject));
+		dataElement = docum.getDocumentElement();
+		dataType = IXMLConstants.DATA_TYPE_XML;
+	    } catch (SAXException | IOException | ParserConfigurationException e) {
+		throw new SigningException(Language.getResIntegra(ILogConstantKeys.XS_LOG006), e);
+	    }
+	} else if (counterSignatureDataObject instanceof Element) {
+	    dataElement = (Element) counterSignatureDataObject;
+	    dataType = IXMLConstants.DATA_TYPE_XML;
+	} else {
+	    throw new SigningException(Language.getResIntegra(ILogConstantKeys.XS_LOG020));
+	}
+
+	String referenceId = "Reference-" + UUID.randomUUID().toString();
+	XMLObject envelopingObject = newEnvelopingObject(referenceList, transformList, getDigestMethod(), referenceId);
+	signBuilder.addXMLObject(envelopingObject);
+    }
+
+    /**
+     * Appends an optional ds:Object element to the generated signature.
+     * @param docSignature Signature document.
+     * @param optionalParams Optional parameters.
+     */
+    private void appendEmbeddedDataObject(Document docSignature, Properties optionalParams) {
+	Object embeddedDataObject = optionalParams.get(XADES_EMBEDDED_DATA_OBJECT);
+	if (!(embeddedDataObject instanceof Element)) {
+	    return;
+	}
+	Node signatureNode = docSignature.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_SIGNATURE).item(0);
+	if (signatureNode != null) {
+	    Node importedNode = docSignature.importNode((Element) embeddedDataObject, true);
+	    signatureNode.appendChild(importedNode);
 	}
     }
 
@@ -1103,7 +1240,7 @@ public final class XadesSigner implements Signer {
 	    signBuilder.setDigestMethod(digestAlgorithmRef);
 
 	    // Asociamos el algoritmo de canonicalización a la firma
-	    signBuilder.setCanonicalizationMethod(defineCanonicalizationMethod(extraParams));
+	    configureXadesExt(signBuilder, extraParams);
 
 	    // En caso de que la firma a generar sea XAdES-EPES, comprobamos si
 	    // el
@@ -1118,7 +1255,10 @@ public final class XadesSigner implements Signer {
 
 	    X509Certificate signerCertificate = (X509Certificate) privateKey.getCertificate();
 	    // Generamos la firma como tal
-	    signBuilder.sign(signerCertificate, privateKey.getPrivateKey(), uriSignAlgorithm, Collections.singletonList(reference), signatureId, null);
+	    List<Reference> referenceList = new ArrayList<Reference>();
+	    referenceList.add(reference);
+	    addCounterSignatureDataObject(signBuilder, referenceList, transformList, extraParams);
+	    signBuilder.sign(signerCertificate, privateKey.getPrivateKey(), uriSignAlgorithm, referenceList, signatureId, null);
 
 	    // Accedemos al elemento ds:Signature que acabamos de crear,
 	    // añadimos el sello de tiempo, en caso de ser necesario y
@@ -1284,7 +1424,7 @@ public final class XadesSigner implements Signer {
      */
     private Properties checkInputParameters(String algorithm, Properties extraParams, byte[ ] signature, PrivateKeyEntry privateKey, String signatureFormat) {
 
-	if (!SignatureConstants.SUPPORTED_COUNTER_XADES_SIGN_FORMAT.contains(signatureFormat)) {
+	if (!SignatureConstants.SUPPORTED_COUNTER_XADES_SIGN_FORMAT.contains(signatureFormat) && !SIGN_FORMAT_XADES_ENVELOPING.equals(signatureFormat)) {
 	    String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.XS_LOG026, new Object[ ] { signatureFormat });
 	    LOGGER.error(errorMsg);
 	    throw new IllegalArgumentException(errorMsg);
@@ -1613,11 +1753,22 @@ public final class XadesSigner implements Signer {
 
 	// Creación del nodo que contendrá los datos del documento a firmar
 	// (para todos los formatos de firma, excepto externally detached)
-	createDataNode(data, signType);
+	if (SIGN_FORMAT_XADES_DETACHED.equals(signType) && hasDetachedSourceDataElement(optionalParams)) {
+	    contentId = optionalParams.getProperty(XADES_DETACHED_SOURCE_DATA_ELEMENTID).trim();
+	    try {
+		Document docum = dBFactory.newDocumentBuilder().parse(new ByteArrayInputStream(data));
+		dataElement = docum.getDocumentElement();
+		dataType = IXMLConstants.DATA_TYPE_XML;
+	    } catch (SAXException | IOException e) {
+		throw new SigningException(Language.getResIntegra(ILogConstantKeys.XS_LOG006), e);
+	    }
+	} else {
+	    createDataNode(data, signType);
+	}
 
 	// Crea el nuevo documento org.w3c.dom.Document xml que contendrá la
 	// firma
-	Document docSignature = createXMLDocument(signType);
+	Document docSignature = createXMLDocument(signType, optionalParams);
 
 	// Comprobamos si en los parámetros extras se han indicado las
 	// propiedades necesarias para generar el elemento dataObjectFormat.
@@ -1640,6 +1791,7 @@ public final class XadesSigner implements Signer {
 
 	// Creamos el conjunto de referencias
 	List<Reference> references = buildReferences(signBuilder, signType, optionalParams);
+	configureXadesExt(signBuilder, optionalParams);
 
 	// Comprobamos si la firma a realizar debe ser XAdES-BES o XAdES-EPES
 	boolean isEPES = signatureForm.equals(ISignatureFormatDetector.FORMAT_XADES_EPES);
@@ -1707,6 +1859,7 @@ public final class XadesSigner implements Signer {
 
 	// Generamos la firma como tal
 	signBuilder.sign((X509Certificate) privateKey.getCertificate(), privateKey.getPrivateKey(), uriSignAlgorithm, references, signatureId, null);
+	appendEmbeddedDataObject(docSignature, optionalParams);
 
 	// Si se esta realizando una firma enveloping quitamos el nodo raíz
 	// y extraemos la firma.
@@ -1844,6 +1997,7 @@ public final class XadesSigner implements Signer {
 
 	    // Creamos el conjunto de referencias
 	    List<Reference> references = buildReferences(signBuilder, signType, optionalParams);
+	    configureXadesExt(signBuilder, optionalParams);
 
 	    // Comprobamos si la firma a realizar debe ser XAdES-BES o
 	    // XAdES-EPES
