@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /** 
  * <b>File:</b><p>es.gob.afirma.tsl.exceptions.TSLValidationException.java.</p>
@@ -42,8 +42,8 @@ public class TSLValidationException extends TSLException {
 
     /**
      * Constructor method for the class TSLValidationException.java.
-     * @param message
-     * @param cause 
+     * @param message Description.
+     * @param cause Cause. 
      */
     public TSLValidationException(String message, Throwable cause) {
 	super(message, cause);
@@ -51,7 +51,7 @@ public class TSLValidationException extends TSLException {
 
     /**
      * Constructor method for the class TSLValidationException.java.
-     * @param message 
+     * @param message Description.
      */
     public TSLValidationException(String message) {
 	super(message);
@@ -59,7 +59,7 @@ public class TSLValidationException extends TSLException {
 
     /**
      * Constructor method for the class TSLValidationException.java.
-     * @param cause 
+     * @param cause Cause.
      */
     public TSLValidationException(Throwable cause) {
 	super(cause);

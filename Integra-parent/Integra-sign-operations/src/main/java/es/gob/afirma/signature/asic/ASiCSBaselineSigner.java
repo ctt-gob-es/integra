@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /**
  * <b>File:</b><p>es.gob.afirma.signature.asic.ASiCSBaselineSigner.java.</p>
@@ -1232,7 +1232,7 @@ public final class ASiCSBaselineSigner implements Signer {
 		Attribute messageDigestAttribute = signedAttributes.get(CMSAttributes.messageDigest);
 
 		// Obtenemos el resumen de los datos firmados
-		byte[ ] signatureSignedDigest = ((ASN1OctetString) messageDigestAttribute.getAttrValues().getObjectAt(0).getDERObject()).getOctets();
+		byte[ ] signatureSignedDigest = ((ASN1OctetString) messageDigestAttribute.getAttrValues().getObjectAt(0).toASN1Primitive()).getOctets();
 
 		// Obtenemos el algoritmo de resumen usado para calcular el
 		// resumen

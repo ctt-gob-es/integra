@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /** 
  * <b>File:</b><p>es.gob.afirma.tsl.parsing.impl.common.TSLCertificateExtensionAnalyzer.java.</p>
@@ -100,6 +100,29 @@ public class TSLCertificateExtensionAnalyzer {
 	analyzeCertificateExtensions();
 
     }
+    
+	/**
+	 * Constructor method for the class TSLCertificateExtensionAnalyzer.java.
+	 * @param cert X509v3 Certificate (Bouncy Castle Provider implementation) to analyze.
+	 * @throws TSLCertificateValidationException If the input certificate is <code>null</code>, or there is
+	 * some error extracting its information.
+	 */
+	public TSLCertificateExtensionAnalyzer(Certificate cert) throws TSLCertificateValidationException {
+
+		this();
+
+		// Si la entrada es nula lanzamos excepción.
+		if (cert == null) {
+			throw new TSLCertificateValidationException(Language.getResIntegraTsl(ILogTslConstant.TCEA_LOG001));
+		}
+
+		// Almacenamos el certificado.
+		certBc = cert;
+
+		// Extraemos y analizamos las extensiones que pueda tener.
+		analyzeCertificateExtensions();
+
+	}
 
     /**
      * Auxiliar method that analyzes and extracts all the certificate

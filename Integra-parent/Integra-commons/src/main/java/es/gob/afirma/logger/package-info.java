@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 /** 
  * <p>Class .</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>

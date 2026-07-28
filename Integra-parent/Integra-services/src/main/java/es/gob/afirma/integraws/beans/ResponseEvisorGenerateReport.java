@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /** 
  * <b>File:</b><p>es.gob.afirma.integraws.beans.ResponseEvisorGenerateReport.java.</p>
@@ -57,8 +57,8 @@ public class ResponseEvisorGenerateReport {
 
     /**
      * Constructor method for the class ResponseEvisorGenerateReport.java.
-     * @param integraSuccessParam 
-     * @param integraErrorMsgParam 
+     * @param integraSuccessParam  The value for the attribute {@link #integraSuccess}
+     * @param integraErrorMsgParam  The value for the attribute {@link #integraErrorMsg}
      */
     public ResponseEvisorGenerateReport(boolean integraSuccessParam, String integraErrorMsgParam) {
 	super();
@@ -69,9 +69,9 @@ public class ResponseEvisorGenerateReport {
    
     /**
      * Constructor method for the class ResponseEvisorGenerateReport.java.
-     * @param resultParam 
-     * @param reportParam 
-     * @param integraSuccessParam  
+     * @param resultParam  The value for the attribute {@link #result}
+     * @param reportParam  The value for the attribute {@link #report}
+     * @param integraSuccessParam   The value for the attribute {@link #integraSuccess}
      */
     public ResponseEvisorGenerateReport(EvisorResult resultParam, byte[ ] reportParam, boolean integraSuccessParam) {
 	super();

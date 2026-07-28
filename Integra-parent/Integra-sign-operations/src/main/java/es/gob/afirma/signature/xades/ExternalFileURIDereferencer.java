@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /**
  * <b>File:</b><p>es.gob.afirma.signature.xades.ExternalFileURIDereferencer.java.</p>
@@ -60,7 +60,6 @@ public class ExternalFileURIDereferencer extends ResourceResolverSpi {
 
     /**
      * {@inheritDoc}
-     * @see org.apache.xml.security.utils.resolver.ResourceResolverSpi#engineResolve(org.w3c.dom.Attr, java.lang.String)
      */
     @Override
     public XMLSignatureInput engineResolveURI(ResourceResolverContext context) throws ResourceResolverException {
@@ -72,7 +71,6 @@ public class ExternalFileURIDereferencer extends ResourceResolverSpi {
 
     /**
      * {@inheritDoc}
-     * @see org.apache.xml.security.utils.resolver.ResourceResolverSpi#engineCanResolve(org.w3c.dom.Attr, java.lang.String)
      */
     @Override
     public boolean engineCanResolveURI(ResourceResolverContext context) {

@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /** 
  * <b>File:</b><p>es.gob.afirma.integraws.ws.IAfirmaServices.java.</p>
@@ -72,7 +72,7 @@ public interface IAfirmaServices {
     
     /**
      * Method that obtains the response of the server counter-signature service.
-     * @param couSigReq 
+     * @param couSigReq Object that represents request to service.
      * @return Result object of service request.
      */
     ResponseServerSign serverCounterSign(RequestServerCounterSign couSigReq);

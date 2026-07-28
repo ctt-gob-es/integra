@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /** 
  * <b>File:</b><p>es.gob.afirma.encryption.CipherIntegraTest.java.</p>
@@ -162,8 +162,6 @@ public class CipherIntegraTest implements Serializable {
 
     /**
      *  Test for {@link CipherIntegra#CipherIntegra(AlgorithmCipherEnum, java.security.Key)}.
-     * @throws Exception 
-     * 
      * @throws Exception If test fails.
      */
     @Test

@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /**
  * <b>File:</b><p>es.gob.afirma.integraFacade.pojo.DocumentRequest.java.</p>
@@ -56,8 +56,8 @@ public class DocumentRequest implements Serializable {
     private String type;
 
     /**
-     * Gets the value of the attribute {@link #idApplication}.
-     * @return the value of the attribute {@link #idApplication}.
+     * Gets the value of the attribute {@link #applicationId}.
+     * @return the value of the attribute {@link #applicationId}.
      */
     public final String getApplicationId() {
 	return applicationId;

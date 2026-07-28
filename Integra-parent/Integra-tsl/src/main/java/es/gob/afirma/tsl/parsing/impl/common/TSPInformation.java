@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /** 
  * <b>File:</b><p>es.gob.afirma.tsl.parsing.impl.common.TSPInformation.java.</p>
@@ -48,14 +48,14 @@ public class TSPInformation implements Serializable {
     /**
 	 * Attribute that represents the name of the legal entity responsible for the TSP
 	 * in all the presented languages:
-	 * Map<Language, List<Names>>.
+	 * Map&lt;Language, List&lt;Names&gt;&gt;.
 	 */
 	private Map<String, List<String>> tspNames = null;
 
 	/**
 	 * Attribute that represents the trade name of the legal entity responsible for the TSP
 	 * in all the presented languages:
-	 * Map<Language, List<TradeNames>>.
+	 * Map&lt;Language, List&lt;TradeNames&gt;&gt;.
 	 */
 	private Map<String, List<String>> tspTradeNames = null;
 

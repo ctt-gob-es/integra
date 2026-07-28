@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /*
  * This file is part of the jXAdES library. 
@@ -377,7 +377,7 @@ public class XMLAdvancedSignature {
 
 	X509Data x509Data = keyInfoFactory.newX509Data(x509DataList);
 
-	List<Object> newList = new ArrayList<Object>();
+	List<XMLStructure> newList = new ArrayList<>();
 	newList.add(keyValue);
 	newList.add(x509Data);
 

@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /**
  * <b>File:</b><p>es.gob.afirma.utils.UtilsSignature.java.</p>
@@ -24,7 +24,7 @@ package es.gob.afirma.utils;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 
-import org.bouncycastle.ocsp.OCSPRespStatus;
+import org.bouncycastle.asn1.ocsp.OCSPResponseStatus;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
@@ -112,21 +112,21 @@ public final class UtilsSignatureOCSP {
     private static void checkOCSPResponseStatus(int status) throws SigningException {
 	String msgError = null;
 	switch (status) {
-	    case OCSPRespStatus.INTERNAL_ERROR:
+	    case OCSPResponseStatus.INTERNAL_ERROR:
 		msgError = Language.getResIntegra(ILogConstantKeys.US_LOG089);
 		break;
-	    case OCSPRespStatus.MALFORMED_REQUEST:
+	    case OCSPResponseStatus.MALFORMED_REQUEST:
 		msgError = Language.getResIntegra(ILogConstantKeys.US_LOG088);
 		break;
-	    case OCSPRespStatus.SIGREQUIRED:
+	    case OCSPResponseStatus.SIG_REQUIRED:
 		msgError = Language.getResIntegra(ILogConstantKeys.US_LOG087);
 		break;
-	    case OCSPRespStatus.TRY_LATER:
+	    case OCSPResponseStatus.TRY_LATER:
 		msgError = Language.getResIntegra(ILogConstantKeys.US_LOG086);
 		break;
-	    case OCSPRespStatus.UNAUTHORIZED:
+	    case OCSPResponseStatus.UNAUTHORIZED:
 		msgError = Language.getResIntegra(ILogConstantKeys.US_LOG084);
-	    case OCSPRespStatus.SUCCESSFUL:
+	    case OCSPResponseStatus.SUCCESSFUL:
 		break;
 	    default:
 		msgError = Language.getResIntegra(ILogConstantKeys.US_LOG083);

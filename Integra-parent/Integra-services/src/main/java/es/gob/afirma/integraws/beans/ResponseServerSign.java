@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /** 
  * <b>File:</b><p>es.gob.afirma.integraws.beans.ResponseServerSign.java.</p>
@@ -55,13 +55,13 @@ public class ResponseServerSign extends ServerSignerResponse{
     
     /**
      * Constructor method for the class ResponseServerSign.java.
-     * @param asyncResponse 
-     * @param idTransaction 
-     * @param result 
-     * @param signature 
-     * @param signatureFormat 
-     * @param updatedSignature 
-     * @param integraSuccessParam 
+     * @param asyncResponse Async response.
+     * @param idTransaction Id transaction.
+     * @param result Result.
+     * @param signature  Signature.
+     * @param signatureFormat Signature format.
+     * @param updatedSignature  Updated signature.
+     * @param integraSuccessParam integraSuccessParam value.
      */
     public ResponseServerSign(String asyncResponse, String idTransaction, Result result, byte[ ] signature, String signatureFormat, byte[ ] updatedSignature, boolean integraSuccessParam) {
 	super();
@@ -78,8 +78,8 @@ public class ResponseServerSign extends ServerSignerResponse{
 
     /**
      * Constructor method for the class ResponseServerSign.java.
-     * @param integraSuccessParam 
-     * @param message 
+     * @param integraSuccessParam integraSuccessParam value.
+     * @param message error message.
      */
     public ResponseServerSign(boolean integraSuccessParam, String message) {
 	super();

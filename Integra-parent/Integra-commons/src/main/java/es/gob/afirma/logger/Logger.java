@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /**
  * <b>File:</b><p>es.gob.afirma.logger.Logger.java.</p>
@@ -85,7 +85,7 @@ public class Logger {
     /**
      * Method that encapsulates the call to the info logger method, including the stack trace.
      * @param message String that represents the message to log with the INFO level.
-     * @param the exception to log, including its stack trace.
+     * @param t the exception to log, including its stack trace.
      */
     public void info(final Object message, final Throwable t) {
 
@@ -104,7 +104,7 @@ public class Logger {
     /**
      * Method that encapsulates the call to the info logger method, including the stack trace.
      * @param message String that represents the message to log with the DEBUG level.
-     * @param the exception to log, including its stack trace.
+     * @param t the exception to log, including its stack trace.
      */
     public void debug(final Object message, final Throwable t) {
 
@@ -123,7 +123,7 @@ public class Logger {
     /**
      * Method that encapsulates the call to the info logger method, including the stack trace.
      * @param message String that represents the message to log with the WARN level.
-     * @param the exception to log, including its stack trace.
+     * @param t the exception to log, including its stack trace.
      */
     public void warn(final Object message, final Throwable t) {
 
@@ -142,7 +142,7 @@ public class Logger {
     /**
      * Method that encapsulates the call to the info logger method, including the stack trace.
      * @param message String that represents the message to log with the ERROR level.
-     * @param the exception to log, including its stack trace.
+     * @param t the exception to log, including its stack trace.
      */
     public void error(final Object message, final Throwable t) {
 
@@ -151,8 +151,7 @@ public class Logger {
 
     /**
      * Checks whether this Logger is enabled for the DEBUG Level.
-     * 
-     * @return
+     * @return {@code true} if debug mode is enabled, {@code false} otherwise.
      */
     public boolean isDebugEnabled() {
 

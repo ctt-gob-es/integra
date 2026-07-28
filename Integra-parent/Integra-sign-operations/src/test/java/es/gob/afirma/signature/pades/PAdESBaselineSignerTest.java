@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /**
  * <b>File:</b><p>es.gob.afirma.signature.pades.PAdESBaselineSignerTest.java.</p>
@@ -68,8 +68,8 @@ public class PAdESBaselineSignerTest extends AbstractSignatureTest {
     private static final String PATH_IMAGE_INVALID = "src/test/resources/image/rubrica_formato_invalido.tif";
 
     /**
-     * Test for methods {@link PAdESBaselineSigner#sign(byte[], String, String, PrivateKeyEntry, java.util.Properties, boolean, String, String)},
-     * and {@link PAdESBaselineSigner#verifySignature(byte[])}.
+     * Test for methods {@link es.gob.afirma.signature.pades.PAdESBaselineSigner#sign(byte[], String, String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String, String)},
+     * and {@link es.gob.afirma.signature.pades.PAdESBaselineSigner#verifySignature(byte[])}.
      */
     public final void testSignWithoutTimestamp() {
 
@@ -153,7 +153,7 @@ public class PAdESBaselineSignerTest extends AbstractSignatureTest {
     }
 
     /**
-     * Test for methods {@link PAdESBaselineSigner#sign(byte[], String, String, PrivateKeyEntry, java.util.Properties, boolean, String, String)},
+     * Test for methods {@link PAdESBaselineSigner#sign(byte[], String, String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, String, String)},
      * and {@link PAdESBaselineSigner#verifySignature(byte[])}.
      */
     public final void testSignWithTimestamp() {
@@ -365,8 +365,7 @@ public class PAdESBaselineSignerTest extends AbstractSignatureTest {
     }
 
     /**
-     * Test for method {@link PadesSigner#sign(byte[], String, String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String).
-     * 
+     * Test for method {@link es.gob.afirma.signature.pades.PAdESBaselineSigner#sign(byte[], String, String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String)}.
      * @throws Exception If the method fails.
      */
     public final void testSignWithRubric() throws Exception {
@@ -500,7 +499,7 @@ public class PAdESBaselineSignerTest extends AbstractSignatureTest {
     }
 
     /**
-     * Test for method {@link PadesSigner#counterSign(byte[], String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String, String).
+     * Test for method {@link es.gob.afirma.signature.pades.PAdESBaselineSigner#counterSign(byte[], String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String, String)}.
      * 
      * @throws Exception If the method fails.
      */

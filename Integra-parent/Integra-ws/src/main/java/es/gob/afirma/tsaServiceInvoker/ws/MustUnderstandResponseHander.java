@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /**
  * <b>File:</b><p>es.gob.afirma.tsaServiceInvoker.ws.MustUnderstandResponseHander.java.</p>
@@ -60,7 +60,6 @@ public class MustUnderstandResponseHander extends AbstractTSAHandler {
 
     /**
      * {@inheritDoc}
-     * @see org.apache.axis.Handler#invoke(org.apache.axis.MessageContext)
      */
     @Override
     public InvocationResponse invoke(MessageContext msgContext) throws AxisFault {

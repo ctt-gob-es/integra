@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /** 
  * <b>File:</b><p>es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorThroughSomeMethod.java.</p>
@@ -33,7 +33,7 @@ import es.gob.afirma.tsl.parsing.impl.common.ServiceHistoryInstance;
 import es.gob.afirma.tsl.parsing.impl.common.TSPService;
 
 /** 
- * <p>Interface that represents a certificate validation using TSL through some specific method.</p> .</p>
+ * <p>Interface that represents a certificate validation using TSL through some specific method.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * @version 1.2, 19/09/2022.
  */

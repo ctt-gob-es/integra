@@ -10,14 +10,12 @@
     <servlet-name>AxisServlet</servlet-name>
     <url-pattern>/services/*</url-pattern>
   </servlet-mapping>
-<!--   <servlet> -->
-<!--     <display-name>Apache-Axis Admin Servlet Web Admin</display-name> -->
-<!--     <servlet-name>AxisAdminServlet</servlet-name> -->
-<!--     <servlet-class>org.apache.axis2.transport.http.AxisAdminServlet</servlet-class> -->
-<!--     <load-on-startup>100</load-on-startup> -->
-<!--   </servlet> -->
-<!--   <servlet-mapping> -->
-<!--     <servlet-name>AxisAdminServlet</servlet-name> -->
-<!--     <url-pattern>/axis2-admin/*</url-pattern> -->
-<!--   </servlet-mapping> -->
+    <servlet>
+    <servlet-name>Test</servlet-name>
+    <servlet-class>es.gob.afirma.integraws.ws.impl.TestService</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Test</servlet-name>
+    <url-pattern>/test</url-pattern>
+  </servlet-mapping>
 </web-app>

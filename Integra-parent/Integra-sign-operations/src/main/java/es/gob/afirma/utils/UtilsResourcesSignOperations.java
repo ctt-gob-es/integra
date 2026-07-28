@@ -9,7 +9,7 @@
 //more details.
 //You should have received a copy of the EUPL1.1 license
 //along with this program; if not, you may find it at
-//http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+//https://eupl.eu/1.1/es/
 package es.gob.afirma.utils;
 
 import java.io.ByteArrayInputStream;
@@ -74,8 +74,8 @@ public class UtilsResourcesSignOperations {
 	 * @param canonicalizationMethod Parameter that represents the URI of the canonicalization algorithm to use.
 	 * @return an object that represents the canonializer. The canonicalizer will be:
 	 * <ul>
-	 * <li>{@link Canonicalizer11_OmitComments} if the canonicalization algorithm to use is {@link CanonicalizationProperties#ALGO_ID_C14N11_OMIT_COMMENTS}.</li>
-	 * <li>{@link Canonicalizer11_WithComments} if the canonicalization algorithm to use is {@link CanonicalizationProperties#ALGO_ID_C14N11_WITH_COMMENTS}.</li>
+	 * <li>{@link Canonicalizer11_OmitComments} if the canonicalization algorithm to use is {@link #ALGO_ID_C14N11_OMIT_COMMENTS}.</li>
+	 * <li>{@link Canonicalizer11_WithComments} if the canonicalization algorithm to use is {@link #ALGO_ID_C14N11_WITH_COMMENTS}.</li>
 	 * <li>{@link Canonicalizer} on another case.</li>
 	 * </ul>
 	 * @throws InvalidCanonicalizerException If the canonicalization algorithm is unsupported.

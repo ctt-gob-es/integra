@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /**
  * <b>File:</b><p>es.gob.afirma.mreport.items.ValidationData.java.</p>
@@ -144,8 +144,8 @@ public class ValidationData {
 	}
 
 	/**
-	 * Sets the value of the attribute {@link #signaturesParam}.
-	 * @param signaturesParam the value for the attribute {@link #signaturesParam} to set.
+	 * Sets the value of the attribute {@link #signatures}.
+	 * @param signaturesParam the value for the attribute {@link #signatures} to set.
 	 */
 	public void setSignatures(List<IndividualSignature> signaturesParam) {
 		this.signatures = signaturesParam;

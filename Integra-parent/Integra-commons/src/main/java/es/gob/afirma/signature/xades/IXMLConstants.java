@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /**
  * <b>File:</b><p>es.gob.afirma.signature.xades.IXMLConstants.java.</p>
@@ -79,7 +79,7 @@ public interface IXMLConstants {
 	String AFIRMA_TAG = "AFIRMA";
 
 	/**
-	 * Constant attribute that represents <code><asic:XAdESSignatures</code> tag name.
+	 * Constant attribute that represents <code>&lt;asic:XAdESSignatures</code> tag name.
 	 */
 	String ASICS_TAG = "asic:XAdESSignatures";
 

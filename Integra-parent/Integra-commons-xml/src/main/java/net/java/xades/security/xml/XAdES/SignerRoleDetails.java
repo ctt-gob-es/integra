@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /*
  * This file is part of the jXAdES library. 
@@ -24,17 +24,17 @@ import org.w3c.dom.Node;
 
 /**
  * 
- * <p:SignerRole>
- * <p:ClaimedRoles>
- * <p:ClaimedRole>
+ * &lt;p:SignerRole&gt;
+ * &lt;p:ClaimedRoles&gt;
+ * &lt;p:ClaimedRole&gt;
  * ANYTYPE
- * </p:ClaimedRole>
- * </p:ClaimedRoles>
- * <p:CertifiedRoles>
- * <p:CertifiedRole Encoding="http://tempuri.org" Id="id">
+ * &lt;/p:ClaimedRole&gt;
+ * &lt;/p:ClaimedRoles&gt;
+ * &lt;p:CertifiedRoles&gt;
+ * &lt;p:CertifiedRole Encoding="http://tempuri.org" Id="id"&gt;
  * 0
- * </p:CertifiedRole>
- * </p:CertifiedRoles> </p:SignerRole>
+ * &lt;/p:CertifiedRole&gt;
+ * &lt;/p:CertifiedRoles&gt; &lt;/p:SignerRole&gt;
  * 
  */
 

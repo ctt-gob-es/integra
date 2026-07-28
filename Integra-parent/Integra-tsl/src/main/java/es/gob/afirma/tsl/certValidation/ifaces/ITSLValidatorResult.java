@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /** 
  * <b>File:</b><p>es.gob.afirma.tsl.parsing.ifaces.ITSLValidatorResult.java.</p>
@@ -307,7 +307,7 @@ public interface ITSLValidatorResult {
 	 * Gets the mapping classification of the validated certificate. It only can be one of the following:<br>
 	 * <ul>
 	 *   <li>{@link ITSLValidatorResult#MAPPING_CLASSIFICATION_OTHER_UNKNOWN}</li>
-	 *   <li>{@link ITSLValidatorResult#MAPPING_CLASSIFICATION_PERSON}</li>
+	 *   <li>{@link ITSLValidatorResult#MAPPING_CLASSIFICATION_NATURAL_PERSON}</li>
 	 *   <li>{@link ITSLValidatorResult#MAPPING_CLASSIFICATION_LEGALPERSON}</li>
 	 *   <li>{@link ITSLValidatorResult#MAPPING_CLASSIFICATION_ESEAL}</li>
 	 *   <li>{@link ITSLValidatorResult#MAPPING_CLASSIFICATION_ESIG}</li>
@@ -358,13 +358,13 @@ public interface ITSLValidatorResult {
 
 	/**
 	 * Gets all the mappings information calculated for the validated certificate.
-	 * @return Map with the pairs <MappingName, MappingValue> calculated for the validated certificate.
+	 * @return Map with the pairs &lt;MappingName, MappingValue&gt; calculated for the validated certificate.
 	 */
 	Map<String, String> getMappings();
 
 	/**
 	 * Sets the mappings calculated for the validated certificate.
-	 * @param mappings Map with the pairs <MappingName, MappingValue> calculated for the validated certificate.
+	 * @param mappings Map with the pairs &lt;MappingName, MappingValue&gt; calculated for the validated certificate.
 	 */
 	void setMappings(Map<String, String> mappings);
 

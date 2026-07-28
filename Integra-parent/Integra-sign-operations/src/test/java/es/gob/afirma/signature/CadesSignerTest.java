@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 /**
  * <b>File:</b><p>es.gob.afirma.signature.CadesSignerTest.java.</p>
  * <b>Description:</b><p>Class that defines tests for {@link CadesSigner}.</p>
@@ -205,7 +205,6 @@ public class CadesSignerTest extends AbstractSignatureTest {
 
     /**
      * Tests for generating CAdES signatures with timestamp.
-     * @throws Exception If the test fails.
      */
     public void testSignWithTimestamp() {
 	CadesSigner cadesSigner = new CadesSigner();
@@ -251,7 +250,6 @@ public class CadesSignerTest extends AbstractSignatureTest {
 
     /**
      * Tests for generating CAdES co-signatures with timestamp.
-     * @throws Exception If the test fails.
      */
     public void testCoSignWithTimestamp() {
 	CadesSigner cadesSigner = new CadesSigner();
@@ -296,7 +294,6 @@ public class CadesSignerTest extends AbstractSignatureTest {
 
     /**
      * Tests for generating CAdES counter-ignatures with timestamp.
-     * @throws Exception If the test fails.
      */
     public void testCounterSignWithTimestamp() {
 	CadesSigner cadesSigner = new CadesSigner();
@@ -332,7 +329,6 @@ public class CadesSignerTest extends AbstractSignatureTest {
 
     /**
      * Tests for {@link CadesSigner#upgrade(byte[], List)}.
-     * @throws Exception If the test fails.
      */
     public void testUpgrade() {
 	CadesSigner cadesSigner = new CadesSigner();

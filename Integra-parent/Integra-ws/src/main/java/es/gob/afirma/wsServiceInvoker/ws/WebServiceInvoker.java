@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /**
  * <b>File:</b><p>es.gob.afirma.wsServiceInvoker.ws.WebServiceInvoker.java.</p>
@@ -37,8 +37,8 @@ import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.engine.Handler;
 import org.apache.axis2.engine.Phase;
+import org.apache.axis2.kernel.http.HTTPConstants;
 import org.apache.axis2.phaseresolver.PhaseException;
-import org.apache.axis2.transport.http.HTTPConstants;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;

@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /**
  * <b>File:</b><p>es.gob.afirma.utils.GenericUtils.java.</p>
@@ -63,7 +63,7 @@ public final class GenericUtils {
     /**
      * Retrieves a value from a tree of several maps by a path given.
      * @param path path of maps tree separated by  '/'.
-     * @param treeValues collection of maps (type: Map<String, Object>).
+     * @param treeValues collection of maps (type: Map&lt;String, Object\&gt;).
      * @return value of the key requested.
      */
     public static String getValueFromMapsTree(String path, Map<String, Object> treeValues) {

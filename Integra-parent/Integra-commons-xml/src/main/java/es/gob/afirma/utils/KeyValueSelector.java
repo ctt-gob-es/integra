@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /**
  * <b>File:</b><p>es.gob.afirma.utils.KeyValueSelector.java.</p>
@@ -65,7 +65,7 @@ public class KeyValueSelector extends KeySelector {
 	for (int i = 0; i < list.size(); i++) {
 	    XMLStructure xmlStructure = list.get(i);
 	    if (xmlStructure instanceof X509Data) {
-		List<X509Certificate> x509datalist = ((X509Data) xmlStructure).getContent();
+		List<X509Certificate> x509datalist = (List<X509Certificate>) ((X509Data) xmlStructure).getContent();
 		for (int y = x509datalist.size() - 1; y >= 0; y--) {
 		    PublicKey pk = null;
 

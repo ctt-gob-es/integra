@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /** 
  * <b>File:</b><p>es.gob.afirma.integraws.beans.ResponseServerVerifySignature.java.</p>
@@ -59,11 +59,11 @@ public class ResponseServerVerifySignature extends VerifySignatureResponse{
     
     /**
      * Constructor method for the class ResponseServerVerifySignature.java.
-     * @param result 
-     * @param signatureFormatParam 
-     * @param signedDataInfoParam 
-     * @param verificationReportParam 
-     * @param integraSuccessParam 
+     * @param result result.
+     * @param signatureFormatParam signature format. 
+     * @param signedDataInfoParam signed data info.
+     * @param verificationReportParam verification report.
+     * @param integraSuccessParam integraSuccessParam value.
      */
     public ResponseServerVerifySignature(Result result, String signatureFormatParam, List<DataInfo> signedDataInfoParam, List<IndividualSignatureReport> verificationReportParam, boolean integraSuccessParam) {
 	super();
@@ -78,8 +78,8 @@ public class ResponseServerVerifySignature extends VerifySignatureResponse{
 
     /**
      * Constructor method for the class ResponseServerVerifySignature.java.
-     * @param integraSuccessParam 
-     * @param message 
+     * @param integraSuccessParam integraSuccessParam value.
+     * @param message error message.
      */
     public ResponseServerVerifySignature(boolean integraSuccessParam, String message) {
 	super();

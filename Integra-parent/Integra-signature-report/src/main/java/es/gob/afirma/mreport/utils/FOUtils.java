@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /** 
  * <b>File:</b><p>es.gob.signaturereport.tools.FOUtils.java.</p>
@@ -68,7 +68,7 @@ public final class FOUtils {
 	 * Creates a PDF file from a XSL-FO document.
 	 * @param foFile	XSL-FO document.
 	 * @return	PDF File.
-	 * @throws ToolsException If an error occurs.
+	 * @throws UtilsException If an error occurs.
 	 */
 	public static byte[ ] fo2pdf(byte[ ] foFile) throws UtilsException {
 		FopFactory fopFactory = FopFactory.newInstance(new File(".").toURI());

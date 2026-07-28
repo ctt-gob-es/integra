@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /**
  * <b>File:</b><p>es.gob.afirma.integraFacade.pojo.UpgradeSignatureRequest.java.</p>
@@ -207,7 +207,7 @@ public class UpgradeSignatureRequest implements Serializable {
 
     /**
      * Gets the value of the attribute {@link #processAsNotBaseline}.
-     * @return the value of the attribute {@link #processAsNotBaseline}.
+     * @param processAsNotBaseline the value of the attribute {@link #processAsNotBaseline}.
      */
     public void setProcessAsNotBaseline(boolean processAsNotBaseline) {
         this.processAsNotBaseline = processAsNotBaseline;

@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /** 
  * <b>File:</b><p>es.gob.afirma.integraws.beans.ResponseServerBatchVerifySignature.java.</p>
@@ -58,10 +58,10 @@ public class ResponseServerBatchVerifySignature extends BatchVerifySignatureResp
     
     /**
      * Constructor method for the class ResponseServerBatchVerifySignature.java.
-     * @param asyncResponseParam 
-     * @param listVerifyResponseParam 
-     * @param resultParam 
-     * @param integraSuccessParam 
+     * @param asyncResponseParam asyncResponseParam value.
+     * @param listVerifyResponseParam listVerifyResponseParam value. 
+     * @param resultParam resultParam value.
+     * @param integraSuccessParam The value for the attribute {@link #integraSuccess}
      */
     public ResponseServerBatchVerifySignature(String asyncResponseParam, List<VerifySignatureResponse> listVerifyResponseParam, Result resultParam, boolean integraSuccessParam) {
 	super();
@@ -75,13 +75,13 @@ public class ResponseServerBatchVerifySignature extends BatchVerifySignatureResp
 
     /**
      * Constructor method for the class ResponseServerBatchVerifySignature.java.
-     * @param integraSuccessParam 
-     * @param message 
+     * @param integraSuccessParam The value for the attribute {@link #integraSuccess}.
+     * @param integraErrorMsg The value for the attribute {@link #integraErrorMsg}. 
      */
-    public ResponseServerBatchVerifySignature(boolean integraSuccessParam, String message) {
+    public ResponseServerBatchVerifySignature(boolean integraSuccessParam, String integraErrorMsg) {
 	super();
 	this.integraSuccess = integraSuccessParam;
-	this.integraErrorMsg = message;
+	this.integraErrorMsg = integraErrorMsg;
     }
 
     /**

@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 /**
  * <b>File:</b><p>es.gob.afirma.signature.PadesSignerTest.java.</p>
  * <b>Description:</b><p>Class that defines tests for {@link PadesSigner}.</p>
@@ -55,28 +55,28 @@ public class PadesSignerTest extends AbstractSignatureTest {
      */
     public final void testSign() throws Exception {
 
-	PadesSigner ps = new PadesSigner();
+	final PadesSigner ps = new PadesSigner();
 	// test con valores nulos
 	try {
 	    ps.sign(null, null, null, null, null, false, null, null);
 	    fail(ERROR_EXCEPTION_NOT_THROWED);
-	} catch (IllegalArgumentException e) {}
+	} catch (final IllegalArgumentException e) {}
 
 	try {
 	    ps.sign(new byte[0], null, null, null, null, false, null, null);
 	    fail(ERROR_EXCEPTION_NOT_THROWED);
-	} catch (IllegalArgumentException e) {}
+	} catch (final IllegalArgumentException e) {}
 
 	try {
 	    ps.sign(new byte[0], SignatureConstants.SIGN_ALGORITHM_SHA1WITHRSA, null, null, null, false, null, null);
 	    fail(ERROR_EXCEPTION_NOT_THROWED);
-	} catch (IllegalArgumentException e) {}
+	} catch (final IllegalArgumentException e) {}
 
 	// test con valores inválidos (algoritmo no soportado)
 	try {
 	    ps.sign(getTextDocument(), "MD5withRSA", null, getCertificatePrivateKey(), null, false, null, null);
 	    fail(ERROR_EXCEPTION_NOT_THROWED);
-	} catch (IllegalArgumentException e) {}
+	} catch (final IllegalArgumentException e) {}
 
 	// test con valores válidos (firma explícita no soportada en firmas PDF
 	// y se ignora parámetro --> se realiza de forma implícita)
@@ -89,7 +89,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 
 	// test con valores válidos (firma implícita con política de firma de
 	// AGE)
-	Properties extraParams = new Properties();
+	final Properties extraParams = new Properties();
 
 	extraParams.put(SignatureProperties.PADES_CONTACT_PROP, "Ricoh");
 	extraParams.put(SignatureProperties.PADES_LOCATION_PROP, "Seville");
@@ -104,19 +104,19 @@ public class PadesSignerTest extends AbstractSignatureTest {
      * Tests for {@link PadesSigner#sign(byte[], String, String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String)} with timestamp.
      */
     public final void testSignWithTimestamp() {
-	PadesSigner padesSigner = new PadesSigner();
+	final PadesSigner padesSigner = new PadesSigner();
 
 	// Obtenemos el fichero que se va a sellar
-	byte[ ] file = UtilsFileSystemCommons.readFile("pdfToSign.pdf", true);
+	final byte[ ] file = UtilsFileSystemCommons.readFile("pdfToSign.pdf", true);
 
 	/*
 	 * Test 1: Generación de firma PAdES-T que no permite ser modificada posteriormente
 	 */
 	try {
-	    byte[ ] padesEPES = padesSigner.sign(file, SignatureConstants.SIGN_ALGORITHM_SHA1WITHRSA, SignatureConstants.SIGN_MODE_IMPLICIT, getCertificatePrivateKey(), null, true, SignatureFormatDetector.FORMAT_PADES_EPES, "2.16.724.1.3.1.1.2.1.9");
-	    PDFValidationResult vr = padesSigner.verifySignature(padesEPES);
+	    final byte[ ] padesEPES = padesSigner.sign(file, SignatureConstants.SIGN_ALGORITHM_SHA1WITHRSA, SignatureConstants.SIGN_MODE_IMPLICIT, getCertificatePrivateKey(), null, true, SignatureFormatDetector.FORMAT_PADES_EPES, "2.16.724.1.3.1.1.2.1.9");
+	    final PDFValidationResult vr = padesSigner.verifySignature(padesEPES);
 	    assertTrue(vr.isCorrect());
-	} catch (Exception e) {
+	} catch (final Exception e) {
 	    assertTrue(false);
 	}
 
@@ -124,10 +124,10 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	 * Test 2: Generación de firma PAdES-T con política de firma que no permite ser modificada posteriormente
 	 */
 	try {
-	    byte[ ] padesEPES = padesSigner.sign(file, SignatureConstants.SIGN_ALGORITHM_SHA256WITHRSA, SignatureConstants.SIGN_MODE_IMPLICIT, getCertificatePrivateKey(), null, true, SignatureFormatDetector.FORMAT_PADES_EPES, "PDF_AGE_1.9");
-	    PDFValidationResult vr = padesSigner.verifySignature(padesEPES);
+	    final byte[ ] padesEPES = padesSigner.sign(file, SignatureConstants.SIGN_ALGORITHM_SHA256WITHRSA, SignatureConstants.SIGN_MODE_IMPLICIT, getCertificatePrivateKey(), null, true, SignatureFormatDetector.FORMAT_PADES_EPES, "PDF_AGE_1.9");
+	    final PDFValidationResult vr = padesSigner.verifySignature(padesEPES);
 	    assertTrue(vr.isCorrect());
-	} catch (Exception e) {
+	} catch (final Exception e) {
 	    assertTrue(false);
 	}
 
@@ -135,10 +135,10 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	 * Test 3: Generación de firma PAdES-T con política de firma que permite ser modificada posteriormente
 	 */
 	try {
-	    byte[ ] padesEPES = padesSigner.sign(file, SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, SignatureConstants.SIGN_MODE_IMPLICIT, getCertificatePrivateKey(), null, true, SignatureFormatDetector.FORMAT_PADES_EPES, "PDF_AGE_1.9");
-	    PDFValidationResult vr = padesSigner.verifySignature(padesEPES);
+	    final byte[ ] padesEPES = padesSigner.sign(file, SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, SignatureConstants.SIGN_MODE_IMPLICIT, getCertificatePrivateKey(), null, true, SignatureFormatDetector.FORMAT_PADES_EPES, "PDF_AGE_1.9");
+	    final PDFValidationResult vr = padesSigner.verifySignature(padesEPES);
 	    assertTrue(vr.isCorrect());
-	} catch (Exception e) {
+	} catch (final Exception e) {
 	    assertTrue(false);
 	}
     }
@@ -147,22 +147,22 @@ public class PadesSignerTest extends AbstractSignatureTest {
      * Tests for {@link PadesSigner#upgrade(byte[], List)}.
      */
     public final void testUpgrade() {
-	PadesSigner padesSigner = new PadesSigner();
+	final PadesSigner padesSigner = new PadesSigner();
 
 	// Obtenemos el fichero que se va a sellar
-	byte[ ] file = UtilsFileSystemCommons.readFile("pdfToSign.pdf", true);
+	final byte[ ] file = UtilsFileSystemCommons.readFile("pdfToSign.pdf", true);
 
 	/*
 	 * Test 1: Actualización de todos los firmantes de una firma PAdES-BES que permite ser modificada posteriormente
 	 */
 	try {
-	    Properties extraParams = new Properties();
+	    final Properties extraParams = new Properties();
 	    extraParams.put(SignatureProperties.PADES_CERTIFICATION_LEVEL, "CERTIFIED_FORM_FILLING_AND_ANNOTATIONS");
-	    byte[ ] pdfSignature = padesSigner.sign(file, SignatureConstants.SIGN_ALGORITHM_SHA1WITHRSA, SignatureConstants.SIGN_MODE_IMPLICIT, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_BES, null);
-	    byte[ ] upgradedSignature = padesSigner.upgrade(pdfSignature, null);
-	    PDFValidationResult vr = padesSigner.verifySignature(upgradedSignature);
+	    final byte[ ] pdfSignature = padesSigner.sign(file, SignatureConstants.SIGN_ALGORITHM_SHA1WITHRSA, SignatureConstants.SIGN_MODE_IMPLICIT, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_BES, null);
+	    final byte[ ] upgradedSignature = padesSigner.upgrade(pdfSignature, null);
+	    final PDFValidationResult vr = padesSigner.verifySignature(upgradedSignature);
 	    assertTrue(vr.isCorrect());
-	} catch (Exception e) {
+	} catch (final Exception e) {
 	    assertTrue(false);
 	}
 
@@ -170,11 +170,11 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	 * Test 2: Actualización de todos los firmantes de una firma PAdES-BES que no permite ser modificada posteriormente
 	 */
 	try {
-	    byte[ ] pdfSignature = padesSigner.sign(file, SignatureConstants.SIGN_ALGORITHM_SHA1WITHRSA, SignatureConstants.SIGN_MODE_IMPLICIT, getCertificatePrivateKey(), null, false, SignatureFormatDetector.FORMAT_PADES_BES, null);
-	    byte[ ] upgradedSignature = padesSigner.upgrade(pdfSignature, null);
-	    PDFValidationResult vr = padesSigner.verifySignature(upgradedSignature);
+	    final byte[ ] pdfSignature = padesSigner.sign(file, SignatureConstants.SIGN_ALGORITHM_SHA1WITHRSA, SignatureConstants.SIGN_MODE_IMPLICIT, getCertificatePrivateKey(), null, false, SignatureFormatDetector.FORMAT_PADES_BES, null);
+	    final byte[ ] upgradedSignature = padesSigner.upgrade(pdfSignature, null);
+	    final PDFValidationResult vr = padesSigner.verifySignature(upgradedSignature);
 	    assertTrue(vr.isCorrect());
-	} catch (Exception e) {
+	} catch (final Exception e) {
 	    assertTrue(true);
 	}
 
@@ -182,15 +182,15 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	 * Test 3: Actualización de un firmante de una firma PAdES-BES que permite ser modificada posteriormente
 	 */
 	try {
-	    List<X509Certificate> listCertificates = new ArrayList<X509Certificate>();
+	    final List<X509Certificate> listCertificates = new ArrayList<X509Certificate>();
 	    listCertificates.add(getCertificate());
-	    Properties extraParams = new Properties();
+	    final Properties extraParams = new Properties();
 	    extraParams.put(SignatureProperties.PADES_CERTIFICATION_LEVEL, "CERTIFIED_FORM_FILLING_AND_ANNOTATIONS");
-	    byte[ ] pdfSignature = padesSigner.sign(file, SignatureConstants.SIGN_ALGORITHM_SHA1WITHRSA, SignatureConstants.SIGN_MODE_IMPLICIT, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_BES, null);
-	    byte[ ] upgradedSignature = padesSigner.upgrade(pdfSignature, listCertificates);
-	    PDFValidationResult vr = padesSigner.verifySignature(upgradedSignature);
+	    final byte[ ] pdfSignature = padesSigner.sign(file, SignatureConstants.SIGN_ALGORITHM_SHA1WITHRSA, SignatureConstants.SIGN_MODE_IMPLICIT, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_BES, null);
+	    final byte[ ] upgradedSignature = padesSigner.upgrade(pdfSignature, listCertificates);
+	    final PDFValidationResult vr = padesSigner.verifySignature(upgradedSignature);
 	    assertTrue(vr.isCorrect());
-	} catch (Exception e) {
+	} catch (final Exception e) {
 	    assertTrue(false);
 	}
     }
@@ -200,12 +200,12 @@ public class PadesSignerTest extends AbstractSignatureTest {
      */
     public final void testValidate() {
 
-	PadesSigner padesSigner = new PadesSigner();
+	final PadesSigner padesSigner = new PadesSigner();
 
 	/*
 	 * Test 1: Validar una firma PDF
 	 */
-	byte[ ] pdf = UtilsFileSystemCommons.readFile("signatures/PDF/PDF.pdf", true);
+	final byte[ ] pdf = UtilsFileSystemCommons.readFile("signatures/PDF/PDF.pdf", true);
 	if (padesSigner.verifySignature(pdf).isCorrect()) {
 	    assertTrue(false);
 	}
@@ -213,7 +213,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	/*
 	 * Test 2: Validar una firma PAdES-Basic
 	 */
-	byte[ ] padesBasic = UtilsFileSystemCommons.readFile("signatures/PDF/PAdES-Basic.pdf", true);
+	final byte[ ] padesBasic = UtilsFileSystemCommons.readFile("signatures/PDF/PAdES-Basic.pdf", true);
 	if (!padesSigner.verifySignature(padesBasic).isCorrect()) {
 	    assertTrue(false);
 	}
@@ -221,7 +221,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	/*
 	 * Test 3: Validar una firma PAdES-BES
 	 */
-	byte[ ] padesBES = UtilsFileSystemCommons.readFile("signatures/PDF/PAdES-BES.pdf", true);
+	final byte[ ] padesBES = UtilsFileSystemCommons.readFile("signatures/PDF/PAdES-BES.pdf", true);
 	if (!padesSigner.verifySignature(padesBES).isCorrect()) {
 	    assertTrue(false);
 	}
@@ -229,7 +229,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	/*
 	 * Test 4: Validar una firma PAdES-EPES
 	 */
-	byte[ ] padesEPES = UtilsFileSystemCommons.readFile("signatures/PDF/PAdES-EPES.pdf", true);
+	final byte[ ] padesEPES = UtilsFileSystemCommons.readFile("signatures/PDF/PAdES-EPES.pdf", true);
 	if (!padesSigner.verifySignature(padesEPES).isCorrect()) {
 	    assertTrue(false);
 	}
@@ -237,20 +237,53 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	/*
 	 * Test 5: Validar una firma PAdES-LTV
 	 */
-	byte[ ] padesLTV = UtilsFileSystemCommons.readFile("signatures/PDF/PAdES-LTV.pdf", true);
+	final byte[ ] padesLTV = UtilsFileSystemCommons.readFile("signatures/PDF/PAdES-LTV.pdf", true);
 	if (!padesSigner.verifySignature(padesLTV).isCorrect()) {
 	    assertTrue(false);
 	}
 
     }
+    
+    /**
+     * Tests for {@link PadesSigner#verifySignature(byte[])}.
+     */
+    public final void testValidateProtectedPDF() {
 
+	final PadesSigner padesSigner = new PadesSigner();
+
+	/*
+	 * Test 1: Validar una firma PDF con encriptacion RC4.
+	 */
+	final byte[ ] pdfRC4 = UtilsFileSystemCommons.readFile("signatures/PDF/PDF_de_prueba_RC4_128_123456.pdf", true);
+	if (!padesSigner.verifySignature(pdfRC4).isCorrect()) {
+	    assertTrue(false);
+	} 
+	
+	/*
+	 * Test 2: Validar una firma PDF con encriptacion AES256.
+	 */
+	final byte[ ] pdfAES256 = UtilsFileSystemCommons.readFile("signatures/PDF/PDF_de_prueba_AES256_123456.pdf", true);
+	if (!padesSigner.verifySignature(pdfAES256).isCorrect()) {
+	    assertTrue(false);
+	} 
+	
+	/*
+	 * Test 3: Test 1: Validar una firma PDF con encriptacion AES128.
+	 */
+	final byte[ ] pdfAES128 = UtilsFileSystemCommons.readFile("signatures/PDF/PDF_de_prueba_AES128_123456.pdf", true);
+	if (!padesSigner.verifySignature(pdfAES128).isCorrect()) {
+	    assertTrue(false);
+	} 
+	
+    }
+    
     /**
         * Test for method {@link PadesSigner#getSignedData(byte[])}.
         */
     public final void testGetSignedData() {
 
-	byte[ ] signature = UtilsFileSystemCommons.readFile("signatures/PDF/PDF.pdf", true);
-	PadesSigner ps = new PadesSigner();
+	final byte[ ] signature = UtilsFileSystemCommons.readFile("signatures/PDF/PDF.pdf", true);
+	final PadesSigner ps = new PadesSigner();
 	OriginalSignedData osd = new OriginalSignedData();
 
 	try {
@@ -261,7 +294,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	    assertNull(osd.getHashAlgorithm());
 	    assertNull(osd.getHashSignedData());
 
-	} catch (SigningException e) {
+	} catch (final SigningException e) {
 	    assertTrue(false);
 	}
 
@@ -272,12 +305,12 @@ public class PadesSignerTest extends AbstractSignatureTest {
      */
     public final void testGetSignedDataParamNull() {
 
-	PadesSigner ps = new PadesSigner();
+	final PadesSigner ps = new PadesSigner();
 	OriginalSignedData osd = new OriginalSignedData();
 
 	try {
 	    osd = ps.getSignedData(null);
-	} catch (SigningException e) {
+	} catch (final SigningException e) {
 	    assertTrue(true);
 	}
 
@@ -289,27 +322,27 @@ public class PadesSignerTest extends AbstractSignatureTest {
      * @throws Exception If the method fails.
      */
     public final void testCoSign() throws Exception {
-	PadesSigner ps = new PadesSigner();
+	final PadesSigner ps = new PadesSigner();
 	byte[ ] result = null;
 	// test con valores nulos
 	try {
 	    ps.coSign(null, null, null, null, null, false, null, null);
 	    fail(ERROR_EXCEPTION_NOT_THROWED);
-	} catch (IllegalArgumentException e) {
+	} catch (final IllegalArgumentException e) {
 	    assertTrue(true);
 	}
 
 	try {
 	    ps.coSign(new byte[0], null, null, null, null, false, null, null);
 	    fail(ERROR_EXCEPTION_NOT_THROWED);
-	} catch (IllegalArgumentException e) {
+	} catch (final IllegalArgumentException e) {
 	    assertTrue(true);
 	}
 
 	try {
 	    ps.coSign(new byte[0], null, SignatureConstants.SIGN_ALGORITHM_SHA1WITHRSA, null, null, false, null, null);
 	    fail(ERROR_EXCEPTION_NOT_THROWED);
-	} catch (IllegalArgumentException e) {
+	} catch (final IllegalArgumentException e) {
 	    assertTrue(true);
 	}
 
@@ -317,24 +350,24 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	try {
 	    ps.coSign(getPdfDocumentCosign(), null, "MD5withRSA", getCertificatePrivateKey(), null, false, null, null);
 	    fail(ERROR_EXCEPTION_NOT_THROWED);
-	} catch (IllegalArgumentException e) {
+	} catch (final IllegalArgumentException e) {
 	    assertTrue(true);
 	}
 
-	Properties extraParams = new Properties();
+	final Properties extraParams = new Properties();
 	extraParams.put(SignatureProperties.PADES_CONTACT_PROP, "Ricoh");
 	extraParams.put(SignatureProperties.PADES_LOCATION_PROP, "Seville");
 	extraParams.put(SignatureProperties.PADES_REASON_PROP, "Document signed for demonstrate this authenticity");
 
 	// test con parámetros válidos
 	result = ps.coSign(getPdfDocumentCosign(), null, SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_BES, null);
-	PDFValidationResult vr = ps.verifySignature(result);
+	final PDFValidationResult vr = ps.verifySignature(result);
 	assertTrue(vr.isCorrect());
 
 	// test con formato no permitido
 	try {
 	    result = ps.coSign(getPdfDocumentCosign(), null, SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_CADES_A, null);
-	} catch (IllegalArgumentException e) {
+	} catch (final IllegalArgumentException e) {
 	    assertTrue(true);
 	}
 
@@ -342,7 +375,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	extraParams.put(SignatureProperties.CADES_POLICY_QUALIFIER_PROP, "");
 	try {
 	    result = ps.coSign(getPdfDocumentCosign(), null, SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_BES, null);
-	} catch (IllegalArgumentException e) {
+	} catch (final IllegalArgumentException e) {
 	    assertTrue(true);
 	}
     }
@@ -353,27 +386,27 @@ public class PadesSignerTest extends AbstractSignatureTest {
      * @throws Exception If the method fails.
      */
     public final void testCounter() throws Exception {
-	PadesSigner ps = new PadesSigner();
+	final PadesSigner ps = new PadesSigner();
 	byte[ ] result = null;
 	// test con valores nulos
 	try {
 	    ps.counterSign(null, null, null, null, false, null, null);
 	    fail(ERROR_EXCEPTION_NOT_THROWED);
-	} catch (IllegalArgumentException e) {
+	} catch (final IllegalArgumentException e) {
 	    assertTrue(true);
 	}
 
 	try {
 	    ps.counterSign(new byte[0], null, null, null, false, null, null);
 	    fail(ERROR_EXCEPTION_NOT_THROWED);
-	} catch (IllegalArgumentException e) {
+	} catch (final IllegalArgumentException e) {
 	    assertTrue(true);
 	}
 
 	try {
 	    ps.counterSign(new byte[0], SignatureConstants.SIGN_ALGORITHM_SHA1WITHRSA, null, null, false, null, null);
 	    fail(ERROR_EXCEPTION_NOT_THROWED);
-	} catch (IllegalArgumentException e) {
+	} catch (final IllegalArgumentException e) {
 	    assertTrue(true);
 	}
 
@@ -382,24 +415,24 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	    ps.counterSign(getPdfDocumentCosign(), "MD5withRSA", getCertificatePrivateKey(), null, false, null, null);
 
 	    fail(ERROR_EXCEPTION_NOT_THROWED);
-	} catch (IllegalArgumentException e) {
+	} catch (final IllegalArgumentException e) {
 	    assertTrue(true);
 	}
 
-	Properties extraParams = new Properties();
+	final Properties extraParams = new Properties();
 	extraParams.put(SignatureProperties.PADES_CONTACT_PROP, "Ricoh");
 	extraParams.put(SignatureProperties.PADES_LOCATION_PROP, "Seville");
 	extraParams.put(SignatureProperties.PADES_REASON_PROP, "Document signed for demonstrate this authenticity");
 
 	// test con parámetros válidos
 	result = ps.counterSign(getPdfDocumentCosign(), SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_BES, null);
-	PDFValidationResult vr = ps.verifySignature(result);
+	final PDFValidationResult vr = ps.verifySignature(result);
 	assertTrue(vr.isCorrect());
 
 	// test con formato no permitido
 	try {
 	    result = ps.counterSign(getPdfDocumentCosign(), SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_CADES_A, null);
-	} catch (IllegalArgumentException e) {
+	} catch (final IllegalArgumentException e) {
 	    assertTrue(true);
 	}
 
@@ -407,22 +440,22 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	extraParams.put(SignatureProperties.XADES_DATA_FORMAT_DESCRIPTION_PROP, "");
 	try {
 	    result = ps.counterSign(getPdfDocumentCosign(), SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_BES, null);
-	} catch (IllegalArgumentException e) {
+	} catch (final IllegalArgumentException e) {
 	    assertTrue(true);
 	}
 
     }
 
     /**
-     * Test for method {@link PadesSigner#sign(byte[], String, String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String).
+     * Test for method {@link es.gob.afirma.signature.pades.PadesSigner#sign(byte[], String, String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String)}.
      * 
      * @throws Exception If the method fails.
      */
     public final void testSignWithRubric() throws Exception {
 
-	PadesSigner ps = new PadesSigner();
+	final PadesSigner ps = new PadesSigner();
 
-	Properties extraParams = new Properties();
+	final Properties extraParams = new Properties();
 
 	extraParams.put(SignatureProperties.PADES_CONTACT_PROP, "Ricoh");
 	extraParams.put(SignatureProperties.PADES_LOCATION_PROP, "Seville");
@@ -438,14 +471,14 @@ public class PadesSignerTest extends AbstractSignatureTest {
 
 	// Test 1 - test con valores válidos
 	byte[ ] result = ps.sign(getPdfDocumentToSignRubric(), SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, SignatureConstants.SIGN_MODE_IMPLICIT, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_EPES, null);
-	PDFValidationResult vr = ps.verifySignature(result);
+	final PDFValidationResult vr = ps.verifySignature(result);
 	assertTrue(vr.isCorrect());
 
 	// Test 2 - insertar rúbrica pasando un número de página inválido
 	extraParams.put(SignatureProperties.PADES_IMAGE_PAGE, "0");
 	try {
 	    result = ps.sign(getPdfDocumentToSignRubric(), SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, SignatureConstants.SIGN_MODE_IMPLICIT, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_EPES, null);
-	} catch (IllegalArgumentException e) {
+	} catch (final IllegalArgumentException e) {
 	    assertTrue(true);
 	}
 
@@ -454,7 +487,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	extraParams.put(SignatureProperties.PADES_IMAGE_PAGE, "10");
 	try {
 	    result = ps.sign(getPdfDocumentToSignRubric(), SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, SignatureConstants.SIGN_MODE_IMPLICIT, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_EPES, null);
-	} catch (SigningException e) {
+	} catch (final SigningException e) {
 	    assertTrue(true);
 	}
 
@@ -463,7 +496,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	extraParams.put(SignatureProperties.PADES_IMAGE, imageB64);
 	try {
 	    result = ps.sign(getPdfDocumentToSignRubric(), SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, SignatureConstants.SIGN_MODE_IMPLICIT, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_EPES, null);
-	} catch (SigningException e) {
+	} catch (final SigningException e) {
 	    assertTrue(true);
 	}
 
@@ -476,9 +509,9 @@ public class PadesSignerTest extends AbstractSignatureTest {
      */
     public final void testCoSignWithRubric() throws Exception {
 
-	PadesSigner ps = new PadesSigner();
+	final PadesSigner ps = new PadesSigner();
 
-	Properties extraParams = new Properties();
+	final Properties extraParams = new Properties();
 
 	extraParams.put(SignatureProperties.PADES_CONTACT_PROP, "Ricoh");
 	extraParams.put(SignatureProperties.PADES_LOCATION_PROP, "Seville");
@@ -494,7 +527,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 
 	// 1 - Test con valores válidos
 	byte[ ] result = ps.coSign(getPdfDocumentToCosignRubric(), null, SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_BES, null);
-	PDFValidationResult vr = ps.verifySignature(result);
+	final PDFValidationResult vr = ps.verifySignature(result);
 	assertTrue(vr.isCorrect());
 
 	// Test 2 - Insertar rúbrica pasando un número de página inválido
@@ -505,7 +538,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	extraParams.remove(SignatureConstants.SIGN_FORMAT_PADES);
 	try {
 	    result = ps.coSign(getPdfDocumentToCosignRubric(), null, SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_BES, null);
-	} catch (IllegalArgumentException e) {
+	} catch (final IllegalArgumentException e) {
 	    assertTrue(true);
 	}
 
@@ -519,7 +552,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	extraParams.remove(SignatureConstants.SIGN_FORMAT_PADES);
 	try {
 	    result = ps.coSign(getPdfDocumentToCosignRubric(), null, SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_BES, null);
-	} catch (SigningException e) {
+	} catch (final SigningException e) {
 	    assertTrue(true);
 	}
 
@@ -528,21 +561,21 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	extraParams.put(SignatureProperties.PADES_IMAGE, imageB64);
 	try {
 	    result = ps.coSign(getPdfDocumentToCosignRubric(), null, SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_BES, null);
-	} catch (SigningException e) {
+	} catch (final SigningException e) {
 	    assertTrue(true);
 	}
     }
 
     /**
-     * Test for method {@link PadesSigner#counterSign(byte[], String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String, String).
+     * Test for method {@link PadesSigner#counterSign(byte[], String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String, String)}.
      * 
      * @throws Exception If the method fails.
      */
     public final void testCounterSignWithRubric() throws Exception {
 
-	PadesSigner ps = new PadesSigner();
+	final PadesSigner ps = new PadesSigner();
 
-	Properties extraParams = new Properties();
+	final Properties extraParams = new Properties();
 
 	extraParams.put(SignatureProperties.PADES_CONTACT_PROP, "Ricoh");
 	extraParams.put(SignatureProperties.PADES_LOCATION_PROP, "Seville");
@@ -558,7 +591,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 
 	// Test 1 - test con valores válidos
 	byte[ ] result = ps.counterSign(getPdfDocumentToCosignRubric(), SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_BES, null);
-	PDFValidationResult vr = ps.verifySignature(result);
+	final PDFValidationResult vr = ps.verifySignature(result);
 	assertTrue(vr.isCorrect());
 
 	// Test 2 - Insertar rúbrica pasando un número de página inválido
@@ -570,7 +603,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	extraParams.remove(SignatureConstants.SIGN_FORMAT_PADES);
 	try {
 	    result = ps.counterSign(getPdfDocumentToCosignRubric(), SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_BES, null);
-	} catch (IllegalArgumentException e) {
+	} catch (final IllegalArgumentException e) {
 	    assertTrue(true);
 	}
 
@@ -584,7 +617,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	extraParams.remove(SignatureConstants.SIGN_FORMAT_PADES);
 	try {
 	    result = ps.counterSign(getPdfDocumentCosign(), SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_BES, null);
-	} catch (SigningException e) {
+	} catch (final SigningException e) {
 	    assertTrue(true);
 	}
 
@@ -597,7 +630,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	extraParams.put(SignatureProperties.PADES_IMAGE, imageB64);
 	try {
 	    result = ps.counterSign(getPdfDocumentCosign(), SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_BES, null);
-	} catch (SigningException e) {
+	} catch (final SigningException e) {
 	    assertTrue(true);
 
 	}

@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /*
  * This file is part of the jXAdES library. 
@@ -81,7 +81,10 @@ public class XMLSignatureElement {
 	});
     }
 
-    /** Creates a new instance of XMLSignatureElement */
+    /**
+     * Creates a new instance of XMLSignatureElement
+     * @param signatureElement Node Signature.
+     */
     public XMLSignatureElement(Element signatureElement) {
 	if (signatureElement == null) {
 	    throw new IllegalArgumentException("Signature Element can not be NULL.");

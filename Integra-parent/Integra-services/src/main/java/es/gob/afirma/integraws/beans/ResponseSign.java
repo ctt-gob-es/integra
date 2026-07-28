@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /** 
  * <b>File:</b><p>es.gob.afirma.integraws.beans.ResponseSign.java.</p>
@@ -52,8 +52,8 @@ public class ResponseSign {
 
     /**
      * Constructor method for the class ResponseSign.java.
-     * @param signParam 
-     * @param integraSuccessParam 
+     * @param signParam Signature.
+     * @param integraSuccessParam integraSuccessParam value.
      */
     public ResponseSign(byte[ ] signParam, boolean integraSuccessParam) {
 	super();
@@ -63,13 +63,13 @@ public class ResponseSign {
 
     /**
      * Constructor method for the class ResponseSign.java.
-     * @param integraSuccessParam 
-     * @param integraErrorMsgParam 
+     * @param integraSuccessParam integraSuccessParam value.
+     * @param message Error message. 
      */
-    public ResponseSign(boolean integraSuccessParam, String integraErrorMsgParam) {
+    public ResponseSign(boolean integraSuccessParam, String message) {
 	super();
 	this.integraSuccess = integraSuccessParam;
-	this.integraErrorMsg = integraErrorMsgParam;
+	this.integraErrorMsg = message;
     }
 
     /**

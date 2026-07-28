@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /** 
  * <b>File:</b><p>es.gob.afirma.tsl.parsing.impl.common.extensions.KeyUsage.java.</p>
@@ -56,7 +56,7 @@ public class KeyUsage implements Serializable {
 
     /**
 	 * Attribute that represents the list with the differente key usages.
-	 * The maximum elements is {@link NumberConstants#NUM9}.
+	 * The maximum elements is {@link NumberConstants#INT_9}.
 	 */
 	private List<KeyUsageBit> keyUsageBitList = null;
 

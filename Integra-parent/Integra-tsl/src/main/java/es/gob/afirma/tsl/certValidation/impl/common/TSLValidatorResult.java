@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /** 
  * <b>File:</b><p>es.gob.afirma.tsl.certValidation.impl.common.TSLValidatorResult.java.</p>
@@ -705,7 +705,7 @@ public class TSLValidatorResult implements ITSLValidatorResult {
 
 	/**
 	 * {@inheritDoc}
-	 * @see es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult#getRevocationValueBasicOCSPResponse()
+	 * @see es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult#getRevocationValueBasicOCSPResp()
 	 */
 	@Override
 	public BasicOCSPResp getRevocationValueBasicOCSPResp() {
@@ -714,7 +714,7 @@ public class TSLValidatorResult implements ITSLValidatorResult {
 
 	/**
 	 * {@inheritDoc}
-	 * @see es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult#setRevocationValueBasicOCSPResponse(org.bouncycastle.cert.ocsp.BasicOCSPResp)
+	 * @see es.gob.afirma.tsl.certValidation.ifaces.ITSLValidatorResult#setRevocationValueBasicOCSPResp(BasicOCSPResp)
 	 */
 	@Override
 	public void setRevocationValueBasicOCSPResp(BasicOCSPResp bor) {

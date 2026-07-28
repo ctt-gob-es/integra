@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /*
  * This file is part of the jXAdES library.
@@ -209,6 +209,9 @@ public class SystemUtils {
 
     /**
      * Return the value of the boolean System property propName.
+     * @param propName property name.
+     * @param defaultValue default value.
+     * @return Property value as boolean.
      */
     public static boolean getBooleanProperty(String propName, boolean defaultValue) {
 	// if set, require value of either true or false

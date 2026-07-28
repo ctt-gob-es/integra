@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /*
  * This file is part of the jXAdES library. 
@@ -32,15 +32,27 @@ public class CertificateValidatorException extends GeneralSecurityException {
      */
     private static final long serialVersionUID = -4063199462796472613L;
 
-    /** Creates a new instance of CertificateValidatorException */
+    /**
+     * Creates a new instance of CertificateValidatorException
+     * @param message the exception's description. 
+     * @param cause the cause that provoke the exception. 
+     */
     public CertificateValidatorException(String message, Throwable cause) {
 	super(message, cause);
     }
 
+    /**
+     * Creates a new instance of CertificateValidatorException
+     * @param message the exception's description.
+     */
     public CertificateValidatorException(String message) {
 	super(message);
     }
 
+    /**
+     * Creates a new instance of CertificateValidatorException
+     * @param cause the cause that provoke the exception. 
+     */
     public CertificateValidatorException(Throwable cause) {
 	super(cause);
     }

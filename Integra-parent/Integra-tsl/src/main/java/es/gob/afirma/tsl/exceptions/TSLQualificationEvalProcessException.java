@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /** 
  * <b>File:</b><p>es.gob.afirma.tsl.exceptions.TSLQualificationEvalProcessException.java.</p>
@@ -42,7 +42,7 @@ public class TSLQualificationEvalProcessException extends Exception {
 
     /**
      * Constructor method for the class TSLQualificationEvalProcessException.java.
-     * @param message 
+     * @param message Description.
      */
     public TSLQualificationEvalProcessException(String message) {
 	super(message);
@@ -50,7 +50,7 @@ public class TSLQualificationEvalProcessException extends Exception {
 
     /**
      * Constructor method for the class TSLQualificationEvalProcessException.java.
-     * @param cause 
+     * @param cause Cause.
      */
     public TSLQualificationEvalProcessException(Throwable cause) {
 	super(cause);
@@ -58,8 +58,8 @@ public class TSLQualificationEvalProcessException extends Exception {
 
     /**
      * Constructor method for the class TSLQualificationEvalProcessException.java.
-     * @param message
-     * @param cause 
+     * @param message Description.
+     * @param cause Cause.
      */
     public TSLQualificationEvalProcessException(String message, Throwable cause) {
 	super(message, cause);
@@ -67,10 +67,10 @@ public class TSLQualificationEvalProcessException extends Exception {
 
     /**
      * Constructor method for the class TSLQualificationEvalProcessException.java.
-     * @param message
-     * @param cause
-     * @param enableSuppression
-     * @param writableStackTrace 
+     * @param message Description.
+     * @param cause Cause.
+     * @param enableSuppression Suppression.
+     * @param writableStackTrace  Write stacktrace.
      */
     public TSLQualificationEvalProcessException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
 	super(message, cause, enableSuppression, writableStackTrace);

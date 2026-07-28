@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /**
  * <b>File:</b><p>es.gob.afirma.signature.xades.XadesExt.java.</p>
@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.crypto.MarshalException;
+import javax.xml.crypto.URIDereferencer;
+import javax.xml.crypto.XMLStructure;
 import javax.xml.crypto.dom.DOMStructure;
 import javax.xml.crypto.dsig.CanonicalizationMethod;
 import javax.xml.crypto.dsig.Reference;
@@ -53,13 +55,13 @@ import net.java.xades.security.xml.XAdES.XAdES_BES;
 import net.java.xades.security.xml.XAdES.XMLAdvancedSignature;
 
 /**
- * <p>Class that extends {@link XMLAdvancedSignature} with new changes:
+ * <p>Class that extends {@link XMLAdvancedSignature} with new changes:</p>
  * <ul>
  * <li><code>SubjectX500Principal</code> and <code>X509IssuerSerial</code> elements are included in the <code>KeyInfo</code> element.</li>
  * <li>Signature algorithm can be set.</li>
  * <li>Canonicalization algorithm of the signature can be set.</li>
  * <li>Namespace of XAdES can be set.</li>
- * </ul></p>
+ * </ul>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * @version 1.3, 13/04/2020.
  */
@@ -82,6 +84,11 @@ public final class XadesExt extends XMLAdvancedSignature {
      * Atribute that indicates whether signature is XAdES Baseline or not.
      */
     private boolean isXAdESBaseline = false;
+
+    /**
+     * Attribute that represents the custom URI dereferencer to use during signature generation.
+     */
+    private URIDereferencer uriDereferencer = null;
 
     /**
      * Establece el algoritmo de canonicalizaci&oacute;n.
@@ -110,6 +117,14 @@ public final class XadesExt extends XMLAdvancedSignature {
     }
 
     /**
+     * Sets the custom URI dereferencer to use during signature generation.
+     * @param uriDereferencerParam Custom URI dereferencer.
+     */
+    public void setURIDereferencer(final URIDereferencer uriDereferencerParam) {
+	this.uriDereferencer = uriDereferencerParam;
+    }
+
+    /**
      * {@inheritDoc}
      * @see net.java.xades.security.xml.XAdES.XMLAdvancedSignature#newKeyInfo(java.security.cert.X509Certificate, java.lang.String)
      */
@@ -121,7 +136,7 @@ public final class XadesExt extends XMLAdvancedSignature {
 	if (!XmlWrappedKeyInfo.PUBLIC_KEY.equals(getXmlWrappedKeyInfo())) {
 	    x509DataList.add(certificate);
 	}
-	final List<Object> newList = new ArrayList<Object>();
+	final List<XMLStructure> newList = new ArrayList<>();
 	newList.add(keyInfoFactory.newKeyValue(certificate.getPublicKey()));
 	newList.add(keyInfoFactory.newX509Data(x509DataList));
 	return keyInfoFactory.newKeyInfo(newList, keyInfoId);
@@ -155,6 +170,9 @@ public final class XadesExt extends XMLAdvancedSignature {
 	this.signContext.putNamespacePrefix(xadesNamespace, xades.getXadesPrefix());
 
 	registerIdAttrs();
+	if (uriDereferencer != null) {
+	    signContext.setURIDereferencer(uriDereferencer);
+	}
 	signature.sign(signContext);
     }
 

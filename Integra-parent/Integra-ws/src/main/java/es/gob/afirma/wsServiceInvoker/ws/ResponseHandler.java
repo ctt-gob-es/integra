@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /**
  * <b>File:</b><p>es.gob.afirma.wsServiceInvoker.ws.ResponseHandler.java.</p>
@@ -28,8 +28,7 @@ import javax.xml.crypto.dsig.XMLSignature;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.saaj.util.SAAJUtil;
-import org.apache.ws.security.components.crypto.CryptoType;
-import org.apache.ws.security.components.crypto.CryptoType.TYPE;
+import org.apache.wss4j.common.crypto.CryptoType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -85,7 +84,6 @@ public class ResponseHandler extends AbstractCommonHandler {
 
     /**
      * {@inheritDoc}
-     * @see org.apache.axis.Handler#invoke(org.apache.axis.MessageContext)
      */
     @Override
     public InvocationResponse invoke(MessageContext msgContext) throws AxisFault {
@@ -108,7 +106,7 @@ public class ResponseHandler extends AbstractCommonHandler {
 		// Obtenemos la clave pública usada en el servidor para las
 		// respuestas a partir del almacén de certificados.
 		LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.RH_LOG003, new Object[ ] { getUserAlias() }));
-		CryptoType aliasCertificate = new CryptoType(TYPE.ALIAS);
+		CryptoType aliasCertificate = new CryptoType(CryptoType.TYPE.ALIAS);
 		aliasCertificate.setAlias(getUserAlias());
 		X509Certificate[ ] certificates = getCryptoInstance().getX509Certificates(aliasCertificate);
 		if (certificates != null && certificates.length > 0) {

@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /** 
  * <b>File:</b><p>es.gob.afirma.encryption.Cipher.java.</p>
@@ -76,7 +76,7 @@ public class CipherIntegra implements Serializable {
      * Constructor method for the class Cipher.java.
      * @param algorithmCipherParam Parameter that represents the selected cipher algorithm.
      * @param keyParam Parameter that represents the used key to encrypt/decrypt a message.
-     * @throws CipherException 
+     * @throws CipherException If the method fails.
      */
     public CipherIntegra(AlgorithmCipherEnum algorithmCipherParam, Key keyParam) throws CipherException {
 	if (algorithmCipherParam != null && keyParam != null) {

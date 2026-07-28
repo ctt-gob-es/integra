@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /** 
  * <b>File:</b><p>es.gob.afirma.integraws.beans.ResponseValidateOCSP.java.</p>
@@ -120,11 +120,11 @@ public class ResponseValidateOCSP{
 
     /**
      * Constructor method for the class ResponseValidateOCSP.java.
-     * @param statusParam 
-     * @param errorMsgParam 
-     * @param revocationDateParam 
-     * @param maxAgeParam 
-     * @param result 
+     * @param statusParam  statusParam value.
+     * @param errorMsgParam  errorMsgParam value.
+     * @param revocationDateParam revocationDateParam value. 
+     * @param maxAgeParam  maxAgeParam value. 
+     * @param result result value.
      */
     public ResponseValidateOCSP(int statusParam, String errorMsgParam, Date revocationDateParam, Date maxAgeParam, boolean result) {
 	super();
@@ -137,8 +137,8 @@ public class ResponseValidateOCSP{
 
     /**
      * Constructor method for the class ResponseValidateOCSP.java.
-     * @param result 
-     * @param message 
+     * @param result result value.
+     * @param message message value. 
      */
     public ResponseValidateOCSP(boolean result, String message) {
 	super();

@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /** 
  * <b>File:</b><p>es.gob.afirma.integraws.beans.ResponseUpgradeSign.java.</p>
@@ -59,9 +59,9 @@ public class ResponseUpgradeSign {
 
     /**
      * Constructor method for the class ResponseUpgradeSign.java.
-     * @param signParam 
-     * @param integraSuccessParam 
-     * @param expirationDateParam 
+     * @param signParam  signParam value.
+     * @param integraSuccessParam  integraSuccessParam value.
+     * @param expirationDateParam expirationDateParam value.
      */
     public ResponseUpgradeSign(byte[ ] signParam, boolean integraSuccessParam, Date expirationDateParam) {
 	super();
@@ -72,8 +72,8 @@ public class ResponseUpgradeSign {
 
     /**
      * Constructor method for the class ResponseUpgradeSign.java.
-     * @param integraSuccessParam 
-     * @param integraErrorMsgParam 
+     * @param integraSuccessParam  integraSuccessParam value.
+     * @param integraErrorMsgParam integraErrorMsgParam value.
      */
     public ResponseUpgradeSign(boolean integraSuccessParam, String integraErrorMsgParam) {
 	super();

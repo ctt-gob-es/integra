@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /** 
  * <b>File:</b><p>es.gob.afirma.tsl.certValidation.impl.TSLValidatorMappingCalculator.java.</p>
@@ -79,7 +79,7 @@ public final class TSLValidatorMappingCalculator {
 	/**
 	 * Extracts the static mappings from the validation result, and add these on the input mapping set.
 	 * @param tslCertExtAnalyzer TSL Certificate Extension Analyzer needed to resolve the mappings of the certificate.
-	 * @param mappings Map in which adds the pairs <MappingName, MappingValue> calculated for the validated certificate.
+	 * @param mappings Map in which adds the pairs &lt;MappingName, MappingValue&gt; calculated for the validated certificate.
 	 * @param tslValidationResult TSL validation result from which get the static mapping information.
 	 */
 	public static void extractStaticMappingsFromResult(TSLCertificateExtensionAnalyzer tslCertExtAnalyzer, Map<String, String> mappings, ITSLValidatorResult tslValidationResult) {

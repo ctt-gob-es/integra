@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /** 
  * <b>File:</b><p>es.gob.afirma.tsl.utils.UtilsDate.java.</p>
@@ -160,6 +160,10 @@ public class UtilsDate {
 	 * Constant attribute that represents the date format <code>"yyyy-MM-dd'T'HH:mm:ss.SSSXXX"</code>.
 	 */
 	public static final String FORMAT_DATE_TIME_JSON = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
+	/**
+	 * Constant attribute that represents the date format <code>"yyyy-MM-dd'T'HH:mm:ss'Z"</code>.
+	 */
+	public static final String FORMAT_DATE_TIME_TSL = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
 	/**
 	 * Attribute that represents the value of the date.

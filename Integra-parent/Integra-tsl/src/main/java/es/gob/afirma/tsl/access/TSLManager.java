@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /** 
  * <b>File:</b><p>es.gob.afirma.tsl.access.TSLManager.java.</p>
@@ -194,7 +194,6 @@ public final class TSLManager {
 
     /**
      * Tries to validate the input X509v3 certificate with.
-     * @param auditTransNumber Audit transaction number.
      * @param cert X509v3 certificate to validate.
      * @param validationDate Validation date to check.
      * @param checkStatusRevocation Flag that indicates if only try to detect the input certificate (<code>false</code>)

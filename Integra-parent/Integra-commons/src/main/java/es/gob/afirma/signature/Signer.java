@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /**
  * <b>File:</b><p>es.gob.afirma.signature.Signer.java.</p>
@@ -96,9 +96,9 @@ public interface Signer {
      * </ul>
      * The allowed values for PAdES signature are:
      * <ul>
-     * <li>{@link es.gob.afirma.signature.SignatureFormatDetector#FORMAT_PADES_BASIC}</li>
-     * <li>{@link es.gob.afirma.signature.SignatureFormatDetector#FORMAT_PADES_BES}</li>
-     * <li>{@link es.gob.afirma.signature.SignatureFormatDetector#FORMAT_PADES_EPES}</li>
+     * <li>{@link es.gob.afirma.signature.ISignatureFormatDetector#FORMAT_PADES_BASIC}</li>
+     * <li>{@link es.gob.afirma.signature.ISignatureFormatDetector#FORMAT_PADES_BES}</li>
+     * <li>{@link es.gob.afirma.signature.ISignatureFormatDetector#FORMAT_PADES_EPES}</li>
      * </ul>
      * The allowed values for PAdES Baseline signature are:
      * <ul>
@@ -281,9 +281,9 @@ public interface Signer {
      * </ul>
      * The allowed values for PAdES signature are:
      * <ul>
-     * <li>{@link es.gob.afirma.signature.SignatureFormatDetector#FORMAT_PADES_BASIC}</li>
-     * <li>{@link es.gob.afirma.signature.SignatureFormatDetector#FORMAT_PADES_BES}</li>
-     * <li>{@link es.gob.afirma.signature.SignatureFormatDetector#FORMAT_PADES_EPES}</li>
+     * <li>{@link es.gob.afirma.signature.ISignatureFormatDetector#FORMAT_PADES_BASIC}</li>
+     * <li>{@link es.gob.afirma.signature.ISignatureFormatDetector#FORMAT_PADES_BES}</li>
+     * <li>{@link es.gob.afirma.signature.ISignatureFormatDetector#FORMAT_PADES_EPES}</li>
      * </ul>
      * The allowed values for PAdES Baseline signature are:
      * <ul>

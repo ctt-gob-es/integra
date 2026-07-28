@@ -9,7 +9,7 @@
 // more details.
 // You should have received a copy of the EUPL1.1 license
 // along with this program; if not, you may find it at
-// http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+// https://eupl.eu/1.1/es/
 
 /** 
  * <b>File:</b><p>es.gob.signaturereport.tools.ImageUtils.java.</p>
@@ -74,7 +74,7 @@ public final class ImageUtils {
 	 * @param angle	Rotated angle. The allowed values are 90, 180 or 270.
 	 * @param imageFormat Format of image.
 	 * @return	Rotated image.
-	 * @throws UtilsException 
+	 * @throws UtilsException if the method fails.
 	 */
 	public static byte[] rotate(byte[] image, double angle, String imageFormat) throws UtilsException{
 		if(angle==QUARTER_ROTATION || angle==HALF_ROTATION || angle == THREE_QUARTERS_ROTATION){
