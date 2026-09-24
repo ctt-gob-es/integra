@@ -21,11 +21,32 @@
  */
 package es.gob.afirma.utils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.Collection;
 
-import org.bouncycastle.tsp.TSPException;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
+
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.tsp.TimeStampRequest;
+import org.bouncycastle.tsp.TimeStampRequestGenerator;
 import org.bouncycastle.tsp.TimeStampResponse;
 import org.bouncycastle.tsp.TimeStampToken;
+import org.bouncycastle.tsp.TSPAlgorithms;
+import org.bouncycastle.tsp.TSPException;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.util.Store;
+import org.bouncycastle.util.StoreException;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
@@ -169,4 +190,161 @@ public final class UtilsTimestampOcspRfc3161 {
 	public static TimeStampToken getTimestampFromRFC3161Service(byte[ ] dataToStamp, String applicationID, String tsaCommunicationMode) throws SigningException {
 		return getTimestampFromRFC3161Service(dataToStamp, applicationID, tsaCommunicationMode, null);
 	}
+
+	/**
+	 * Method that connects to an external RFC3161 TSA over HTTPS, requests a timestamp and
+	 * returns the certificate used by the TSA to sign the returned TimeStampToken.
+	 * <p>
+	 * This method performs a POST of an ASN.1 TimeStampRequest to the URL formed by
+	 * https://{host}:{port}{context} with Content-Type "application/timestamp-query".
+	 * </p>
+	 * @param host Hostname of the TSA (for example "psis.aoc.cat").
+	 * @param port TCP port of the TSA (for example 443).
+	 * @param context Context path of the TSA service (for example "/psis/catcert/tsp").
+	 * @param policyOID OID of the timestamp policy to request (may be null or empty).
+	 * @param hashAlgorithm Hash algorithm to use for the request (e.g. "SHA-256").
+	 * @return X509Certificate that signed the TimeStampToken returned by the TSA.
+	 * @throws SigningException If any error occurs building the request, contacting the TSA or parsing the response.
+	 */
+	public static X509Certificate getSigningCertificateFromExternalTSA(final String host, final int port, final String context,
+			final String policyOID, final String hashAlgorithm) throws SigningException {
+			LOGGER.info("Obteniendo certificado firmante del TSA externo: " + host + ":" + port + context);
+			try {
+				// Build TimeStampRequest
+				TimeStampRequestGenerator reqgen = new TimeStampRequestGenerator();
+				reqgen.setCertReq(true);
+
+				if (policyOID != null && !policyOID.trim().isEmpty()) {
+					reqgen.setReqPolicy(policyOID);
+				}
+
+				// Use a small fixed nonce payload (content does not matter for certificate retrieval)
+				byte[] data = "integra-tsa-cert-retrieval".getBytes("UTF-8");
+
+				String algOid = translateHashAlgorithmToOid(hashAlgorithm);
+
+				MessageDigest md = MessageDigest.getInstance(normalizeJavaHashName(hashAlgorithm));
+				byte[] digest = md.digest(data);
+
+				TimeStampRequest req = reqgen.generate(algOid, digest);
+				byte[] requestBytes = req.getEncoded();
+
+				// Build URL
+				String contextNormalized = (context == null) ? "" : context;
+				if (!contextNormalized.startsWith("/")) {
+					contextNormalized = "/" + contextNormalized;
+				}
+				URL url = new URL("https", host, port, contextNormalized);
+
+				// Open connection
+				HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+				// Accept any hostname (behaviour consistent with existing invoker)
+				conn.setHostnameVerifier(new HostnameVerifier() {
+					@Override
+					public boolean verify(String hostname, SSLSession session) {
+						return true;
+					}
+				});
+
+				conn.setDoOutput(true);
+				conn.setDoInput(true);
+				conn.setUseCaches(false);
+				conn.setRequestProperty("Content-Type", "application/timestamp-query");
+				conn.setRequestProperty("Content-Transfer-Encoding", "binary");
+
+				OutputStream out = null;
+				InputStream in = null;
+				ByteArrayOutputStream baos = null;
+				try {
+					out = conn.getOutputStream();
+					out.write(requestBytes);
+					out.flush();
+
+					in = conn.getInputStream();
+					baos = new ByteArrayOutputStream();
+					byte[] buffer = new byte[1024];
+					int read = -1;
+					while ((read = in.read(buffer)) != -1) {
+						baos.write(buffer, 0, read);
+					}
+					byte[] responseBytes = baos.toByteArray();
+
+					TimeStampResponse tsr = new TimeStampResponse(responseBytes);
+					if (tsr.getFailInfo() != null) {
+						throw new SigningException("TSA returned failure: " + tsr.getStatusString());
+					}
+					TimeStampToken tst = tsr.getTimeStampToken();
+					if (tst == null) {
+						throw new SigningException("TSA did not return a TimeStampToken");
+					}
+
+					// Extract signing certificate directly to avoid module dependency
+					try {
+						Store<X509CertificateHolder> store = tst.getCertificates();
+						Collection<X509CertificateHolder> collectionSigningCertificate = store.getMatches(tst.getSID());
+
+						if (collectionSigningCertificate == null || collectionSigningCertificate.size() != 1) {
+							throw new SigningException(Language.getResIntegra(ILogConstantKeys.TSU_LOG015));
+						}
+
+						X509CertificateHolder certHolder = collectionSigningCertificate.iterator().next();
+						return new JcaX509CertificateConverter()
+								.setProvider(BouncyCastleProvider.PROVIDER_NAME)
+								.getCertificate(certHolder);
+					} catch (StoreException e) {
+						String errorMsg = Language.getResIntegra(ILogConstantKeys.TSU_LOG122);
+						LOGGER.error(errorMsg);
+						throw new SigningException(errorMsg, e);
+					} catch (CertificateException e) {
+						String errorMsg = Language.getResIntegra(ILogConstantKeys.TSU_LOG123);
+						LOGGER.error(errorMsg);
+						throw new SigningException(errorMsg, e);
+					}
+
+				} finally {
+					UtilsResourcesCommons.safeCloseOutputStream(out);
+					UtilsResourcesCommons.safeCloseInputStream(in);
+					UtilsResourcesCommons.safeCloseOutputStream(baos);
+				}
+
+			} catch (IOException e) {
+				throw new SigningException("I/O error contacting TSA", e);
+			} catch (Exception e) {
+				throw new SigningException("Error obtaining signing certificate from TSA", e);
+			}
+		}
+
+		private static String normalizeJavaHashName(String hashAlgorithm) {
+			if (hashAlgorithm == null) {
+				return "SHA-256";
+			}
+			String s = hashAlgorithm.replace("-", "").toUpperCase();
+			if (s.equals("SHA256") || s.equals("SHA256")) {
+				return "SHA-256";
+			} else if (s.equals("SHA1") || s.equals("SHA")) {
+				return "SHA-1";
+			} else if (s.equals("SHA512")) {
+				return "SHA-512";
+			} else if (s.equals("RIPEMD160")) {
+				return "RIPEMD160";
+			}
+			return hashAlgorithm;
+		}
+
+		private static String translateHashAlgorithmToOid(String hashAlgorithm) throws SigningException {
+			if (hashAlgorithm == null) {
+				return TSPAlgorithms.SHA256.getId();
+			}
+			String s = hashAlgorithm.replace("-", "").toUpperCase();
+			if (s.equals("SHA256")) {
+				return TSPAlgorithms.SHA256.getId();
+			} else if (s.equals("SHA1") || s.equals("SHA")) {
+				return TSPAlgorithms.SHA1.getId();
+			} else if (s.equals("SHA512")) {
+				return TSPAlgorithms.SHA512.getId();
+			} else if (s.equals("RIPEMD160")) {
+				return TSPAlgorithms.RIPEMD160.getId();
+			}
+			throw new SigningException("Unsupported hash algorithm: " + hashAlgorithm);
+		}
 }

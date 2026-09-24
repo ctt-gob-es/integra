@@ -21,10 +21,12 @@
  */
 package es.gob.afirma.utils;
 
+import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -119,15 +121,19 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Font;
 import com.lowagie.text.Image;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.AcroFields;
+import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PRTokeniser;
 import com.lowagie.text.pdf.PdfArray;
 import com.lowagie.text.pdf.PdfDictionary;
 import com.lowagie.text.pdf.PdfName;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfSignatureAppearance;
+import com.lowagie.text.pdf.PdfStamper;
 
 import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
@@ -438,7 +444,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // Instanciamos un objeto para leer las firmas
 	    final AcroFields af = reader.getAcroFields();
 	    // Obtenemos la lista de firmas del documento PDF
-	    final List<String> listSignatures = af.getSignatureNames();
+	    final List<String> listSignatures = af.getSignedFieldNames();
 	    // Recorremos la lista de firmas obtenidas
 	    for (int i = 0; i < listSignatures.size(); i++) {
 		// Metemos en una variable el nombre de la firma
@@ -1335,7 +1341,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	    // Instanciamos un objeto para leer las firmas
 	    final AcroFields af = reader.getAcroFields();
 	    // Obtenemos la lista de firmas del documento PDF
-	    final List<String> listSignatures = af.getSignatureNames();
+	    final List<String> listSignatures = af.getSignedFieldNames();
 	    // Recorremos la lista de firmas obtenidas
 	    for (int i = 0; i < listSignatures.size(); i++) {
 		// Metemos en una variable el nombre de la firma
@@ -2662,7 +2668,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 		// si el número de revisiones es mayor que 1, existen varias
 		// firmas
 		// Obtenemos la lista de firmas obtenidas.
-		final List<String> listSignatures = af.getSignatureNames();
+		final List<String> listSignatures = af.getSignedFieldNames();
 		// recorremos la lista de firmas obtenidas
 		for (int i = 0; i < listSignatures.size(); i++) {
 		    // se guarda en una variable el nombre de la firma
@@ -2807,6 +2813,57 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	}
     }
 
+
+	/**
+	 * Method that delete from the XMP metadata of the original PDF document the attributes that
+	 * are going to be added by the signature process to avoid duplication in the final result.
+	 * @param stp Parameter that represents the object that allows us to modify the PDF document.
+	 * @param xmpBytes Parameter that represents the XMP metadata of the original PDF document.
+	 */
+    public static void cleanMetadata(PdfStamper stp, byte[] xmpBytes) {
+    	if (xmpBytes != null) {
+    		String newXmp = new String(xmpBytes);
+    		newXmp = deleteXmpAttribute("Producer", newXmp);
+    		newXmp = deleteXmpAttribute("ModifyDate", newXmp);
+    		stp.setXmpMetadata(newXmp.getBytes(StandardCharsets.UTF_8));
+    	}
+	}
+
+    /**
+     * Deletes an attribute and its value from the XMP (not an element, only if it is an attribute of an element),
+     * if it exists, to avoid duplication in the final result. When searching for the attribute, it takes into
+     * account that the attribute may have a namespace prefix and that there may be spaces between the attribute
+     * name and the '=' sign and between the '=' sign and the value.
+     * @param attribute Attribute to search for and delete from the XMP.
+     * @param xmp XMP from which the attribute and its value will be deleted.
+     * @return XMP without the attribute and its value.
+     */
+	private static String deleteXmpAttribute(String attribute, String xmp) {
+
+		String nameSpacePrefix = null;
+		int idx = xmp.indexOf(":" + attribute);
+		if (idx != -1) {
+			String prefix = "";
+			for (int i = idx - 1; i >= 0; i--) {
+				char c = xmp.charAt(i);
+				if (Character.isLetterOrDigit(c) || c == '_') {
+					prefix = c + prefix;
+				}
+				else {
+					break;
+				}
+			}
+			nameSpacePrefix = prefix;
+		}
+
+		String attributeName = nameSpacePrefix != null ? nameSpacePrefix + ":" + attribute : attribute;
+
+		String regex = attributeName + "\\s*=\\s*\"[^\"]*\"";
+		xmp = xmp.replaceAll(regex, "");
+
+		return xmp;
+	}
+
     /**
      * Method that checks if the signature includes a rubric.
      *
@@ -2835,6 +2892,23 @@ public final class UtilsSignatureOp implements IUtilsSignature {
 	}
 	return rubric;
     }
+
+    /**
+	 * Indica si en el XMP de metadatos se declara que el PDF es de tipo A.
+	 * @param metadata Metadatos XMP del PDF.
+	 * @return <code>true</code> si el PDF es de tipo PDF/A,
+	 *         <code>false</code> en caso contrario.
+	 */
+	public static boolean isPdfA(final byte[] metadata) {
+		if (metadata == null) {
+			return false;
+		}
+		final String rdf = new String(metadata).replace("\n", "") //$NON-NLS-1$ //$NON-NLS-2$
+				.replace("\r", "") //$NON-NLS-1$ //$NON-NLS-2$
+				.replace("\t", "") //$NON-NLS-1$ //$NON-NLS-2$
+				.replace(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
+		return rdf.contains("<pdfaid:part>") || rdf.contains("pdfaid:part="); //$NON-NLS-1$
+	}
 
     /**
      * Method that inserts the rubric in a document.
@@ -2882,6 +2956,40 @@ public final class UtilsSignatureOp implements IUtilsSignature {
     		throw new SigningException(e);
     	}
     }
+
+	/**
+	 * Carga una fuente de letray la marca para que se incruste en el PDF.
+	 * @param fontFamily Familia de fuentes.
+	 * @return Fuente de letra.
+	 * @throws DocumentException Cuando falla la composici&oacute;n de la fuente.
+	 * @throws IOException Cuando falla la carga de la fuente.
+	 */
+	public static Font loadFontToEmbedIntoPdf(final int fontFamily) throws DocumentException, IOException {
+
+		// Establecemos la fuente de letra y marcamos que se embeba en el documento
+		BaseFont baseFont;
+		switch (fontFamily) {
+		case Font.HELVETICA:
+			baseFont = BaseFont.createFont("/es/gob/afirma/signature/utils/fonts/helvetica.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED); //$NON-NLS-1$
+			break;
+		case Font.TIMES_ROMAN:
+			baseFont = BaseFont.createFont("/es/gob/afirma/signature/utils/fonts/times.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED); //$NON-NLS-1$
+			break;
+		case Font.COURIER:
+		default:
+			baseFont = BaseFont.createFont("/es/gob/afirma/signature/utils/fonts/courier.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED); //$NON-NLS-1$
+		}
+		baseFont.setSubset(false);
+
+		// Tamano de letra
+		int fontSize = Font.DEFAULTSIZE;
+		// Estilo
+		int fontStyle = Font.NORMAL;
+		// Color
+		Color fontColor = Color.BLACK;
+
+		return new Font(baseFont, fontSize, fontStyle, fontColor);
+	}
 
     /**
      * Method that obtains an instance of the object Image with the image to be inserted into the document.
@@ -5967,7 +6075,7 @@ public final class UtilsSignatureOp implements IUtilsSignature {
      * @throws SigningException if it's not possible to access to the timestamp of a timestamp dictionary.
      */
     private static void obtainListOfDictionaries(final PdfReader reader, final AcroFields af, final List<PDFDocumentTimestampDictionary> listTimestampDictionaries, final List<PDFSignatureDictionary> listSignatureDictionaries) throws SigningException {
-	final List<String> names = af.getSignatureNames();
+	final List<String> names = af.getSignedFieldNames();
 	// Recorremos las firmas
 	for (final String signatureName: names) {
 

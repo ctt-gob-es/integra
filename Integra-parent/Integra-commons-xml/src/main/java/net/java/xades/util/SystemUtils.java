@@ -15,7 +15,7 @@
  * This file is part of the jXAdES library.
  * jXAdES is an open implementation for the Java platform of the XAdES standard for advanced XML digital signature.
  * This library can be consulted and downloaded from http://universitatjaumei.jira.com/browse/JXADES.
- * 
+ *
  */
 package net.java.xades.util;
 
@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -35,7 +36,7 @@ import java.util.Date;
  * <p>Title: </p>
  *
  * <p>Description: </p>
- * 
+ *
  * <p>Copyright: Copyright (c) 2006</p>
  *
  * <p>Company: </p>
@@ -215,7 +216,13 @@ public class SystemUtils {
      */
     public static boolean getBooleanProperty(String propName, boolean defaultValue) {
 	// if set, require value of either true or false
-	String b = (String) AccessController.doPrivileged(new sun.security.action.GetPropertyAction(propName));
+	String b = (String) AccessController.doPrivileged(new PrivilegedAction<String>() {
+		@Override
+		public String run() {
+			return System.getProperty(propName);
+		}
+
+	});
 
 	if (b == null) {
 	    return defaultValue;

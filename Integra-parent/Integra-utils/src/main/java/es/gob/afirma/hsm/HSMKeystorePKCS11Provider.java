@@ -21,8 +21,9 @@
  */
 package es.gob.afirma.hsm;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.security.Provider;
 import java.security.Security;
 import java.util.Properties;
@@ -31,8 +32,8 @@ import es.gob.afirma.i18n.ILogConstantKeys;
 import es.gob.afirma.i18n.Language;
 import es.gob.afirma.logger.Logger;
 import es.gob.afirma.properties.HSMProperties;
+import es.gob.afirma.utils.CryptoUtilCommons;
 import es.gob.afirma.utils.GenericUtilsCommons;
-import sun.security.pkcs11.SunPKCS11;
 
 /**
  * <p>Class to manage the connection to the HSM and create the Keystore representation.</p>
@@ -100,19 +101,21 @@ public final class HSMKeystorePKCS11Provider {
 	    }
 
 	    try {
-		// Comprobamos si ya existe un proveedor PKCS11
-		pkcs11Provider = Security.getProvider(TOKEN_PKCS11);
+	    	// Comprobamos si ya existe un proveedor PKCS11
+	    	pkcs11Provider = Security.getProvider(TOKEN_PKCS11);
 
-		// Si no existe, asociamos el proveedor de Sun como PKCS11 y lo
-		// añadimos a la lista de proveedores en la última posición
-		if (pkcs11Provider == null) {
-			pkcs11Provider = new SunPKCS11(absPathConfigFile);
-		    Security.addProvider(pkcs11Provider);
-		}
-		// Obtenemos el almacén de claves
-		hsmKeystore = KeyStore.getInstance(TOKEN_PKCS11);
-	    } catch (KeyStoreException e) {
-		throw new HSMException(Language.getResIntegra(ILogConstantKeys.HKPP_LOG004), e);
+	    	// Si no existe, asociamos el proveedor de Sun como PKCS11 y lo
+	    	// añadimos a la lista de proveedores en la última posición
+	    	if (pkcs11Provider == null) {
+	    		byte[] configFileContent = Files.readAllBytes(new File(absPathConfigFile).toPath());
+	    		pkcs11Provider = CryptoUtilCommons.getP11Provider(configFileContent);
+	    		Security.addProvider(pkcs11Provider);
+	    	}
+
+	    	// Obtenemos el almacén de claves
+	    	hsmKeystore = KeyStore.getInstance(TOKEN_PKCS11);
+	    } catch (Exception e) {
+	    	throw new HSMException(Language.getResIntegra(ILogConstantKeys.HKPP_LOG004), e);
 	    }
 
 	    // Hacemos la carga del KeyStore

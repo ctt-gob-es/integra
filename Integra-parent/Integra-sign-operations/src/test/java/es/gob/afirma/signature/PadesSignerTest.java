@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import com.lowagie.text.pdf.codec.Base64;
-
 import es.gob.afirma.signature.pades.PadesSigner;
 import es.gob.afirma.signature.validation.PDFValidationResult;
 import es.gob.afirma.utils.Base64CoderCommons;
@@ -96,10 +94,10 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	extraParams.put(SignatureProperties.PADES_REASON_PROP, "Document signed for demonstrate this authenticity");
 
 	result = ps.sign(getPdfDocument(), SignatureConstants.SIGN_ALGORITHM_SHA512WITHECDSA, SignatureConstants.SIGN_MODE_IMPLICIT, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_EPES, null);
-	
+
 	System.out.println("\n------>>PDF FIRMADO (firma implícita con política de firma de AGE)------¬ \n" + new String(Base64CoderCommons.encodeBase64(result)));
     }
-    
+
     /**
      * Tests for {@link PadesSigner#sign(byte[], String, String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String)}.
      * @throws Exception If the test fails.
@@ -147,7 +145,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	extraParams.put(SignatureProperties.PADES_REASON_PROP, "Document signed for demonstrate this authenticity");
 
 	result = ps.sign(getPdfDocument(), SignatureConstants.SIGN_ALGORITHM_SHA512, SignatureConstants.SIGN_MODE_IMPLICIT, getCertificateECCPrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_EPES, null);
-	
+
 	System.out.println("\n------>>PDF FIRMADO (firma implícita con política de firma de AGE)------¬ \n" + new String(Base64CoderCommons.encodeBase64(result)));
     }
 
@@ -294,7 +292,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	}
 
     }
-    
+
     /**
      * Tests for {@link PadesSigner#verifySignature(byte[])}.
      */
@@ -308,26 +306,26 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	final byte[ ] pdfRC4 = UtilsFileSystemCommons.readFile("signatures/PDF/PDF_de_prueba_RC4_128_123456.pdf", true);
 	if (!padesSigner.verifySignature(pdfRC4).isCorrect()) {
 	    assertTrue(false);
-	} 
-	
+	}
+
 	/*
 	 * Test 2: Validar una firma PDF con encriptacion AES256.
 	 */
 	final byte[ ] pdfAES256 = UtilsFileSystemCommons.readFile("signatures/PDF/PDF_de_prueba_AES256_123456.pdf", true);
 	if (!padesSigner.verifySignature(pdfAES256).isCorrect()) {
 	    assertTrue(false);
-	} 
-	
+	}
+
 	/*
 	 * Test 3: Test 1: Validar una firma PDF con encriptacion AES128.
 	 */
 	final byte[ ] pdfAES128 = UtilsFileSystemCommons.readFile("signatures/PDF/PDF_de_prueba_AES128_123456.pdf", true);
 	if (!padesSigner.verifySignature(pdfAES128).isCorrect()) {
 	    assertTrue(false);
-	} 
-	
+	}
+
     }
-    
+
     /**
         * Test for method {@link PadesSigner#getSignedData(byte[])}.
         */
@@ -357,10 +355,8 @@ public class PadesSignerTest extends AbstractSignatureTest {
     public final void testGetSignedDataParamNull() {
 
 	final PadesSigner ps = new PadesSigner();
-	OriginalSignedData osd = new OriginalSignedData();
-
 	try {
-	    osd = ps.getSignedData(null);
+	    ps.getSignedData(null);
 	} catch (final SigningException e) {
 	    assertTrue(true);
 	}
@@ -369,7 +365,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 
     /**
      * Test for method {@link PadesSigner#coSign(byte[], byte[], String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String)}.
-     * 
+     *
      * @throws Exception If the method fails.
      */
     public final void testCoSign() throws Exception {
@@ -433,10 +429,10 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	    assertTrue(true);
 	}
     }
-    
+
     /**
      * Test for method {@link PadesSigner#coSign(byte[], byte[], String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String)}.
-     * 
+     *
      * @throws Exception If the method fails.
      */
     public final void testCoSignECC() throws Exception {
@@ -503,7 +499,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 
     /**
      * Test for method {@link PadesSigner#counterSign(byte[], String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String)}.
-     * 
+     *
      * @throws Exception If the method fails.
      */
     public final void testCounter() throws Exception {
@@ -566,10 +562,10 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	}
 
     }
-    
+
     /**
      * Test for method {@link PadesSigner#counterSign(byte[], String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String)}.
-     * 
+     *
      * @throws Exception If the method fails.
      */
     public final void testCounterECC() throws Exception {
@@ -635,7 +631,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 
     /**
      * Test for method {@link es.gob.afirma.signature.pades.PadesSigner#sign(byte[], String, String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String)}.
-     * 
+     *
      * @throws Exception If the method fails.
      */
     public final void testSignWithRubric() throws Exception {
@@ -648,7 +644,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	extraParams.put(SignatureProperties.PADES_LOCATION_PROP, "Seville");
 	extraParams.put(SignatureProperties.PADES_REASON_PROP, "Document signed for demonstrate this authenticity");
 
-	String imageB64 = Base64.encodeBytes(PATH_IMAGE.getBytes());
+	String imageB64 = Base64CoderCommons.encodeBase64(PATH_IMAGE);
 	extraParams.put(SignatureProperties.PADES_IMAGE, imageB64);
 	extraParams.put(SignatureProperties.PADES_IMAGE_PAGE, "-1");
 	extraParams.put(SignatureProperties.PADES_LOWER_LEFT_X, "20");
@@ -679,7 +675,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	}
 
 	// Test 4 - insertar rúbrica pasando una imagen con formato inválido.
-	imageB64 = Base64.encodeBytes(PATH_IMAGE_INVALID.getBytes());
+	imageB64 = Base64CoderCommons.encodeBase64(PATH_IMAGE_INVALID);
 	extraParams.put(SignatureProperties.PADES_IMAGE, imageB64);
 	try {
 	    result = ps.sign(getPdfDocumentToSignRubric(), SignatureConstants.SIGN_ALGORITHM_SHA512WITHECDSA, SignatureConstants.SIGN_MODE_IMPLICIT, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_EPES, null);
@@ -691,7 +687,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 
     /**
      * Test for method {@link PadesSigner#coSign(byte[], byte[], String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String)}.
-     * 
+     *
      * @throws Exception If the method fails.
      */
     public final void testCoSignWithRubric() throws Exception {
@@ -704,7 +700,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	extraParams.put(SignatureProperties.PADES_LOCATION_PROP, "Seville");
 	extraParams.put(SignatureProperties.PADES_REASON_PROP, "Document signed for demonstrate this authenticity");
 
-	String imageB64 = Base64.encodeBytes(PATH_IMAGE.getBytes());
+	String imageB64 = Base64CoderCommons.encodeBase64(PATH_IMAGE);
 	extraParams.put(SignatureProperties.PADES_IMAGE, imageB64);
 	extraParams.put(SignatureProperties.PADES_IMAGE_PAGE, "1");
 	extraParams.put(SignatureProperties.PADES_LOWER_LEFT_X, "200");
@@ -744,7 +740,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	}
 
 	// Test 4 - insertar rúbrica pasando una imagen con formato inválido.
-	imageB64 = Base64.encodeBytes(PATH_IMAGE_INVALID.getBytes());
+	imageB64 = Base64CoderCommons.encodeBase64(PATH_IMAGE_INVALID);
 	extraParams.put(SignatureProperties.PADES_IMAGE, imageB64);
 	try {
 	    result = ps.coSign(getPdfDocumentToCosignRubric(), null, SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_BES, null);
@@ -755,7 +751,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 
     /**
      * Test for method {@link PadesSigner#counterSign(byte[], String, java.security.KeyStore.PrivateKeyEntry, Properties, boolean, String, String, String)}.
-     * 
+     *
      * @throws Exception If the method fails.
      */
     public final void testCounterSignWithRubric() throws Exception {
@@ -768,7 +764,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	extraParams.put(SignatureProperties.PADES_LOCATION_PROP, "Seville");
 	extraParams.put(SignatureProperties.PADES_REASON_PROP, "Document signed for demonstrate this authenticity");
 
-	String imageB64 = Base64.encodeBytes(PATH_IMAGE.getBytes());
+	String imageB64 = Base64CoderCommons.encodeBase64(PATH_IMAGE);
 	extraParams.put(SignatureProperties.PADES_IMAGE, imageB64);
 	extraParams.put(SignatureProperties.PADES_IMAGE_PAGE, "1");
 	extraParams.put(SignatureProperties.PADES_LOWER_LEFT_X, "300");
@@ -813,7 +809,7 @@ public class PadesSignerTest extends AbstractSignatureTest {
 	// indicaba el formato de la firma pades para crear el signedData
 	// (específico para PAdES).
 	extraParams.remove(SignatureConstants.SIGN_FORMAT_PADES);
-	imageB64 = Base64.encodeBytes(PATH_IMAGE_INVALID.getBytes());
+	imageB64 = Base64CoderCommons.encodeBase64(PATH_IMAGE_INVALID);
 	extraParams.put(SignatureProperties.PADES_IMAGE, imageB64);
 	try {
 	    result = ps.counterSign(getPdfDocumentCosign(), SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_BES, null);

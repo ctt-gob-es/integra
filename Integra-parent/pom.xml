@@ -182,7 +182,7 @@
 		<version.Integra.utils>2.2.5_002-SNAPSHOT</version.Integra.utils>
 		<version.Integra.ws>2.2.5_002-SNAPSHOT</version.Integra.ws>
 		
-		<version.afirma.itext>2.8</version.afirma.itext>
+		<version.openpdf>1.3.43</version.openpdf>
 		
 		<version.axis2>1.8.2</version.axis2>
 		<version.bouncycastle>1.78</version.bouncycastle>

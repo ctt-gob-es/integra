@@ -31,7 +31,6 @@ import java.util.Properties;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import com.lowagie.text.pdf.PdfSignatureAppearance;
-import com.lowagie.text.pdf.codec.Base64;
 
 import es.gob.afirma.signature.AbstractSignatureTest;
 import es.gob.afirma.signature.ISignatureFormatDetector;
@@ -42,6 +41,7 @@ import es.gob.afirma.signature.SignatureFormatDetectorCadesPades;
 import es.gob.afirma.signature.SignatureProperties;
 import es.gob.afirma.signature.SigningException;
 import es.gob.afirma.signature.validation.PDFValidationResult;
+import es.gob.afirma.utils.Base64CoderCommons;
 import es.gob.afirma.utils.UtilsFileSystemCommons;
 
 /**
@@ -177,7 +177,7 @@ public class PAdESBaselineSignerTest extends AbstractSignatureTest {
 	    PDFValidationResult vr = signer.verifySignature(padesTLevelSignature);
 	    assertTrue(vr.isCorrect());
 	} catch (Exception e) {
-	    assertTrue(false);
+	    fail("Error durante la firma PAdES T-Level sin politica de firma y algoritmo SHA-384: " + e);
 	}
 
 	/*
@@ -189,7 +189,7 @@ public class PAdESBaselineSignerTest extends AbstractSignatureTest {
 	    PDFValidationResult vr = signer.verifySignature(padesTLevelSignature);
 	    assertTrue(vr.isCorrect());
 	} catch (Exception e) {
-	    assertTrue(false);
+		fail("Error durante la firma PAdES T-Level con politica de firma y algoritmo SHA-512: " + e);
 	}
 
     }
@@ -223,10 +223,8 @@ public class PAdESBaselineSignerTest extends AbstractSignatureTest {
     public final void testGetSignedDataParamNull() {
 
 	PAdESBaselineSigner pbs = new PAdESBaselineSigner();
-	OriginalSignedData osd = new OriginalSignedData();
-
 	try {
-	    osd = pbs.getSignedData(null);
+	    pbs.getSignedData(null);
 	} catch (SigningException e) {
 	    assertTrue(true);
 	}
@@ -377,7 +375,7 @@ public class PAdESBaselineSignerTest extends AbstractSignatureTest {
 	extraParams.put(SignatureProperties.PADES_LOCATION_PROP, "Seville");
 	extraParams.put(SignatureProperties.PADES_REASON_PROP, "Document signed for demonstrate this authenticity");
 
-	String imagePathB64 = Base64.encodeBytes(PATH_IMAGE.getBytes());
+	String imagePathB64 = Base64CoderCommons.encodeBase64(PATH_IMAGE);
 	extraParams.put(SignatureProperties.PADES_IMAGE, imagePathB64);
 	extraParams.put(SignatureProperties.PADES_IMAGE_PAGE, "-1");
 	extraParams.put(SignatureProperties.PADES_LOWER_LEFT_X, "20");
@@ -393,7 +391,7 @@ public class PAdESBaselineSignerTest extends AbstractSignatureTest {
 
 	// test con valores válidos y la imagen en Base 64
 	byte[] image = UtilsFileSystemCommons.readFile(PATH_IMAGE, false);
-	String imageB64 = Base64.encodeBytes(image);
+	String imageB64 = new String(Base64CoderCommons.encodeBase64(image));
 	extraParams.put(SignatureProperties.PADES_IMAGE, imageB64);
 
 	result = pbs.sign(getPdfDocumentToSignRubric(), SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, SignatureConstants.SIGN_MODE_IMPLICIT, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_B_LEVEL, null);
@@ -427,7 +425,7 @@ public class PAdESBaselineSignerTest extends AbstractSignatureTest {
 	}
 
 	// Test 4 - insertar rúbrica pasando una imagen con formato inválido.
-	imagePathB64 = Base64.encodeBytes(PATH_IMAGE_INVALID.getBytes());
+	imagePathB64 = Base64CoderCommons.encodeBase64(PATH_IMAGE_INVALID);
 	extraParams.put(SignatureProperties.PADES_IMAGE, imagePathB64);
 	try {
 	    result = pbs.sign(getPdfDocumentToSignRubric(), SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, SignatureConstants.SIGN_MODE_IMPLICIT, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_B_LEVEL, null);
@@ -452,7 +450,7 @@ public class PAdESBaselineSignerTest extends AbstractSignatureTest {
 	extraParams.put(SignatureProperties.PADES_LOCATION_PROP, "Seville");
 	extraParams.put(SignatureProperties.PADES_REASON_PROP, "Document signed for demonstrate this authenticity");
 
-	String imageB64 = Base64.encodeBytes(PATH_IMAGE.getBytes());
+	String imageB64 = Base64CoderCommons.encodeBase64(PATH_IMAGE);
 	extraParams.put(SignatureProperties.PADES_IMAGE, imageB64);
 	extraParams.put(SignatureProperties.PADES_IMAGE_PAGE, "1");
 	extraParams.put(SignatureProperties.PADES_LOWER_LEFT_X, "300");
@@ -506,7 +504,7 @@ public class PAdESBaselineSignerTest extends AbstractSignatureTest {
 	}
 
 	// Test 4 - insertar rúbrica pasando una imagen con formato inválido.
-	imageB64 = Base64.encodeBytes(PATH_IMAGE_INVALID.getBytes());
+	imageB64 = Base64CoderCommons.encodeBase64(PATH_IMAGE_INVALID);
 	extraParams.put(SignatureProperties.PADES_IMAGE, imageB64);
 	try {
 	    result = pbs.coSign(getPdfDocumentToCosignRubric(), null, SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_B_LEVEL, null);
@@ -530,7 +528,7 @@ public class PAdESBaselineSignerTest extends AbstractSignatureTest {
 	extraParams.put(SignatureProperties.PADES_LOCATION_PROP, "Seville");
 	extraParams.put(SignatureProperties.PADES_REASON_PROP, "Document signed for demonstrate this authenticity");
 
-	String imageB64 = Base64.encodeBytes(PATH_IMAGE.getBytes());
+	String imageB64 = Base64CoderCommons.encodeBase64(PATH_IMAGE);
 	extraParams.put(SignatureProperties.PADES_IMAGE, imageB64);
 	extraParams.put(SignatureProperties.PADES_IMAGE_PAGE, "1");
 	extraParams.put(SignatureProperties.PADES_LOWER_LEFT_X, "300");
@@ -584,12 +582,97 @@ public class PAdESBaselineSignerTest extends AbstractSignatureTest {
 	}
 
 	// Test 4 - insertar rúbrica pasando una imagen con formato inválido.
-	imageB64 = Base64.encodeBytes(PATH_IMAGE_INVALID.getBytes());
+	imageB64 = Base64CoderCommons.encodeBase64(PATH_IMAGE_INVALID);
 	extraParams.put(SignatureProperties.PADES_IMAGE, imageB64);
 	try {
 	    result = pbs.counterSign(getPdfDocumentCosign(), SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_B_LEVEL, null);
 	} catch (SigningException e) {
 	    assertTrue(true);
 	}
+    }
+
+    /**
+     * Test to sign PDF/A-1 document. The signature must be compliant with PDF/A standard.
+     *
+     * @throws Exception If the method fails.
+     */
+    public final void testPdfA1() throws Exception {
+
+    	byte[ ] dataToSign = UtilsFileSystemCommons.readFile("signatures/PDF/PDF-A1.pdf", true);
+    	signPDFWithRubric(dataToSign);
+    }
+
+    /**
+     * Test to sign PDF/A-1B document. The signature must be compliant with PDF/A standard.
+     *
+     * @throws Exception If the method fails.
+     */
+    public final void testPdfA1B() throws Exception {
+
+    	byte[ ] dataToSign = UtilsFileSystemCommons.readFile("signatures/PDF/PDF-A1B.pdf", true);
+    	signPDFWithRubric(dataToSign);
+    }
+
+    /**
+     * Test to sign PDF/A-2B document. The signature must be compliant with PDF/A standard.
+     *
+     * @throws Exception If the method fails.
+     */
+    public final void testPdfA2B() throws Exception {
+
+    	byte[ ] dataToSign = UtilsFileSystemCommons.readFile("signatures/PDF/PDF-A2B.pdf", true);
+    	signPDFWithRubric(dataToSign);
+    }
+
+    /**
+     * Test to sign PDF/A-2B document generated by PdfTools. The signature must be compliant with PDF/A standard.
+     *
+     * @throws Exception If the method fails.
+     */
+    public final void testPdfA2B_PdfTools() throws Exception {
+
+    	byte[ ] dataToSign = UtilsFileSystemCommons.readFile("signatures/PDF/PDF-A2B-PdfTools.pdf", true);
+    	signPDFWithRubric(dataToSign);
+    }
+
+    /**
+     * Test to sign PDF/A-2 document. The signature must be compliant with PDF/A standard.
+     *
+     * @throws Exception If the method fails.
+     */
+    public final void testPdfA3B() throws Exception {
+    	byte[ ] dataToSign = UtilsFileSystemCommons.readFile("signatures/PDF/PDF-A3B.pdf", true);
+    	signPDFWithRubric(dataToSign);
+    }
+
+
+    /**
+     * Sign and save a PDF document.
+     * @param dataToSign PDF document.
+     *
+     * @throws Exception If the method fails.
+     */
+    private final void signPDFWithRubric(byte[] dataToSign) throws Exception {
+
+    	PAdESBaselineSigner pbs = new PAdESBaselineSigner();
+
+    	Properties extraParams = new Properties();
+
+    	extraParams.put(SignatureProperties.PADES_CONTACT_PROP, "Ricoh");
+    	extraParams.put(SignatureProperties.PADES_LOCATION_PROP, "Seville");
+    	extraParams.put(SignatureProperties.PADES_REASON_PROP, "Document signed for demonstrate this authenticity");
+
+    	String imageB64 = Base64CoderCommons.encodeBase64(PATH_IMAGE);
+    	extraParams.put(SignatureProperties.PADES_IMAGE, imageB64);
+    	extraParams.put(SignatureProperties.PADES_IMAGE_PAGE, "1");
+    	extraParams.put(SignatureProperties.PADES_LOWER_LEFT_X, "300");
+    	extraParams.put(SignatureProperties.PADES_LOWER_LEFT_Y, "40");
+    	extraParams.put(SignatureProperties.PADES_UPPER_RIGHT_X, "530");
+    	extraParams.put(SignatureProperties.PADES_UPPER_RIGHT_Y, "150");
+
+    	// 1 - Test con valores válidos
+    	byte[ ] result = pbs.sign(dataToSign, SignatureConstants.SIGN_ALGORITHM_SHA512WITHRSA, null, getCertificatePrivateKey(), extraParams, false, SignatureFormatDetector.FORMAT_PADES_B_LEVEL, null);
+    	PDFValidationResult vr = pbs.verifySignature(result);
+    	assertTrue(vr.isCorrect());
     }
 }

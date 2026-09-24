@@ -59,11 +59,11 @@
 			<artifactId>bcutil-jdk18on</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>es.gob.afirma.lib</groupId>
-			<artifactId>itext-afirma</artifactId>
-			<version>${version.afirma.itext}</version>
+			<groupId>com.github.librepdf</groupId>
+        	<artifactId>openpdf</artifactId>
+        	<version>${version.openpdf}</version>
 		</dependency>
-		
+
 		<!-- Scope test -->
 		<dependency>
 			<groupId>junit</groupId>

@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyStore.PrivateKeyEntry;
 import java.security.Security;
 import java.security.cert.X509Certificate;
@@ -143,7 +144,7 @@ public final class ASiCSBaselineSigner implements Signer {
     private byte[ ] signedXML = null;
 
     /**
-     * Constructor method for the class ASiCSBaselineSigner.java. 
+     * Constructor method for the class ASiCSBaselineSigner.java.
      */
     public ASiCSBaselineSigner() {
 	// Añadimos el proveedor criptográfico Bouncycastle en caso de que no
@@ -669,41 +670,41 @@ public final class ASiCSBaselineSigner implements Signer {
 
 	try {
 	    // Si el fichero ZIP contiene un fichero mimetype
-	    if (mimeTypeFile != null) {
-		// Accedemos al contenido del fichero mimetype
-		is = new ByteArrayInputStream(mimeTypeFile);
-		final List<String> lines = IOUtils.readLines(is);
+		if (mimeTypeFile != null) {
+			// Accedemos al contenido del fichero mimetype
+			is = new ByteArrayInputStream(mimeTypeFile);
+			final List<String> lines = IOUtils.readLines(is, StandardCharsets.UTF_8);
 
-		// Comprobamos que el fichero mimetype contiene una única línea
-		if (lines.size() > 1) {
-		    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG017);
-		    LOGGER.error(errorMsg);
-		    validationResult.setIntegrallyCorrect(false);
-		    validationResult.setErrorMsg(errorMsg);
-		    throw new SigningException(errorMsg);
+			// Comprobamos que el fichero mimetype contiene una única línea
+			if (lines.size() > 1) {
+				final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG017);
+				LOGGER.error(errorMsg);
+				validationResult.setIntegrallyCorrect(false);
+				validationResult.setErrorMsg(errorMsg);
+				throw new SigningException(errorMsg);
+			}
+
+			// Accedemos al valor del mimetype
+			final String mimetype = lines.get(0);
+
+			// Comprobamos si el valor del mimetype es el asociado a firmas
+			// ASiC-S, esto es, 'application/vnd.etsi.asic-s+zip'. Si no
+			// posee dicho valor, deberá tener el mimetype asociado a los
+			// datos firmados
+			if (!mimetype.trim().equals(SignatureFormatDetectorASiC.ASIC_S_MIME_TYPE)) {
+				// Obtenemos el mimetype de los datos firmados
+				final String signedDataMimetype = UtilsResourcesSignOperations.getMimeType(this.signedFile);
+
+				// Comprobamos que los mimetype coinciden
+				if (!mimetype.equals(signedDataMimetype)) {
+					final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG018, new Object[ ] { mimetype, signedDataMimetype });
+					LOGGER.error(errorMsg);
+					validationResult.setIntegrallyCorrect(false);
+					validationResult.setErrorMsg(errorMsg);
+					throw new SigningException(errorMsg);
+				}
+			}
 		}
-
-		// Accedemos al valor del mimetype
-		final String mimetype = lines.get(0);
-
-		// Comprobamos si el valor del mimetype es el asociado a firmas
-		// ASiC-S, esto es, 'application/vnd.etsi.asic-s+zip'. Si no
-		// posee dicho valor, deberá tener el mimetype asociado a los
-		// datos firmados
-		if (!mimetype.trim().equals(SignatureFormatDetectorASiC.ASIC_S_MIME_TYPE)) {
-		    // Obtenemos el mimetype de los datos firmados
-		    final String signedDataMimetype = UtilsResourcesSignOperations.getMimeType(this.signedFile);
-
-		    // Comprobamos que los mimetype coinciden
-		    if (!mimetype.equals(signedDataMimetype)) {
-			final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG018, new Object[ ] { mimetype, signedDataMimetype });
-			LOGGER.error(errorMsg);
-			validationResult.setIntegrallyCorrect(false);
-			validationResult.setErrorMsg(errorMsg);
-			throw new SigningException(errorMsg);
-		    }
-		}
-	    }
 	} catch (final IOException e) {
 	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.ASBS_LOG019);
 	    LOGGER.error(errorMsg, e);
@@ -786,7 +787,7 @@ public final class ASiCSBaselineSigner implements Signer {
 
     /**
      * Method that generates an ASiC-S Baseline signature with a CAdES Baseline.
-     * 
+     *
      * @param data Parameter that represents the data to sign.
      * @param algorithm Parameter that represents the signature algorithm.
      * @param signatureFormat Parameter that represents the signing mode.
@@ -831,7 +832,7 @@ public final class ASiCSBaselineSigner implements Signer {
 
     /**
      * Method that generates an ASiC-S Baseline signature with a XAdES Baseline.
-     * 
+     *
      * @param data Parameter that represents the data to sign.
      * @param algorithm Parameter that represents the signature algorithm.
      * The allowed value for a XAdES Baseline signature is:
@@ -842,7 +843,7 @@ public final class ASiCSBaselineSigner implements Signer {
      * @param privateKey Parameter that represents the private key of the signing certificate.
      * @param extraParams Set of extra configuration parameters.  The allowed parameters are:
      * <ul>
-     * 
+     *
      * <li>{@link SignatureProperties#XADES_CLAIMED_ROLE_PROP}.</li>
      * <li>{@link SignatureProperties#XADES_POLICY_QUALIFIER_PROP}. </li>
      * <li>{@link SignatureProperties#XADES_DATA_FORMAT_DESCRIPTION_PROP}. </li>
@@ -988,7 +989,7 @@ public final class ASiCSBaselineSigner implements Signer {
 
     /**
      * Method that checks the properties defined are allowed.
-     * 
+     *
      * @param extraParams Represents the optional input parameters.
      */
     private void checkInputExtraParams(final Properties extraParams) {
@@ -1025,7 +1026,7 @@ public final class ASiCSBaselineSigner implements Signer {
 
 	    /*
 	     * Validación de la Integridad. Se llevarán a cabo las siguientes verificaciones:
-	     * 
+	     *
 	     * > Los 4 primeros octetos del fichero ZIP deberán tener el valor '504B0304' en hexadecimal.
 	     * > El fichero ZIP deberá contener al menos dos elementos: El fichero que se corresponde con los datos firmados, y una firma (ASN.1 o XML).
 	     * > Si dentro del fichero ZIP se incluye un fichero "mimetype" se comprobará que el valor indicado en dicho fichero es el asociado a firmas ASiC-S,
@@ -1158,7 +1159,7 @@ public final class ASiCSBaselineSigner implements Signer {
 	    // Añadimos la información de validación del firmante a la lista
 	    // asociada
 	    listSignersValidationResults.add(signerValidationResult);
-	    
+
 	 // Recuperamos el último sello de tiempo de tipo ArchiveTimestamp (en caso de existir).
 	 signerValidationResult.setLastArchiveTst(UtilsSignatureOp.obtainCertificateArchiveTimestampsXAdES(signer));
 	}
@@ -1199,7 +1200,7 @@ public final class ASiCSBaselineSigner implements Signer {
 	    validationResult.setErrorMsg(errorMsg);
 	    throw new SigningException(errorMsg);
 	}
-	
+
 	// Componemos el signedData con los datos extraidos de la firma ASiC
 	asn1SignedData = getCMSSignedData(validationResult);
 
@@ -1271,7 +1272,7 @@ public final class ASiCSBaselineSigner implements Signer {
 		// Añadimos la información de validación del firmante a la lista
 		// asociada
 		listSignersValidationResults.add(signerValidationResult);
-		
+
 		// Recuperamos el último sello de tiempo de tipo ArchiveTimestamp (en caso de existir).
 		signerValidationResult.setLastArchiveTst(UtilsSignatureOp.obtainCertificateArchiveTimestamps(signerInfo.getSignerInformation().getUnsignedAttributes()));
 	    }
@@ -1410,7 +1411,7 @@ public final class ASiCSBaselineSigner implements Signer {
     }
 
     /**
-     * 
+     *
      * {@inheritDoc}
      * @see es.gob.afirma.signature.Signer#getSignedData(byte[])
      */

@@ -21,13 +21,18 @@
  */
 package es.gob.afirma.testrfc3161services;
 
-import junit.framework.TestCase;
+import java.io.FileOutputStream;
+import java.security.Security;
+import java.security.cert.X509Certificate;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.tsp.TimeStampResponse;
 
 import es.gob.afirma.rfc3161TSAServiceInvoker.RFC3161TSAServiceInvoker;
 import es.gob.afirma.tsaServiceInvoker.TSAServiceInvokerConstants;
 import es.gob.afirma.utils.UtilsFileSystemCommons;
+import es.gob.afirma.utils.UtilsTimestampOcspRfc3161;
+import junit.framework.TestCase;
 
 /**
  * <p>Class that allows to tests the TS@ RFC 3161 services.</p>
@@ -86,6 +91,34 @@ public class RFC3161ServicesTest extends TestCase {
 	} catch (Exception e) {
 	    assertTrue(false);
 	}
+    }
+
+    /**
+     * Test for obtaining the TSA signing certificate from an external TSA.
+     */
+    public void testGetSigningCertificateFromExternalTSA() {
+
+    	Security.addProvider(new BouncyCastleProvider());
+
+        try {
+            // This is an integration test that requires network access
+            String host = "psis.aoc.cat";
+            int port = 443;
+            String context = "/psis/catcert/tsp"; // provided context in request
+            String policy = "0.4.0.2023.1.1"; // provided policy
+            String algorithm = "SHA-256";
+
+            X509Certificate cert = UtilsTimestampOcspRfc3161.getSigningCertificateFromExternalTSA(host, port, context, policy, algorithm);
+            assertNotNull(cert);
+            System.out.println("TSA signer: " + cert.getSubjectDN().getName());
+            FileOutputStream fos = new FileOutputStream("C:\\Users\\carlos.gamuci\\OneDrive - Ricoh Europe PLC\\Desktop\\tsa_signing_cert.cer");
+            fos.write(cert.getEncoded());
+            fos.close();
+
+        } catch (Exception e) {
+            // Do not fail tests on network issues in local environments; just print stack
+            e.printStackTrace();
+        }
     }
 
     // /**

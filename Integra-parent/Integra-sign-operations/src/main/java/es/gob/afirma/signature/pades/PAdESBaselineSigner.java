@@ -48,6 +48,7 @@ import org.ietf.jgss.GSSException;
 import org.ietf.jgss.Oid;
 
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Font;
 import com.lowagie.text.pdf.AcroFields;
 import com.lowagie.text.pdf.PdfDate;
 import com.lowagie.text.pdf.PdfDictionary;
@@ -155,6 +156,12 @@ public final class PAdESBaselineSigner implements Signer {
 	    // Leemos el documento PDF original
 	    PdfReader reader = new PdfReader(data);
 
+		// Obtenemos los metadatos del PDF para analizarlos y restaurarlos sobre el PDF generado
+	    final byte[] xmpBytes = reader.getMetadata();
+
+	    // Comprobamos si el PDF se declara PDF/A
+		final boolean pdfA = UtilsSignatureOp.isPdfA(xmpBytes);
+
 	    // Antes de llevar a cabo la firma comprobamos el nivel de
 	    // certificación asociado a la firma más reciente, en caso de
 	    // existir, del documento PDF.
@@ -162,9 +169,9 @@ public final class PAdESBaselineSigner implements Signer {
 	    // no se podrán añadir más firmas al documento PDF
 	    PdfReader lastRevisionReader = UtilsSignatureOp.obtainLatestRevision(reader);
 	    if (lastRevisionReader != null && lastRevisionReader.getCertificationLevel() != PdfSignatureAppearance.NOT_CERTIFIED) {
-		String errorMsg = Language.getResIntegra(ILogConstantKeys.PBS_LOG010);
-		LOGGER.error(errorMsg);
-		throw new SigningException(errorMsg);
+	    	String errorMsg = Language.getResIntegra(ILogConstantKeys.PBS_LOG010);
+	    	LOGGER.error(errorMsg);
+	    	throw new SigningException(errorMsg);
 	    }
 
 	    // Creamos el contenido de la firma
@@ -175,7 +182,26 @@ public final class PAdESBaselineSigner implements Signer {
 
 	    // Se comprueba si se va a insertar rúbrica
 	    if (UtilsSignatureOp.checkExtraParamsSignWithRubric(externalParams)) {
-		UtilsSignatureOp.insertRubric(reader, signatureAppearance, externalParams);
+
+    		// En caso de ser PDF/A, se deberan tener en cuenta ciertos criterios para no romperlo
+	    	if (pdfA) {
+
+    			// Configuramos el espacio de color (no se modificara si ya estaba), para asegurarnos que la imagen de rubrica
+    			// no rompe el PDF/A
+    			PdfAColorSpaces.configure(stp.getWriter(), reader);
+
+    			// Junto a la rubrica se inserta el texto por defecto con el firmante y la fecha. Incrustamos en el PDF la fuente
+    			// de letra que se va a usar para el texto para que el resultado respete el formato PDF/A.
+    			// NOTA: Si mas adelante se permitiese configurar la fuente de letra a usar, aqui se deberia cargar ese tipo de fuente
+    			try {
+    				Font layer2Font = UtilsSignatureOp.loadFontToEmbedIntoPdf(Font.HELVETICA);
+    				signatureAppearance.setLayer2Font(layer2Font);
+    			} catch (Exception e) {
+    				LOGGER.warn("No se pudo cargar el tipo de fuente que se usara en la rubrica. No se podra insertar en el PDF para respetar el formato PDF/A", e);
+    			}
+    		}
+
+	    	UtilsSignatureOp.insertRubric(reader, signatureAppearance, externalParams);
 	    }
 	    // Establecemos como fecha de creación de la firma la fecha actual
 	    signatureAppearance.setSignDate(new GregorianCalendar());
@@ -212,6 +238,15 @@ public final class PAdESBaselineSigner implements Signer {
 
 	    // Incluímos el diccionario de firma
 	    signatureAppearance.setCryptoDictionary(signDictionary);
+
+	    // En el caso de los PDF/A, deberemos tener en cuenta algo sobre los metadatos incluidos
+	    // En el XMP pueden aparecer los atributos del PDF como atributos del elemento Description
+	    // o como elementos dentro de este. En caso de aparecer como atributos, deberemos
+	    // eliminarlos, ya que OpenPDF/iText los volvera a agregar como elementos y romperia el
+	    // PDF/A al aparecer duplicados.
+	    if (pdfA) {
+	    	UtilsSignatureOp.cleanMetadata(stp, xmpBytes);
+	    }
 
 	    // Reservamos espacio para el contenido de la clave /Contents
 	    int csize = NumberConstants.INT_8000;
@@ -295,7 +330,7 @@ public final class PAdESBaselineSigner implements Signer {
 	}
     }
 
-    /**
+	/**
      * {@inheritDoc}
      * @see es.gob.afirma.signature.Signer#sign(byte[], java.lang.String, java.lang.String, java.security.KeyStore.PrivateKeyEntry, java.util.Properties, boolean, java.lang.String, java.lang.String)
      */
@@ -473,7 +508,7 @@ public final class PAdESBaselineSigner implements Signer {
 	    Map<PdfName, Integer> exc = new HashMap<PdfName, Integer>();
 	    exc.put(PdfName.CONTENTS, reservedSpace);
 	    errorMsg = Language.getResIntegra(ILogConstantKeys.PBS_LOG020);
-	    sap.preClose((HashMap<PdfName, Integer>) exc);
+	    sap.preClose(exc);
 
 	    // Obtenemos los datos que debe sellar la entidad emisora de marcas
 	    // de hora (TSA)
@@ -749,22 +784,21 @@ public final class PAdESBaselineSigner implements Signer {
      * @return an object that allows to access to the fields of PDF document.
      * @throws SigningException If the method fails.
      */
-    @SuppressWarnings("unchecked")
     private AcroFields checkSignatureIntegrity(byte[ ] pdfDocument, PDFValidationResult validationResult, List<PDFSignatureDictionary> listSignatureDictionaries, List<PDFDocumentTimestampDictionary> listTimestampDictionaries, Map<Integer, InputStream> mapSignatureDictionaryRevisions) throws SigningException {
 	// Establecemos, por defecto, que el documento PDF es íntegramente
 	// correcto
 	validationResult.setIntegrallyCorrect(true);
 
-	try {
-	    // Construimos el objeto para poder leer el PDF
-	    PdfReader reader = new PdfReader(pdfDocument);
+
+    // Construimos el objeto para poder leer el PDF
+	try (PdfReader reader = new PdfReader(pdfDocument);) {
 
 	    // Instanciamos un objeto para consultar campos del PDF
 	    AcroFields af = reader.getAcroFields();
 
 	    // Obtenemos las firmas del documento, esto es, los objetos /Sig y
 	    // los objetos /DocTimeStamp
-	    List<String> names = af.getSignatureNames();
+	    List<String> names = af.getSignedFieldNames();
 
 	    // Añadimos los valores a las listas y mapa anteriores.
 	    searchSignaturesAndTimestamps(names, af, listSignatureDictionaries, listTimestampDictionaries, mapSignatureDictionaryRevisions, validationResult);
