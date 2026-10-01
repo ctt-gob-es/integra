@@ -28,7 +28,7 @@ import org.apache.wss4j.common.crypto.Crypto;
 import org.apache.wss4j.common.ext.WSSecurityException;
 import org.apache.wss4j.dom.WSConstants;
 
-import es.gob.afirma.wsServiceInvoker.crypto.CryptoCache;
+import es.gob.afirma.crypto.CryptoCache;
 
 /**
  * <p>Class that represents handlers used in the service invoker.</p>

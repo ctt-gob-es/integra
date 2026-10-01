@@ -23,12 +23,11 @@ package es.gob.afirma.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
 import java.security.Provider;
 import java.security.Security;
 
@@ -52,7 +51,7 @@ public final class CryptoUtilCommons implements ICryptoUtil {
     private CryptoUtilCommons() {
     }
 
-    public static Provider getP11Provider(final byte[] p11NSSConfigFileContents) throws NoSuchMethodException,
+    public static Provider getP11Provider(final File p11ConfigFile) throws NoSuchMethodException,
 		    SecurityException,
 		    IllegalAccessException,
 		    IllegalArgumentException,
@@ -61,8 +60,8 @@ public final class CryptoUtilCommons implements ICryptoUtil {
 		    ClassNotFoundException,
 		    IOException {
     	return isJava9orNewer() ?
-    			getP11ProviderJava9(p11NSSConfigFileContents) :
-    				getP11ProviderJava8(p11NSSConfigFileContents);
+    			getP11ProviderJava9(p11ConfigFile) :
+    				getP11ProviderJava8(p11ConfigFile);
     }
 
     /**
@@ -112,37 +111,28 @@ public final class CryptoUtilCommons implements ICryptoUtil {
 	    return value.matches("^[0-9]+$"); //$NON-NLS-1$
 	}
 
-    private static Provider getP11ProviderJava9(final byte[] p11NSSConfigFileContents) throws IOException,
+    private static Provider getP11ProviderJava9(final File p11ConfigFile) throws IOException,
 		    NoSuchMethodException,
 		    SecurityException,
 		    IllegalAccessException,
 		    IllegalArgumentException,
 		    InvocationTargetException {
     	final Provider p = Security.getProvider("SunPKCS11"); //$NON-NLS-1$
-    	final File f = File.createTempFile("pkcs11_", ".cfg");  //$NON-NLS-1$//$NON-NLS-2$
-    	try (
-    			final OutputStream fos = new FileOutputStream(f);
-    			) {
-    		fos.write(p11NSSConfigFileContents);
-    	}
     	final Method configureMethod = Provider.class.getMethod("configure", String.class); //$NON-NLS-1$
-    	final Provider configuredProvider = (Provider) configureMethod.invoke(p, f.getAbsolutePath());
-    	f.deleteOnExit();
-    	Security.addProvider(configuredProvider);
+    	final Provider configuredProvider = (Provider) configureMethod.invoke(p, p11ConfigFile.getAbsolutePath());
     	return configuredProvider;
     }
 
-    private static Provider getP11ProviderJava8(final byte[] p11NSSConfigFileContents) throws InstantiationException,
+    private static Provider getP11ProviderJava8(final File p11ConfigFile) throws InstantiationException,
 		    IllegalAccessException,
 		    IllegalArgumentException,
 		    InvocationTargetException,
 		    NoSuchMethodException,
 		    SecurityException,
-		    ClassNotFoundException {
+		    ClassNotFoundException, IOException {
     	final Provider p = (Provider) Class.forName("sun.security.pkcs11.SunPKCS11") //$NON-NLS-1$
     			.getConstructor(InputStream.class)
-    			.newInstance(new ByteArrayInputStream(p11NSSConfigFileContents));
-    	Security.addProvider(p);
+    			.newInstance(new ByteArrayInputStream(Files.readAllBytes(p11ConfigFile.toPath())));
     	return p;
     }
 }

@@ -12,10 +12,10 @@
 // https://eupl.eu/1.1/es/
 
 /*
- * This file is part of the jXAdES library. 
- * jXAdES is an open implementation for the Java platform of the XAdES standard for advanced XML digital signature. 
+ * This file is part of the jXAdES library.
+ * jXAdES is an open implementation for the Java platform of the XAdES standard for advanced XML digital signature.
  * This library can be consulted and downloaded from http://universitatjaumei.jira.com/browse/JXADES.
- * 
+ *
  */
 package net.java.xades.security.xml.XAdES;
 
@@ -24,9 +24,10 @@ import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 
+import org.bouncycastle.tsp.TSPException;
 import org.w3c.dom.Document;
 
 public interface AllDataObjectsTimeStamp {
 
-    public byte[ ] generateEncapsulatedTimeStamp(Document parent, String tsaURL) throws NoSuchAlgorithmException, SignatureException, IOException, URISyntaxException;
+	public byte[ ] generateEncapsulatedTimeStamp(Document parent, String tsaURL) throws NoSuchAlgorithmException, SignatureException, IOException, URISyntaxException, TSPException;
 }

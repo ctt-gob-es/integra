@@ -52,6 +52,7 @@ import org.apache.axis2.engine.Handler;
 import org.apache.axis2.engine.Phase;
 import org.apache.axis2.kernel.http.HTTPConstants;
 import org.apache.axis2.phaseresolver.PhaseException;
+import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.axis2.util.XMLUtils;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
@@ -132,17 +133,17 @@ public class TSAWebServiceInvoker {
     private static final String SECURE_PROTOCOL = "https";
 
     /**
-     * Constant attribute that identifier the security Axis2 phase. 
+     * Constant attribute that identifier the security Axis2 phase.
      */
     private static final String PHASE_NAME_SECURITY = "Security";
 
     /**
-     * Constant attribute that identifier the dispatch Axis2 phase. 
+     * Constant attribute that identifier the dispatch Axis2 phase.
      */
     private static final String PHASE_NAME_DISPATCH = "Dispatch";
 
     /**
-     * Attribute that represents the list of handlers added to the Axis engine. 
+     * Attribute that represents the list of handlers added to the Axis engine.
      */
     private static List<String> handlerAdded = new ArrayList<String>();
 
@@ -256,11 +257,25 @@ public class TSAWebServiceInvoker {
     		// conexión al servicio.
     		LOGGER.debug(Language.getResIntegra(ILogConstantKeys.WSI_LOG006));
     		Options options = new Options();
+    	    options.setProperty(HTTPConstants.CONNECTION_TIMEOUT, Integer.valueOf(timeout));
+    	    options.setProperty(HTTPConstants.SO_TIMEOUT, Integer.valueOf(timeout));
     		options.setTimeOutInMilliSeconds(Integer.valueOf(timeout));
     		options.setTo(new EndpointReference(endPointURL));
 
     		// Desactivamos el chunked.
     		options.setProperty(HTTPConstants.CHUNKED, "false");
+
+    	    // Configuraremos un proxie para afirma en caso de estar definido
+    	    String proxie = this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_PROXIE_HOST_PROP);
+    	    String proxiePort = this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_PROXIE_PORT_PROP);
+    	    if(proxie != null && !proxie.isEmpty() && proxiePort != null && !proxiePort.isEmpty()) {
+    	    	 HttpTransportProperties.ProxyProperties proxyProperties = new HttpTransportProperties.ProxyProperties();
+    	    	 proxyProperties.setProxyName(proxie);
+    	    	 proxyProperties.setProxyPort(Integer.valueOf(proxiePort));
+    	    	 proxyProperties.setUserName(this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_USER_PROXIE_PROP)); // Si no hay usuario de proxie, se puede dejar vacío
+    	    	 proxyProperties.setPassWord(this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_PASS_PROXIE_PROP)); // Si no hay usuario de proxie, se puede dejar vacío
+    	    	 options.setProperty(HTTPConstants.PROXY, proxyProperties);
+    	    }
 
     		// Generamos el cliente.
     		client = new ServiceClient();
@@ -338,7 +353,7 @@ public class TSAWebServiceInvoker {
      * This method was necessary in order to reduce the cyclomatic complexity.
      * @param client Axis client.
      * @param clientHandler Client handler.
-     * @param clientSymmetricKeyHandler Symmetric key handler. 
+     * @param clientSymmetricKeyHandler Symmetric key handler.
      * @param responseHandler Response handler.
      * @param responseSymmetricKeyHandler Response symmetric key handler.
      * @param mustUnderstandResponseHandler MustUnderstand response handler.
@@ -365,7 +380,7 @@ public class TSAWebServiceInvoker {
 				}
 			}
 		}
-		
+
 		// Añadimos el handler de seguridad y el handler de mustUnderstand para la fase de invocación.
 		List<Phase> phasesIn = config.getInFlowPhases();
 		for (Phase phase : phasesIn) {

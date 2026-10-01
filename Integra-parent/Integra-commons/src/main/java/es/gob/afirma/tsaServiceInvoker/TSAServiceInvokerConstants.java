@@ -170,13 +170,13 @@ public interface TSAServiceInvokerConstants {
      *  symmetric key used to encrypt the SOAP request.
      */
     String WS_REQUEST_SYMMETRICKEY_VALUE = "request.symmetricKey.value";
-    
+
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with the algorithm of the
      *  symmetric key used to encrypt the SOAP request.
      */
     String WS_REQUEST_SYMMETRICKEY_ALGORITHM = "request.symmetricKey.algorithm";
-    
+
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with the path of the
      *  keystore which contains the certificate used to secure the SOAP responses from TS@ with X509 Certificate Token.
@@ -304,7 +304,7 @@ public interface TSAServiceInvokerConstants {
     String RFC3161_HTTPS_KEYSTORE_TYPE = "rfc3161HTTPS.keystoreType";
 
     /**
-     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ RFC 3161 service with the password 
+     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ RFC 3161 service with the password
      *  of the keystore which contains the certificate used to the client authentication for the RFC 3161 - HTTPS service.
      */
     String RFC3161_HTTPS_KEYSTORE_PASSWORD = "rfc3161HTTPS.keystorePassword";
@@ -328,12 +328,12 @@ public interface TSAServiceInvokerConstants {
     String RFC3161_SSL_KEYSTORE_TYPE = "rfc3161SSL.keystoreType";
 
     /**
-     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ RFC 3161 service with the password 
+     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ RFC 3161 service with the password
      *  of the keystore which contains the certificate used to the client authentication for the RFC 3161 - SSL service.
      */
     String RFC3161_SSL_KEYSTORE_PASSWORD = "rfc3161SSL.keystorePassword";
 
-    /** 
+    /**
      * <p>Interface that defines all the modes to communicate with the TS@ RFC 3161 service.</p>
      * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
      * @version 1.0, 22/01/2014.
@@ -341,148 +341,148 @@ public interface TSAServiceInvokerConstants {
     interface RFC3161Protocol {
 
 	/**
-	 * Constant attribute that identifies the Transmission Control Protocol used to communicate with TS@ RFC 3161 service. 
+	 * Constant attribute that identifies the Transmission Control Protocol used to communicate with TS@ RFC 3161 service.
 	 */
 	String TCP = "TCP";
 
 	/**
-	 * Constant attribute that identifies the Hypertext Transfer Protocol Secure used to communicate with TS@ RFC 3161 service. 
+	 * Constant attribute that identifies the Hypertext Transfer Protocol Secure used to communicate with TS@ RFC 3161 service.
 	 */
 	String HTTPS = "HTTPS";
 
 	/**
-	 * Constant attribute that identifies the cryptographic protocol Secure Sockets Layer used to communicate with TS@ RFC 3161 service. 
+	 * Constant attribute that identifies the cryptographic protocol Secure Sockets Layer used to communicate with TS@ RFC 3161 service.
 	 */
 	String SSL = "SSL";
     }
-    
-    /** 
+
+    /**
      * <p>Interface that defines some SOAP element and attributes necessaries for the management of petitions.</p>
      * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
      * @version 1.0, 04/03/2020.
      */
     interface SOAPElements {
-	
+
 	/**
-	 * Constant attribute that represents the <i>DataReference</i> element. 
+	 * Constant attribute that represents the <i>DataReference</i> element.
 	 */
 	String DATA_REFERENCE = "DataReference";
 
 	/**
-	 * Constant attribute that represents the <i>URI</i> element. 
+	 * Constant attribute that represents the <i>URI</i> element.
 	 */
 	String URI = "URI";
 
 	/**
-	 * Constant attribute that represents the <i>EncryptedData</i> element. 
+	 * Constant attribute that represents the <i>EncryptedData</i> element.
 	 */
 	String ENCRYPTED_DATA = "EncryptedData";
-	
+
 	/**
-	 * Constant attribute that represents the <i>Id</i> element. 
-	 */	
+	 * Constant attribute that represents the <i>Id</i> element.
+	 */
 	String ID = "Id";
 
 	/**
-	 * Constant attribute that represents the <i>KeyName</i> element. 
+	 * Constant attribute that represents the <i>KeyName</i> element.
 	 */
 	String KEY_NAME = "KeyName";
 
 	/**
-	 * Constant attribute that represents the <i>EncryptionMethod</i> element. 
+	 * Constant attribute that represents the <i>EncryptionMethod</i> element.
 	 */
 	String ENCRYPTION_METHOD = "EncryptionMethod";
 
 	/**
-	 * Constant attribute that represents the <i>Algorithm</i> element. 
+	 * Constant attribute that represents the <i>Algorithm</i> element.
 	 */
 	String ALGORITHM = "Algorithm";
 
 	/**
-	 * Constant attribute that represents the <i>ReferenceList</i> element. 
+	 * Constant attribute that represents the <i>ReferenceList</i> element.
 	 */
 	String REFERENCE_LIST = "ReferenceList";
 
 	/**
-	 * Constant attribute that represents the <i>Security</i> element. 
+	 * Constant attribute that represents the <i>Security</i> element.
 	 */
 	String SECURITY = "Security";
-	
+
 	/**
-	 * Constant attribute that represents the <i>Type</i> element. 
-	 */	
+	 * Constant attribute that represents the <i>Type</i> element.
+	 */
 	String TYPE = "Type";
 
 	/**
-	 * Constant attribute that represents the <i>KeyInfo</i> element. 
-	 */	
+	 * Constant attribute that represents the <i>KeyInfo</i> element.
+	 */
 	String KEY_INFO = "KeyInfo";
 
 	/**
-	 * Constant attribute that represents the <i>CipherData</i> element. 
-	 */	
+	 * Constant attribute that represents the <i>CipherData</i> element.
+	 */
 	String CIPHER_DATA = "CipherData";
 
 	/**
-	 * Constant attribute that represents the <i>CipherValue</i> element. 
+	 * Constant attribute that represents the <i>CipherValue</i> element.
 	 */
 	String CIPHER_VALUE = "CipherValue";
 
 	/**
-	 * Constant attribute that represents the <i>idAplicacion</i> element. 
+	 * Constant attribute that represents the <i>idAplicacion</i> element.
 	 */
 	String ID_APPLICATION = "idAplicacion";
 
 	/**
-	 * Constant attribute that represents the <i>ResultMessage</i> element. 
+	 * Constant attribute that represents the <i>ResultMessage</i> element.
 	 */
 	String RESULT_MESSAGE = "ResultMessage";
 
 	/**
-	 * Constant attribute that represents the <i>InputDocuments</i> element. 
+	 * Constant attribute that represents the <i>InputDocuments</i> element.
 	 */
 	String INPUT_DOCUMENTS = "InputDocuments";
 
 	/**
-	 * Constant attribute that represents the <i>SecurityTokenReference</i> element. 
+	 * Constant attribute that represents the <i>SecurityTokenReference</i> element.
 	 */
 	String SECURITY_TOKEN_REFERENCE = "SecurityTokenReference";
 
 	/**
-	 * Constant attribute that represents the <i>Reference</i> element. 
+	 * Constant attribute that represents the <i>Reference</i> element.
 	 */
 	String REFERENCE = "Reference";
 
 	/**
-	 * Constant attribute that represents the <i>BinarySecurityToken</i> element. 
+	 * Constant attribute that represents the <i>BinarySecurityToken</i> element.
 	 */
 	String BINARY_SECURITY_TOKEN = "BinarySecurityToken";
 
 	/**
-	 * Constant attribute that represents the <i>KeyIdentifier</i> element. 
+	 * Constant attribute that represents the <i>KeyIdentifier</i> element.
 	 */
 	String KEY_IDENTIFIER = "KeyIdentifier";
 
 	/**
-	 * Constant attribute that represents the <i>Assertion</i> element. 
+	 * Constant attribute that represents the <i>Assertion</i> element.
 	 */
 	String ASSERTION = "Assertion";
 
 	/**
-	 * Constant attribute that represents the <i>AssertionID</i> element. 
+	 * Constant attribute that represents the <i>AssertionID</i> element.
 	 */
 	String ASSERTION_ID = "AssertionID";
 
 	/**
-	 * Constant attribute that represents the <i>MajorVersion</i> element. 
+	 * Constant attribute that represents the <i>MajorVersion</i> element.
 	 */
 	String MAJOR_VERSION = "MajorVersion";
 
 	/**
-	 * Constant attribute that represents the <i>MinorVersion</i> element. 
+	 * Constant attribute that represents the <i>MinorVersion</i> element.
 	 */
 	String MINOR_VERSION = "MinorVersion";
-	
+
     }
 
 }

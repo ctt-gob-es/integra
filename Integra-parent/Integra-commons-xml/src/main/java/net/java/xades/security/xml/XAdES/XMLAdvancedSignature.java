@@ -12,10 +12,10 @@
 // https://eupl.eu/1.1/es/
 
 /*
- * This file is part of the jXAdES library. 
- * jXAdES is an open implementation for the Java platform of the XAdES standard for advanced XML digital signature. 
+ * This file is part of the jXAdES library.
+ * jXAdES is an open implementation for the Java platform of the XAdES standard for advanced XML digital signature.
  * This library can be consulted and downloaded from http://universitatjaumei.jira.com/browse/JXADES.
- * 
+ *
  */
 package net.java.xades.security.xml.XAdES;
 
@@ -59,6 +59,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.xml.security.c14n.CanonicalizationException;
 import org.apache.xml.security.c14n.InvalidCanonicalizerException;
+import org.bouncycastle.tsp.TSPException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -72,7 +73,7 @@ import net.java.xades.security.xml.XmlWrappedKeyInfo;
 import net.java.xades.util.Base64;
 
 /**
- * 
+ *
  * @author miro
  */
 public class XMLAdvancedSignature {
@@ -105,13 +106,14 @@ public class XMLAdvancedSignature {
     static {
 	AccessController.doPrivileged(new java.security.PrivilegedAction<Void>() {
 
-	    public Void run() {
+	    @Override
+		public Void run() {
 		// if (System.getProperty("java.version").startsWith("1.5"))
 		// {
 		// try
 		// {
 		//Security.insertProviderAt(new org.apache.xml.dsig.internal.dom.XMLDSigRI(), 1);
-		Security.insertProviderAt(new org.apache.jcp.xml.dsig.internal.dom.XMLDSigRI(), 1);		
+		Security.insertProviderAt(new org.apache.jcp.xml.dsig.internal.dom.XMLDSigRI(), 1);
 		// }
 		// catch (Throwable e)
 		// {
@@ -157,85 +159,85 @@ public class XMLAdvancedSignature {
 	this.xadesNamespace = xadesNamespace;
     }
 
-    public void sign(X509Certificate certificate, PrivateKey privateKey, String signatureMethod, List refsIdList, String signatureIdPrefix, String tsaURL) throws MarshalException, XMLSignatureException, GeneralSecurityException, TransformException, InvalidCanonicalizerException, CanonicalizationException, IOException, ParserConfigurationException, SAXException, URISyntaxException {
-	List referencesIdList = new ArrayList(refsIdList);
+    public void sign(X509Certificate certificate, PrivateKey privateKey, String signatureMethod, List refsIdList, String signatureIdPrefix, String tsaURL) throws MarshalException, XMLSignatureException, GeneralSecurityException, TransformException, InvalidCanonicalizerException, CanonicalizationException, IOException, ParserConfigurationException, SAXException, URISyntaxException, TSPException {
+    	List referencesIdList = new ArrayList(refsIdList);
 
-	if (WrappedKeyStorePlace.SIGNING_CERTIFICATE_PROPERTY.equals(getWrappedKeyStorePlace())) {
-	    xades.setSigningCertificate(certificate);
-	} else {
-	    /*
-	     * @ToDo The ds:KeyInfo element also MAY contain other certificates forming a chain that
-	     * MAY reach the point of trust;
-	     */
-	}
+    	if (WrappedKeyStorePlace.SIGNING_CERTIFICATE_PROPERTY.equals(getWrappedKeyStorePlace())) {
+    		xades.setSigningCertificate(certificate);
+    	} else {
+    		/*
+    		 * @ToDo The ds:KeyInfo element also MAY contain other certificates forming a chain that
+    		 * MAY reach the point of trust;
+    		 */
+    	}
 
-	XMLObject xadesObject = marshalXMLSignature(xadesNamespace, signatureIdPrefix, referencesIdList, tsaURL);
-	addXMLObject(xadesObject);
+    	XMLObject xadesObject = marshalXMLSignature(xadesNamespace, signatureIdPrefix, referencesIdList, tsaURL);
+    	addXMLObject(xadesObject);
 
-	String signatureId = getSignatureId(signatureIdPrefix);
-	String signatureValueId = getSignatureValueId(signatureIdPrefix);
+    	String signatureId = getSignatureId(signatureIdPrefix);
+    	String signatureValueId = getSignatureValueId(signatureIdPrefix);
 
-	XMLSignatureFactory fac = getXMLSignatureFactory();
-	CanonicalizationMethod cm = fac.newCanonicalizationMethod(CanonicalizationMethod.INCLUSIVE, (C14NMethodParameterSpec) null);
+    	XMLSignatureFactory fac = getXMLSignatureFactory();
+    	CanonicalizationMethod cm = fac.newCanonicalizationMethod(CanonicalizationMethod.INCLUSIVE, (C14NMethodParameterSpec) null);
 
-	List<Reference> documentReferences = getReferences(referencesIdList);
-	String keyInfoId = getKeyInfoId(signatureIdPrefix);
-	documentReferences.add(fac.newReference("#" + keyInfoId, getDigestMethod()));
+    	List<Reference> documentReferences = getReferences(referencesIdList);
+    	String keyInfoId = getKeyInfoId(signatureIdPrefix);
+    	documentReferences.add(fac.newReference("#" + keyInfoId, getDigestMethod()));
 
-	SignatureMethod sm = fac.newSignatureMethod(signatureMethod, null);
-	SignedInfo si = fac.newSignedInfo(cm, sm, documentReferences);
+    	SignatureMethod sm = fac.newSignatureMethod(signatureMethod, null);
+    	SignedInfo si = fac.newSignedInfo(cm, sm, documentReferences);
 
-	this.signature = fac.newXMLSignature(si, newKeyInfo(certificate, keyInfoId), getXMLObjects(), signatureId, signatureValueId);
+    	this.signature = fac.newXMLSignature(si, newKeyInfo(certificate, keyInfoId), getXMLObjects(), signatureId, signatureValueId);
 
-	this.signContext = new DOMSignContext(privateKey, baseElement);
-	this.signContext.putNamespacePrefix(XMLSignature.XMLNS, xades.getXmlSignaturePrefix());
-	this.signContext.putNamespacePrefix(xadesNamespace, xades.getXadesPrefix());
+    	this.signContext = new DOMSignContext(privateKey, baseElement);
+    	this.signContext.putNamespacePrefix(XMLSignature.XMLNS, xades.getXmlSignaturePrefix());
+    	this.signContext.putNamespacePrefix(xadesNamespace, xades.getXadesPrefix());
 
-	this.signature.sign(signContext);
+    	this.signature.sign(signContext);
 
-	enrichUnsignedProperties(tsaURL);
+    	enrichUnsignedProperties(tsaURL);
     }
 
-    public void enrichUnsignedProperties(String tsaURL) throws TransformException, MarshalException, NoSuchAlgorithmException, SignatureException, IOException, InvalidCanonicalizerException, CanonicalizationException, ParserConfigurationException, SAXException, URISyntaxException {
-	if (this.signature == null) {
-	    throw new IllegalStateException("Can not find Signature. You must call sign method firs to generate it");
-	}
+    public void enrichUnsignedProperties(String tsaURL) throws TransformException, MarshalException, NoSuchAlgorithmException, SignatureException, IOException, InvalidCanonicalizerException, CanonicalizationException, ParserConfigurationException, SAXException, URISyntaxException, TSPException {
+    	if (this.signature == null) {
+    		throw new IllegalStateException("Can not find Signature. You must call sign method firs to generate it");
+    	}
 
-	if (xades instanceof TimestampXAdESImpl) {
-	    //
-	    // SignatureTimeStamp
-	    //
+    	if (xades instanceof TimestampXAdESImpl) {
+    		//
+    		// SignatureTimeStamp
+    		//
 
-	    NodeList unsignedProperties = this.baseElement.getElementsByTagNameNS(xadesNamespace, "UnsignedSignatureProperties");
-	    NodeList signatureValue = this.baseElement.getElementsByTagNameNS(XMLSignature.XMLNS, "SignatureValue");
-	    NodeList canonicalizationMethod = this.baseElement.getElementsByTagNameNS(XMLSignature.XMLNS, "CanonicalizationMethod");
+    		NodeList unsignedProperties = this.baseElement.getElementsByTagNameNS(xadesNamespace, "UnsignedSignatureProperties");
+    		NodeList signatureValue = this.baseElement.getElementsByTagNameNS(XMLSignature.XMLNS, "SignatureValue");
+    		NodeList canonicalizationMethod = this.baseElement.getElementsByTagNameNS(XMLSignature.XMLNS, "CanonicalizationMethod");
 
-	    if (unsignedProperties != null && unsignedProperties.getLength() == 1 && signatureValue != null && signatureValue.getLength() == 1 && canonicalizationMethod != null && canonicalizationMethod.getLength() == 1) {
-		// Determine c14n algorithm
-		String c14nAlgorithm = canonicalizationMethod.item(0).getAttributes().getNamedItem("Algorithm").getTextContent();
+    		if (unsignedProperties != null && unsignedProperties.getLength() == 1 && signatureValue != null && signatureValue.getLength() == 1 && canonicalizationMethod != null && canonicalizationMethod.getLength() == 1) {
+    			// Determine c14n algorithm
+    			String c14nAlgorithm = canonicalizationMethod.item(0).getAttributes().getNamedItem("Algorithm").getTextContent();
 
-		// c14n signatureValue node
-		byte[ ] c10nSignatureValue = DOMCanonicalizationFactory.c14n(c14nAlgorithm, signatureValue.item(0));
+    			// c14n signatureValue node
+    			byte[ ] c10nSignatureValue = DOMCanonicalizationFactory.c14n(c14nAlgorithm, signatureValue.item(0));
 
-		// Generate timestamp with the c14n result
-		byte[ ] timestampData = TimeStampFactory.getTimeStamp(tsaURL, c10nSignatureValue, true);
+    			// Generate timestamp with the c14n result
+    			byte[ ] timestampData = TimeStampFactory.getTimeStamp(tsaURL, c10nSignatureValue, true);
 
-		// Append new SignatureTimeStamp node to
-		// UnsignedSignatureProperties
-		Element encapsulatedTimeStamp = this.baseElement.getOwnerDocument().createElementNS(xadesNamespace, "EncapsulatedTimeStamp");
-		encapsulatedTimeStamp.setPrefix(xades.getXadesPrefix());
-		encapsulatedTimeStamp.setTextContent(Base64.encodeBytes(timestampData));
+    			// Append new SignatureTimeStamp node to
+    			// UnsignedSignatureProperties
+    			Element encapsulatedTimeStamp = this.baseElement.getOwnerDocument().createElementNS(xadesNamespace, "EncapsulatedTimeStamp");
+    			encapsulatedTimeStamp.setPrefix(xades.getXadesPrefix());
+    			encapsulatedTimeStamp.setTextContent(Base64.encodeBytes(timestampData));
 
-		Element signatureTimestamp = this.baseElement.getOwnerDocument().createElementNS(xadesNamespace, "SignatureTimeStamp");
-		signatureTimestamp.setPrefix(xades.getXadesPrefix());
-		signatureTimestamp.appendChild(encapsulatedTimeStamp);
-		signatureTimestamp.setAttributeNS(xadesNamespace, "Id", "TS1-SignatureTimeStamp");
+    			Element signatureTimestamp = this.baseElement.getOwnerDocument().createElementNS(xadesNamespace, "SignatureTimeStamp");
+    			signatureTimestamp.setPrefix(xades.getXadesPrefix());
+    			signatureTimestamp.appendChild(encapsulatedTimeStamp);
+    			signatureTimestamp.setAttributeNS(xadesNamespace, "Id", "TS1-SignatureTimeStamp");
 
-		unsignedProperties.item(0).appendChild(signatureTimestamp);
-	    } else {
-		throw new MarshalException("UnsignedProperties section not found in signature. Unable to generate SignatureTimeStamp element.");
-	    }
-	}
+    			unsignedProperties.item(0).appendChild(signatureTimestamp);
+    		} else {
+    			throw new MarshalException("UnsignedProperties section not found in signature. Unable to generate SignatureTimeStamp element.");
+    		}
+    	}
     }
 
     public List<SignatureStatus> validate() {
@@ -362,7 +364,7 @@ public class XMLAdvancedSignature {
 
     protected KeyInfo newKeyInfo(X509Certificate certificate, String keyInfoId) throws KeyException {
 	KeyInfoFactory keyInfoFactory = getXMLSignatureFactory().getKeyInfoFactory();
-	
+
 	//FIXME: Se omite la inclusion del KeyValue en las firmas de curva elipticas hasta que @firma
 	// soporte el elemento ECKeyValue generado por Apache Santuario (Apache Santuario e IAIK
 	// soportan distintos estandares)

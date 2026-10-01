@@ -69,7 +69,7 @@ public final class SignatureFormatDetectorCommons implements ISignatureFormatDet
 	try {
 	    // Si se ha indicado la firma
 	    if (signature != null) {
-		Document doc = UtilsSignatureCommons.getDocumentFromXML(signature);
+		Document doc = UtilsSignatureCommons.getDocumentFromXML(signature, true);
 		NodeList nl = null;
 		if (doc != null) {
 		    nl = doc.getElementsByTagNameNS(XMLSignature.XMLNS, IXMLConstants.ELEMENT_SIGNATURE);

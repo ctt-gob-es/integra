@@ -37,8 +37,14 @@ import es.gob.afirma.logger.Logger;
 import es.gob.afirma.signature.SigningException;
 
 /**
- * <p>Class that contains methods related to the manage of signatures.</p>
- * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
+ * <p>
+ * Class that contains methods related to the manage of signatures.
+ * </p>
+ * <b>Project:</b>
+ * <p>
+ * Library for the integration with the services of @Firma, eVisor and TS@.
+ * </p>
+ *
  * @version 1.1, 18/04/2022.
  */
 public final class UtilsSignatureCommons implements IUtilsSignature {
@@ -56,25 +62,34 @@ public final class UtilsSignatureCommons implements IUtilsSignature {
 
 	/**
 	 * Method that obtains an object as a representation of a XML document.
+	 *
 	 * @param xmlDocument Parameter that represents the XML document.
+	 * @param onlyCheck.  Parameter that represents if is an only check format
+	 *                    request.
 	 * @return an object as a representation of the XML document.
 	 * @throws SigningException If the XML document has a bad format.
 	 */
-	public static Document getDocumentFromXML(byte[ ] xmlDocument) throws SigningException {
+	public static Document getDocumentFromXML(byte[] xmlDocument, boolean onlyCheck) throws SigningException {
 		LOGGER.info(Language.getResIntegra(ILogConstantKeys.US_LOG076));
 		try {
 			// Comprobamos que se han indicado parámetros de entrada
-			GenericUtilsCommons.checkInputParameterIsNotNull(xmlDocument, Language.getResIntegra(ILogConstantKeys.US_LOG037));
+			GenericUtilsCommons.checkInputParameterIsNotNull(xmlDocument,
+					Language.getResIntegra(ILogConstantKeys.US_LOG037));
 			try {
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				dbf.setNamespaceAware(true);
 				dbf.setAttribute("http://xml.org/sax/features/namespaces", Boolean.TRUE);
 				DocumentBuilder db = dbf.newDocumentBuilder();
+				db.setErrorHandler(null);
 				return db.parse(new java.io.ByteArrayInputStream(xmlDocument));
 			} catch (Exception e) {
-				String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG036);
-				LOGGER.error(errorMsg, e);
-				throw new SigningException(errorMsg, e);
+				if (!onlyCheck) {
+					String errorMsg = Language.getResIntegra(ILogConstantKeys.US_LOG036);
+					LOGGER.error(errorMsg, e);
+					throw new SigningException(errorMsg, e);
+				} else {
+					throw new SigningException(e);
+				}
 			}
 		} finally {
 			LOGGER.info(Language.getResIntegra(ILogConstantKeys.US_LOG077));
@@ -82,8 +97,11 @@ public final class UtilsSignatureCommons implements IUtilsSignature {
 	}
 
 	/**
-	 * Method that checks if the verification date parameter is into the certificate validity period.
-	 * @param certificate Parameter that represents the certificate to validate.
+	 * Method that checks if the verification date parameter is into the certificate
+	 * validity period.
+	 *
+	 * @param certificate      Parameter that represents the certificate to
+	 *                         validate.
 	 * @param verificationDate Parameter that represents the validation date.
 	 * @throws SigningException If the certificate is expired or not yet valid.
 	 */

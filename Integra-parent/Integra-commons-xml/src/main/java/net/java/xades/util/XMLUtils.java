@@ -12,10 +12,10 @@
 // https://eupl.eu/1.1/es/
 
 /*
- * This file is part of the jXAdES library. 
- * jXAdES is an open implementation for the Java platform of the XAdES standard for advanced XML digital signature. 
+ * This file is part of the jXAdES library.
+ * jXAdES is an open implementation for the Java platform of the XAdES standard for advanced XML digital signature.
  * This library can be consulted and downloaded from http://universitatjaumei.jira.com/browse/JXADES.
- * 
+ *
  */
 package net.java.xades.util;
 
@@ -47,7 +47,7 @@ import es.gob.afirma.utils.UtilsSignatureCommons;
 
 /**
  * Common XML Tasks
- * 
+ *
  * @author Miroslav Nachev
  */
 public class XMLUtils {
@@ -56,7 +56,7 @@ public class XMLUtils {
 
     /**
      * Get the attribute with given name's value
-     * 
+     *
      * @param node
      *            the node which attribute's value is returned
      * @param name
@@ -78,7 +78,7 @@ public class XMLUtils {
 
     /**
      * Get the data of the element , no matter whether it is TXT ot CDATA
-     * 
+     *
      * @param parentNode
      *            the node which data is returned
      * @return the TEXT or CDATA of the parentNode
@@ -94,7 +94,7 @@ public class XMLUtils {
 
     /**
      * Sets element TEXT data
-     * 
+     *
      * @param e
      *            the element
      * @param data
@@ -112,7 +112,7 @@ public class XMLUtils {
 
     /**
      * Sets element CDATA data
-     * 
+     *
      * @param e
      *            the lement
      * @param data
@@ -130,7 +130,7 @@ public class XMLUtils {
 
     /**
      * Gets CDATA value of an element
-     * 
+     *
      * @param e
      *            the element
      * @return CDATA value of element e
@@ -146,7 +146,7 @@ public class XMLUtils {
 
     /**
      * Returns element's CDATA Node
-     * 
+     *
      * @param element
      *            the element which CDATA node is returned
      * @return CDATA node
@@ -157,7 +157,7 @@ public class XMLUtils {
 
     /**
      * Returns element's TEXT Node
-     * 
+     *
      * @param element
      *            the element which TEXT node is returned
      * @return TEXT node
@@ -210,7 +210,7 @@ public class XMLUtils {
 
     /**
      * Writes the specified document to the given file. The default encoding is UTF-8.
-     * 
+     *
      * @param writer
      *            the writer to print the xml node.
      * @param node
@@ -264,7 +264,7 @@ public class XMLUtils {
 
     /**
      * Returns the element which is at the end of the specified chain &lt;parent&gt;&lt;child&gt;&lt;grandchild&gt;...
-     * 
+     *
      * @param element Element node.
      * @param chain Chain of elements.
      * @param create no use.
@@ -287,7 +287,7 @@ public class XMLUtils {
     /**
      * Creates (only if necessary) and returns the element which is at the end of the specified
      * path.
-     * 
+     *
      * @param doc
      *            the target document where the specified path should be created
      * @param path
@@ -332,9 +332,9 @@ public class XMLUtils {
 
     /**
      * Returns the child element with the specified tagName for the specified parent element
-     * 
+     *
      * @param parent Parent element.
-     * @param tagName Tag name. 
+     * @param tagName Tag name.
      * @return Element.
      */
     public static Element getChildElementByTagName(Element parent, String tagName) {
@@ -347,7 +347,7 @@ public class XMLUtils {
 	int len = nodes.getLength();
 	for (int i = 0; i < len; i++) {
 	    node = nodes.item(i);
-	    if (node.getNodeType() == Node.ELEMENT_NODE && ((Element) node).getNodeName().equals(tagName)) {
+	    if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals(tagName)) {
 		return (Element) node;
 	    }
 	}
@@ -356,8 +356,9 @@ public class XMLUtils {
     }
 
     public static List<Element> getChildElementsByTagNameNS(Element parent, String tagName, String nsName) {
-	if (parent == null || tagName == null)
-	    return Collections.<Element> emptyList();
+	if (parent == null || tagName == null) {
+		return Collections.<Element> emptyList();
+	}
 
 	NodeList nl = parent.getChildNodes();
 	int size = nl.getLength();
@@ -378,8 +379,9 @@ public class XMLUtils {
     }
 
     public static List<Element> getChildElementsByTagName(Element parent, String tagName) {
-	if (parent == null || tagName == null)
-	    return Collections.<Element> emptyList();
+	if (parent == null || tagName == null) {
+		return Collections.<Element> emptyList();
+	}
 
 	NodeList nodes = parent.getChildNodes();
 	Node node;
@@ -387,7 +389,7 @@ public class XMLUtils {
 	ArrayList<Element> childElements = new ArrayList<Element>(len);
 	for (int i = 0; i < len; i++) {
 	    node = nodes.item(i);
-	    if (node.getNodeType() == Node.ELEMENT_NODE && ((Element) node).getNodeName().equals(tagName)) {
+	    if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals(tagName)) {
 		childElements.add((Element) node);
 	    }
 	}
@@ -397,7 +399,7 @@ public class XMLUtils {
 
     /**
      * Used for debuging
-     * 
+     *
      * @param parent
      *            Element
      * @param out
@@ -450,7 +452,7 @@ public class XMLUtils {
      */
     public static boolean isXMLFormat(byte[ ] document) {
 	try {
-	    Document doc = UtilsSignatureCommons.getDocumentFromXML(document);
+	    Document doc = UtilsSignatureCommons.getDocumentFromXML(document, true);
 	    if (doc != null) {
 		return true;
 	    } else {

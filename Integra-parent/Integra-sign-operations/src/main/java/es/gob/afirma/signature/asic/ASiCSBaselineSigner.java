@@ -971,7 +971,7 @@ public final class ASiCSBaselineSigner implements Signer {
 	// corresponde con la firma ASiC-S
 	try {
 	    final File mimetypeFile = new File(SignatureFormatDetectorASiC.MIME_TYPE_FILE);
-	    FileUtils.writeStringToFile(mimetypeFile, SignatureFormatDetectorASiC.ASIC_S_MIME_TYPE);
+	    FileUtils.writeStringToFile(mimetypeFile, SignatureFormatDetectorASiC.ASIC_S_MIME_TYPE, StandardCharsets.UTF_8);
 
 	    final ZipEntry mimetypeZIPEntry = new ZipEntry(SignatureFormatDetectorASiC.MIME_TYPE_FILE);
 	    ((ZipOutputStream) outZip).putNextEntry(mimetypeZIPEntry);
@@ -1173,7 +1173,7 @@ public final class ASiCSBaselineSigner implements Signer {
      */
     private Document getDocumentFromXML(final ValidationResult validationResult) throws SigningException {
 	try {
-	    return UtilsSignatureCommons.getDocumentFromXML(this.signedXML);
+	    return UtilsSignatureCommons.getDocumentFromXML(this.signedXML, false);
 	} catch (final Exception e) {
 	    final String errorMsg = Language.getFormatResIntegra(ILogConstantKeys.ASBS_LOG020, new Object[ ] { e.getMessage() });
 	    LOGGER.error(errorMsg, e);

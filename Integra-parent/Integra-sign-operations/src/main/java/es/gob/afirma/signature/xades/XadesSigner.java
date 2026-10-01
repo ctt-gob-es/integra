@@ -174,7 +174,7 @@ public final class XadesSigner implements Signer {
 		    // A partir de Apache Santuario 2.1.2 se implementa la siguiente propiedad, tambien disponible
 		    // con Java 11.0.5 (que actualiza la version interna de Apache santuario a la 2.1.3).
 		    System.setProperty("org.apache.xml.security.ignoreLineBreaks", "true"); //$NON-NLS-1$ //$NON-NLS-2$
-		    
+
 		    Security.insertProviderAt(new org.apache.jcp.xml.dsig.internal.dom.XMLDSigRI(), 1);
 		} catch (final SecurityException e) {
 		    LOGGER.error(Language.getResIntegra(ILogConstantKeys.XS_LOG002), e);
@@ -331,8 +331,8 @@ public final class XadesSigner implements Signer {
 	// Canonicalización.
 	final List<Transform> transformList = new ArrayList<Transform>();
 
-	
-	
+
+
 	final String referenceId = "Reference-" + UUID.randomUUID().toString();
 
 	// crea una referencia al documento insertado en un nodo Object para la
@@ -366,7 +366,7 @@ public final class XadesSigner implements Signer {
 
 		// Agregamos la canonicalizacion XML (si se declara el algoritmo)
 		addXmlCanonicalizationTransform(transformList, extraParams, false);
-		
+
 		// Transformacion enveloped
 		transformList.add(xmlSignatureFactory.newTransform(Transform.ENVELOPED, (TransformParameterSpec) null));
 
@@ -441,10 +441,10 @@ public final class XadesSigner implements Signer {
     private void addContentTransforms(final List<Transform> transformList, final Properties extraParams) {
 	// Solo canonicalizo si es XML
 	if (IXMLConstants.DATA_TYPE_XML == this.dataType) {
-	    
+
 	    // Agregamos la canonicalizacion XML
 	    addXmlCanonicalizationTransform(transformList, extraParams, true);
-	    
+
 	    // Si no era XML y tuve que convertir a Base64 yo mismo declaro la
 	    // transformación
 	} else if (IXMLConstants.DATA_TYPE_BINARY_BASE64 == this.dataType) {
@@ -455,7 +455,7 @@ public final class XadesSigner implements Signer {
 	    }
 	}
     }
-    
+
     /**
      * Method that adds into the list with transforms the canonicalization transform associated to the type of the data to sign.
      * @param transformList Parameter that represents the list with transforms to update.
@@ -1182,7 +1182,7 @@ public final class XadesSigner implements Signer {
 
 	// Obtenemos el objeto Document a partir del array de bytes de la
 	// firma XAdES previa
-	final Document eSignDoc = UtilsSignatureCommons.getDocumentFromXML(signature);
+	final Document eSignDoc = UtilsSignatureCommons.getDocumentFromXML(signature, false);
 
 	// Obtenemos del modo de firma (Enveloping, Enveloped o Detached) de
 	// la firma XAdES previa
@@ -1194,9 +1194,9 @@ public final class XadesSigner implements Signer {
 	LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.XS_LOG037, new Object[ ] { algorithm, optionalParams }));
 
     final String keyType = privateKey.getPrivateKey().getAlgorithm();
-    
+
     final String signAlgorithm = SignatureConstants.composeSignatureAlgorithmName(algorithm, keyType);
-	
+
 	// Obtenemos la URI del algoritmo de firma
 	final String uriSignAlgorithm = SIGN_ALGORITHM_URI.get(signAlgorithm);
 
@@ -1207,7 +1207,7 @@ public final class XadesSigner implements Signer {
 	// XAdES previa
 	Document signDocument = null;
 	try {
-	    signDocument = UtilsSignatureCommons.getDocumentFromXML(signature);
+	    signDocument = UtilsSignatureCommons.getDocumentFromXML(signature, false);
 	} catch (final SigningException e) {
 	    final String errorMsg = Language.getResIntegra(ILogConstantKeys.XS_LOG005);
 	    LOGGER.error(errorMsg, e);
@@ -1335,7 +1335,7 @@ public final class XadesSigner implements Signer {
 	}
 
 	// Obtenemos la firma como objeto XML
-	final Document doc = UtilsSignatureCommons.getDocumentFromXML(signature);
+	final Document doc = UtilsSignatureCommons.getDocumentFromXML(signature, false);
 
 	// Registramos los atributos de tipo ID
 	IdRegister.registerElements(doc.getDocumentElement());
@@ -1613,10 +1613,10 @@ public final class XadesSigner implements Signer {
 
     // Obtenemos el algoritmo de firma compatible con el tipo de clave del
     // certificado utilizando el algoritmo de hash del algoritmo
-    // proporcionado 
+    // proporcionado
     final String keyType = privateKey.getPrivateKey().getAlgorithm();
-    final String signAlgorithm = SignatureConstants.composeSignatureAlgorithmName(algorithm, keyType);	
-	
+    final String signAlgorithm = SignatureConstants.composeSignatureAlgorithmName(algorithm, keyType);
+
 	// Obtenemos la URI del algoritmo de firma
 	final String uriSignAlgorithm = SIGN_ALGORITHM_URI.get(signAlgorithm);
 
@@ -1767,7 +1767,7 @@ public final class XadesSigner implements Signer {
     @Override
     public byte[ ] sign(final byte[ ] data, final String algorithm, final String signatureFormat, final PrivateKeyEntry privateKey, final Properties extraParams, final boolean includeTimestamp, final String signatureForm, final String signaturePolicyID, final String idClient) throws SigningException {
 	LOGGER.debug(Language.getResIntegra(ILogConstantKeys.XS_LOG024));
-		
+
 	try {
 	    return generateXAdESSignature(data, algorithm, signatureFormat, privateKey, extraParams, includeTimestamp, signatureForm, signaturePolicyID, idClient);
 	} catch (final TransformersException e) {
@@ -1973,9 +1973,9 @@ public final class XadesSigner implements Signer {
 	    LOGGER.debug(Language.getFormatResIntegra(ILogConstantKeys.XS_LOG037, new Object[ ] { algorithm, extraParams }));
 
 	    final String keyType = privateKey.getPrivateKey().getAlgorithm();
-	    
-	    final String signAlgorithm = SignatureConstants.composeSignatureAlgorithmName(algorithm, keyType);	
-	    
+
+	    final String signAlgorithm = SignatureConstants.composeSignatureAlgorithmName(algorithm, keyType);
+
 	    // Obtenemos la URI del algoritmo de firma
 	    final String uriSignAlgorithm = SIGN_ALGORITHM_URI.get(signAlgorithm);
 
@@ -1984,7 +1984,7 @@ public final class XadesSigner implements Signer {
 
 	    // Obtenemos el objeto Document a partir del array de bytes de la
 	    // firma XAdES previa
-	    final Document eSignDoc = UtilsSignatureCommons.getDocumentFromXML(signature);
+	    final Document eSignDoc = UtilsSignatureCommons.getDocumentFromXML(signature, false);
 
 	    // Obtenemos del modo de firma (Enveloping, Enveloped o Detached) de
 	    // la firma XAdES previa
@@ -2190,7 +2190,7 @@ public final class XadesSigner implements Signer {
 		currentDate = UtilsSignatureOp.calculateExpirationDateForValidations(signerValidationResult, currentDate);
 	    }
 	    validationResult.setExpirationDate(currentDate);
-	    
+
 	    // Indicamos en el log que la firma es correcta
 	    LOGGER.info(Language.getResIntegra(ILogConstantKeys.XS_LOG042));
 	} catch (final SigningException e) {
@@ -2235,7 +2235,7 @@ public final class XadesSigner implements Signer {
 	String signingMode = IUtilsSignature.DETACHED_SIGNATURE_MODE;
 	try {
 	    // Accedemos al documento XML firmado
-	    doc = UtilsSignatureCommons.getDocumentFromXML(xmlDocument);
+	    doc = UtilsSignatureCommons.getDocumentFromXML(xmlDocument, false);
 
 	    // Registramos los atributos de tipo ID del documento XML
 	    IdRegister.registerElements(doc.getDocumentElement());

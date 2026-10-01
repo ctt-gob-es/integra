@@ -22,7 +22,6 @@
 package es.gob.afirma.hsm;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.security.KeyStore;
 import java.security.Provider;
 import java.security.Security;
@@ -76,57 +75,56 @@ public final class HSMKeystorePKCS11Provider {
      */
     public static void reloadHSMConfiguration() throws HSMException {
 
-	LOGGER.info(Language.getResIntegra(ILogConstantKeys.HKPP_LOG001));
+    	LOGGER.info(Language.getResIntegra(ILogConstantKeys.HKPP_LOG001));
 
-	try {
-	    // Accedemos al archivo de propiedades relacionadas con los HSM
-	    Properties hsmProperties = HSMProperties.getHSMProperties();
+    	try {
+    		// Accedemos al archivo de propiedades relacionadas con los HSM
+    		Properties hsmProperties = HSMProperties.getHSMProperties();
 
-	    if (hsmProperties.isEmpty()) {
-		throw new HSMException(Language.getFormatResIntegra(ILogConstantKeys.HKPP_LOG002, new Object[ ] { IHSMConstants.HSM_PROPERTIES }));
-	    }
+    		if (hsmProperties.isEmpty()) {
+    			throw new HSMException(Language.getFormatResIntegra(ILogConstantKeys.HKPP_LOG002, new Object[ ] { IHSMConstants.HSM_PROPERTIES }));
+    		}
 
-	    // Cargamos la propiedad con la ruta absoluta al fichero de
-	    // configuración PKCS11 donde se establece la ruta absoluta a la
-	    // librería nativa del HSM entre otras configuraciones adicionales
-	    String absPathConfigFile = hsmProperties.getProperty(IHSMConstants.KEY_HSM_CONFIG_PATH);
-	    if (!GenericUtilsCommons.assertStringValue(absPathConfigFile)) {
-		throw new HSMException(Language.getFormatResIntegra(ILogConstantKeys.HKPP_LOG003, new Object[ ] { IHSMConstants.HSM_PROPERTIES }));
-	    }
+    		// Cargamos la propiedad con la ruta absoluta al fichero de
+    		// configuración PKCS11 donde se establece la ruta absoluta a la
+    		// librería nativa del HSM entre otras configuraciones adicionales
+    		String p11ConfigFilePath = hsmProperties.getProperty(IHSMConstants.KEY_HSM_CONFIG_PATH);
+    		if (!GenericUtilsCommons.assertStringValue(p11ConfigFilePath)) {
+    			throw new HSMException(Language.getFormatResIntegra(ILogConstantKeys.HKPP_LOG003, new Object[ ] { IHSMConstants.HSM_PROPERTIES }));
+    		}
 
-	    // Cargamos la propiedad con la contraseña de acceso al HSM
-	    String password = hsmProperties.getProperty(IHSMConstants.KEY_HSM_PASSWORD);
-	    if (password == null) {
-		password = "";
-	    }
+    		// Cargamos la propiedad con la contraseña de acceso al HSM
+    		String password = hsmProperties.getProperty(IHSMConstants.KEY_HSM_PASSWORD);
+    		if (password == null) {
+    			password = "";
+    		}
 
-	    try {
-	    	// Comprobamos si ya existe un proveedor PKCS11
-	    	pkcs11Provider = Security.getProvider(TOKEN_PKCS11);
+    		try {
+    			// Comprobamos si ya existe un proveedor PKCS11
+    			pkcs11Provider = Security.getProvider(TOKEN_PKCS11);
 
-	    	// Si no existe, asociamos el proveedor de Sun como PKCS11 y lo
-	    	// añadimos a la lista de proveedores en la última posición
-	    	if (pkcs11Provider == null) {
-	    		byte[] configFileContent = Files.readAllBytes(new File(absPathConfigFile).toPath());
-	    		pkcs11Provider = CryptoUtilCommons.getP11Provider(configFileContent);
-	    		Security.addProvider(pkcs11Provider);
-	    	}
+    			// Si no existe, asociamos el proveedor de Sun como PKCS11 y lo
+    			// añadimos a la lista de proveedores en la última posición
+    			if (pkcs11Provider == null) {
+    				pkcs11Provider = CryptoUtilCommons.getP11Provider(new File(p11ConfigFilePath));
+    				Security.addProvider(pkcs11Provider);
+    			}
 
-	    	// Obtenemos el almacén de claves
-	    	hsmKeystore = KeyStore.getInstance(TOKEN_PKCS11);
-	    } catch (Exception e) {
-	    	throw new HSMException(Language.getResIntegra(ILogConstantKeys.HKPP_LOG004), e);
-	    }
+    			// Obtenemos el almacén de claves
+    			hsmKeystore = KeyStore.getInstance(TOKEN_PKCS11);
+    		} catch (Exception e) {
+    			throw new HSMException(Language.getResIntegra(ILogConstantKeys.HKPP_LOG004), e);
+    		}
 
-	    // Hacemos la carga del KeyStore
-	    try {
-		hsmKeystore.load(null, password.toCharArray());
-	    } catch (Exception e) {
-		throw new HSMException(Language.getResIntegra(ILogConstantKeys.HKPP_LOG005), e);
-	    }
-	} finally {
-	    LOGGER.info(Language.getResIntegra(ILogConstantKeys.HKPP_LOG006));
-	}
+    		// Hacemos la carga del KeyStore
+    		try {
+    			hsmKeystore.load(null, password.toCharArray());
+    		} catch (Exception e) {
+    			throw new HSMException(Language.getResIntegra(ILogConstantKeys.HKPP_LOG005), e);
+    		}
+    	} finally {
+    		LOGGER.info(Language.getResIntegra(ILogConstantKeys.HKPP_LOG006));
+    	}
     }
 
     /**

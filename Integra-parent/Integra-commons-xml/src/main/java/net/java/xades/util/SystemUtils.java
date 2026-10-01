@@ -216,13 +216,7 @@ public class SystemUtils {
      */
     public static boolean getBooleanProperty(String propName, boolean defaultValue) {
 	// if set, require value of either true or false
-	String b = (String) AccessController.doPrivileged(new PrivilegedAction<String>() {
-		@Override
-		public String run() {
-			return System.getProperty(propName);
-		}
-
-	});
+	String b = (String) AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty(propName));
 
 	if (b == null) {
 	    return defaultValue;

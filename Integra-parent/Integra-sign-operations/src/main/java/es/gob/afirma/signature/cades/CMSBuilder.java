@@ -17,7 +17,7 @@
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
  * <b>Date:</b><p>13/09/2011.</p>
  * @author Gobierno de España.
- * @version 1.4, 18/04/2022.
+ * @version 1.5, 25/09/2023.
  */
 package es.gob.afirma.signature.cades;
 
@@ -89,7 +89,9 @@ import org.bouncycastle.cms.CMSSignedDataGenerator;
 import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
+import org.bouncycastle.operator.DefaultDigestAlgorithmIdentifierFinder;
 import org.bouncycastle.operator.DefaultSignatureAlgorithmIdentifierFinder;
+import org.bouncycastle.operator.DigestAlgorithmIdentifierFinder;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.bouncycastle.util.Store;
 import org.ietf.jgss.Oid;
@@ -123,7 +125,7 @@ import es.gob.afirma.utils.UtilsTimestampWS;
 /**
  * <p>Class that manages the generation of CMS elements as defined on RFC 3852.</p>
  * <b>Project:</b><p>Library for the integration with the services of @Firma, eVisor and TS@.</p>
- * @version 1.4, 18/04/2022.
+ * @version 1.5, 25/09/2023.
  */
 public final class CMSBuilder {
 
@@ -196,7 +198,7 @@ public final class CMSBuilder {
      * <pre>
      * id-signedData OBJECT IDENTIFIER ::= { iso(1) member-body(2)
          us(840) rsadsi(113549) pkcs(1) pkcs7(7) 2 }
-    
+
       SignedData ::= SEQUENCE {
         version CMSVersion,
         digestAlgorithms DigestAlgorithmIdentifiers,
@@ -204,7 +206,7 @@ public final class CMSBuilder {
         certificates [0] IMPLICIT CertificateSet OPTIONAL,
         crls [1] IMPLICIT RevocationInfoChoices OPTIONAL,
         signerInfos SignerInfos }
-    
+
     </pre>
      * @param parameters parameters used in the signature.
      * @param includeContent indicates whether the document content is included in the signature or is only referenced.
@@ -252,9 +254,11 @@ public final class CMSBuilder {
 
 	    final String digestAlgorithm = SignatureConstants.getDigestAlgorithmName(parameters.getSignatureAlgorithm());
 
-	    final sun.security.x509.AlgorithmId digestAlgorithmId = sun.security.x509.AlgorithmId.get(digestAlgorithm);
+	    // Obtenemos el oid a través de bouncy castle
+	    DigestAlgorithmIdentifierFinder finder = new DefaultDigestAlgorithmIdentifierFinder();
+        ASN1ObjectIdentifier oid = finder.find(digestAlgorithm).getAlgorithm();
 
-	    AlgorithmIdentifier digAlgId = makeAlgId(digestAlgorithmId.getOID().toString(), digestAlgorithmId.getEncodedParams());
+	    AlgorithmIdentifier digAlgId = makeAlgId(oid.getId(), oid.getEncoded());
 
 	    digestAlgs.add(digAlgId);
 
@@ -282,13 +286,11 @@ public final class CMSBuilder {
 	    final SignerIdentifier identifier = new SignerIdentifier(encSid);
 
 	    // AlgorithmIdentifier
-	    digAlgId = new AlgorithmIdentifier(new ASN1ObjectIdentifier(digestAlgorithmId.getOID().toString()), DERNull.INSTANCE);
+	    digAlgId = new AlgorithmIdentifier(new ASN1ObjectIdentifier(oid.getId()), DERNull.INSTANCE);
 
 	    // Atributos firmados
-	    final ASN1Set signedAttr = generateSignedAttr(parameters, digestAlgorithmId, digAlgId, digestAlgorithm, dataType, optionalParams, signatureForm, signaturePolicyID, includeContent, idClient);
+	    final ASN1Set signedAttr = generateSignedAttr(parameters, digAlgId, digestAlgorithm, dataType, optionalParams, signatureForm, signaturePolicyID, includeContent, idClient);
 
-	    final String keyType = signerCertificate.getPublicKey().getAlgorithm();
-	    	    
 	    // Generamos la firma
 	    final ASN1OctetString sign2 = sign(parameters.getSignatureAlgorithm(), parameters.getPrivateKey(), signedAttr);
 
@@ -349,8 +351,6 @@ public final class CMSBuilder {
 	    return new ContentInfo(PKCSObjectIdentifiers.signedData, new SignedData(new DERSet(digestAlgs), encInfo, certificates, certrevlist, new DERSet(signerInfos))).getEncoded(ASN1Encoding.DER);
 	} catch (final CertificateException e) {
 	    throw new SigningException(Language.getResIntegra(ILogConstantKeys.CMSB_LOG006), e);
-	} catch (final NoSuchAlgorithmException e) {
-	    throw new SigningException(Language.getResIntegra(ILogConstantKeys.CMSB_LOG007), e);
 	} catch (final IOException e) {
 	    throw new SigningException(Language.getResIntegra(ILogConstantKeys.CMSB_LOG008), e);
 	}
@@ -363,7 +363,7 @@ public final class CMSBuilder {
      * <pre>
      * id-signedData OBJECT IDENTIFIER ::= { iso(1) member-body(2)
          us(840) rsadsi(113549) pkcs(1) pkcs7(7) 2 }
-    
+
       SignedData ::= SEQUENCE {
         version CMSVersion,
         digestAlgorithms DigestAlgorithmIdentifiers,
@@ -371,7 +371,7 @@ public final class CMSBuilder {
         certificates [0] IMPLICIT CertificateSet OPTIONAL,
         crls [1] IMPLICIT RevocationInfoChoices OPTIONAL,
         signerInfos SignerInfos }
-    
+
     </pre>
      * @param parameters parameters used in the signature.
      * @param includeContent indicates whether the document content is included in the signature or is only referenced.
@@ -473,11 +473,11 @@ public final class CMSBuilder {
      * Definition:
      * <pre>
      SignedAttributes ::= SET SIZE (1..MAX) OF Attribute
-    
+
       Attribute ::= SEQUENCE {
         attrType OBJECT IDENTIFIER,
         attrValues SET OF AttributeValue }
-    
+
       AttributeValue ::= ANY
       </pre>
      * @param parameters parameters for signature process.
@@ -506,7 +506,7 @@ public final class CMSBuilder {
      * @throws SigningException throws in error case.
      */
     @SuppressWarnings("restriction")
-    private ASN1Set generateSignedAttr(final P7ContentSignerParameters parameters, final sun.security.x509.AlgorithmId digestAlgorithmId, final AlgorithmIdentifier algId, final String digestAlgorithm, final Oid dataType, final Properties extraParams, final String signatureForm, final String signaturePolicyID, final boolean includeContent, final String idClient) throws SigningException {
+    private ASN1Set generateSignedAttr(final P7ContentSignerParameters parameters, final AlgorithmIdentifier algId, final String digestAlgorithm, final Oid dataType, final Properties extraParams, final String signatureForm, final String signaturePolicyID, final boolean includeContent, final String idClient) throws SigningException {
 
 	try {
 	    final boolean isPadesSigner = extraParams.get(SignatureConstants.SIGN_FORMAT_PADES) == null ? false : true;
@@ -524,7 +524,7 @@ public final class CMSBuilder {
 	    if (!isPadesSigner) {
 		contexExpecific.add(new Attribute(CMSAttributes.signingTime, new DERSet(new DERUTCTime(Calendar.getInstance().getTime()))));
 	    }
-	    
+
 	    final AlgorithmIdentifier signAlgorithmId = new DefaultSignatureAlgorithmIdentifierFinder().find(parameters.getSignatureAlgorithm());
 
 	    // Política de la firma --> elemento SignaturePolicyId
@@ -570,7 +570,7 @@ public final class CMSBuilder {
 		     *   Hash ::= OCTET STRING
 		     */
 
-		    final MessageDigest md = MessageDigest.getInstance(CryptoUtilPdfBc.getDigestAlgorithmName(digestAlgorithmId.getName()));
+		    final MessageDigest md = MessageDigest.getInstance(CryptoUtilPdfBc.getDigestAlgorithmName(digestAlgorithm));
 		    final byte[ ] certHash = md.digest(cert.getEncoded());
 		    final ESSCertIDv2[ ] essCertIDv2 = { new ESSCertIDv2(algId, certHash, isuerSerial) };
 
@@ -617,11 +617,11 @@ public final class CMSBuilder {
 		     *   certHash                 Hash,
 		     *   issuerSerial             IssuerSerial OPTIONAL
 		     *	}
-		     * 
+		     *
 		     *	Hash ::= OCTET STRING -- SHA1 hash of entire certificate
 		     */
 		    // MessageDigest
-		    final String digestAlgorithmName = CryptoUtilPdfBc.getDigestAlgorithmName(digestAlgorithmId.getName());
+		    final String digestAlgorithmName = CryptoUtilPdfBc.getDigestAlgorithmName(digestAlgorithm);
 		    final MessageDigest md = MessageDigest.getInstance(digestAlgorithmName);
 		    final byte[ ] certHash = md.digest(cert.getEncoded());
 		    final ESSCertID essCertID = new ESSCertID(certHash, isuerSerial);
@@ -979,21 +979,21 @@ public final class CMSBuilder {
         signatureAlgorithm SignatureAlgorithmIdentifier,
         signature SignatureValue,
         unsignedAttrs [1] IMPLICIT UnsignedAttributes OPTIONAL }
-    
+
       SignerIdentifier ::= CHOICE {
         issuerAndSerialNumber IssuerAndSerialNumber,
         subjectKeyIdentifier [0] SubjectKeyIdentifier }
-    
+
       SignedAttributes ::= SET SIZE (1..MAX) OF Attribute
-    
+
       UnsignedAttributes ::= SET SIZE (1..MAX) OF Attribute
-    
+
       Attribute ::= SEQUENCE {
         attrType OBJECT IDENTIFIER,
         attrValues SET OF AttributeValue }
-    
+
       AttributeValue ::= ANY
-    
+
       SignatureValue ::= OCTET STRING
       </pre>
      * @param parameters object that includes all data to generate SignerInfo object.
@@ -1045,7 +1045,7 @@ public final class CMSBuilder {
 	    }
 	    // SigningTime (fecha de firma)
 	    signedAttributes.add(new Attribute(CMSAttributes.signingTime, new DERSet(new DERUTCTime(Calendar.getInstance().getTime()))));
-	    
+
 	    // SignatureAlgorithmIdentifier
 	    final AlgorithmIdentifier signAlgorithmId = new DefaultSignatureAlgorithmIdentifierFinder().find(parameters.getSignatureAlgorithm());
 
@@ -1138,21 +1138,21 @@ public final class CMSBuilder {
         signatureAlgorithm SignatureAlgorithmIdentifier,
         signature SignatureValue,
         unsignedAttrs [1] IMPLICIT UnsignedAttributes OPTIONAL }
-    
+
       SignerIdentifier ::= CHOICE {
         issuerAndSerialNumber IssuerAndSerialNumber,
         subjectKeyIdentifier [0] SubjectKeyIdentifier }
-    
+
       SignedAttributes ::= SET SIZE (1..MAX) OF Attribute
-    
+
       UnsignedAttributes ::= SET SIZE (1..MAX) OF Attribute
-    
+
       Attribute ::= SEQUENCE {
         attrType OBJECT IDENTIFIER,
         attrValues SET OF AttributeValue }
-    
+
       AttributeValue ::= ANY
-    
+
       SignatureValue ::= OCTET STRING
       </pre>
      * @param parameters object that includes all data to generate SignerInfo object.
@@ -1202,7 +1202,7 @@ public final class CMSBuilder {
 	boolean upgrade = false;
 	/*
 	 * Comprobamos si hay que actualizar el firmante, esto se hará si se cumple alguna de las siguientes condiciones:
-	 * 
+	 *
 	 * 1- La lista con los certificados de los firmantes a actualizar es vacía o nula, por lo que se deben actualizar todos los que no posean
 	 * un sello de tiempo previo ni los que posean el atributo no firmado id-aa-ets-archiveTimeStamp o id-aa-ets-archiveTimestampV2.
 	 * 2- El certificado del firmante coincide con alguno de los indicados como parámetro no posee un sello de tiempo previo ni posee
@@ -1258,7 +1258,7 @@ public final class CMSBuilder {
 	    for (SignerInformation signerInformation: listSignersSignature) {
 		/*
 		 * Comprobamos si hay que actualizar el firmante, esto se hará si se cumple alguna de las siguientes condiciones:
-		 * 
+		 *
 		 * 1- La lista con los certificados de los firmantes a actualizar es vacía o nula, por lo que se deben actualizar todos los que no posean
 		 * un sello de tiempo previo ni los que posean el atributo no firmado id-aa-ets-archiveTimeStamp o id-aa-ets-archiveTimestampV2.
 		 * 2- El certificado del firmante coincide con alguno de los indicados como parámetro no posee un sello de tiempo previo ni posee
@@ -1350,7 +1350,7 @@ public final class CMSBuilder {
         	certHash                 Hash,
         	issuerSerial             IssuerSerial OPTIONAL
      	}
-    
+
      	Hash ::= OCTET STRING -- SHA1 hash of entire certificate
      	 -------------------------
      SigningCertificateV2 ::=  SEQUENCE {
@@ -1362,10 +1362,10 @@ public final class CMSBuilder {
             certHash            Hash,
             issuerSerial        IssuerSerial OPTIONAL
         }
-    
+
     	Hash ::= OCTET STRING
      	</pre>
-     * 
+     *
      * @param cert certificate object.
      * @param digestAlgorithm digest algorithm.
      * @param digestAlgorithmId digest algorithm identification.
@@ -1401,7 +1401,7 @@ public final class CMSBuilder {
 	        	certHash                 Hash,
 	        	issuerSerial             IssuerSerial OPTIONAL
 	     	}
-	    
+
 	     	Hash ::= OCTET STRING -- SHA1 hash of entire certificate
 	     */
 
@@ -1427,9 +1427,9 @@ public final class CMSBuilder {
 	            certHash            Hash,
 	            issuerSerial        IssuerSerial OPTIONAL
 	        }
-	    
+
 	    	Hash ::= OCTET STRING
-	    
+
 	     */
 	    final ESSCertIDv2[ ] essCertIDv2 = { new ESSCertIDv2(digestAlgorithmId, certHash, issuerSerial) };
 
@@ -1498,7 +1498,7 @@ public final class CMSBuilder {
 //    		LOGGER.error(e);
 //    		throw new SigningException(e);
 //    	}
-//    	
+//
 //    	return signedData;
 //    }
 //
@@ -1507,10 +1507,10 @@ public final class CMSBuilder {
 //    	// Agregamos el algoritmo al conjunto para que solo se agregue si no estaba ya
 //    	HashSet<AlgorithmIdentifier> algorithms = new HashSet<>(digestAlgorithmIDs);
 //    	algorithms.add(digestAlgId);
-//    	
+//
 //    	ASN1EncodableVector digestAlgorithmVector = new ASN1EncodableVector();
 //    	for (AlgorithmIdentifier algorithm : algorithms) {
-//    		digestAlgorithmVector.add(algorithm);	
+//    		digestAlgorithmVector.add(algorithm);
 //    	}
 //    	return new BERSet(digestAlgorithmVector);
 //	}
@@ -1518,28 +1518,28 @@ public final class CMSBuilder {
 //	private ASN1Set prepareNewCertList(Store<X509CertificateHolder> certs1, Store<X509CertificateHolder> certs2) {
 //
 //    	ASN1EncodableVector certs = new ASN1EncodableVector();
-//    	
+//
 //        for (final X509CertificateHolder element : certs1.getMatches(null)) {
 //            certs.add(element.toASN1Structure());
 //        }
 //        for (final X509CertificateHolder element : certs2.getMatches(null)) {
 //            certs.add(element.toASN1Structure());
 //        }
-//    	
+//
 //		return new BERSet(certs);
 //	}
-//    
+//
 //    private ASN1Set prepareNewCRLList(Store<X509CRLHolder> crls) {
 //
 //    	ASN1EncodableVector certs = new ASN1EncodableVector();
-//    	
+//
 //        for (final X509CRLHolder element : crls.getMatches(null)) {
 //            certs.add(element.toASN1Structure());
 //        }
-//    	
+//
 //		return new BERSet(certs);
 //	}
-    
+
     /**
      * Generates a signature object.
      * @param cmsSignedData object that contains all data of original signature.
@@ -1555,7 +1555,7 @@ public final class CMSBuilder {
     	ASN1Set digestAlgorithms = originalSignedData.getDigestAlgorithms();
     	digestAlgorithms = addElementToASN1Set(digestAlgorithms, digestAlgId.toASN1Primitive());
     	final SignedData newSignedData = new SignedData(digestAlgorithms, originalSignedData.getEncapContentInfo(), convertCertStoreToASN1Set(certificates), null, signerInfos);
-    	
+
     	byte[] signedData;
     	try {
 			signedData = new ContentInfo(PKCSObjectIdentifiers.signedData, newSignedData).getEncoded(ASN1Encoding.DER);
@@ -1617,10 +1617,10 @@ public final class CMSBuilder {
     @SuppressWarnings("restriction")
     AlgorithmIdentifier makeDigestAlgorithmId(final String digestAlg) throws SigningException {
 	try {
-	    final sun.security.x509.AlgorithmId digestAlgorithmId = sun.security.x509.AlgorithmId.get(digestAlg);
-	    return makeAlgId(digestAlgorithmId.getOID().toString(), digestAlgorithmId.getEncodedParams());
-	} catch (final NoSuchAlgorithmException e) {
-	    throw new SigningException(Language.getResIntegra(ILogConstantKeys.CMSB_LOG007), e);
+		// Obtenemos el oid a través de bouncy castle
+	    DigestAlgorithmIdentifierFinder finder = new DefaultDigestAlgorithmIdentifierFinder();
+        ASN1ObjectIdentifier oid = finder.find(digestAlg).getAlgorithm();
+	    return makeAlgId(oid.getId(), oid.getEncoded());
 	} catch (final IOException e) {
 	    throw new SigningException(Language.getResIntegra(ILogConstantKeys.CMSB_LOG007), e);
 	}

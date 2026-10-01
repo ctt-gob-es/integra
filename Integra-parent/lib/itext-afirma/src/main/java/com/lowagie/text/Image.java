@@ -52,11 +52,14 @@ package com.lowagie.text;
 import java.awt.Graphics2D;
 import java.awt.color.ICC_Profile;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import javax.imageio.ImageIO;
 
 import com.lowagie.text.pdf.PRIndirectReference;
 import com.lowagie.text.pdf.PdfArray;
@@ -274,7 +277,8 @@ public abstract class Image extends Rectangle {
 			}
 			if (c1 == PngImage.PNGID[0] && c2 == PngImage.PNGID[1]
 					&& c3 == PngImage.PNGID[2] && c4 == PngImage.PNGID[3]) {
-				return PngImage.getImage(url);
+				//return PngImage.getImage(url);
+				return getPngImage(url);
 			}
 			if (c1 == 0xD7 && c2 == 0xCD) {
 				return new ImgWMF(url);
@@ -344,6 +348,25 @@ public abstract class Image extends Rectangle {
 		return getInstance(Utilities.toURL(filename));
 	}
     
+    public static Image getPngImage(byte[] imageData) {
+        try (InputStream is = new ByteArrayInputStream(imageData)) {
+            BufferedImage bufferedImage = ImageIO.read(is);
+            return Image.getInstance(bufferedImage, null, false);
+
+        } catch (Exception e) {
+            throw new ExceptionConverter(e);
+        }
+    }
+    
+    public static Image getPngImage(URL url) {
+        try (InputStream is = url.openStream()) {
+            BufferedImage bufferedImage = ImageIO.read(is);
+            return Image.getInstance(bufferedImage, null, false);
+        } catch (Exception e) {
+            throw new ExceptionConverter(e);
+        }
+    }
+	
 	/**
 	 * gets an instance of an Image
 	 * 
@@ -381,7 +404,8 @@ public abstract class Image extends Rectangle {
 			}
 			if (c1 == PngImage.PNGID[0] && c2 == PngImage.PNGID[1]
 					&& c3 == PngImage.PNGID[2] && c4 == PngImage.PNGID[3]) {
-				return PngImage.getImage(imgb);
+				//return PngImage.getImage(imgb);
+				return getPngImage(imgb);
 			}
 			if (c1 == 0xD7 && c2 == 0xCD) {
 				return new ImgWMF(imgb);
@@ -745,8 +769,15 @@ public abstract class Image extends Rectangle {
 								transparency[0] = transparency[1] = (transparentPixel >> 16) & 0xff;
 								transparency[2] = transparency[3] = (transparentPixel >> 8) & 0xff;
 								transparency[4] = transparency[5] = transparentPixel & 0xff;
+                                for (int prevPixel = 0; prevPixel < j; prevPixel++) {
+                                    if ((pixels[prevPixel] & 0xffffff) == transparentPixel) {
+                                        shades = true;
+                                        break;
+                                    }
+                                }
 							}
-						} else if ((pixels[j] & 0xffffff) != transparentPixel) {
+						} else if ((pixels[j] & 0xffffff) != transparentPixel && alpha == 0
+                                || (pixels[j] & 0xffffff) == transparentPixel && alpha != 0) {
 							shades = true;
 						}
 					}

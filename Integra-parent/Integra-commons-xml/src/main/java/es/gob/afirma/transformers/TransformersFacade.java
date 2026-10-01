@@ -54,7 +54,7 @@ public final class TransformersFacade {
     private static final Logger LOGGER = Logger.getLogger(TransformersFacade.class);
 
     /**
-     * Attribute that represents the unique instance of the class. 
+     * Attribute that represents the unique instance of the class.
      */
     private static TransformersFacade instance;
 
@@ -78,7 +78,9 @@ public final class TransformersFacade {
      * @return the unique instance of the class.
      */
     public static TransformersFacade getInstance() {
+    	if (instance == null) {
 	instance = new TransformersFacade();
+    	}
 	return instance;
     }
 
