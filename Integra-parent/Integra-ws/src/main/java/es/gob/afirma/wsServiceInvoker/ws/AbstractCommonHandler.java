@@ -21,15 +21,14 @@
  */
 package es.gob.afirma.wsServiceInvoker.ws;
 
-import java.util.Properties;
-
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.handlers.AbstractHandler;
 import org.apache.wss4j.common.crypto.Crypto;
-import org.apache.wss4j.common.crypto.CryptoFactory;
 import org.apache.wss4j.common.ext.WSSecurityException;
 import org.apache.wss4j.dom.WSConstants;
+
+import es.gob.afirma.wsServiceInvoker.crypto.CryptoCache;
 
 /**
  * <p>Class that represents handlers used in the service invoker.</p>
@@ -85,15 +84,8 @@ public class AbstractCommonHandler extends AbstractHandler {
      * @throws WSSecurityException If there is an error in loading the cryptographic properties.
      */
     final Crypto getCryptoInstance() throws WSSecurityException {
-
-	Properties properties = new Properties();
-	properties.setProperty("org.apache.ws.security.crypto.provider", "org.apache.ws.security.components.crypto.Merlin");
-	properties.setProperty("org.apache.ws.security.crypto.merlin.keystore.type", this.userKeystoreType);
-	properties.setProperty("org.apache.ws.security.crypto.merlin.keystore.password", this.userKeystorePass);
-	properties.setProperty("org.apache.ws.security.crypto.merlin.keystore.alias", this.userAlias);
-	properties.setProperty("org.apache.ws.security.crypto.merlin.alias.password", this.password);
-	properties.setProperty("org.apache.ws.security.crypto.merlin.file", this.userKeystore);
-	return CryptoFactory.getInstance(properties);
+    	return CryptoCache.getCrypto(this.userKeystoreType, this.userKeystorePass, this.userAlias, this.password,
+    			this.userKeystore);
     }
 
     /**

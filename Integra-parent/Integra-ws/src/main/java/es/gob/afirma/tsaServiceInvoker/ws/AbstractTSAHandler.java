@@ -21,15 +21,14 @@
  */
 package es.gob.afirma.tsaServiceInvoker.ws;
 
-import java.util.Properties;
-
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.handlers.AbstractHandler;
 import org.apache.wss4j.common.crypto.Crypto;
-import org.apache.wss4j.common.crypto.CryptoFactory;
 import org.apache.wss4j.common.ext.WSSecurityException;
 import org.apache.wss4j.dom.WSConstants;
+
+import es.gob.afirma.wsServiceInvoker.crypto.CryptoCache;
 
 /**
  * <p>Class that represents handlers used in the TS@ service invoker.</p>
@@ -69,47 +68,47 @@ public class AbstractTSAHandler extends AbstractHandler {
      * Attribute that represents user Keystore Type.
      */
     private String userKeystoreType;
-    
+
     /**
      * Attribute that represents the SAML method type used in SAML authentication.
      */
     private String samlMethod;
-    
+
     /**
      * Attribute that represents the keystore used to validate the TS@ response.
      */
     private String responseKeystore;
-    
+
     /**
      * Attribute that represents the keystore password used to validate the TS@ response.
      */
     private String responseKeystorePass;
-    
+
     /**
      * Attribute that represents the keystore type used to validate the TS@ response.
      */
     private String responseKeystoreType;
-    
+
     /**
      * Attribute that represents the certificate alias used to validate the TS@ response.
      */
     private String responseCertificateAlias;
-    
+
     /**
      * Attribute that represents the SAML keystore used to validate the TS@ response.
      */
     private String responseSAMLKeystore;
-    
+
     /**
      * Attribute that represents the SAML keystore password used to validate the TS@ response.
      */
     private String responseSAMLKeystorePass;
-    
+
     /**
      * Attribute that represents the SAML keystore type used to validate the TS@ response.
      */
     private String responseSAMLKeystoreType;
-    
+
     /**
      * Attribute that represents the SAML certificate alias used to validate the TS@ response.
      */
@@ -134,16 +133,16 @@ public class AbstractTSAHandler extends AbstractHandler {
      * Attribute that represents the symmetric algorithm used in the TS@ request message.
      */
     private String requestSymmetricAlgorithm;
-    
+
     /**
      * Attribute that represents the symmetric key alias used in the TS@ response message.
      */
     private String responseSymmetricKeyAlias;
-    
+
     /**
      * Attribute that represents the symmetric key used in the TS@ response message.
      */
-    private String responseSymmetricKeyValue;    
+    private String responseSymmetricKeyValue;
 
     /**
      * {@inheritDoc}
@@ -160,30 +159,18 @@ public class AbstractTSAHandler extends AbstractHandler {
      * @throws WSSecurityException If there is an error in loading the cryptographic properties.
      */
     final Crypto getCryptoInstance() throws WSSecurityException {
-	Properties properties = new Properties();
-	properties.setProperty("org.apache.ws.security.crypto.provider", "org.apache.ws.security.components.crypto.Merlin");
-	properties.setProperty("org.apache.ws.security.crypto.merlin.keystore.type", this.userKeystoreType);
-	properties.setProperty("org.apache.ws.security.crypto.merlin.keystore.password", this.userKeystorePass);
-	properties.setProperty("org.apache.ws.security.crypto.merlin.keystore.alias", this.userAlias);
-	properties.setProperty("org.apache.ws.security.crypto.merlin.alias.password", this.password);
-	properties.setProperty("org.apache.ws.security.crypto.merlin.file", this.userKeystore);
-	return CryptoFactory.getInstance(properties);
+    	return CryptoCache.getCrypto(this.userKeystoreType, this.userKeystorePass, this.userAlias, this.password,
+    			this.userKeystore);
     }
-    
+
     /**
      * Method that configures the properties related to WSS4J cryptographic manager.
      * @return the configured properties related to WSS4J cryptographic manager.
      * @throws WSSecurityException If there is an error in loading the cryptographic properties.
      */
     final Crypto getResponseCryptoInstance() throws WSSecurityException {
-	Properties properties = new Properties();
-	properties.setProperty("org.apache.ws.security.crypto.provider", "org.apache.ws.security.components.crypto.Merlin");
-	properties.setProperty("org.apache.ws.security.crypto.merlin.keystore.type", this.responseKeystoreType);
-	properties.setProperty("org.apache.ws.security.crypto.merlin.keystore.password", this.responseKeystorePass);
-	properties.setProperty("org.apache.ws.security.crypto.merlin.keystore.alias", this.responseCertificateAlias);
-	properties.setProperty("org.apache.ws.security.crypto.merlin.alias.password", this.password);
-	properties.setProperty("org.apache.ws.security.crypto.merlin.file", this.responseKeystore);
-	return CryptoFactory.getInstance(properties);
+    	return CryptoCache.getCrypto(this.responseKeystoreType, this.responseKeystorePass,
+    			this.responseCertificateAlias, this.password, this.responseKeystore);
     }
 
     /**
@@ -293,7 +280,7 @@ public class AbstractTSAHandler extends AbstractHandler {
     public String getSamlMethod() {
         return samlMethod;
     }
-    
+
     /**
      * Sets the value of the attribute {@link #samlMethod}.
      * @param samlMethodParam The value for the attribute {@link #samlMethod}.
@@ -334,7 +321,7 @@ public class AbstractTSAHandler extends AbstractHandler {
         this.responseKeystorePass = responseKeystorePassParam;
     }
 
-    
+
     /**
      * Gets the value of the attribute {@link #responseKeystoreType}.
      * @return the value of the attribute {@link #responseKeystoreType}.
@@ -478,7 +465,7 @@ public class AbstractTSAHandler extends AbstractHandler {
     public void setRequestSymmetricKeyValue(String requestSymmetricKeyValueParam) {
         this.requestSymmetricKeyValue = requestSymmetricKeyValueParam;
     }
-    
+
     /**
      * Gets the value of the attribute {@link #requestSymmetricAlgorithm}.
      * @return the value of the attribute {@link #requestSymmetricAlgorithm}.
@@ -526,5 +513,5 @@ public class AbstractTSAHandler extends AbstractHandler {
     public void setResponseSymmetricKeyValue(String responseSymmetricKeyValueParam) {
         this.responseSymmetricKeyValue = responseSymmetricKeyValueParam;
     }
-    
+
 }
