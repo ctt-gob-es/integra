@@ -73,7 +73,7 @@ public class WebServiceInvoker {
     private static final Logger LOGGER = Logger.getLogger(WebServiceInvoker.class);
 
     /**
-     * Constant attribute that identifier the security Axis2 phase. 
+     * Constant attribute that identifier the security Axis2 phase.
      */
     private static final String PHASE_NAME_SECURITY = "Security";
 
@@ -83,12 +83,12 @@ public class WebServiceInvoker {
     private Properties properties;
 
     /**
-     * Attribute that represents the list of handlers added to the Axis engine. 
+     * Attribute that represents the list of handlers added to the Axis engine.
      */
     private static List<String> handlerAdded = new ArrayList<String>();
 
     /**
-     * Attribute that represents the list of DSS services defined by the @firma platform. 
+     * Attribute that represents the list of DSS services defined by the @firma platform.
      */
     private static final List<String> DSS_SERVICES_NAMES = Arrays.asList(new String[ ] { GeneralConstants.DSS_AFIRMA_VERIFY_CERTIFICATE_REQUEST, GeneralConstants.DSS_AFIRMA_ARCHIVE_RETRIEVAL, GeneralConstants.DSS_AFIRMA_SIGN_REQUEST, GeneralConstants.DSS_AFIRMA_VERIFY_REQUEST, GeneralConstants.DSS_ASYNC_REQUEST_STATUS, GeneralConstants.DSS_BATCH_VERIFY_CERTIFICATE_REQUEST, GeneralConstants.DSS_BATCH_VERIFY_SIGNATURE_REQUESTS });
 
@@ -178,15 +178,21 @@ public class WebServiceInvoker {
 	    // Desactivamos el chunked.
 	    options.setProperty(HTTPConstants.CHUNKED, "false");
 
-	    // Configuraremos un proxie para afirma en caso de estar definido 
-	    String proxie = this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_PROXIE_HOST_PROP);
-	    String proxiePort = this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_PROXIE_PORT_PROP);
-	    if(proxie != null && !proxie.isEmpty() && proxiePort != null && !proxiePort.isEmpty()) {
+	    // Configuraremos un proxy de red para el acceso al servicio en caso de estar definido
+	    String proxyHost = this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_PROXY_HOST_PROP);
+	    String proxyPort = this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_PROXY_PORT_PROP);
+	    if(proxyHost != null && !proxyHost.isEmpty() && proxyPort != null && !proxyPort.isEmpty()) {
 	    	 HttpTransportProperties.ProxyProperties proxyProperties = new HttpTransportProperties.ProxyProperties();
-	    	 proxyProperties.setProxyName(proxie);
-	    	 proxyProperties.setProxyPort(Integer.valueOf(proxiePort));
-	    	 proxyProperties.setUserName(this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_USER_PROXIE_PROP)); // Si no hay usuario de proxie, se puede dejar vacío
-	    	 proxyProperties.setPassWord(this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_PASS_PROXIE_PROP)); // Si no hay usuario de proxie, se puede dejar vacío
+	    	 proxyProperties.setProxyName(proxyHost);
+	    	 proxyProperties.setProxyPort(Integer.valueOf(proxyPort));
+	    	 String proxyUser = this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_PROXY_USER_PROP);
+	    	 if (proxyUser != null && !proxyUser.isEmpty()) {
+	    		 proxyProperties.setUserName(proxyUser);
+	    	 }
+	    	 String proxyPass = this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_PROXY_PASS_PROP);
+	    	 if (proxyPass != null && !proxyPass.isEmpty()) {
+	    		 proxyProperties.setPassWord(proxyPass);
+	    	 }
 	    	 options.setProperty(HTTPConstants.PROXY, proxyProperties);
 	    }
 

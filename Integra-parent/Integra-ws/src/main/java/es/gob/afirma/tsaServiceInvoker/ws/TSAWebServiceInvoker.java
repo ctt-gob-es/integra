@@ -265,15 +265,21 @@ public class TSAWebServiceInvoker {
     		// Desactivamos el chunked.
     		options.setProperty(HTTPConstants.CHUNKED, "false");
 
-    	    // Configuraremos un proxie para afirma en caso de estar definido
-    	    String proxie = this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_PROXIE_HOST_PROP);
-    	    String proxiePort = this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_PROXIE_PORT_PROP);
-    	    if(proxie != null && !proxie.isEmpty() && proxiePort != null && !proxiePort.isEmpty()) {
+    	    // Configuraremos un proxy de red para el acceso al servicio en caso de estar definido
+    	    String proxyHost = this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_PROXY_HOST_PROP);
+    	    String proxyPort = this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_PROXY_PORT_PROP);
+    	    if(proxyHost != null && !proxyHost.isEmpty() && proxyPort != null && !proxyPort.isEmpty()) {
     	    	 HttpTransportProperties.ProxyProperties proxyProperties = new HttpTransportProperties.ProxyProperties();
-    	    	 proxyProperties.setProxyName(proxie);
-    	    	 proxyProperties.setProxyPort(Integer.valueOf(proxiePort));
-    	    	 proxyProperties.setUserName(this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_USER_PROXIE_PROP)); // Si no hay usuario de proxie, se puede dejar vacío
-    	    	 proxyProperties.setPassWord(this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_PASS_PROXIE_PROP)); // Si no hay usuario de proxie, se puede dejar vacío
+    	    	 proxyProperties.setProxyName(proxyHost);
+    	    	 proxyProperties.setProxyPort(Integer.valueOf(proxyPort));
+    	    	 String proxyUser = this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_PROXY_USER_PROP);
+    	    	 if (proxyUser != null && !proxyUser.isEmpty()) {
+    	    		 proxyProperties.setUserName(proxyUser);
+    	    	 }
+    	    	 String proxyPass = this.properties.getProperty(WSServiceInvokerConstants.WS_CALL_PROXY_PASS_PROP);
+    	    	 if (proxyPass != null && !proxyPass.isEmpty()) {
+    	    		 proxyProperties.setPassWord(proxyPass);
+    	    	 }
     	    	 options.setProperty(HTTPConstants.PROXY, proxyProperties);
     	    }
 

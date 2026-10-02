@@ -62,43 +62,43 @@ public interface WSServiceInvokerConstants {
      *  the connection and request timeout for the web service, in milliseconds.
      */
     String WS_CALL_TIMEOUT_PROP = "callTimeout";
-    
-    /**
-     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of @Firma and eVisor web services with
-     *  the connection and request timeout for the web service, in milliseconds.
-     */
-    String WS_CALL_PROXIE_HOST_PROP = "proxieHost";
 
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of @Firma and eVisor web services with
      *  the connection and request timeout for the web service, in milliseconds.
      */
-    String WS_CALL_PROXIE_PORT_PROP = "proxiePort";
+    String WS_CALL_PROXY_HOST_PROP = "proxyHost";
 
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of @Firma and eVisor web services with
      *  the connection and request timeout for the web service, in milliseconds.
      */
-    String WS_CALL_USER_PROXIE_PROP = "userProxie";
+    String WS_CALL_PROXY_PORT_PROP = "proxyPort";
 
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of @Firma and eVisor web services with
      *  the connection and request timeout for the web service, in milliseconds.
      */
-    String WS_CALL_PASS_PROXIE_PROP = "passProxie";
+    String WS_CALL_PROXY_USER_PROP = "proxyUser";
+
+    /**
+     *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of @Firma and eVisor web services with
+     *  the connection and request timeout for the web service, in milliseconds.
+     */
+    String WS_CALL_PROXY_PASS_PROP = "proxyPass";
 
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of @Firma and eVisor web services with
      *  the authorization method used to secure the SOAP requests to invoke the web service.
      */
     String WS_AUTHORIZATION_METHOD_PROP = "authorizationMethod";
-    
+
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with
      *  the authorization method used to secure the SOAP requests to invoke the web service.
      */
     String TSA__USER_WS_AUTHORIZATION_METHOD_PROP = "UserNameToken";
-    
+
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with
      *  the authorization method used to secure the SOAP requests to invoke the web service.
@@ -116,7 +116,7 @@ public interface WSServiceInvokerConstants {
      *  the user name or the alias of the certificate defined for the authorization method used to secure the SOAP requests to invoke the web service.
      */
     String WS_AUTHORIZ_METHOD_USER_PROP = "user";
-    
+
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with
      *  the user name or the alias of the certificate defined for the authorization method used to secure the SOAP requests to invoke the web service.
@@ -129,7 +129,7 @@ public interface WSServiceInvokerConstants {
      *  to invoke the web service.
      */
     String WS_AUTHORIZATION_METHOD_PASS_PROP = "password";
-    
+
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with
      *  the user password defined for the authorization method used to secure the SOAP requests
@@ -143,7 +143,7 @@ public interface WSServiceInvokerConstants {
      *  to invoke the web service.
      */
     String TSA_WS_AUTHORIZATION_METHOD_KEYSTOREPASSWORD_PROP = "keystorePassword";
-    
+
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with
      *  the password of the private key of the certificate defined for the authorization method used to secure the SOAP requests
@@ -163,19 +163,19 @@ public interface WSServiceInvokerConstants {
      *  the path of the keystore with the certificates used to sign the requests.
      */
     String WS_AUTHORIZATION_METHOD_USERKEYSTORE_PROP = "userKeystore";
-    
+
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with
      *  the path of the keystore with the certificates used to sign the requests.
      */
     String TSA_WS_AUTHORIZATION_METHOD_USERKEYSTORE_PROP = "keystorePath";
-    
+
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with
      *  the SAML method used to sign the requests.
      */
-    String TSA_SAML_AUTHORIZATION_METHOD_METHOD_PROP = "method";    
-    
+    String TSA_SAML_AUTHORIZATION_METHOD_METHOD_PROP = "method";
+
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with
      *  the name of certificate to use.
@@ -187,7 +187,7 @@ public interface WSServiceInvokerConstants {
      *  the password of the keystore with the certificates used to sign the requests.
      */
     String WS_AUTHORIZATION_METHOD_USERKEYSTORE_PASS_PROP = "userKeystorePassword";
-    
+
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with
      *  the password of the keystore with the certificates used to sign the requests.
@@ -199,7 +199,7 @@ public interface WSServiceInvokerConstants {
      *  the type of the keystore with the certificates used to sign the requests.
      */
     String WS_AUTHORIZATION_METHOD_USERKEYSTORE_TYPE_PROP = "userKeystoreType";
-    
+
     /**
      *  Constant attribute that identifies the key defined on the properties file where to configure the invoke of TS@ web services with
      *  the type of the keystore with the certificates used to sign the requests.
@@ -215,7 +215,7 @@ public interface WSServiceInvokerConstants {
      *  Constant attribute that identifies the service to call for the classes used to execute the request of the web services for @Firma.
      */
     String AFIRMA_SERVICE = "afirmaService";
-    
+
     /**
      *  Constant attribute that identifies the service to call for the classes used to execute the request of the web services for TSA@.
      */
