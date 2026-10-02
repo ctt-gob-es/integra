@@ -23,12 +23,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 
-import javax.xml.crypto.dsig.XMLSignature;
-
 import org.bouncycastle.tsp.TSPException;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import net.java.xades.security.timestamp.TimeStampFactory;
 
@@ -40,20 +36,9 @@ public class SignatureTimeStampImpl implements SignatureTimeStamp {
 	this.data = data;
     }
 
-    private Node getSignatureValue(Document base) {
-	NodeList nl = base.getElementsByTagNameNS(XMLSignature.XMLNS, "SignatureValue");
-
-	if (nl.getLength() > 0) {
-	    return nl.item(0);
-	} else {
-	    return null;
-	}
-    }
-
 	@Override
 	public byte[] generateEncapsulatedTimeStamp(Document parent, String tsaURL)
 			throws NoSuchAlgorithmException, IOException, URISyntaxException, TSPException {
-		Node signatureValue = getSignatureValue(parent);
 
 		return TimeStampFactory.getTimeStamp(tsaURL, this.data, true);
 	}
