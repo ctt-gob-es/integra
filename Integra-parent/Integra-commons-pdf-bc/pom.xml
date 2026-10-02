@@ -3,7 +3,7 @@
   <parent>
     <groupId>es.gob.afirma</groupId>
     <artifactId>Integra-parent</artifactId>
-    <version>2.2.5_002-SNAPSHOT</version>
+    <version>2.5.0_001-SNAPSHOT</version>
   </parent>
   <artifactId>Integra-commons-pdf-bc</artifactId>
   <name>Integra-commons-pdf-bc</name>
@@ -16,7 +16,6 @@
 			<groupId>es.gob.afirma</groupId>
 			<artifactId>Integra-commons</artifactId>
 		</dependency>
-		
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk18on</artifactId>
@@ -32,8 +31,8 @@
 
 		<dependency>
 			<groupId>com.github.librepdf</groupId>
-        	<artifactId>openpdf</artifactId>
-        	<version>${version.openpdf}</version>
+	        	<artifactId>openpdf</artifactId>
+	        	<version>${version.openpdf}</version>
 		</dependency>
 
 		<!-- Scope test -->
@@ -59,6 +58,17 @@
 						<manifest>
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 						</manifest>
+						<manifestSection>
+							<name>Dependencies</name>
+							<manifestEntries>
+								<Integra-commons>${version.Integra.commons}</Integra-commons>
+								<bcprov-jdk18on>${version.bouncycastle}</bcprov-jdk18on>
+								<bcpkix-jdk18on>${version.bouncycastle}</bcpkix-jdk18on>
+								<bcutil-jdk18on>${version.bouncycastle}</bcutil-jdk18on>
+                                <openpdf>${version.openpdf}</openpdf>
+                                <junit>${version.junit}</junit>
+							</manifestEntries>
+						</manifestSection>
 					</archive>
 				</configuration>
 				<executions>

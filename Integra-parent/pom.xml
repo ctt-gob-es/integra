@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>es.gob.afirma</groupId>
 	<artifactId>Integra-parent</artifactId>
-	<version>2.2.5_002-SNAPSHOT</version>
+	<version>2.5.0_001-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Integra-parent</name>
 	<description>Kit de integracion para la Suite de @Firma</description>
@@ -125,22 +125,7 @@
 			<id>topublish</id>	
 			<build>
 		        <plugins>
-		        
-		        <!-- Esta version del plugin requiere Java 11 o superior, pero eso es incompatible con Integra-signature-report -->
-<!--		        
-		            <plugin>
-		              <groupId>org.owasp</groupId>
-		              <artifactId>dependency-check-maven</artifactId>
-		              <version>12.2.2</version>
-		              <executions>
-		                  <execution>
-		                      <goals>
-		                          <goal>aggregate</goal>
-		                      </goals>
-		                  </execution>
-		              </executions>
-		            </plugin>
--->
+
 			        <plugin>
 				        <groupId>org.apache.maven.plugins</groupId>
 				        <artifactId>maven-dependency-plugin</artifactId>
@@ -165,24 +150,72 @@
 				</plugins>
 		    </build>
 		</profile>
+
+		<!-- Compilacion y dependencias para Java 11 -->
+		<profile>
+			<id>java11</id>
+			<modules>
+				<module>Integra-commons-xml</module>
+				<module>Integra-commons-pdf-bc</module>
+				<module>Integra-commons</module>
+				<module>Integra-ocsp-rfc3161</module>
+				<module>Integra-ws</module>
+				<module>Integra-sign-operations</module>
+				<module>Integra-utils</module>
+				<module>Integra-encryption</module>
+				<module>Integra-services</module>
+				<module>Integra-tsl</module>
+				<module>Integra-signature-report</module>
+				<module>Integra-commons-tsl</module>
+			</modules>
+			<properties>
+				<project.build.jdk>11</project.build.jdk>
+				<version.bouncycastle>1.79</version.bouncycastle>
+				<version.commons.codec>1.17.1</version.commons.codec>
+				<version.commons.io>2.11.0</version.commons.io>
+				<version.commons.lang3>3.17.0</version.commons.lang3>
+				<version.fop>2.10</version.fop>
+				<version.httpclient>4.5.14</version.httpclient>
+				<version.log4j2>2.24.1</version.log4j2>
+				<version.tika>3.0.0</version.tika>
+				<version.wss4j>3.0.3</version.wss4j>
+				<version.openpdf>1.3.43</version.openpdf>
+				<groupId.xmlbeans>org.apache.xmlbeans</groupId.xmlbeans>
+				<artifactId.xmlbeans>xmlbeans-afirma</artifactId.xmlbeans>
+				<version.xmlbeans>2.3.0</version.xmlbeans>
+				<groupId.jcifs>jcifs</groupId.jcifs>
+				<version.jcifs>1.3.17</version.jcifs>
+				<version.zxing>3.5.3</version.zxing>
+				<version.commons-text>1.12.0</version.commons-text>
+			</properties>
+		</profile>
 		
 	</profiles>
 		
 	<properties>
-		<version.Integra.commons>2.2.5_002-SNAPSHOT</version.Integra.commons>
-		<version.Integra.commons.pdf.bc>2.2.5_002-SNAPSHOT</version.Integra.commons.pdf.bc>
-		<version.Integra.commons.tsl>2.2.5_002-SNAPSHOT</version.Integra.commons.tsl>
-		<version.Integra.commons.xml>2.2.5_002-SNAPSHOT</version.Integra.commons.xml>
-		<version.Integra.encryption>2.2.5_002-SNAPSHOT</version.Integra.encryption>
-		<version.Integra.ocsp.rfc3161>2.2.5_002-SNAPSHOT</version.Integra.ocsp.rfc3161>
-		<version.Integra.services>2.2.5_002-SNAPSHOT</version.Integra.services>
-		<version.Integra.sign.operations>2.2.5_002-SNAPSHOT</version.Integra.sign.operations>
-		<version.Integra.signature-report>2.2.5_002-SNAPSHOT</version.Integra.signature-report>
-		<version.Integra.tsl>2.2.5_002-SNAPSHOT</version.Integra.tsl>
-		<version.Integra.utils>2.2.5_002-SNAPSHOT</version.Integra.utils>
-		<version.Integra.ws>2.2.5_002-SNAPSHOT</version.Integra.ws>
+		<version.Integra.commons>2.5.0_001-SNAPSHOT</version.Integra.commons>
+		<version.Integra.commons.pdf.bc>2.5.0_001-SNAPSHOT</version.Integra.commons.pdf.bc>
+		<version.Integra.commons.tsl>2.5.0_001-SNAPSHOT</version.Integra.commons.tsl>
+		<version.Integra.commons.xml>2.5.0_001-SNAPSHOT</version.Integra.commons.xml>
+		<version.Integra.encryption>2.5.0_001-SNAPSHOT</version.Integra.encryption>
+		<version.Integra.ocsp.rfc3161>2.5.0_001-SNAPSHOT</version.Integra.ocsp.rfc3161>
+		<version.Integra.services>2.5.0_001-SNAPSHOT</version.Integra.services>
+		<version.Integra.sign.operations>2.5.0_001-SNAPSHOT</version.Integra.sign.operations>
+		<version.Integra.signature-report>2.5.0_001-SNAPSHOT</version.Integra.signature-report>
+		<version.Integra.tsl>2.5.0_001-SNAPSHOT</version.Integra.tsl>
+		<version.Integra.utils>2.5.0_001-SNAPSHOT</version.Integra.utils>
+		<version.Integra.ws>2.5.0_001-SNAPSHOT</version.Integra.ws>
 		
+		<pdf.groupId>com.github.librepdf</pdf.groupId>
+		<pdf.artifactId>openpdf</pdf.artifactId>
 		<version.openpdf>1.3.43</version.openpdf>
+		<groupId.xmlbeans>org.apache.xmlbeans</groupId.xmlbeans>
+		<artifactId.xmlbeans>xmlbeans-afirma</artifactId.xmlbeans>
+		<version.xmlbeans>2.3.0</version.xmlbeans>
+		<groupId.jcifs>org.samba.jcifs</groupId.jcifs>
+		<version.jcifs>1.3.14-kohsuke-1</version.jcifs>
+		<version.zxing>3.3.0</version.zxing>
+		<version.commons-text>1.10.0</version.commons-text>
 		
 		<version.axis2>1.8.2</version.axis2>
 		<version.bouncycastle>1.78</version.bouncycastle>

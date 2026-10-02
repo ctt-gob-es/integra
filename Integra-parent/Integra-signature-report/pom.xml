@@ -5,7 +5,7 @@
   <parent>
     <groupId>es.gob.afirma</groupId>
     <artifactId>Integra-parent</artifactId>
-    <version>2.2.5_002-SNAPSHOT</version>
+    <version>2.5.0_001-SNAPSHOT</version>
   </parent>
   <artifactId>Integra-signature-report</artifactId>
   <name>Integra-signature-report</name>
@@ -29,18 +29,34 @@
 		</dependency>
 		<dependency>
 			<groupId>com.github.librepdf</groupId>
-        	<artifactId>openpdf</artifactId>
-        	<version>${version.openpdf}</version>
+			<artifactId>openpdf</artifactId>
+			<version>${version.openpdf}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>fop</artifactId>
 			<version>${version.fop}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>xml-apis</groupId>
+					<artifactId>xml-apis-ext</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>xml-apis</groupId>
+					<artifactId>xml-apis</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.barcode4j</groupId>
 			<artifactId>barcode4j-fop-ext-complete</artifactId>
 			<version>2.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>xml-apis</groupId>
+					<artifactId>xml-apis</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>xalan</groupId>
@@ -54,12 +70,12 @@
 		<dependency>
 			<groupId>com.google.zxing</groupId>
 			<artifactId>core</artifactId>
-			<version>3.3.0</version>
+			<version>${version.zxing}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.zxing</groupId>
 			<artifactId>javase</artifactId>
-			<version>3.3.0</version>
+			<version>${version.zxing}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tika</groupId>
@@ -69,7 +85,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-text</artifactId>
-			<version>1.10.0</version>
+			<version>${version.commons-text}</version>
 		</dependency>
 	
 		<!-- Scope test -->
@@ -89,6 +105,24 @@
 						<manifest>
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 						</manifest>
+						<manifestSection>
+	                    	<name>Dependencies</name>
+	                    	<manifestEntries>
+	                    		<log4j-api>${version.log4j2}</log4j-api>
+								<log4j-core>${version.log4j2}</log4j-core>
+								<log4j-jcl>${version.log4j2}</log4j-jcl>
+								<openpdf>${version.openpdf}</openpdf>
+								<fop>${version.fop}</fop>
+								<barcode4j-fop-ext-complete>2.1</barcode4j-fop-ext-complete>
+								<xalan>${version.xalan}</xalan>
+								<serializer>${version.xalan}</serializer>
+								<zxing.core>3.5.3</zxing.core>
+								<zxing.javase>3.5.3</zxing.javase>
+								<tika>${version.tika}</tika>
+								<commons-text>1.12.0</commons-text>
+								<junit>${version.junit}</junit>
+	                    	</manifestEntries>
+	                    </manifestSection>
 					</archive>
 				</configuration>				
 			</plugin>
